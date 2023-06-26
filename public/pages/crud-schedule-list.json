@@ -1,0 +1,418 @@
+{
+    "type": "page",
+    "title": "排课列表",
+    "remark": "bla bla bla",
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "name":"schedule_list",
+        "api": {
+            "method": "post",
+            "url":  "/mapi/schedule/pklists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "syncLocation":false,
+        "id" : "schedule_list",
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "id",
+                    "size":"md",
+                    "label": "编号",
+                    "placeholder" : "支持多个,用英文逗号分割不要有空格"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "group_ids",
+                    "onlyLeaf":true,
+                    "multiple": true,
+                    "searchable":true,
+                    "size":"md",
+                    "label": "班级",
+                    "source": "/mapi/group/lists?isSelect=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "teacher_id",
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "label": "教师",
+                    "size":"md",
+                    "source": "/mapi/teacher/lists?isSelect=1&isNoSubject=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "area_id",
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "label": "校区",
+                    "size":"md",
+                    "source": "/mapi/area/onlyarea"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "area_op",
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "label": "区域管理",
+                    "size":"md",
+                    "source": "/mapi/group/areaops"
+                },
+                {
+                    "label": "结算状态",
+                    "type": "select",
+                    "name": "status",
+                    "value" : "0",
+                    "options": [
+                        {
+                            "label": "请选择",
+                            "value": "0"
+                        },
+                        {
+                            "label": "已结算",
+                            "value": "1"
+                        },
+                        {
+                            "label": "未结算",
+                            "value": "2"
+                        }
+                    ]
+                },
+                {
+                    "type": "input-date-range",
+                    "name": "daterange",
+                    "inline": true,
+                    "label": "时间范围"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "bulkActions": [
+            {
+                "label": "批量删除",
+                "actionType": "ajax",
+                "api": "/mapi/schedule/delete?ids=$ids",
+                "confirmText": "只会删除选择中未结算,已结算会做过滤,确定要批量删除?"
+            }
+        ],
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "action",
+                "actionType": "download",
+                "label": "导出Excel",
+                "api": "/mapi/schedule/pklists?group_id=${group_id}&teacher_id=${teacher_id}&daterange=${daterange}&area_id=${area_id}&area_op=${area_op}&export=1"
+            },
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "affixRow": [
+            {
+              "type": "text",
+              "text": "当前页总计时长"
+            },
+            {
+              "type": "text",
+              "tpl": "${sum_duration}"
+            }
+        ],
+        "columns": [
+            {
+                "name": "id",
+                "label": "ID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "teacher_name",
+                "label": "教师名",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "group_name",
+                "label": "班级名",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "subject_name",
+                "label": "课程名",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "area_name",
+                "label": "校区(教室)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "operator_name",
+                "label": "排课人员",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "area_op_name",
+                "label": "区域管理",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "birthplace",
+                "label": "生源地",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "stateInfo",
+                "label": "状态",
+                "type": "text",
+                "toggled": true,
+                "classNameExpr": "<%= data.state == 0 ? 'bg-success' : 'bg-danger'  %>"
+            },
+            {
+                "name": "week_time",
+                "label": "星期",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "duration",
+                "label": "时长",
+                
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "range_time",
+                "label": "时间",
+                
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "create_time",
+                "label": "创建时间",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "type": "operation",
+                "label": "结算",
+                "width": 100,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "icon": "fa fa-check",
+                        "level" : "success",
+                        "label" : "点名",
+                        "disabledOn": "this.state === '0'",
+                        "hiddenOn" : "this.muilt_scount <= 1",
+                        "actionType": "dialog",
+                        "tooltip": "点名",
+                        "dialog": {
+                            "position": "right",
+                            "title": "选择未参加课程同学, 进行剔除  (默认为全部结算)",
+                            "body": {
+                                "type": "form",
+                                "name": "sample-edit-form2",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/schedule/muiltcheckout",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                            "actionType": "reload",
+                                            "componentId": "schedule_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body":  [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "id",
+                                        "hidden": true
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "uids",
+                                        "onlyLeaf":true,
+                                        "multiple": true,
+                                        "searchable":true,
+                                        "label": "请选择",
+                                        "source": "/mapi/group/onlystudent?group_id=$group_id"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "icon": "fa fa-check",
+                        "level" : "success",
+                        "label" : "结算",
+                        "disabledOn": "this.state === '0'",
+                        "hiddenOn" : "this.muilt_scount > 1 || this.muilt_scount === 0",
+                        "actionType": "ajax",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/schedule/checkout?id=$id"
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "icon": "fa fa-mail-reply",
+                        "level" : "danger",
+                        "label" : "撤销",
+                        "disabledOn": "this.state === '1'",
+                        "hiddenOn" : "this.isSuper === 0",
+                        "actionType": "ajax",
+                        "confirmText": "是否确认撤销操作?",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/schedule/revoke?id=$id"
+                        }
+                    }
+                ],
+                "toggled": true
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "width": 100,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "icon": "fa fa-pencil",
+                        "disabledOn": "this.state === '0'",
+                        "tooltip": "编辑",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "sample-edit-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/schedule/update",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                            "actionType": "reload",
+                                            "componentId": "schedule_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "id",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "teacherId",
+                                        "onlyLeaf":true,
+                                        "label": "教师",
+                                        "initiallyOpen": false,
+                                        "size": "full",
+                                        "searchable":true,
+                                        "value": "${s_t_id}",
+                                        "required": true,
+                                        "source": "/mapi/teacher/lists?isSelect=1&state=1"
+                                    },
+                                    {
+                                        "type": "input-date",
+                                        "label": "调整日期",
+                                        "name": "date",
+                                        "value" : "${time_day}",
+                                        "required": true,
+                                        "onlyLeaf":true
+                                    },
+                                    {
+                                        "type": "input-time-range",
+                                        "format":"HH:mm",
+                                        "value" : "${time_range}",
+                                        "label" : "模板时间",
+                                        "onlyLeaf":true,
+                                        "required": true,
+                                        "name": "time_range"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "area_op",
+                                        "onlyLeaf":true,
+                                        "label": "区域管理",
+                                        "searchable":true,
+                                        "size":"md",
+                                        "initiallyOpen":false,
+                                        "value":"$area_op",
+                                        "source": "/mapi/group/areaops",
+                                        "description": "区域管理非必选"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "icon": "fa fa-times text-danger",
+                        "disabledOn": "this.state === '0'",
+                        "actionType": "ajax",
+                        "tooltip": "删除",
+                        "confirmText": "您确认要删除?",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/schedule/delete?id=$id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

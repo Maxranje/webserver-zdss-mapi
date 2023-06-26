@@ -1,0 +1,341 @@
+{
+    "type": "page",
+    "title": "科目分类",
+    "remark": "bla bla bla",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "drawer",
+            "label": "新增",
+            "className" : "m-r-sm",
+            "primary": true,
+            "drawer": {
+                "position": "right",
+                "size": "lg",
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "new-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/subject/create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                "actionType": "reload",
+                                "componentId": "subject_list"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "input-text",
+                            "name": "category1",
+                            "label": "一级类目",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "category2",
+                            "label": "二级类目",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "name",
+                            "label": "课程名",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "descs",
+                            "label": "描述"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "api": {
+            "method": "post",
+            "url": "/mapi/subject/lists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "syncLocation":false,
+        "id" : "subject_list",
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "name",
+                    "size":"md",
+                    "label": "科目",
+                    "placeholder": ""
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "id",
+                "label": "SID",
+                
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "name",
+                "label": "科目",
+                
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "category1",
+                "label": "一级分类",
+                
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "category2",
+                "label": "二级分类",
+                
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "descs",
+                "label": "描述",
+                
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "create_time",
+                "label": "创建时间",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "name": "update_time",
+                "label": "修改时间",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "width": 100,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "icon": "fa fa-eye",
+                        "actionType": "dialog",
+                        "tooltip": "查看",
+                        "dialog": {
+                            "title": "查看",
+                            "body": {
+                                "type": "form",
+                                "body": [
+                                    {
+                                        "type": "static",
+                                        "name": "id",
+                                        "label": "SID"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "name",
+                                        "label": "科目"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "category1",
+                                        "label": "一级分类"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "category2",
+                                        "label": "二级分类"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "descs",
+                                        "label": "描述"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "create_time",
+                                        "label": "创建时间"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "update_time",
+                                        "label": "编辑时间"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "html",
+                                        "html": "<p>如需添加其他信息, 请联系超管.</p>"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "icon": "fa fa-pencil",
+                        "tooltip": "编辑",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "sample-edit-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/subject/update",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                            "actionType": "reload",
+                                            "componentId": "subject_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "SID",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "category1",
+                                        "label": "一级分类",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "category2",
+                                        "label": "二级分类",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "name",
+                                        "label": "科目",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "descs",
+                                        "label": "描述"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "icon": "fa fa-times text-danger",
+                        "actionType": "ajax",
+                        "tooltip": "删除",
+                        "confirmText": "删除后关联的教师选课也会删除, 已经排好的课也会删除, 但不会删除已结算课程, 您确认要删除?",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/subject/delete?id=$id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

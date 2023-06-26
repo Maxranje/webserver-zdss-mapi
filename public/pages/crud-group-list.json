@@ -1,0 +1,526 @@
+{
+    "type": "page",
+    "cssVars": {
+        "--fontSizeBase": "10px",
+        "--borderRadius":"2px"
+    },
+    "title": "班级管理",
+    "remark": "bla bla bla",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "drawer",
+            "label": "新增",
+            "className" : "m-r-sm",
+            "primary": true,
+            "drawer": {
+                "position": "right",
+                "size": "lg",
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "new-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/group/create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                "actionType": "reload",
+                                "componentId": "group_list"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "input-text",
+                            "name": "name",
+                            "label": "班级名",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "descs",
+                            "label": "描述"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "label": "选择学生",
+                            "name": "student_ids",
+                            "type": "transfer",
+                            "source": "/mapi/student/lists?isSelect=1",
+                            "searchable": true,
+                            "searchApi": "/mapi/student/lists?isSelect=1&nickname=$term",
+                            "selectMode": "list"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "tree-select",
+                            "name": "area_op",
+                            "onlyLeaf":true,
+                            "label": "区域管理",
+                            "searchable":true,
+                            "size":"md",
+                            "initiallyOpen":false,
+                            "source": "/mapi/group/areaops",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "price",
+                            "label": "课时单价(元)",
+                            "addOn": {
+                                "type": "text",
+                                "label": "$"
+                            },
+                            "desc" : "一小时的课程价格, 如果课程有半小时情况, 系统会自行计算, 填写谨慎, 保留小数点后两位, 0为免费"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "duration",
+                            "label": "总课时数",
+                            "addOn": {
+                                "type": "text",
+                                "label": "H"
+                            },
+                            "desc" : "一共要上多少个小时的课, 填写必须大于0, 如小数则仅保留后两位, 请谨慎填写",
+                            "required": true
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "api": {
+            "method": "post",
+            "url":  "/mapi/group/lists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "syncLocation":false,
+        "labelTpl": "${uid}",
+        "id" : "group_list",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "name",
+                    "label": "班级名称",
+                    "size":"md",
+                    "placeholder": ""
+                },
+                {
+                    "type": "input-text",
+                    "name": "student_nickname",
+                    "label": "学生昵称",
+                    "size":"md",
+                    "placeholder": ""
+                },
+                {
+                    "type": "tree-select",
+                    "name": "area_op",
+                    "onlyLeaf":true,
+                    "label": "区域管理",
+                    "searchable":true,
+                    "size":"md",
+                    "initiallyOpen":false,
+                    "source": "/mapi/group/areaops"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "id",
+                "label": "GID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "name",
+                "label": "班级名称",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "descs",
+                "label": "描述",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "studentCount",
+                "label": "学生数量",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "area_op_name",
+                "label": "区域管理",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "priceInfo",
+                "label": "班级单价",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "durationInfo",
+                "label": "总课时数",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "lastDurationInfo",
+                "label": "剩余课时数",
+                "type": "text",
+                "classNameExpr": "<%= data.lastDuration < 0 ? 'bg-danger' : 'bg-default'%>",
+                "toggled": true
+            },
+            {
+                "type": "progress",
+                "name" : "progress",
+                "label" : "课时比例",
+                "mode": "dashboard",
+                "strokeWidth": 4,
+                "gapDegree": 22,
+                "gapPosition": "bottom",
+                "map": [
+                    {
+                        "value": 20,
+                        "color": "#F96D3E"
+                    },
+                    {
+                        "value": 100,
+                        "color": "#007bff"
+                    }
+                ]
+            },
+            {
+                "name": "create_time",
+                "label": "创建时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "width": 100,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "icon": "fa fa-eye",
+                        "actionType": "dialog",
+                        "tooltip": "查看",
+                        "dialog": {
+                            "title": "查看",
+                            "body": {
+                                "type": "form",
+                                "body": [
+                                    {
+                                        "type": "static",
+                                        "name": "id",
+                                        "label": "GID"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "name",
+                                        "label": "班级名称"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "descs",
+                                        "label": "描述"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "priceInfo",
+                                        "label": "课时单价"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "durationInfo",
+                                        "label": "总课时数"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "lastDurationInfo",
+                                        "label": "剩余课时数"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "studentNames",
+                                        "label": "学生名单"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "create_time",
+                                        "label": "创建时间"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "static",
+                                        "name": "update_time",
+                                        "label": "编辑时间"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "html",
+                                        "html": "<p>如需添加其他信息, 请联系超管.</p>"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "icon": "fa fa-pencil",
+                        "tooltip": "编辑",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "sample-edit-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/group/update",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                            "actionType": "reload",
+                                            "componentId": "group_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "GID",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "name",
+                                        "label": "班级名称",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "descs",
+                                        "label": "描述"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "label": "选择学生",
+                                        "name": "student_ids",
+                                        "type": "transfer",
+                                        "source": "/mapi/student/lists?isSelect=1&group_id=${id}",
+                                        "searchable": true,
+                                        "searchApi": "/mapi/student/lists?isSelect=1&group_id=${id}&nickname=$term",
+                                        "selectMode": "list"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "area_op",
+                                        "onlyLeaf":true,
+                                        "label": "区域管理",
+                                        "searchable":true,
+                                        "size":"md",
+                                        "initiallyOpen":false,
+                                        "value" : "${area_op}",
+                                        "source": "/mapi/group/areaops",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "price",
+                                        "label": "课时单价(元)",
+                                        "value" : "${priceInfo2}",
+                                        "addOn": {
+                                            "type": "text",
+                                            "label": "$"
+                                        },
+                                        "desc" : "一小时的课程价格, 如果课程有半小时情况, 系统会自行计算, 填写谨慎, 保留小数点后两位, 0为免费"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "duration",
+                                        "label": "总课时数",
+                                        "addOn": {
+                                            "type": "text",
+                                            "label": "H"
+                                        },
+                                        "desc" : "一共要上多少课时, 填写必须大于0, 如小数则仅保留后两位, 请谨慎填写",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "icon": "fa fa-bitcoin",
+                        "tooltip": "设置单个学生价格",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "编辑",
+                            "body" : {
+                                "type": "form",
+                                "name": "sample-edit-formv2",
+                                "mode": "horizontal",
+                                "horizontal": {
+                                    "justify": true
+                                },
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/group/updateprice",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                            "actionType": "reload",
+                                            "componentId": "group_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "service",
+                                        "schemaApi": "/mapi/group/singleprice?group_id=${id}"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "icon": "fa fa-times text-danger",
+                        "actionType": "ajax",
+                        "tooltip": "删除",
+                        "confirmText": "班级可能有关联的排课, 建议下线即可,  您确认要删除么?",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/group/delete?id=$id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

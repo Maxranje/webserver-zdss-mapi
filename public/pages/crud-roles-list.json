@@ -1,0 +1,226 @@
+{
+    "type": "page",
+    "data": {
+        "page_select" : [
+            {
+                "label": "学生管理",
+                "value": "2"
+            },
+            {
+                "label": "班级管理",
+                "value": "3"
+            },
+            {
+                "label": "排课管理",
+                "children": [
+                    {
+                        "label": "开始排课",
+                        "value": "41"
+                    },
+                    {
+                        "label": "排课列表",
+                        "value": "42"
+                    }
+                ]
+            },
+            {
+                "label": "校区管理",
+                "children": [
+                    {
+                        "label": "教室预览",
+                        "value": "101"
+                    },
+                    {
+                        "label": "配置教室",
+                        "value": "102"
+                    }
+                ]
+            },
+            {
+                "label": "统计管理",
+                "children": [
+                    {
+                        "label": "订单记录",
+                        "value": "51"
+                    },
+                    {
+                        "label": "学班记录",
+                        "value": "52"
+                    }
+                ]
+            },
+            {
+                "label": "科目分类",
+                "value": "6"
+            },
+            {
+                "label": "教师管理",
+                "children": [
+                    {
+                        "label": "教师列表",
+                        "value": "71"
+                    },
+                    {
+                        "label": "教师锁定",
+                        "value": "72"
+                    }
+                ]
+            },
+            {
+                "label": "校区管理",
+                "value": "8"
+            }
+        ]
+    },
+    "cssVars": {
+        "--fontSizeBase": "10px",
+        "--borderRadius":"2px"
+    },
+    "title": "角色管理",
+    "remark": "bla bla bla",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "drawer",
+            "label": "新增",
+            "className": "m-r-sm",
+            "primary": true,
+            "drawer": {
+                "position": "right",
+                "size": "lg",
+                "title": "新增角色",
+                "body": {
+                    "type": "form",
+                    "name": "new-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/roles/create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "roles_list"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "input-text",
+                            "name": "name",
+                            "label": "角色名",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "descs",
+                            "label": "描述"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "api": "/mapi/roles/lists",
+        "syncLocation": false,
+        "mode": "cards",
+        "switchPerPage": false,
+        "placeholder": "没有权限信息",
+        "columnsCount": 4,
+        "perPageAvailable": [10000, 20000],
+        "perPage" : 10000,
+        "card": {
+            "header": {
+                "className": "bg-white",
+                "title": "$name",
+                "subTitle": "",
+                "description": "$descs",
+                "highlight": "$isSuperAdmin",
+                "avatarClassName": "pull-left thumb-md avatar b-3x m-r"
+            },
+            "bodyClassName": "padder",
+            "actions": [
+                {
+                    "label": "编辑",
+                    "actionType": "dialog",
+                    "dialog": {
+                        "title": null,
+                        "size": "lg",
+                        "body": {
+                            "api": "/mapi/roles/update",
+                            "type": "form",
+                            "tabs": [
+                                {
+                                    "title": "基本信息",
+                                    "body": [
+                                        {
+                                            "type": "hidden",
+                                            "name": "id"
+                                        },
+                                        {
+                                            "name": "name",
+                                            "label": "角色",
+                                            "size" : "full",
+                                            "type": "input-text"
+                                        },
+                                        {
+                                            "type": "divider"
+                                        },
+                                        {
+                                            "name": "descs",
+                                            "type": "textarea",
+                                            "label": "描述",
+                                            "size" : "full"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "title": "角色信息",
+                                    "body": [
+                                        {
+                                            "label": "选择人员",
+                                            "name": "uids",
+                                            "type": "transfer",
+                                            "source": "/mapi/roles/userlists?rid=$id",
+                                            "searchable": true,
+                                            "searchApi": "/mapi/roles/userlists?nickname=$term&rid=$id",
+                                            "selectMode": "list",
+                                            "required": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "title": "页面权限",
+                                    "body": [
+                                        {
+                                            "label": "选择页面",
+                                            "name": "page_ids",
+                                            "type": "transfer",
+                                            "source": "$page_select",
+                                            "selectMode": "list",
+                                            "required": true
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "label": "移除",
+                    "confirmText": "您确定要移除该角色?",
+                    "actionType": "ajax",
+                    "api": "/mapi/roles/delete"
+                }
+            ]
+        }
+    }
+}

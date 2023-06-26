@@ -1,0 +1,226 @@
+{
+    "type": "page",
+    "title": "学班记录",
+    "remark": "bla bla bla",
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "api": {
+            "method": "post",
+            "url":"/mapi/statistics/details",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "syncLocation":false,
+        "id" : "statistics_list",
+        "name" : "statistics_list",
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "student_name",
+                    "label": "学生姓名",
+                    "size": "md",
+                    "placeholder": ""
+                },
+                {
+                    "type": "input-text",
+                    "name": "group_name",
+                    "size":"md",
+                    "label": "班级名"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "action",
+                "actionType": "download",
+                "label": "导出Excel",
+                "api": "/mapi/statistics/details?student_name=${student_name}&group_name=${group_name}&export=1"
+            },
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "uid",
+                "label": "UID",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "name": "group_id",
+                "label": "Gid",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "name": "student_name",
+                "label": "学生",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "group_name",
+                "label": "班级",     
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "birthplace",
+                "label": "生源地",     
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "group_price",
+                "label": "班级客单价",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "student_price",
+                "label": "学生客单价",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "capital",
+                "label": "存额",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "duration_scale",
+                "label": "班级剩余课时/总课时",     
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "duration_real",
+                "label": "已结转课时",     
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "progress",
+                "name" : "duration_progress",
+                "label" : "占比",
+                "mode": "dashboard",
+                "strokeWidth": 4,
+                "gapDegree": 22,
+                "gapPosition": "bottom",
+                "map": [
+                    {
+                        "value": 20,
+                        "color": "#F96D3E"
+                    },
+                    {
+                        "value": 100,
+                        "color": "#007bff"
+                    }
+                ]
+            },
+            {
+                "name": "area_op",
+                "label": "区域管理",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "expenses_info",
+                "label": "结转金额",     
+                "type": "text",
+                "remark" : "结转金额是按照历史消耗进行统计, 由于存在动态改客单价场景,  所以不一定等于消耗课时乘以当前客单价",
+                "toggled": true
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "width": 100,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "icon": "fa fa-pencil",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "sample-edit-formv2",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/statistics/updatecapital",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                            "actionType": "reload",
+                                            "componentId": "statistics_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "uid",
+                                        "label": "uid",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "group_id",
+                                        "label": "班级ID",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "expenses",
+                                        "label": "修改结转金额",
+                                        "desc": "结转金额修改会根据实际情况返还/扣减存额, 同时会修改学生在班级的客单价和历史存根(老订单中每一笔), 数据实时统计, 因为除法保留小数点后两位, 导致除不尽时, 会与设置值不同"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

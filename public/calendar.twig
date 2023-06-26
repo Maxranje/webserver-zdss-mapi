@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- Title -->
+    <title>课表</title>
+
+    <!-- These plugins only need for the run this page -->
+    <link rel="stylesheet" href="/public/atom/css/fullcalendar.min.css">
+
+    <!-- Master Stylesheet [If you remove this CSS file, your file will be broken undoubtedly.] -->
+    <link rel="stylesheet" href="/public/atom/style.css">
+
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader"></div>
+
+    <!-- ======================================
+    ******* Page Wrapper Area Start **********
+    ======================================= -->
+    <div class="admetro-page-wrapper">
+
+        <!-- Page Content -->
+        <div class="admetro-page-content" style="margin-left:0px">
+            <!-- Top Header Area -->
+            <header class="top-header-area d-flex align-items-center justify-content-between" style="width:calc(100%); left:0px">
+                <div class="left-side-content-area d-flex align-items-center">
+                    <!-- Mobile Logo -->
+                    <div class="mobile-logo mr-3 mr-sm-4">
+                        <a href=""><img src="/public/atom/img/new-img/logo.png" alt="Mobile Logo"></a>
+                    </div>
+                </div>
+
+                <div class="right-side-navbar d-flex align-items-center justify-content-end" style="padding-right:10px">
+                    <!-- Top Bar Nav -->
+                    <ul class="d-flex align-items-center">
+
+                        <li class="nav-item dropdown">
+                            {# <a class="btn dropdown-toggle" href="javascript:singout()">
+                                <img src="/public/atom/img/profile-img/avatar_default.jpeg" alt="">
+                            </a> #}
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="/public/atom/img/profile-img/avatar_default.jpeg" alt=""></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <!-- User Profile Area -->
+                                <div class="user-profile-area">
+                                    <div class="user-profile-heading">
+                                        <!-- Profile Text -->
+                                        <div class="profile-text">
+                                            <h6>{{ data.user.name }}</h6>
+                                            {# <span>samanthasarah@example.com</span> #}
+                                        </div>
+                                    </div>
+                                    <a href="javascript:singout()" class="dropdown-item"><i class="ti-unlink text-warning" aria-hidden="true"></i> Sign-out</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </header>
+            <!-- Main Content Area -->
+            <div class="main-content" style="padding:30px 0">
+                <!-- Calendar area Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="content calender-content">
+                            <div class="row"><div class="col-lg-8" style="padding: 0px 5px;"><div class="card bg-boxshadow mb-30"><div class="card-body" ><div id='fullcalendar-default-view'></div></div></div></div></div>
+                            {% if data.user.type == 13 %}
+                            <div class="row">
+                                <div class="col-12 col-sm-6 col-lg-4 mb-30">
+                                    <!-- Widget Social Content -->
+                                    <div class="widget-social-content p-3 primary-color full-height wow fadeInUp" data-wow-delay="200ms">
+                                        <h5 class="text-white">本月课时</h5>
+                                        <h5 class="text-white">{{ data.lists.month }}</h5>
+                                        <!-- Widget Social Icon -->
+                                        <div class="widget-social-icon">
+                                            <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-sm-6 col-lg-4 mb-30">
+                                    <!-- Widget Social Content -->
+                                    <div class="widget-social-content p-3 bg-teal full-height wow fadeInUp" data-wow-delay="300ms">
+                                        <h5 class="text-white">上月课时</h5>
+                                        <h5 class="text-white">{{ data.lists.lastMonth }}</h5>
+                                        <!-- Widget Social Icon -->
+                                        <div class="widget-social-icon">
+                                            <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if data.user.type == 12 %}
+                            <div class="row">
+                                {% for foo in data.lists %}
+                                <div class="col-12 col-sm-6 col-lg-4 mb-30">
+                                    <!-- Widget Social Content -->
+                                    <div class="widget-social-content p-3 {{ foo.bg }} full-height wow fadeInUp" data-wow-delay="200ms">
+                                        <h5 class="text-white"><span style="width:5rem;display:inline-block;">班级</span>{{ foo.groupName }}</h5>
+                                        <h5 class="text-white"><span style="width:5rem;display:inline-block;">总课时</span>{{ foo.duration }}</h5>
+                                        <h5 class="{{ foo.durationColor }}"><span style="width:5rem;display:inline-block;" class="text-white">剩余课时</span>{{ foo.lastDuration }}</h5>
+                                        <!-- Widget Social Icon -->
+                                        <div class="widget-social-icon">
+                                            <i class="fa {{ foo.icon }}" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================
+    ********* Page Wrapper Area End ***********
+    ======================================= -->
+
+    <!-- Must needed plugins to the run this template -->
+    <script src="/public/atom/js/jquery.min.js"></script>
+    <script src="/public/atom/js/popper.min.js"></script>
+    <script src="/public/atom/js/bootstrap.min.js"></script>
+    <script src="/public/atom/js/admetro.bundle.js"></script>
+
+    <!-- These plugins only need for the run this page -->
+    <script src="/public/atom/js/default-assets/fullcalendar-moment.min.js"></script>
+    <script src="/public/atom/js/fullcalendar.min.js"></script>
+    <script src="/public/atom/js/default-assets/ui-fullcalendr.js"></script>
+
+    <!-- Active JS -->
+    <script src="/public/atom/js/default-assets/active.js"></script>
+    <script>
+    function singout () {
+        $.post("/mapi/sign/out",function(data){window.location.reload();});
+    }
+    </script>
+
+</body>
+
+</html>

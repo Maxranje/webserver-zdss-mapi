@@ -1,0 +1,290 @@
+{
+    "type": "page",
+    "cssVars": {
+        "--fontSizeBase": "10px",
+        "--borderRadius":"2px"
+    },
+    "title": "校区管理",
+    "remark": "bla bla bla",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "drawer",
+            "label": "新增校区",
+            "className": "m-r-sm",
+            "primary": true,
+            "drawer": {
+                "position": "right",
+                "size": "lg",
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "new-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/area/create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "area_lists"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "input-text",
+                            "name": "area_name",
+                            "size":"md",
+                            "label": "校区名称",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "room_name",
+                            "size":"md",
+                            "label": "教室名称",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "html",
+                            "html": "<p>新增的校区, 最小需要有一个教室.</p>"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "button",
+            "actionType": "drawer",
+            "label": "新增教室",
+            "className": "m-r-sm",
+            "primary": true,
+            "drawer": {
+                "position": "right",
+                "size": "lg",
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "new-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/area/create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "area_lists"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "tree-select",
+                            "name": "area_id",
+                            "onlyLeaf":true,
+                            "searchable":true,
+                            "size":"md",
+                            "label": "校区",
+                            "source": "/mapi/area/onlyarea",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "room_name",
+                            "size":"md",
+                            "label": "教室名称",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "api": {
+            "method": "post",
+            "url": "/mapi/area/lists",
+            "dataType": "form"
+        },
+        "id":"area_lists",
+        "perPageAvailable": [10000, 20000],
+        "perPage" : 10000,
+        "syncLocation":false,
+        "labelTpl": "${id}",
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "展示全部数据, 共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page"
+        ],
+        "combineNum": 2,
+        "columns": [
+            {
+                "name": "aid",
+                "label": "Aid",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "area_name",
+                "label": "校区名称",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "rid",
+                "label": "教室编号",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "room_name",
+                "label": "教室名称",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "area_time",
+                "label": "校区更新时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "room_time",
+                "label": "教室更新时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "width": 100,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "icon": "fa fa-pencil",
+                        "tooltip": "编辑",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "sample-edit-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/area/update",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                                "actionType": "reload",
+                                                "componentId": "area_lists"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "aid",
+                                        "label": "校区ID",
+                                        "size":"md",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "rid",
+                                        "label": "教室ID",
+                                        "size":"md",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "area_name",
+                                        "size":"md",
+                                        "label": "校区名称",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "room_name",
+                                        "size":"md",
+                                        "label": "教室名称",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "icon": "fa fa-times text-danger",
+                        "actionType": "ajax",
+                        "tooltip": "删除",
+                        "confirmText": "您确认要删除, 如果校区没有班级则会删除校区?",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/area/delete?rid=$rid&aid=$aid"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

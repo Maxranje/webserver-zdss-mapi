@@ -1,0 +1,307 @@
+{
+    "type": "page",
+    "body": [
+        {
+            "type": "container",
+            "body": [
+            {
+                "type": "form",
+                "title": "PK 查询",
+                "autoFocus": true,
+                "mode": "inline",
+                "body": [
+                    {
+                        "type": "tree-select",
+                        "name": "s_group_id",
+                        "onlyLeaf":true,
+                        "searchable":true,
+                        "size": "md",
+                        "label": "班级",
+                        "placeholder": "请选择班级",
+                        "source": "/mapi/group/lists?isSelect=1"
+                    },
+                    {
+                        "type": "tree-select",
+                        "name": "s_teacher_id",
+                        "onlyLeaf":true,
+                        "label": "教师",
+                        "searchable":true,
+                        "size": "md",
+                        "source": "/mapi/teacher/lists?isSelect=1&isNoSubject=1"
+                    },
+                    {
+                        "type": "button",
+                        "actionType": "reload",
+                        "target": "time_calendar?group_id=${s_group_id}&s_teacher_id=${s_teacher_id}",
+                        "level" : "info",
+                        "label" : "查询",
+                        "tooltip" :"查询前后半年数据"
+                    }
+                ]
+            },
+            {
+                "type": "panel",
+                "title": "时间表 (红色未结算, 绿色已结算, 灰色锁定)",
+                "body": {
+                    "type": "service",
+                    "id" : "time_calendar",
+                    "schemaApi": "/mapi/schedule/pkcalendar?teacher_id=${s_teacher_id}&group_id=${s_group_id}"
+                }
+            }]
+        },
+        {
+            "type": "tabs",
+            "tabsMode": "radio",
+            "tabs": [
+                {
+                    "title": "周期排课",
+                    "body": {
+                        "type": "form",
+                        "api": {
+                            "method": "post",
+                            "url": "/mapi/schedule/create",
+                            "dataType": "form"
+                        },
+                        "title": "",
+                        "autoFocus": true,
+                        "body": [
+                            {
+                                "type": "group",
+                                "body": [
+                                    {
+                                        "type": "tree-select",
+                                        "name": "group_id",
+                                        "onlyLeaf":true,
+                                        "label": "班级",
+                                        "searchable":true,
+                                        "size": "full",
+                                        "source": "/mapi/group/lists?isSelect=1"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "teacher_id",
+                                        "onlyLeaf":true,
+                                        "searchable":true,
+                                        "label": "教师",
+                                        "initiallyOpen":false,
+                                        "size": "full",
+                                        "source": "/mapi/teacher/lists?isSelect=1&state=1"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "tree-select",
+                                "name": "area_id",
+                                "onlyLeaf":true,
+                                "label": "校区",
+                                "searchable":true,
+                                "size":"md",
+                                "initiallyOpen":false,
+                                "source": "/mapi/area/onlyarea",
+                                "description": "校区为非必选项"
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "input-number",
+                                "label": "总课程量",
+                                "name": "length",
+                                "min":1,
+                                "max":30,
+                                "precision" : 0,
+                                "showSteps":true,
+                                "size":"md",
+                                "description": "一共多少节课(非多少小时), 系统会自动除每周选择时间, 确定延续到第几周, 一次最多可配置20节课"
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "input-date",
+                                "label": "起始时间",
+                                "name": "start_day",
+                                "size":"md",
+                                "description": "重要: 设定起始时间后, 会根据起始时间本周开始排"
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "radios",
+                                "name": "type",
+                                "label": "周期时间",
+                                "value": 1,
+                                "options": [
+                                    {
+                                        "label": "每周",
+                                        "value": 1
+                                    },
+                                    {
+                                        "label": "隔周",
+                                        "value": 2
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "checkboxes",
+                                "name": "week",
+                                "label": "",
+                                "value": 3,
+                                "options": [
+                                    {
+                                        "label": "周一",
+                                        "value": 1
+                                    },
+                                    {
+                                        "label": "周二",
+                                        "value": 2
+                                    },
+                                    {
+                                        "label": "周三",
+                                        "value": 3
+                                    },
+                                    {
+                                        "label": "周四",
+                                        "value": 4
+                                    },
+                                    {
+                                        "label": "周五",
+                                        "value": 5
+                                    },
+                                    {
+                                        "label": "周六",
+                                        "value": 6
+                                    },
+                                    {
+                                        "label": "周日",
+                                        "value": 7
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "input-time-range",
+                                "format":"HH:mm",
+                                "label" : "模板时间",
+                                "name": "time_range",
+                                "desc" : "<p style='color:red;'>以模板时间为基础值, 按照周期进行计算出详细时间, 模板时间必须填写开始课程开始[时:分]和结束[时:分], 课时长度最小5分钟, 最大4小时</p>"
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "button",
+                                "label": "生成详细时间列表",
+                                "level": "success",
+                                "actionType":"reload",
+                                "target" : "pk_info_lists"
+                            },
+                            {
+                                "type": "html",
+                                "html": "<p style='color:red;'>根据上述配置生成具体到天级别时间列表, 可微调相关时间, 也可以自定义删除新增, 提交时以生成的详细时间列表为准</p>"
+                            },
+                            {
+                                "type": "container",
+                                "body": {
+                                    "type": "service",
+                                    "initFetchSchema" : false,
+                                    "id" : "pk_info_lists",
+                                    "schemaApi": "/mapi/schedule/timelist"
+                                }
+                            }
+                        ],
+                        "actions": [
+                            {
+                                "type": "button",
+                                "label": "提交",
+                                "level": "primary",
+                                "actionType":"submit"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "title": "自定义排课",
+                    "body": {
+                        "type": "form",
+                        "api": {
+                            "method": "post",
+                            "url": "/mapi/schedule/createv2",
+                            "dataType": "form"
+                        },
+                        "title": "",
+                        "autoFocus": true,
+                        "body": [
+                            {
+                                "type": "group",
+                                "body": [
+                                    {
+                                        "type": "tree-select",
+                                        "name": "group_id",
+                                        "onlyLeaf":true,
+                                        "label": "班级",
+                                        "searchable":true,
+                                        "size": "full",
+                                        "source": "/mapi/group/lists?isSelect=1"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "teacher_id",
+                                        "onlyLeaf":true,
+                                        "label": "教师",
+                                        "searchable":true,
+                                        "initiallyOpen": false,
+                                        "size": "full",
+                                        "source": "/mapi/teacher/lists?isSelect=1&state=1"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "tree-select",
+                                "name": "area_id",
+                                "onlyLeaf":true,
+                                "label": "校区",
+                                "searchable":true,
+                                "size":"md",
+                                "initiallyOpen":false,
+                                "source": "/mapi/area/onlyarea",
+                                "description": "校区为非必选项"
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "combo",
+                                "name": "times",
+                                "label": "排课时间",
+                                "multiple": true,
+                                "items": [
+                                    {
+                                        "type": "input-date",
+                                        "name": "date",
+                                        "onlyLeaf":true
+                                    },
+                                    {
+                                        "type": "input-time-range",
+                                        "format":"HH:mm",
+                                        "label" : "时间范围",
+                                        "name": "time_range"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

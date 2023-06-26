@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta author="maxranje@aliyun.com" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- Title -->
+    <title>ZD PK</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="/public/atom/img/core-img/favicon.ico">
+
+    <!-- Master Stylesheet [If you remove this CSS file, your file will be broken undoubtedly.] -->
+    <link rel="stylesheet" href="/public/atom/style.css">
+
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader"></div>
+
+    <!-- ======================================
+    ******* Page Wrapper Area Start **********
+    ======================================= -->
+    <div class="main-content- h-100vh">
+        <div class="container h-100">
+            <div class="row h-100 justify-content-center align-items-center">
+                <div class="col-lg-6 mx-auto">
+                    <!-- Middle Box -->
+                    <div class="middle-box my-5 text-center bg-white p-4 p-sm-5 bg-boxshadow">
+                        <h5 class="mb-50">Login</h5>
+
+                        <!-- Form -->
+                        <form class="login-form" id="login-form">
+                            <!-- Form Group -->
+                            <div class="form-group">
+                                <input type="text" class="form-control login" placeholder="User Name" required="" name="username">
+                            </div>
+
+                            <!-- Form Group -->
+                            <div class="form-group">
+                                <input type="password" class="form-control login" placeholder="Password" required="" name="passport">
+                            </div>
+                            <div class="alert alert-outline-danger text-danger display-none" role="alert" id="tips"> <i class=" ti-close  close text-black" onclick="$('#tips').hide();"></i> <strong>Error!</strong> <span id="tips-content"></span></div>
+                            <p class="text-center text-danger g-font-size-16 display-none" id="tips"></p> 
+                            <button type="button" class="btn- btn-success btn-1 btn-1c w-100 text-center" id="login">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================
+    ********* Page Wrapper Area End ***********
+    ======================================= -->
+
+    <!-- Must needed plugins to the run this Template -->
+    <script src="/public/atom/js/jquery.min.js"></script>
+    <script src="/public/atom/js/popper.min.js"></script>
+    <script src="/public/atom/js/bootstrap.min.js"></script>
+    <script src="/public/atom/js/admetro.bundle.js"></script>
+
+    <!-- Active JS -->
+    <script src="/public/atom/js/default-assets/active.js"></script>
+    <script src="/public/atom/js/mapi.js"></script>
+</body>
+
+</html>
