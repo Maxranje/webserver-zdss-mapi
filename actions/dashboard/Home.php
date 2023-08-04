@@ -8,7 +8,7 @@ class Actions_Home extends Zy_Core_Actions {
             $this->redirectLogin();
         }
 
-        $serivce = new Service_Page_Base_Page ($this->_request, $this->_userInfo);
+        $serivce = new Service_Page_Api_Page ($this->_request, $this->_userInfo);
         $data = $serivce->execute();
 
         $result = array(

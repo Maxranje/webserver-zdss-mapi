@@ -1,83 +1,6 @@
 {
     "type": "page",
-    "data": {
-        "page_select" : [
-            {
-                "label": "学生管理",
-                "value": "2"
-            },
-            {
-                "label": "班级管理",
-                "value": "3"
-            },
-            {
-                "label": "排课管理",
-                "children": [
-                    {
-                        "label": "开始排课",
-                        "value": "41"
-                    },
-                    {
-                        "label": "排课列表",
-                        "value": "42"
-                    }
-                ]
-            },
-            {
-                "label": "校区管理",
-                "children": [
-                    {
-                        "label": "教室预览",
-                        "value": "101"
-                    },
-                    {
-                        "label": "配置教室",
-                        "value": "102"
-                    }
-                ]
-            },
-            {
-                "label": "统计管理",
-                "children": [
-                    {
-                        "label": "订单记录",
-                        "value": "51"
-                    },
-                    {
-                        "label": "学班记录",
-                        "value": "52"
-                    }
-                ]
-            },
-            {
-                "label": "科目分类",
-                "value": "6"
-            },
-            {
-                "label": "教师管理",
-                "children": [
-                    {
-                        "label": "教师列表",
-                        "value": "71"
-                    },
-                    {
-                        "label": "教师锁定",
-                        "value": "72"
-                    }
-                ]
-            },
-            {
-                "label": "校区管理",
-                "value": "8"
-            }
-        ]
-    },
-    "cssVars": {
-        "--fontSizeBase": "10px",
-        "--borderRadius":"2px"
-    },
     "title": "角色管理",
-    "remark": "bla bla bla",
     "toolbar": [
         {
             "type": "button",
@@ -91,7 +14,7 @@
                 "title": "新增角色",
                 "body": {
                     "type": "form",
-                    "name": "new-form",
+                    "name": "role-new-form",
                     "api": {
                         "method": "post",
                         "url": "/mapi/roles/create",
@@ -142,11 +65,8 @@
                 "className": "bg-white",
                 "title": "$name",
                 "subTitle": "",
-                "description": "$descs",
-                "highlight": "$isSuperAdmin",
-                "avatarClassName": "pull-left thumb-md avatar b-3x m-r"
+                "description": "$descs"
             },
-            "bodyClassName": "padder",
             "actions": [
                 {
                     "label": "编辑",
@@ -204,7 +124,7 @@
                                             "label": "选择页面",
                                             "name": "page_ids",
                                             "type": "transfer",
-                                            "source": "$page_select",
+                                            "source": "/mapi/roles/pagelists",
                                             "selectMode": "list",
                                             "required": true
                                         }

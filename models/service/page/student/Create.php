@@ -14,8 +14,6 @@ class Service_Page_Student_Create extends Zy_Core_Service{
         $graduate   = empty($this->request['graduate']) ? "" : trim($this->request['graduate']);
         $birthplace = empty($this->request['birthplace']) ? "" : trim($this->request['birthplace']);
         $sex        = empty($this->request['sex']) ? "M" : trim($this->request['sex']);
-        $remark     = empty($this->request['capital_remark']) ? "" : trim($this->request['capital_remark']);
-        $capital    = empty($this->request['student_capital']) ? 0 : $this->request['student_capital'];
 
         if (empty($name) || empty($phone) || empty($nickname)) {
             throw new Zy_Core_Exception(405, "管理员名或手机号等提交数据有空值, 请检查");
@@ -25,27 +23,25 @@ class Service_Page_Student_Create extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "手机号参数错误, 6-12位数字, 请检查");
         }
 
-        $serviceData = new Service_Data_User_Profile();
-        $userInfo = $serviceData->getUserInfo($name, $phone);
+        $serviceData = new Service_Data_Profile();
+        $userInfo = $serviceData->getUserInfoByNameAndPass($name, $phone);
         if (!empty($userInfo)) {
             throw new Zy_Core_Exception(405, "用户名/手机号绑定的用户已存在");
         }
 
         $profile = [
-            "type"          => Service_Data_User_Profile::USER_TYPE_STUDENT , 
+            "type"          => Service_Data_Profile::USER_TYPE_STUDENT , 
             "name"          => $name, 
             "nickname"      => $nickname,
+            "state"         => Service_Data_Profile::STUDENT_ABLE,
             "phone"         => $phone, 
             "avatar"        => "",
             "birthplace"    => $birthplace,
             "school"        => $school, 
             "graduate"      => $graduate,
             "sex"           => $sex, 
-            "capital_remark" => $remark,
-            "student_capital" => $capital,
-            "teacher_capital" => 0,
-            "create_time"  => time() , 
-            "update_time"  => time() , 
+            "create_time"   => time() , 
+            "update_time"   => time() , 
         ];
 
         $ret = $serviceData->createUserInfo($profile);

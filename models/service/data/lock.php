@@ -8,6 +8,50 @@ class Service_Data_Lock {
         $this->daoLock = new Dao_Lock () ;
     }
 
+    // 根据UID获取列表时间
+    public function getListByUid ($uid, $sts, $ets) {
+        $conds = array(
+            'uid'   => $uid,
+            sprintf("start_time >= %d", $sts),
+            sprintf("end_time <= %d", $ets),
+        );
+        $lists = $this->daoLock->getListByConds($conds, $this->daoLock->arrFieldsMap);
+        if (empty($lists)) {
+            return array();
+        }
+        return $lists;
+    }
+
+
+    // 创建
+    public function create ($params) {
+        $this->daoLock->startTransaction();
+        foreach ($params['need_times'] as $time) {
+            $profile = array(
+                "uid"           => $params['teacher_uid'],
+                "type"          => Service_Data_Profile::USER_TYPE_TEACHER,
+                "start_time"    => $time['sts'] , 
+                "end_time"      => $time['ets'], 
+                "operator"      => OPERATOR,
+                "update_time"   => time(),
+                "create_time"   => time(), 
+            );
+            $ret = $this->daoLock->insertRecords($profile);
+            if ($ret == false) {
+                $this->daoLock->rollback();
+                return false;
+            }
+        }
+        $this->daoLock->commit();
+        return true;
+    }
+
+    // 删除
+    public function delete ($id) {
+        return $this->daoLock->deleteByConds(array('id' => $id));
+    }
+
+
     public function getListByConds($conds, $field = array(), $indexs = null, $appends = null) {
         $field = empty($field) || !is_array($field) ? $this->daoLock->arrFieldsMap : $field;
         $lists = $this->daoLock->getListByConds($conds, $field, $indexs, $appends);
@@ -21,43 +65,4 @@ class Service_Data_Lock {
         return  $this->daoLock->getCntByConds($conds);
     }
 
-    public function create ($params) {
-        $this->daoLock->startTransaction();
-        foreach ($params['needTimes'] as $time) {
-            $profile = array(
-                "uid"  => $params['teacher_id'],
-                "type" => $params['type'],
-                "start_time"  => $time['sts'] , 
-                "end_time"  => $time['ets'], 
-                "operator" => OPERATOR,
-                "update_time"  => time(),
-                "create_time"  => time(), 
-            );
-            $ret = $this->daoLock->insertRecords($profile);
-            if ($ret == false) {
-                $this->daoLock->rollback();
-                return false;
-            }
-        }
-        $this->daoLock->commit();
-        return true;
-    }
-
-    public function delete ($id) {
-        $conds = array(
-            'id' => $id,
-        );
-        $ret = $this->daoLock->deleteByConds($conds);
-        return $ret;
-    }
-
-    public function getLockListByUid ($uid, $sts, $ets) {
-        // 锁时间的数据
-        $conds = array();
-        $conds[] = "uid=".$uid;
-        $conds[] = "start_time >= ".$sts;
-        $conds[] = "end_time <= ".$ets;
-        $locks = $this->getListByConds($conds);
-        return empty($locks) ? array() : $locks;
-    }
 }

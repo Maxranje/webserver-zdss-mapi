@@ -67,10 +67,9 @@ class Service_Data_Roles {
     }
 
     // 根据uid获取页面ids (基础session用, 不要改, 重启一个接口)
-    public function getPagesByUid($uid, $type) {
+    public function getPageIdsByUid($uid, $type) {
         // 超管权限为空, 默认就是全部, 学生返回空, 就是真的没有
-        if ($type == Service_Data_User_Profile::USER_TYPE_SUPER
-            || $type == Service_Data_User_Profile::USER_TYPE_STUDENT) {
+        if (in_array($type, array(Service_Data_Profile::USER_TYPE_STUDENT, Service_Data_Profile::USER_TYPE_SUPER))) {
             return array();
         }
 
@@ -79,38 +78,27 @@ class Service_Data_Roles {
             'uid' => intval($uid),
         );
         $data = $this->daoRoleMap->getListByConds($conds, array("role_id"));
-        if (!empty($data)) {
-            $rolesIds = array();
-            foreach ($data as $key => $item) {
-                $rolesIds[intval($item['role_id'])] = intval($item['role_id']);
-            }
-            $rolesIds = array_values($rolesIds);
-    
-            // 查询roles中的pageid
-            $conds = array(
-                sprintf("id in (%s)", implode(",", $rolesIds))
-            );
-            $data2 = $this->daoRole->getListByConds($conds, array("page_ids"));
-            if (!empty($data2)) {
-                $pageIds = array();
-                foreach ($data2 as $key => $item) {
-                    $pageIds = array_merge($pageIds, explode(",", $item['page_ids']));
-                }
-                $pageIds = array_unique($pageIds);
-                $pageIds = array_values($pageIds);
-                return $pageIds;
-            }
+        if (empty($data)) {
+            return array();  // 不配置谁都没权限
         }
-        // 获取默认pages列表
-        // 获取menu conf
-        $menuConf = Zy_Helper_Config::getAppConfig("menu");
+
+        $rolesIds = Zy_Helper_Utils::arrayInt($data, 'role_id');
+
+        // 查询roles中的pageid
+        $conds = array(
+            sprintf("id in (%s)", implode(",", $rolesIds))
+        );
+        $data2 = $this->daoRole->getListByConds($conds, array("page_ids"));
+        if (empty($data2)) {
+            return array();
+        }
 
         $pageIds = array();
-        if ($type == Service_Data_User_Profile::USER_TYPE_TEACHER) {
-            $pageIds = $menuConf['defualt_teacher'];
-        } else if ($type == Service_Data_User_Profile::USER_TYPE_ADMIN) {
-            $pageIds = $menuConf['defualt_amdins'];
+        foreach ($data2 as $item) {
+            $pageIds = array_merge($pageIds, explode(",", $item['page_ids']));
         }
+        $pageIds = array_unique($pageIds);
+        $pageIds = array_values($pageIds);
         return $pageIds;
     }
 

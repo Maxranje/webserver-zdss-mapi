@@ -65,4 +65,45 @@ class Zy_Helper_Utils {
         ob_end_clean();
         exit;
     }
+
+    // 数组内数据做为整数
+    public static function arrayInt ($arr, $key = "") {
+        $result = array();
+        if (empty($key)) {
+            foreach ($arr as $item) {
+                $result[intval($item)] = intval($item);
+            }
+        } else {
+            foreach ($arr as $item) {
+                if (!isset($item[$key])) {
+                    continue;
+                }
+                $result[intval($item[$key])] = intval($item[$key]);
+            }
+        }
+        return array_values($result);
+    }
+
+    /** 
+     * 格式化时长
+     * @param int $secondParam 传入秒数
+     * @return string 返回时长，格式为 1小时3分20秒 
+     */
+    public static function formatDurationForTime($secondParam) {
+        $durationSec = (int) $secondParam;
+        $hour = floor($durationSec / 3600);
+        $hourSecond = $durationSec - $hour * 3600;
+        $minute = floor($hourSecond / 60);
+        $duration = '';
+        if ($hour > 0) {
+            $duration = $hour . ' Hour ';
+        }
+        if ($minute > 0) {
+            $duration .= $minute . ' Min ';
+        }
+        if (empty($duration)) {
+            $duration = "0 Hour";
+        }
+        return $duration;
+    }
 }

@@ -6,5 +6,8 @@ class Controller_Column extends Zy_Core_Controller{
         "create"    => "actions/column/Create.php",
         "update"    => "actions/column/Update.php",
         "delete"    => "actions/column/Delete.php",
+
+        // 科目下的老师列表
+        "teacherlists"  => "actions/subject/Teacherlists.php",
     );
 }

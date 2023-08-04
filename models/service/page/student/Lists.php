@@ -11,65 +11,99 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
         $rn         = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
         $name       = empty($this->request['name']) ? "" : strval($this->request['name']);
         $phone      = empty($this->request['phone']) ? "" : strval($this->request['phone']);
+        $state      = empty($this->request['state']) ? 0 : intval($this->request['state']);
         $nickname   = empty($this->request['nickname']) ? "" : strval($this->request['nickname']);
-        $isSelect   = empty($this->request['isSelect']) ? false : true;
+        $isSelect   = empty($this->request['is_select']) ? false : true;
+        $isDefer    = empty($this->request['is_defer']) ? false : true;
 
         $pn = ($pn-1) * $rn;
 
         $conds = array(
-            'type' => Service_Data_User_Profile::USER_TYPE_STUDENT,
+            'type' => Service_Data_Profile::USER_TYPE_STUDENT,
         );
 
         if (!empty($nickname)) {
             $conds[] = "nickname like '%".$nickname."%'";
         }
 
+        if (!empty($state)) {
+            $conds[] = sprintf("state = '%d'", $state);
+        }
+
         if (!empty($name)) {
-            $conds[] = "name like '%".$name."%'";
+            $conds[] = sprintf("name = '%s'", $name);
         }
 
         if (!empty($phone)) {
             $conds[] = sprintf("phone = '%s'", $phone);
         }
         
-        $serviceData = new Service_Data_User_Profile();
+        $serviceData = new Service_Data_Profile();
 
-        $arrAppends[] = 'order by uid desc';
-
+        $arrAppends = array(
+            'order by uid desc',
+        );
         if (!$isSelect) {
             $arrAppends[] = "limit {$pn} , {$rn}";
         }
 
         $lists = $serviceData->getListByConds($conds, array(), NULL, $arrAppends);
-        if ($isSelect) {
-            return $this->formatSelect ($lists);
+        if (empty($lists)) {
+            return array();
         }
+
+        if ($isSelect) {
+            return $this->formatSelect($lists, $isDefer);
+        } 
 
         $total = $serviceData->getTotalByConds($conds);
         return array(
-            'rows' => $lists,
+            'rows' => $this->formatDefault($lists),
             'total' => $total,
         );
     }
 
-    private function formatSelect ($lists) {
+    // 格式化数据
+    private function formatDefault($lists) {
+        if (empty($lists)) {
+            return array();
+        }
+
+        $studentUids = Zy_Helper_Utils::arrayInt($lists, "uid");
+
+        // 获取订单量
+        $serviceData = new Service_Data_Order();
+        $orderInfos = $serviceData->getOrderCountByStudentUids($studentUids);
+        $orderInfos = array_column($orderInfos, null, 'student_uid');
+
+        $result = array();
+        foreach ($lists as $item) {
+            $item['order_count'] = empty($orderInfos[$item['uid']]['order_count']) ? "-" : $orderInfos[$item['uid']]['order_count'];
+            $item['balance']     = empty($orderInfos[$item['uid']]['balance']) ? "0元" : sprintf("%.2f元", $orderInfos[$item['uid']]['balance'] / 100);
+            $item['create_time'] = date("Y年m月d日", $item['create_time']);
+            $item['update_time'] = date("Y年m月d日", $item['update_time']);
+            $result[] = $item;
+        }
+        return $result;
+    }
+
+    // Select格式化数据
+    private function formatSelect($lists, $isDefer = false) {
+        if (empty($lists)) {
+            return array();
+        }
+
         $options = array();
         foreach ($lists as $item) {
-            $options[] = array(
-                'label' => sprintf("%s 【%s - %s】", $item['nickname'] , $item['school'], $item['graduate']),
+            $tmp = array(
+                'label' => $item['nickname'],
                 'value' => $item['uid'],
             );
-        }
-        $values = array();
-        if(!empty($this->request['group_id'])) { 
-            $serviceGroupMap = new Service_Data_User_Group();
-            $miList = $serviceGroupMap->getGroupMapByGid(intval($this->request['group_id']));
-            if (!empty($miList)) {
-                foreach ($miList as $t) {
-                    $values[]= $t['student_id'];
-                }
+            if ($isDefer) {
+                $tmp['defer'] = true;
             }
+            $options[] = $tmp;
         }
-        return array('options' => $options, 'value' => implode(",", $values));
+        return array('options' => array_values($options));
     }
 }

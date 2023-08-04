@@ -10,5 +10,4 @@ class Actions_Page extends Zy_Core_Actions {
         $this->_output['data'] = $this->_userInfo;
         $this->displayTemplate("index");
     }
-
 }

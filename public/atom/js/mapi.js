@@ -12,7 +12,4 @@
     $(document).on("click","#logout",function(){
         $.post("/mapi/sign/out",function(data){window.location.reload();});
     });
-    $(document).on("click","#logout",function(){
-        $.post("/mapi/sign/out",function(data){window.location.reload();});
-    });
 })(jQuery);

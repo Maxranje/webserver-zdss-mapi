@@ -4,13 +4,11 @@ class Service_Data_Subject {
 
     private $daoSubject ;
 
-    const PIDS = [];
-    const PPIDS = [];
-
     public function __construct() {
         $this->daoSubject = new Dao_Subject () ;
     }
 
+    // 通过ID获取科目
     public function getSubjectById ($id){
         $arrConds = array(
             'id'  => $id,
@@ -24,84 +22,22 @@ class Service_Data_Subject {
         return $subject;
     }
 
-    public function getSubjectByName ($name){
-        $arrConds = array(
-            'name'  => $name,
-        );
-
-        $subject = $this->daoSubject->getRecordByConds($arrConds, $this->daoSubject->arrFieldsMap);
-        if (empty($subject)) {
-            return array();
-        }
-
-        return $subject;
-    }
-
-
+    // 对科目编辑
     public function editSubject ($id, $profile) {
-        $arrConds = array(
-            'id'  => $id,
-        );
-
-        $ret = $this->daoSubject->updateByConds($arrConds, $profile);
-        return $ret;
+        return $this->daoSubject->updateByConds(array('id'  => $id), $profile);
     }
 
+    // 创建科目
     public function createSubject ($profile) {
-        $ret = $this->daoSubject->insertRecords($profile);
-        if ($ret == false) {
-            return false;
-        }
-
-        $id = $this->daoSubject->getInsertId();
-
-        $profile['id'] = $id;
-        return $profile;
+        return $this->daoSubject->insertRecords($profile);
     }
 
+    // 删除科目
     public function deleteSubject ($id) {
-        $this->daoSubject->startTransaction();
-        $daoColumn = new Dao_Column();
-        $daoSchedule = new Dao_Schedule();
-
-        $conds = array(
-            'subject_id' => $id,
-        );
-        $columnInfo = $daoColumn->getListByConds($conds, array("id"));
-        $columnInfo = array_column($columnInfo, "id");
-        if (!empty($columnInfo)) {
-            $conds = array(
-                sprintf("column_id in (%s)", implode(",", $columnInfo)),
-                "state in (1,2)",
-            );
-            $ret = $daoSchedule->deleteByConds($conds);
-            if ($ret === false) {
-                $this->daoSubject->rollback();
-                return false;
-            }
-        }
-
-        $conds = array(
-            "subject_id" => $id,
-        );
-        $ret = $daoColumn->deleteByConds($conds);
-        if ($ret === false) {
-            $this->daoSubject->rollback();
-            return false;
-        }
-
-        $conds = array(
-            'id' => $id,
-        );
-        $ret = $this->daoSubject->deleteByConds($conds);
-        if ($ret === false) {
-            $this->daoSubject->rollback();
-            return false;
-        }
-        $this->daoSubject->commit();
-        return $ret;
+        return $this->daoSubject->deleteByConds(array('id'  => $id));
     }
 
+    // 获取列表
     public function getListByConds($conds, $field = array(), $indexs = null, $appends = null) {
         $field = empty($field) || !is_array($field) ? $this->daoSubject->arrFieldsMap : $field;
         $lists = $this->daoSubject->getListByConds($conds, $field, $indexs, $appends);
@@ -111,9 +47,22 @@ class Service_Data_Subject {
         foreach ($lists as $index => $item) {
             $item['create_time']  = date('Y年m月d日', $item['create_time']);
             $item['update_time']  = date('Y年m月d日', $item['update_time']);
+            $item['price_info']   = sprintf("%.2f", $item['price'] / 100);
             $lists[$index] = $item;
         }
         return $lists;
+    }
+
+    // 获取单条
+    public function getRecordByConds($conds, $field = array(), $indexs = null, $appends = null) {
+        $field = empty($field) || !is_array($field) ? $this->daoSubject->arrFieldsMap : $field;
+        $record = $this->daoSubject->getRecordByConds($conds, $field, $indexs, $appends);
+        if (empty($record)) {
+            return array();
+        }
+        $record['create_time']  = date('Y年m月d日', $record['create_time']);
+        $record['update_time']  = date('Y年m月d日', $record['update_time']);
+        return $record;
     }
 
     public function getTotalByConds($conds) {

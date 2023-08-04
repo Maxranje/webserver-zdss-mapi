@@ -2,6 +2,10 @@
 
 class Service_Data_Area {
 
+    const ONLINE    = 1;
+    const OFFLINE   = 2;
+    const STATE     = [self::ONLINE, self::OFFLINE];
+
     private $daoArea ;
     private $daoRoom ;
 
@@ -15,9 +19,7 @@ class Service_Data_Area {
             'id'  => $areaId,
         );
 
-        $arrFields = $this->daoArea->arrFieldsMap;
-
-        $Area = $this->daoArea->getRecordByConds($arrConds, $arrFields);
+        $Area = $this->daoArea->getRecordByConds($arrConds, $this->daoArea->arrFieldsMap);
         if (empty($Area)) {
             return array();
         }
@@ -31,91 +33,73 @@ class Service_Data_Area {
         return $Area;
     }
 
+    public function getAreaByIds ($areaIds, $withRoom = true) {
+        $arrConds = array(
+            sprintf("id in (%s)", implode(",", $areaIds))
+        );
+
+        $Areas = $this->daoArea->getListByConds($arrConds, $this->daoArea->arrFieldsMap);
+        if (empty($Areas)) {
+            return array();
+        }
+
+        if (!$withRoom) {
+            return $Areas;
+        }
+
+        $Areas = array_column($Areas, null, "id");
+        $roomLists = $this->getRoomListByAid($areaIds);
+        // 把所有房间绑定到
+        foreach ($roomLists as $room) {
+            if (isset($Areas[$room['area_id']])) {
+                $Areas[$room['area_id']]['rooms'][] = $room;
+            }
+        }
+
+        return array_values($Areas);
+    }
+
     public function getAreaRoomById ($areaId, $roomId) {
         $arrConds = array(
             'id'  => $roomId,
             'area_id' => $areaId,
         );
-
-        $arrFields = $this->daoArea->arrFieldsMap;
-
-        $Room = $this->daoRoom->getRecordByConds($arrConds, $arrFields);
-        if (empty($Room)) {
-            return array();
-        }
-
-        return $Room;
+        return $this->daoRoom->getRecordByConds($arrConds, $this->daoRoom->arrFieldsMap);
     }
 
     public function getAreaByName ($areaName) {
-        $arrConds = array(
-            'name'  => $areaName,
-        );
-
-        $arrFields = $this->daoArea->arrFieldsMap;
-
-        $Area = $this->daoArea->getRecordByConds($arrConds, $arrFields);
-        if (empty($Area)) {
-            return array();
-        }
-        return $Area;
+        return $this->daoArea->getRecordByConds(array('name'  => $areaName), $this->daoArea->arrFieldsMap);
     }
 
     public function getRoomByName ($areaId, $roomName) {
-        $arrConds = array(
-            "area_id" => $areaId,
-            'name'  => $roomName,
-        );
-
-        $arrFields = $this->daoArea->arrFieldsMap;
-
-        $Room = $this->daoRoom->getRecordByConds($arrConds, $arrFields);
-        if (empty($Room)) {
-            return array();
-        }
-        return $Room;
+        return $this->daoRoom->getRecordByConds(array("area_id" => $areaId,'name'  => $roomName), $this->daoRoom->arrFieldsMap);
     }
 
     public function getRoomListByAid ($aid) {
-        $arrConds = array(
-            'area_id'  => $aid,
-        );
-
-        $arrFields = $this->daoRoom->arrFieldsMap;
-
-        $rooms = $this->daoRoom->getListByConds($arrConds, $arrFields);
-        if (empty($rooms)) {
-            return array();
-        }
-        return $rooms;
+        return $this->daoRoom->getListByConds(array('area_id'  => $aid), $this->daoRoom->arrFieldsMap);
     }
 
+    public function getRoomListByAids ($aids) {
+        return $this->daoRoom->getListByConds(array(sprintf("area_id in (%s)", implode(",", $aids))), $this->daoRoom->arrFieldsMap);
+    }
+
+
+    // 获取房间列表
     public function getRoomListByConds ($arrConds) {
-        $arrFields = $this->daoRoom->arrFieldsMap;
-
-        $rooms = $this->daoRoom->getListByConds($arrConds, $arrFields);
-        if (empty($rooms)) {
-            return array();
-        }
-        return $rooms;
+        return $this->daoRoom->getListByConds($arrConds, $this->daoRoom->arrFieldsMap);
     }
 
+    // 获取校区列表
     public function getAreaListByConds ($arrConds) {
-        $arrFields = $this->daoArea->arrFieldsMap;
-
-        $areas = $this->daoArea->getListByConds($arrConds, $arrFields);
-        if (empty($areas)) {
-            return array();
-        }
-        return $areas;
+        return $this->daoArea->getListByConds($arrConds, $this->daoArea->arrFieldsMap);
     }
 
     // 创建area 和room
-    public function createArea ($areaName, $roomName) {
-
+    public function createArea ($profile) {
         $this->daoArea->startTransaction();
         $areaParams = array(
-            'name' => $areaName,
+            'name' => $profile['area_name'],
+            "is_online" => $profile['is_online'],
             'create_time' => time(),
             'update_time' => time(),
         );
@@ -127,7 +111,19 @@ class Service_Data_Area {
 
         // 获取插入id
         $aid = $this->daoArea->getInsertId();
-        $ret = $this->createRoom($aid, $roomName);
+        if (intval($aid) <= 0) {
+            $this->daoArea->rollback();
+            return false;
+        }
+        
+        // 添加room
+        $p1 = array(
+            "area_id" => intval($aid),
+            "name" => $profile['room_name'],
+            'create_time' => time(),
+            'update_time' => time(),
+        );
+        $ret = $this->createRoom($p1);
         if ($ret == false) {
             $this->daoArea->rollback();
             return false;
@@ -137,14 +133,8 @@ class Service_Data_Area {
     }
 
     // creat room
-    public function createRoom ($areaId, $roomName) {
-        $roomParams = array(
-            'name' => $roomName,
-            'area_id' => intval($areaId),
-            'create_time' => time(),
-            'update_time' => time(),
-        );
-        return $this->daoRoom->insertRecords($roomParams);
+    public function createRoom ($profile) {
+        return $this->daoRoom->insertRecords($profile);
     }
 
     // delete room
@@ -160,11 +150,25 @@ class Service_Data_Area {
             return false;
         }
 
+        $daoSchedule = new Dao_Schedule();
+        $ret = $daoSchedule->updateByConds(array('room_id' => $rid), array('room_id'=>0));
+        if ($ret == false) {
+            $this->daoRoom->rollback();
+            return false;
+        }
+
         if ($bothDel) {
             $conds = array(
                 'id' => $aid,
             );
             $ret = $this->daoArea->deleteByConds($conds);
+            if ($ret == false) {
+                $this->daoRoom->rollback();
+                return false;
+            }
+
+            // 删除校区
+            $ret = $daoSchedule->updateByConds(array('area_id' => $aid), array('area_id'=>0));
             if ($ret == false) {
                 $this->daoRoom->rollback();
                 return false;
@@ -175,7 +179,7 @@ class Service_Data_Area {
     }
 
     // update
-    public function updateArea ($aid, $rid, $areaName, $roomName) {
+    public function updateArea ($aid, $rid, $areaName, $roomName, $isOnline) {
 
         $this->daoRoom->startTransaction();
         $conds = array(
@@ -195,6 +199,7 @@ class Service_Data_Area {
         );
         $params = array(
             'name' => $areaName,
+            "is_online"=>$isOnline,
         );
         $ret = $this->daoArea->updateByConds($conds, $params);
         if ($ret == false) {
@@ -203,29 +208,5 @@ class Service_Data_Area {
         }
         $this->daoRoom->commit();
         return true;
-    }
-
-    public function getList () {
-        $arrFields = $this->daoArea->arrFieldsMap;
-        $AreaLists = $this->daoArea->getListByConds(array("id > 0"), $arrFields);
-        if (empty($AreaLists)) {
-            return array();
-        }
-
-        $arrFields = $this->daoRoom->arrFieldsMap;
-        $RoomLists = $this->daoRoom->getListByConds(array("id > 0"), $arrFields);
-        if (empty($RoomLists)) {
-            return array();
-        }
-
-        $AreaLists = array_column($AreaLists, null, "id");
-
-        foreach ($RoomLists as $room) {
-            if (isset($AreaLists[$room['area_id']])) {
-                $AreaLists[$room['area_id']]['rooms'][] = $room;
-            }
-        }
-
-        return array_values($AreaLists);
     }
 }

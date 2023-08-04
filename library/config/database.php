@@ -8,7 +8,7 @@ return array(
         'hostport' => 3306,
         'username' => 'root',
         'password' => '',
-        'database' => 'zy_mapi',
+        'database' => 'zy_mapiv2',
         'dbdriver' => 'mysqli',
         'pconnect' => FALSE,
         'char_set' => 'utf8',

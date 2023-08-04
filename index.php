@@ -1,5 +1,5 @@
 <?php
-define('APP_NAME',  'napi');
+define('APP_NAME',  'mapi');
 define('ENV',       'development');
 
 # init error reporting by env

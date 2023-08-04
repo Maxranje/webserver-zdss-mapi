@@ -2,12 +2,11 @@
 
 class Service_Data_Schedule {
 
-    const CATEGORY_STUDENT_RECHARGE = 1;
-    const CATEGORY_TEACHER_RECHARGE = 2;
-    const CATEGORY_STUDENT_PAID = 3;
-    const CATEGORY_TEACHER_PAID = 4;
-    const CATEGORY_STUDENT_PAID_PERSONAL = 5;
-    const CATEGORY_TEACHER_MUILT_PAID = 6;
+    const CATEGORY_STUDENT_PAID = 1;
+    const CATEGORY_TEACHER_PAID = 2;
+
+    const SCHEDULE_ABLE = 1;
+    const SCHEDULE_DONE = 2;
 
     private $daoSchedule ;
 
@@ -15,21 +14,23 @@ class Service_Data_Schedule {
         $this->daoSchedule = new Dao_Schedule () ;
     }
 
+    // 创建订单
     public function create ($params) {
         $this->daoSchedule->startTransaction();
         foreach ($params['needTimes'] as $time) {
             $profile = array(
-                "group_id"  => $params['group_id'],
-                "column_id"  => $params['column_id'],
-                "teacher_id"  => $params['teacher_id'],
-                "area_id"  => $params['area_id'],
-                "start_time"  => $time['sts'] , 
-                "area_op" => $params['area_op'],
-                "end_time"  => $time['ets'], 
-                "operator" => OPERATOR,
-                "state"  => $params['state'] , 
-                "update_time"  => time(),
-                "create_time"  => time(), 
+                "group_id"      => $params['group_id'],
+                "column_id"     => $params['column_id'],
+                "teacher_uid"   => $params['teacher_uid'],
+                "subject_id"    => $params['subject_id'],
+                "area_id"       => $params['area_id'],
+                "start_time"    => $time['sts'] , 
+                "end_time"      => $time['ets'], 
+                "area_operator" => $params['area_operator'],
+                "operator"      => OPERATOR,
+                "state"         => self::SCHEDULE_ABLE, 
+                "update_time"   => time(),
+                "create_time"   => time(), 
             );
             $ret = $this->daoSchedule->insertRecords($profile);
             if ($ret == false) {
@@ -41,37 +42,85 @@ class Service_Data_Schedule {
         return true;
     }
 
+    // 更新
     public function update ($params) {
+        $this->daoSchedule->startTransaction();
         $conds = array(
             'id' => $params['id'],
         );
 
         $profile = array(
-            "column_id"  => $params['column_id'],
-            "start_time"  => $params['needTimes']['sts'] , 
-            "end_time"  => $params['needTimes']['ets'],
-            "area_op" => $params['area_op'],
-	        'teacher_id' => $params['teacher_id'],
-	        "operator" => OPERATOR,
-            "state"  => 1 , 
-            "update_time"  => time(),
+            "column_id"         => intval($params['column_id']),
+            "start_time"        => intval($params['needTimes']['sts']), 
+            "end_time"          => intval($params['needTimes']['ets']),
+            "area_operator"     => intval($params['area_op']),
+	        'teacher_uid'       => intval($params['teacher_uid']),
+            'subject_id'        => intval($params['subject_id']),
+	        "operator"          => OPERATOR,
+            "update_time"       => time(),
         );
-        return $this->daoSchedule->updateByConds($conds, $profile);
-    }
+        $ret = $this->daoSchedule->updateByConds($conds, $profile);
+        if ($ret == false) {
+            $this->daoSchedule->rollback();
+            return false;
+        }
 
-    public function updateArea ($params) {
+        // 更新订单
         $conds = array(
-            'id' => $params['id'],
+            'schedule_id' => $params['id'],
         );
-
         $profile = array(
-            "room_id" => $params['room_id'],
-            "area_id" => $params['area_id'],
-            "ext" => $params['ext'],
+            "column_id"         => intval($params['column_id']),
+            "start_time"        => intval($params['needTimes']['sts']), 
+            "end_time"          => intval($params['needTimes']['ets']),
+	        'teacher_uid'       => intval($params['teacher_uid']),
+            'subject_id'        => intval($params['subject_id']),
+            "update_time"       => time(),
         );
-        return $this->daoSchedule->updateByConds($conds, $profile);
+        $daoCurriculum = new Dao_Curriculum();
+        $ret = $daoCurriculum->updateByConds($conds, $profile);
+        if ($ret == false) {
+            $this->daoSchedule->rollback();
+            return false;
+        }
+        $this->daoSchedule->commit();
     }
 
+    public function updateArea ($arrParams) {
+        $daoCurriculum = new Dao_Curriculum();
+        $this->daoSchedule->startTransaction();
+        foreach ($arrParams as $params) {
+            $conds = array(
+                'id' => intval($params['id']),
+            );
+    
+            $profile = array(
+                "room_id"   => intval($params['room_id']),
+                "area_id"   => intval($params['area_id']),
+                "ext"       => $params['ext'],
+            );
+            $ret = $this->daoSchedule->updateByConds($conds, $profile);
+            if ($ret == false) {
+                $this->daoSchedule->rollback();
+                return false;
+            }
+    
+            // 更新用户关联
+            $conds = array(
+                'schedule_id' => intval($params['id']),
+            );
+            $ret = $daoCurriculum->updateByConds($conds, $profile);
+            if ($ret == false) {
+                $this->daoSchedule->rollback();
+                return false;
+            }
+        }
+
+        $this->daoSchedule->commit();
+        return true;
+    }
+
+    // 获取一个单个
     public function getScheduleById ($id){
         $arrConds = array(
             'id'  => intval($id),
@@ -87,9 +136,10 @@ class Service_Data_Schedule {
         return $data;
     }
 
+    // 根据ids 获取排课
     public function getScheduleByIds ($ids){
         $arrConds = array(
-            sprintf("id in (%s)", $ids),
+            sprintf("id in (%s)", implode(",", $ids)),
         );
 
         $arrFields = $this->daoSchedule->arrFieldsMap;
@@ -102,32 +152,34 @@ class Service_Data_Schedule {
         return $data;
     }
 
-    public function deleteSchedule ($id) {
-        $conds = array(
-            'id' => $id,
-        );
-        $ret = $this->daoSchedule->deleteByConds($conds);
-        return $ret;
-    }
-
+    // 删除所有排课
     public function deleteSchedules ($ids) {
+        $this->daoSchedule->startTransaction();
+
+        // 删除学生关联
+        $daoCurriculum = new Dao_Curriculum();
+        $conds = array(
+            sprintf("schedule_id in (%s)", $ids),
+        );
+        $ret = $daoCurriculum->deleteByConds($conds);
+        if ($ret == false) {
+            $this->daoSchedule->rollback();
+            return false;
+        }
+
+        // 删除排课
         $conds = array(
             sprintf("id in (%s)", $ids),
         );
         $ret = $this->daoSchedule->deleteByConds($conds);
+        if ($ret == false) {
+            $this->daoSchedule->rollback();
+            return false;
+        }
+        $this->daoSchedule->commit();
         return $ret;
     }
 
-    public function getListByConds($conds, $fields = array(), $indexs = null, $appends = null) {
-        if (empty($fields)) {
-            $fields = $this->daoSchedule->arrFieldsMap;
-        }
-        $lists = $this->daoSchedule->getListByConds($conds, $fields, $indexs, $appends);
-        if (empty($lists)) {
-            return array();
-        }
-        return $lists;
-    }
 
     public function getLastDuration($groupIds) {
         $conds = array(
@@ -159,171 +211,255 @@ class Service_Data_Schedule {
         return  $this->daoSchedule->getCntByConds($conds);
     }
 
-    public function checkJobs ($params) {
+    // 结算
+    public function checkout ($params) {
         $now = time();
-        $daoUser = new Dao_User();
-        $daoCapital = new Dao_Capital();
+        $daoRecords = new Dao_Records();
+        $daoOrder = new Dao_Order();
+        $daoCurriculum = new Dao_Curriculum();
+
+        
+        $schedule         = $params['schedule'];
+        $column           = $params['column'];
+        $subject          = $params['subjectInfo'];
+        $orderInfos       = $params['orderInfos'];
+        $studentUids      = $params['studentUids'];
 
         // 按小时计算
-        $timeLength = ($params['job']['end_time'] - $params['job']['start_time']) / 3600;
-        $teacherPrice = intval($params['column']['price'] * $timeLength);
-        $teacherCategory = self::CATEGORY_TEACHER_PAID;
-        $studentPrice = intval($params['group']['price'] * $timeLength);
+        $timeLength     = ($schedule['end_time'] - $schedule['start_time']) / 3600;
 
-        // 过滤有效的uid
-        foreach ($params['studentUids'] as $key => $uid) {
-            if (empty($params['studentInfos'][$uid])) {
-                unset($params['studentUids'][$key]);
+        // 获取教师的price
+        $teacherPrice   = 0;
+        if (!empty($column['price'])){
+            $column['price'] = json_decode($column['price'], true);
+            foreach ($column['price'] as $item) {
+                if (count($studentUids) > $item['number']) {
+                    continue;
+                }
+                $teacherPrice = intval($item['price'] * $timeLength);
+                break;
             }
-        }
-        $params['studentUids'] = array_values($params['studentUids']);
-        unset($params['studentInfos']);
-
-        // 根据用户数量判断是否走重新算价
-        if (!empty($params['column']['number']) && count($params['studentUids']) >= $params['column']['number']){
-            $teacherPrice = intval($params['column']['muilt_price'] * $timeLength);
-            $teacherCategory = self::CATEGORY_TEACHER_MUILT_PAID;
-        }
-
-        // 获取班级单个学生价格
-        $singlePrice = array();
-        if (!empty($params['group']['student_price'])) {
-            $singlePrice = json_decode($params['group']['student_price'], true);
         }
 
         $this->daoSchedule->startTransaction();
-        // 教师
-        $profile = array(
-            'uid' => intval($params['column']['teacher_id']),
-            'type' => Service_Data_User_Profile::USER_TYPE_TEACHER,
-            'column_id' => $params['job']['column_id'],
-            'group_id' => $params['job']['group_id'],
-            'schedule_id' => $params['job']['id'],
-            'category' => $teacherCategory,  // 1用户充值, 2作者充值, 3,用户消耗, 4,作者收入
-            'operator' => OPERATOR,
-            'capital' => $teacherPrice,
-            'update_time' => $now,
-            'create_time' => $now,
-            'ext' => json_encode($params)
-        ); 
-        $ret = $daoCapital->insertRecords($profile);
-        if ($ret == false) {
-            $this->daoSchedule->rollback();
-            return false;
-        }
-
-        // 教师收入
-        $conds = array(
-            'uid' => intval($params['column']['teacher_id'])
+        // 插入消费记录
+        // 教师收入记录
+        $recordsProfile = array(
+            "uid"               => intval($schedule['teacher_uid']),
+            "type"              => Service_Data_Profile::USER_TYPE_TEACHER,
+            "state"             => Service_Data_Records::RECORDS_NOMARL,
+            "group_id"          => intval($schedule['group_id']),
+            "order_id"          => 0, // 教师不做记录
+            "subject_id"        => intval($schedule['subject_id']),
+            "teacher_uid"       => 0, // 教师不做记录
+            "schedule_id"       => intval($schedule['id']),
+            "category"          => self::CATEGORY_TEACHER_PAID,
+            "operator"          => OPERATOR,
+            "money"             => $teacherPrice,
+            'update_time'       => $now,
+            'create_time'       => $now,
+            'ext'               => json_encode(array(
+                "column"    => $column,
+                "subject"   => $subject,
+            ))
         );
-        $profile = array(
-            "teacher_capital = teacher_capital+" . $teacherPrice ,
-        ); 
-        $ret = $daoUser->updateByConds($conds, $profile);
+        $ret = $daoRecords->insertRecords($recordsProfile);
         if ($ret == false) {
             $this->daoSchedule->rollback();
             return false;
         }
 
-        // 获取班级中学生独立价格
-        foreach ($params['studentUids'] as $uid) {
-            $stuPrice = $studentPrice; 
-            $stuCategory =  self::CATEGORY_STUDENT_PAID;
-            if (isset($singlePrice[$uid])) {
-                $stuPrice = intval(intval($singlePrice[$uid]) * $timeLength);
-                $stuCategory = self::CATEGORY_STUDENT_PAID_PERSONAL;
-            }
-            // 学生支出
-            $profile = array(
-                'uid' => intval($uid),
-                'type' => Service_Data_User_Profile::USER_TYPE_STUDENT,
-                'category' => $stuCategory,  // 1用户充值, 2作者充值, 3,用户消耗(班级), 4,作者收入, 5 用户消耗(个人)
-                'column_id' => $params['job']['column_id'],
-                'group_id' => $params['job']['group_id'],
-                'schedule_id' => $params['job']['id'],
-                'operator' => OPERATOR,
-                'capital' => $stuPrice,
-                'update_time' => $now,
-                'create_time' => $now,
-                'ext' => json_encode($params)
-            ); 
-            $ret = $daoCapital->insertRecords($profile);
-            if ($ret == false) {
-                $this->daoSchedule->rollback();
-                return false;
+        // 学生消费记录 和 删除订单中钱
+        foreach ($orderInfos as $order) {
+            $price = intval($subject['price']);
+            if ($order['discount_type'] == Service_Data_Order::DISCOUNT_Z) {
+                $price = $price * (intval($order['discount']) / 100); 
+            } else if ($order['discount_type'] == Service_Data_Order::DISCOUNT_J) {
+                $price = $price - intval($order['discount']);
             }
 
-            // 学生消耗
-            $conds = array(
-                'uid' => intval($uid),
+            $price = $price * $timeLength;
+
+            $recordsProfile = array(
+                "uid"               => intval($order['student_uid']),
+                "type"              => Service_Data_Profile::USER_TYPE_STUDENT,
+                "state"             => Service_Data_Records::RECORDS_NOMARL,
+                "group_id"          => intval($schedule['group_id']),
+                "order_id"          => intval($order['order_id']), 
+                "subject_id"        => intval($schedule['subject_id']),
+                "teacher_uid"       => intval($schedule['teacher_uid']), 
+                "schedule_id"       => intval($schedule['id']),
+                "category"          => self::CATEGORY_STUDENT_PAID, 
+                "operator"          => OPERATOR,
+                "money"             => $price,
+                'update_time'       => $now,
+                'create_time'       => $now,
+                'ext'               => json_encode(array(
+                    "order"     => $order,
+                    "subject"   => $subject,
+                ))
             );
-            $profile = array(
-                "student_capital = student_capital - " . $stuPrice ,
-            ); 
-            $ret = $daoUser->updateByConds($conds, $profile);
+            $ret = $daoRecords->insertRecords($recordsProfile);
+            if ($ret == false) {
+                $this->daoSchedule->rollback();
+                return false;
+            }
+
+            // 学生订单余额删掉
+            $conds = array(
+                "order_id" => intval($order['order_id']),
+            );
+            $orderProfile = array(
+                sprintf("balance=balance-%d", $price)
+            );
+            $ret = $daoOrder->updateByConds($conds, $orderProfile);
             if ($ret == false) {
                 $this->daoSchedule->rollback();
                 return false;
             }
         }
 
-        // 更新订单状态
+        // 更新排课状态
         $conds = array(
-            'id' => $params['job']['id'],
+            'id' => intval($schedule['id']),
         );
         $profile = array(
-            'state' => 0,
+            'state' => self::SCHEDULE_DONE,
         );
         $ret = $this->daoSchedule->updateByConds($conds, $profile);
         if ($ret == false) {
             $this->daoSchedule->rollback();
             return false;
         }
-        $this->daoSchedule->commit();
 
+        // 更新学生关联排课状态
+        $conds = array(
+            'schedule_id' => intval($schedule['id']),
+        );
+        $profile = array(
+            'state' => self::SCHEDULE_DONE,
+        );
+        $ret = $daoCurriculum->updateByConds($conds, $profile);
+        if ($ret == false) {
+            $this->daoSchedule->rollback();
+            return false;
+        }
+        // 提交
+        $this->daoSchedule->commit();
         return true;
     }
 
+    // 撤销
     public function revoke($params) {
-        $this->daoSchedule->startTransaction();
-        $daoCapital = new Dao_Capital();
-        $daoUser = new Dao_User();
-        $conds = array(
-            'uid' => 0,
-        );
-        foreach ($params['list'] as $item) {
-            $conds['uid'] = intval($item['uid']);
-            if ($item['type'] == Service_Data_User_Profile::USER_TYPE_STUDENT) {
-                $ret= $daoUser->updateByConds($conds, "student_capital=student_capital+".$item['capital']);
-            } else {
-                $ret= $daoUser->updateByConds($conds, "teacher_capital=teacher_capital-".$item['capital']);
-            }
+        $now = time();
+        $daoRecords = new Dao_Records();
+        $daoOrder = new Dao_Order();
+        $daoCurriculum = new Dao_Curriculum();
 
-            if ($ret == false ) {
+        
+        $schedule       = $params['schedule'];
+        $orderInfos     = $params['orderInfos'];
+        $records        = $params['records'];
+        $orderRecords   = array_column($records, null, 'order_id');
+
+        $this->daoSchedule->startTransaction();
+
+        // 加回学生的钱
+        foreach ($orderInfos as $order) {
+            if (empty($orderRecords[$order['order_id']]['money'])) {
+                continue;
+            }
+            $conds = array(
+                'order_id' => intval($order['order_id']),
+            );
+            $profile = array(
+                sprintf("balance=balance+%d", intval($orderRecords[$order['order_id']]['money']))
+            );
+            $ret = $daoOrder->updateByConds($conds, $profile);
+            if ($ret == false) {
                 $this->daoSchedule->rollback();
                 return false;
             }
         }
-        $ret = $daoCapital->deleteByConds(array('schedule_id' => $params['id']));
+
+        // 更新排课状态
+        $conds = array(
+            'id' => intval($schedule['id']),
+        );
+        $profile = array(
+            'state' => self::SCHEDULE_ABLE,
+        );
+        $ret = $this->daoSchedule->updateByConds($conds, $profile);
         if ($ret == false) {
             $this->daoSchedule->rollback();
             return false;
         }
-        $ret = $this->daoSchedule->updateByConds(array('id' => $params['id']), array('state' => 1));
+
+        // 更新学生关联排课状态
+        $conds = array(
+            'schedule_id' => intval($schedule['id']),
+        );
+        $ret = $daoCurriculum->updateByConds($conds, $profile);
         if ($ret == false) {
             $this->daoSchedule->rollback();
             return false;
         }
+
+        // 所有记录, 修改为状态
+        $conds = array(
+            'schedule_id' => intval($schedule['id']),
+            'state' => Service_Data_Records::RECORDS_NOMARL,
+        );
+        $profile = array(
+            'state' => Service_Data_Records::RECORDS_REVOKE,
+        );
+        $ret = $daoRecords->updateByConds($conds, $profile);
+        if ($ret == false) {
+            $this->daoSchedule->rollback();
+            return false;
+        }
+
+        // 提交
         $this->daoSchedule->commit();
         return true;
     }
 
+    // 根据group 获取排课数量
+    public function getSchduleCountByGroup($ids) {
+        $conds = array(
+            sprintf("group_id in (%s)", implode(",", $ids))
+        );
+        $field = array(
+            "count(id) as count",
+            "group_id",
+        );
+        $appends = array(
+            "group by group_id"
+        );
+        $lists = $this->daoSchedule->getListByConds($conds, $field, null, $appends);
+        if (empty($lists)) {
+            return array();
+        }
+        return $lists;
+    }    
+
+    // 根据请求条件获取课表数据
+    public function getListByConds($conds, $fields = array(), $indexs = null, $appends = null) {
+        $fields = empty($fields) ? $this->daoSchedule->arrFieldsMap : $fields;
+        $lists = $this->daoSchedule->getListByConds($conds, $fields, $indexs, $appends);
+        if (empty($lists)) {
+            return array();
+        }
+        return $lists;
+    }
+
+    // 检测班级时间是否冲突
     public function checkGroup ($needTimes, $needDays, $groupId, $info = array()) {
         $conds= array(
             sprintf('start_time >= %d', $needDays['sts']),
             sprintf('end_time <= %d', $needDays['ets']),
             'group_id' => intval($groupId),
-            'state' => 1,
+            'state' => self::SCHEDULE_ABLE,
         );
         $list = $this->getListByConds($conds);
         if ($list === false) {
@@ -364,12 +500,13 @@ class Service_Data_Schedule {
         return $diff;
     }
 
-    public function checkTeacherPk ($needTimes, $needDays, $teacherId, $info = array()) {
+    // 检测教师时间是否有冲突
+    public function checkTeacherPk ($needTimes, $needDays, $teacherUid, $info = array()) {
         $conds= array(
             sprintf('start_time >= %d', $needDays['sts']),
             sprintf('end_time <= %d', $needDays['ets']),
-            'teacher_id' => intval($teacherId),
-            'state' => 1,
+            'teacher_uid' => intval($teacherUid),
+            'state' => self::SCHEDULE_ABLE,
         );
         $list = $this->getListByConds($conds);
         if ($list === false) {
@@ -380,7 +517,7 @@ class Service_Data_Schedule {
         $conds= array(
             sprintf('start_time >= %d', $needDays['sts']),
             sprintf('end_time <= %d', $needDays['ets']),
-            'uid' => intval($teacherId),
+            'uid' => intval($teacherUid),
         );
         $serviceLock = new Service_Data_Lock();
         $locks = $serviceLock->getListByConds($conds);
@@ -434,7 +571,7 @@ class Service_Data_Schedule {
             sprintf('end_time <= %d', $needDays['ets']),
             "room_id = " . intval($info['room_id']) ,
             "area_id = " . intval($info['area_id']) ,
-            'state' => 1,
+            'state' => self::SCHEDULE_ABLE,
         );
         $list = $this->getListByConds($conds);
         if ($list === false) {
@@ -469,5 +606,117 @@ class Service_Data_Schedule {
             }
         }
         return $diff;
+    }
+
+    // check param 中的times是否合法
+    public function checkParamsTime ($needTimes) {
+        $times = $needTimes;
+        foreach ($times as $k1 => $item) {
+            foreach ($needTimes as $k2 => $t) {
+                // 比较, 开始时间大于存开始时间,  结束时间小于存结束时间
+                if ($k1 == $k2) {
+                    continue;
+                }
+                if ($t['sts'] > $item['sts'] && $t['sts'] < $item['ets']) {
+                    return false;
+                }
+                if ($t['ets'] > $item['sts'] && $t['ets'] < $item['ets']) {
+                    return false;
+                }
+                if ($t['sts'] < $item['sts'] && $t['ets'] > $item['ets']) {
+                    return false;
+                }
+                if ($t['sts'] == $item['sts'] || $t['ets'] == $item['ets']) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // check 2个时间范围数据的时间是否有冲突
+    public function checkDefaultTimes ($list1, $list2) {
+        if (empty($list1) || empty($list2)) {
+            return array();
+        }
+
+        $diff = array();
+        foreach ($list1 as $item) {
+            $flag = false;
+            foreach ($list2 as $t) {
+                if ($t['sts'] > $item['sts'] && $t['sts'] < $item['ets']) {
+                    $flag = true;
+                }
+                if ($t['ets'] > $item['sts'] && $t['ets'] < $item['ets']) {
+                    $flag = true;
+                }
+                if ($t['sts'] < $item['sts'] && $t['ets'] > $item['ets']) {
+                    $flag = true;
+                }
+                if ($t['sts'] == $item['sts'] || $t['ets'] == $item['ets']) {
+                    $flag = true;
+                }
+            }
+            if ($flag) {
+                $diff[] = $item;
+            }
+        }
+
+        return $diff;
+    }
+
+    public function checkRandAreaRoom ($needDays, $scheduleLists, $areaLists) {
+        $result = array();
+        foreach ($needDays as $key => $item) {
+            if (empty($scheduleLists[$key])) {
+                continue;
+            }
+            $conds = array(
+                sprintf("start_time >= %d", $item['sts']),
+                sprintf("end_time <= %d", $item['ets']),
+                "room_id > 0",
+                "state" => Service_Data_Schedule::SCHEDULE_ABLE,
+            );
+            $filed = array(
+                "start_time as sts",
+                'end_time as ets',
+                "room_id",
+                "area_id",
+                "id",
+            );
+            $lists = $this->getListByConds($conds, $filed);
+
+            foreach ($scheduleLists[$key] as $v) {
+                $diff = $this->checkDefaultTimes($lists, array($v));
+                if (empty($diff)) {
+                    $result[$v['id']] = $areaLists[$v['area_id']]['rooms'][0];
+                    continue;
+                }   
+                $realDiff = array();
+                foreach ($diff as $vv) {
+                    if ($areaLists[$v['area_id']]['is_online'] == Service_Data_Area::ONLINE) {
+                        continue;
+                    }
+                    if ($vv['area_id'] != $v['area_id']) {
+                        continue;
+                    }
+                    $realDiff[] = $vv['room_id'];
+                }
+                if (empty($realDiff)) {
+                    $result[$v['id']] = $areaLists[$v['area_id']]['rooms'][0];
+                    continue;
+                }
+
+                $rooms = array_column($areaLists[$v['area_id']]['rooms'], null , "id");
+                $rids = Zy_Helper_Utils::arrayInt($rooms, "id");
+                $diff2 = array_values(array_diff($rids, $realDiff));
+
+                if (!empty($diff2) && !empty($rooms[$diff2[0]])) {
+                    $result[$v['id']] = $rooms[$diff2[0]];
+                }
+            }
+        }
+
+        return $result;
     }
 }

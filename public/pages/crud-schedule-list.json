@@ -1,17 +1,15 @@
 {
     "type": "page",
     "title": "排课列表",
-    "remark": "bla bla bla",
     "body": {
         "type": "crud",
         "draggable": true,
         "name":"schedule_list",
         "api": {
             "method": "post",
-            "url":  "/mapi/schedule/pklists",
+            "url":  "/mapi/schedule/lists",
             "dataType": "form"
         },
-        "perPage": 20,
         "syncLocation":false,
         "id" : "schedule_list",
         "labelTpl": "${id}",
@@ -21,7 +19,7 @@
             "body": [
                 {
                     "type": "input-text",
-                    "name": "id",
+                    "name": "ids",
                     "size":"md",
                     "label": "编号",
                     "placeholder" : "支持多个,用英文逗号分割不要有空格"
@@ -34,16 +32,28 @@
                     "searchable":true,
                     "size":"md",
                     "label": "班级",
-                    "source": "/mapi/group/lists?isSelect=1"
+                    "source": "/mapi/group/lists?is_select=1"
                 },
                 {
                     "type": "tree-select",
-                    "name": "teacher_id",
+                    "name": "order_id",
+                    "label": "学员订单",
+                    "mode": "inline",
+                    "size":"lg",
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term&is_defer=1",
+                    "deferApi": "/mapi/order/lists?is_select=1&student_uid=$value"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "teacher_uid",
                     "searchable":true,
                     "onlyLeaf":true,
                     "label": "教师",
                     "size":"md",
-                    "source": "/mapi/teacher/lists?isSelect=1&isNoSubject=1"
+                    "source": "/mapi/teacher/lists?is_select=1&is_subject=0"
                 },
                 {
                     "type": "tree-select",
@@ -52,21 +62,21 @@
                     "onlyLeaf":true,
                     "label": "校区",
                     "size":"md",
-                    "source": "/mapi/area/onlyarea"
+                    "source": "/mapi/area/lists?is_onlyarea=1"
                 },
                 {
                     "type": "tree-select",
-                    "name": "area_op",
+                    "name": "area_operator",
                     "searchable":true,
                     "onlyLeaf":true,
                     "label": "区域管理",
                     "size":"md",
-                    "source": "/mapi/group/areaops"
+                    "source": "/mapi/api/areaoperator"
                 },
                 {
                     "label": "结算状态",
                     "type": "select",
-                    "name": "status",
+                    "name": "state",
                     "value" : "0",
                     "options": [
                         {
@@ -111,7 +121,7 @@
                 "type": "action",
                 "actionType": "download",
                 "label": "导出Excel",
-                "api": "/mapi/schedule/pklists?group_id=${group_id}&teacher_id=${teacher_id}&daterange=${daterange}&area_id=${area_id}&area_op=${area_op}&export=1"
+                "api": "/mapi/schedule/lists?ids=${ids}&group_ids=${group_ids}&teacher_uid=${teacher_uid}&daterange=${daterange}&area_id=${area_id}&area_operator=${area_operator}&state=${state}&is_export=1"
             },
             {
                 "type": "tpl",
@@ -143,7 +153,7 @@
             },
             {
               "type": "text",
-              "tpl": "${sum_duration}"
+              "tpl": "${duration}"
             }
         ],
         "columns": [
@@ -173,7 +183,7 @@
             },
             {
                 "name": "area_name",
-                "label": "校区(教室)",
+                "label": "校区教室",
                 "type": "text",
                 "toggled": true
             },
@@ -190,17 +200,19 @@
                 "toggled": true
             },
             {
-                "name": "birthplace",
-                "label": "生源地",
+                "name": "order_count",
+                "label": "订单数",
                 "type": "text",
                 "toggled": true
             },
             {
-                "name": "stateInfo",
+                "name": "state",
                 "label": "状态",
-                "type": "text",
-                "toggled": true,
-                "classNameExpr": "<%= data.state == 0 ? 'bg-success' : 'bg-danger'  %>"
+                "type": "mapping",
+                "map": {
+                    "2": "<span class='label label-danger'>结束</span>",
+                    "1": "<span class='label label-success'>待开始</span>"
+                }
             },
             {
                 "name": "week_time",
@@ -211,7 +223,6 @@
             {
                 "name": "duration",
                 "label": "时长",
-                
                 "type": "text",
                 "toggled": true
             },
@@ -235,22 +246,20 @@
                 "buttons": [
                     {
                         "type": "button",
-                        "icon": "fa fa-check",
-                        "level" : "success",
+                        "level" : "info",
                         "label" : "点名",
-                        "disabledOn": "this.state === '0'",
-                        "hiddenOn" : "this.muilt_scount <= 1",
+                        "disabledOn": "this.state === 2",
+                        "hiddenOn" : "this.order_count <= 1",
                         "actionType": "dialog",
-                        "tooltip": "点名",
                         "dialog": {
                             "position": "right",
                             "title": "选择未参加课程同学, 进行剔除  (默认为全部结算)",
                             "body": {
                                 "type": "form",
-                                "name": "sample-edit-form2",
+                                "name": "dianming-form",
                                 "api": {
                                     "method": "post",
-                                    "url": "/mapi/schedule/muiltcheckout",
+                                    "url": "/mapi/schedule/checkoutsingle",
                                     "dataType": "form"
                                 },
                                 "onEvent": {
@@ -272,12 +281,12 @@
                                     },
                                     {
                                         "type": "tree-select",
-                                        "name": "uids",
+                                        "name": "filter_uids",
                                         "onlyLeaf":true,
                                         "multiple": true,
                                         "searchable":true,
                                         "label": "请选择",
-                                        "source": "/mapi/group/onlystudent?group_id=$group_id"
+                                        "source": "/mapi/schedule/checkoutlists?id=$id"
                                     }
                                 ]
                             }
@@ -285,23 +294,21 @@
                     },
                     {
                         "type": "button",
-                        "icon": "fa fa-check",
                         "level" : "success",
                         "label" : "结算",
-                        "disabledOn": "this.state === '0'",
-                        "hiddenOn" : "this.muilt_scount > 1 || this.muilt_scount === 0",
+                        "disabledOn": "this.state === 2",
+                        "hiddenOn" : "this.order_count > 1",
                         "actionType": "ajax",
                         "api": {
                             "method": "get",
-                            "url": "/mapi/schedule/checkout?id=$id"
+                            "url": "/mapi/schedule/checkoutsingle?id=$id"
                         }
                     },
                     {
                         "type": "button",
-                        "icon": "fa fa-mail-reply",
-                        "level" : "danger",
+                        "level" : "warning",
                         "label" : "撤销",
-                        "disabledOn": "this.state === '1'",
+                        "disabledOn": "this.state === 1",
                         "hiddenOn" : "this.isSuper === 0",
                         "actionType": "ajax",
                         "confirmText": "是否确认撤销操作?",
@@ -320,9 +327,9 @@
                 "buttons": [
                     {
                         "type": "button",
-                        "icon": "fa fa-pencil",
-                        "disabledOn": "this.state === '0'",
-                        "tooltip": "编辑",
+                        "level" : "primary",
+                        "label" : "编辑",
+                        "disabledOn": "this.state === 2",
                         "actionType": "drawer",
                         "drawer": {
                             "position": "right",
@@ -330,7 +337,7 @@
                             "title": "编辑",
                             "body": {
                                 "type": "form",
-                                "name": "sample-edit-form",
+                                "name": "schedule-edit-form",
                                 "api": {
                                     "method": "post",
                                     "url": "/mapi/schedule/update",
@@ -355,7 +362,7 @@
                                     },
                                     {
                                         "type": "tree-select",
-                                        "name": "teacherId",
+                                        "name": "teacher_uid",
                                         "onlyLeaf":true,
                                         "label": "教师",
                                         "initiallyOpen": false,
@@ -363,7 +370,7 @@
                                         "searchable":true,
                                         "value": "${s_t_id}",
                                         "required": true,
-                                        "source": "/mapi/teacher/lists?isSelect=1&state=1"
+                                        "source": "/mapi/column/teacherlists?subject_id=$subject_id"
                                     },
                                     {
                                         "type": "input-date",
@@ -384,14 +391,14 @@
                                     },
                                     {
                                         "type": "tree-select",
-                                        "name": "area_op",
+                                        "name": "area_opreator",
                                         "onlyLeaf":true,
                                         "label": "区域管理",
                                         "searchable":true,
                                         "size":"md",
                                         "initiallyOpen":false,
-                                        "value":"$area_op",
-                                        "source": "/mapi/group/areaops",
+                                        "value":"${area_operator}",
+                                        "source": "/mapi/api/areaoperator",
                                         "description": "区域管理非必选"
                                     }
                                 ]
@@ -400,8 +407,9 @@
                     },
                     {
                         "type": "button",
-                        "icon": "fa fa-times text-danger",
-                        "disabledOn": "this.state === '0'",
+                        "level" : "danger",
+                        "label" : "删除",
+                        "disabledOn": "this.state === 2",
                         "actionType": "ajax",
                         "tooltip": "删除",
                         "confirmText": "您确认要删除?",

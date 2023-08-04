@@ -7,49 +7,44 @@ class Service_Page_Column_Update extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $teacherId  = empty($this->request['teacher_id']) ? 0 : intval($this->request['teacher_id']);
+        $columnId   = empty($this->request['column_id']) ? 0 : intval($this->request['column_id']);
+        $teacherUid = empty($this->request['teacher_uid']) ? 0 : intval($this->request['teacher_uid']);
         $subjectId  = empty($this->request['subject_id']) ? 0 : intval($this->request['subject_id']);
-        $price      = empty($this->request['price']) ? 0 : floatval($this->request['price']);
-        $number     = empty($this->request['number']) ? 0 : intval($this->request['number']);
-        $muiltPrice = empty($this->request['muilt_price']) ? 0 : $this->request['muilt_price'];
+        $price      = empty($this->request['price']) ? array() : $this->request['price'];
 
-        if ($teacherId <= 0 || $subjectId <= 0) {
-            throw new Zy_Core_Exception(405, "部分参数为空, 请检查");
+        if ($columnId <=0 || $teacherUid <= 0 || $subjectId <= 0 || empty($price)) {
+            throw new Zy_Core_Exception(405, "操作错误, 无法获取教师或科目或没有配置阈值客单价, 请检查");
         }
 
-        if ($number <= 1 && $muiltPrice > 0) {
-            throw new Zy_Core_Exception(405, "阈值数量必须大于1, 才能设置价格");
+        foreach ($price as &$item) {
+            if ($item['number'] <= 0 || $item["price"] <= 0) {
+                throw new Zy_Core_Exception(405, "操作失败, 人数和价格存在为空情况");
+            }
+            $item['number'] = intval($item['number']);
+            $item['price']  = intval($item['price']) * 100;
         }
 
-        if ($muiltPrice < 0 || $price < 0) {
-            throw new Zy_Core_Exception(405, "单价或超阈值价格不能是负数");
+        $price = array_column(array_values($price), null, 'number');
+        ksort($price);
+
+        $serviceData = new Service_Data_Column();
+        $column = $serviceData->getColumnById($columnId);
+        if (empty($column) ) {
+            throw new Zy_Core_Exception(405, "操作失败, 绑定信息不存在, 无法修改");
         }
 
-        $serviceSubject = new Service_Data_Subject();
-        $subjectInfo = $serviceSubject->getSubjectById($subjectId);
-        if (empty($subjectInfo)) {
-            throw new Zy_Core_Exception(405, "科目不存在");
+        $column = $serviceData->getColumnByTSId($teacherUid, $subjectId);
+        if (!empty($column) && $column['id'] != $columnId) {
+            throw new Zy_Core_Exception(405, "操作失败, 已经绑定无需重新绑定");
         }
 
-        $serviceColumn = new Service_Data_Column();
-        $column = $serviceColumn->getColumnByTSId($teacherId, $subjectId);
-        if (empty($column)) {
-            throw new Zy_Core_Exception(405, "课程不存在");
-        }
-
-
-        $conds = array(
-            'teacher_id' => $teacherId,
-            'subject_id' => $subjectId,
-        );
         $profile = [
-            "price"         => intval($price) * 100, 
-            "number"        => $number,
-            "muilt_price"   => intval($muiltPrice) * 100,
-            "discount"      => 0,
+            "subject_id"    => $subjectId, 
+            "teacher_uid"   => $teacherUid, 
+            "price"         => json_encode($price), 
             'update_time'   => time(),
         ];
-        $ret = $serviceColumn->editColumn($conds, $profile);
+        $ret = $serviceData->editColumn($columnId, $profile);
 
         if ($ret === false) {
             throw new Zy_Core_Exception(405, "更新失败, 请重试");

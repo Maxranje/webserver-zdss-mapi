@@ -11,16 +11,17 @@ class Service_Page_Teacher_Create extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "上传文件解析失败, 请检查");
         }
 
-        $serviceData = new Service_Data_User_Profile();
+        $serviceData = new Service_Data_Profile();
 
         $count = 0;
         foreach ($this->request['excel'] as $record) {
             if (empty($record['name'])
+                || empty($record['nickname'])
                 || empty($record['phone'])) {
                 continue;
             }
 
-            $userInfo = $serviceData->getUserInfo($record['name'], $record['phone']);
+            $userInfo = $serviceData->getUserInfoByNameAndPass($record['name'], $record['phone']);
             if (!empty($userInfo)) {
                 continue;
             }
@@ -34,12 +35,13 @@ class Service_Page_Teacher_Create extends Zy_Core_Service{
             }
 
             $profile = [
-                "type"  => Service_Data_User_Profile::USER_TYPE_TEACHER , 
-                "name"  => $record['name'] , 
-                "phone"  => $record['phone']  , 
-                "avatar" => "",
-                "sex"  => $record['sex'] , 
-                "teacher_capital" => $record['capital'],
+                "type"      => Service_Data_Profile::USER_TYPE_TEACHER , 
+                "state"     => Service_Data_Profile::STUDENT_ABLE,
+                "name"      => $record['name'] , 
+                "phone"     => $record['phone']  , 
+                "nickname"  => $record['nickname'],
+                "avatar"    => "",
+                "sex"       => $record['sex'] , 
                 "create_time" => time(),
                 "update_time" => time(),
             ];

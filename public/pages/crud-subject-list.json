@@ -1,7 +1,6 @@
 {
     "type": "page",
     "title": "科目分类",
-    "remark": "bla bla bla",
     "toolbar": [
         {
             "type": "button",
@@ -15,7 +14,7 @@
                 "title": "新增",
                 "body": {
                     "type": "form",
-                    "name": "new-form",
+                    "name": "subject-new-form",
                     "api": {
                         "method": "post",
                         "url": "/mapi/subject/create",
@@ -34,17 +33,8 @@
                     "body": [
                         {
                             "type": "input-text",
-                            "name": "category1",
-                            "label": "一级类目",
-                            "required": true
-                        },
-                        {
-                            "type": "divider"
-                        },
-                        {
-                            "type": "input-text",
-                            "name": "category2",
-                            "label": "二级类目",
+                            "name": "category",
+                            "label": "分类",
                             "required": true
                         },
                         {
@@ -53,7 +43,7 @@
                         {
                             "type": "input-text",
                             "name": "name",
-                            "label": "课程名",
+                            "label": "科目名称",
                             "required": true
                         },
                         {
@@ -63,6 +53,20 @@
                             "type": "input-text",
                             "name": "descs",
                             "label": "描述"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "price",
+                            "label": "课时价",
+                            "required": true,
+                            "addOn": {
+                                "type": "text",
+                                "label": "元"
+                            },
+                            "desc": "按小时填写具体钱数, 元为单位, 保留小数点后2位, | 配置价格不会对已绑定科目的订单生效, 需要重新创建订单"
                         }
                     ]
                 }
@@ -90,7 +94,7 @@
                     "name": "name",
                     "size":"md",
                     "label": "科目",
-                    "placeholder": ""
+                    "placeholder": "模糊搜索"
                 },
                 {
                     "type": "submit",
@@ -128,36 +132,31 @@
         "columns": [
             {
                 "name": "id",
-                "label": "SID",
-                
+                "label": "科目ID",
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "name",
-                "label": "科目",
-                
+                "label": "科目名称",
                 "type": "text",
                 "toggled": true
             },
             {
-                "name": "category1",
+                "name": "category",
                 "label": "一级分类",
-                
-                "type": "text",
-                "toggled": true
-            },
-            {
-                "name": "category2",
-                "label": "二级分类",
-                
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "descs",
                 "label": "描述",
-                
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "price_info",
+                "label": "价格(元)",
                 "type": "text",
                 "toggled": true
             },
@@ -180,82 +179,8 @@
                 "buttons": [
                     {
                         "type": "button",
-                        "icon": "fa fa-eye",
-                        "actionType": "dialog",
-                        "tooltip": "查看",
-                        "dialog": {
-                            "title": "查看",
-                            "body": {
-                                "type": "form",
-                                "body": [
-                                    {
-                                        "type": "static",
-                                        "name": "id",
-                                        "label": "SID"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "name",
-                                        "label": "科目"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "category1",
-                                        "label": "一级分类"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "category2",
-                                        "label": "二级分类"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "descs",
-                                        "label": "描述"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "create_time",
-                                        "label": "创建时间"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "update_time",
-                                        "label": "编辑时间"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "html",
-                                        "html": "<p>如需添加其他信息, 请联系超管.</p>"
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        "type": "button",
-                        "icon": "fa fa-pencil",
-                        "tooltip": "编辑",
+                        "label": "编辑",
+                        "level": "info",
                         "actionType": "drawer",
                         "drawer": {
                             "position": "right",
@@ -263,7 +188,7 @@
                             "title": "编辑",
                             "body": {
                                 "type": "form",
-                                "name": "sample-edit-form",
+                                "name": "subject-edit-form",
                                 "api": {
                                     "method": "post",
                                     "url": "/mapi/subject/update",
@@ -283,22 +208,13 @@
                                     {
                                         "type": "input-text",
                                         "name": "id",
-                                        "label": "SID",
+                                        "label": "科目ID",
                                         "disabled": true
                                     },
                                     {
                                         "type": "input-text",
-                                        "name": "category1",
-                                        "label": "一级分类",
-                                        "required": true
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "input-text",
-                                        "name": "category2",
-                                        "label": "二级分类",
+                                        "name": "category",
+                                        "label": "分类",
                                         "required": true
                                     },
                                     {
@@ -307,7 +223,7 @@
                                     {
                                         "type": "input-text",
                                         "name": "name",
-                                        "label": "科目",
+                                        "label": "科目名称",
                                         "required": true
                                     },
                                     {
@@ -317,6 +233,17 @@
                                         "type": "input-text",
                                         "name": "descs",
                                         "label": "描述"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "price_info",
+                                        "label": "课时价",
+                                        "required": true,
+                                        "addOn": {
+                                            "type": "text",
+                                            "label": "元"
+                                        },
+                                        "desc": "按小时填写具体钱数, 元为单位, 保留小数点后2位, | 配置价格不会对已绑定科目的订单生效, 需要重新创建订单"
                                     }
                                 ]
                             }
@@ -324,10 +251,10 @@
                     },
                     {
                         "type": "button",
-                        "icon": "fa fa-times text-danger",
+                        "label": "删除",
+                        "level": "danger",
                         "actionType": "ajax",
-                        "tooltip": "删除",
-                        "confirmText": "删除后关联的教师选课也会删除, 已经排好的课也会删除, 但不会删除已结算课程, 您确认要删除?",
+                        "confirmText": "确认删除么, 需要先删掉教师绑定, 以及订单绑定",
                         "api": {
                             "method": "get",
                             "url": "/mapi/subject/delete?id=$id"

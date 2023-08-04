@@ -2,52 +2,44 @@
     "type": "page",
     "body": [
         {
-            "type": "container",
+            "type": "panel",
+            "title": "排课查询 (两者互斥, 优先班级, 前后6个月数据, 红色已结算, 绿色未结算)",
             "body": [
-            {
-                "type": "form",
-                "title": "PK 查询",
-                "autoFocus": true,
-                "mode": "inline",
-                "body": [
-                    {
-                        "type": "tree-select",
-                        "name": "s_group_id",
-                        "onlyLeaf":true,
-                        "searchable":true,
-                        "size": "md",
-                        "label": "班级",
-                        "placeholder": "请选择班级",
-                        "source": "/mapi/group/lists?isSelect=1"
-                    },
-                    {
-                        "type": "tree-select",
-                        "name": "s_teacher_id",
-                        "onlyLeaf":true,
-                        "label": "教师",
-                        "searchable":true,
-                        "size": "md",
-                        "source": "/mapi/teacher/lists?isSelect=1&isNoSubject=1"
-                    },
-                    {
-                        "type": "button",
-                        "actionType": "reload",
-                        "target": "time_calendar?group_id=${s_group_id}&s_teacher_id=${s_teacher_id}",
-                        "level" : "info",
-                        "label" : "查询",
-                        "tooltip" :"查询前后半年数据"
-                    }
-                ]
-            },
-            {
-                "type": "panel",
-                "title": "时间表 (红色未结算, 绿色已结算, 灰色锁定)",
-                "body": {
+                {
+                    "type": "tree-select",
+                    "name": "search_group_id",
+                    "onlyLeaf":true,
+                    "searchable":true,
+                    "size": "md",
+                    "mode": "inline",
+                    "label": "班级",
+                    "placeholder": "请选择班级",
+                    "source": "/mapi/group/lists?is_select=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "search_teacher_uid",
+                    "onlyLeaf":true,
+                    "label": "教师",
+                    "mode": "inline",
+                    "searchable":true,
+                    "size": "md",
+                    "source": "/mapi/teacher/lists?is_select=1"
+                },
+                {
+                    "type": "divider"
+                },
+                {
                     "type": "service",
-                    "id" : "time_calendar",
-                    "schemaApi": "/mapi/schedule/pkcalendar?teacher_id=${s_teacher_id}&group_id=${s_group_id}"
+                    "api": "/mapi/schedule/calendarstartsearch?teacher_uid=${search_teacher_uid}&group_id=${search_group_id}",
+                    "body" : {
+                        "type": "calendar",
+                        "largeMode": true,
+                        "value": "NOW()",
+                        "schedules": "$schedules"
+                    }
                 }
-            }]
+            ]
         },
         {
             "type": "tabs",
@@ -75,17 +67,17 @@
                                         "label": "班级",
                                         "searchable":true,
                                         "size": "full",
-                                        "source": "/mapi/group/lists?isSelect=1"
+                                        "source": "/mapi/group/lists?is_select=1"
                                     },
                                     {
                                         "type": "tree-select",
-                                        "name": "teacher_id",
+                                        "name": "teacher_uid",
                                         "onlyLeaf":true,
                                         "searchable":true,
                                         "label": "教师",
                                         "initiallyOpen":false,
                                         "size": "full",
-                                        "source": "/mapi/teacher/lists?isSelect=1&state=1"
+                                        "source": "/mapi/teacher/lists?is_select=1&is_subject=1&state=1"
                                     }
                                 ]
                             },
@@ -100,7 +92,7 @@
                                 "searchable":true,
                                 "size":"md",
                                 "initiallyOpen":false,
-                                "source": "/mapi/area/onlyarea",
+                                "source": "/mapi/area/lists?is_onlyarea=1",
                                 "description": "校区为非必选项"
                             },
                             {
@@ -150,7 +142,7 @@
                                 "type": "checkboxes",
                                 "name": "week",
                                 "label": "",
-                                "value": 3,
+                                "value": 0,
                                 "options": [
                                     {
                                         "label": "周一",
@@ -200,7 +192,7 @@
                                 "label": "生成详细时间列表",
                                 "level": "success",
                                 "actionType":"reload",
-                                "target" : "pk_info_lists"
+                                "target" : "pk_times_details"
                             },
                             {
                                 "type": "html",
@@ -211,7 +203,7 @@
                                 "body": {
                                     "type": "service",
                                     "initFetchSchema" : false,
-                                    "id" : "pk_info_lists",
+                                    "id" : "pk_times_details",
                                     "schemaApi": "/mapi/schedule/timelist"
                                 }
                             }
@@ -236,7 +228,6 @@
                             "dataType": "form"
                         },
                         "title": "",
-                        "autoFocus": true,
                         "body": [
                             {
                                 "type": "group",
@@ -248,17 +239,17 @@
                                         "label": "班级",
                                         "searchable":true,
                                         "size": "full",
-                                        "source": "/mapi/group/lists?isSelect=1"
+                                        "source": "/mapi/group/lists?is_select=1"
                                     },
                                     {
                                         "type": "tree-select",
-                                        "name": "teacher_id",
+                                        "name": "teacher_uid",
                                         "onlyLeaf":true,
                                         "label": "教师",
                                         "searchable":true,
                                         "initiallyOpen": false,
                                         "size": "full",
-                                        "source": "/mapi/teacher/lists?isSelect=1&state=1"
+                                        "source": "/mapi/teacher/lists?is_select=1&is_subject=1&state=1"
                                     }
                                 ]
                             },
@@ -273,7 +264,7 @@
                                 "searchable":true,
                                 "size":"md",
                                 "initiallyOpen":false,
-                                "source": "/mapi/area/onlyarea",
+                                "source": "/mapi/area/lists?is_onlyarea=1",
                                 "description": "校区为非必选项"
                             },
                             {

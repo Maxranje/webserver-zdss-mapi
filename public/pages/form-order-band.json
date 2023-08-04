@@ -1,0 +1,133 @@
+{
+    "type": "page",
+    "body": [
+        {
+            "type": "panel",
+            "title" : "选择班级和订单",
+            "body": [
+                {
+                    "type": "tree-select",
+                    "name": "search_group_id",
+                    "label": "班级",
+                    "size": "md",
+                    "mode": "inline",
+                    "initiallyOpen":false,
+                    "onlyLeaf":true,
+                    "searchable":true,
+                    "source": "/mapi/group/lists?is_select=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "search_order_id",
+                    "label": "学员订单",
+                    "mode": "inline",
+                    "size":"lg",
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term&is_defer=1",
+                    "deferApi": "/mapi/order/lists?is_select=1&student_uid=$value&state=3"
+                }
+            ]
+        },
+        {
+            "type": "service",
+            "name": "order_detail",
+            "initFetch": false,
+            "api": "/mapi/order/detail?order_id=$search_order_id",
+            "body": {
+                "type": "card",
+                "header": {
+                    "className": "bg-white",
+                    "title": "$student_name - $subject_name",
+                    "subTitle": "订单ID: $order_id",
+                    "description": "扣除已排好课, 剩余存量",
+                    "avatarText": "$pic_name",
+                    "avatarTextBackground": [
+                        "#FFB900",
+                        "#D83B01",
+                        "#B50E0E",
+                        "#E81123",
+                        "#B4009E",
+                        "#5C2D91",
+                        "#0078D7",
+                        "#00B4FF",
+                        "#008272"
+                    ]
+                },
+                "body": {
+                    "type": "property",
+                    "labelStyle": {
+                        "fontWeight": "bold",
+                        "textTransform": "capitalize"
+                    },
+                    "column": 4,
+                    "items": [
+                        {
+                            "label": "可用存额",
+                            "content": "$balance 元"
+                        },
+                        {
+                            "label": "科目课时价",
+                            "content": "$subject_price 元"
+                        },
+                        {
+                            "label": "优惠信息",
+                            "content": "$discount_price 元 ($discount_type)"
+                        },
+                        {
+                            "label": "可绑定课时数",
+                            "content": "$schedule_count 小时"
+                        }
+                    ]
+                },
+                "toolbar": [
+                    {
+                        "type": "tpl",
+                        "tpl": "\n<% if (this.is_transfer === 1) { %>\n  <span class=\"label label-success m-l\">未结转</span>\n <% } else if(this.is_transfer === 2) { %>\n <span class=\"label label-default m-l\">已结转</span>\n  <% } else { %>\n  <% } %>\n"
+                    },
+                    {
+                        "type": "tpl",
+                        "tpl": "\n<% if (this.is_refund === 1) { %>\n  <span class=\"label label-success m-l\">未退款</span>\n <% } else if(this.is_refund === 2) { %>\n <span class=\"label label-default m-l\">已退款</span>\n  <% } else { %>\n  <% } %>\n"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "选择排课",
+            "name": "schedule_ids",
+            "type": "transfer",
+            "id" : "schedule_lists",
+            "resultListModeFollowSelect" : true,
+            "columns": [
+                {
+                    "name": "label",
+                    "label": "排课时间"
+                },
+                {
+                    "name": "teacher_subject_name",
+                    "label": "教师科目"
+                },
+                {
+                    "name": "area_name",
+                    "label": "校区教室"
+                },
+                {
+                    "name": "duration",
+                    "label": "时长"
+                }
+            ],
+            "source": "/mapi/schedule/bandlists?group_id=$search_group_id&order_id=$search_order_id",
+            "searchable": true,
+            "selectMode": "table"
+        },
+        {
+            "type": "button",
+            "label": "订单绑定课程",
+            "level":"success",
+            "actionType": "ajax",
+            "api": "/mapi/schedule/bandcreate?group_id=$search_group_id&order_id=$search_order_id&schedule_ids=$schedule_ids",
+            "reload": "schedule_ids"
+        }
+    ]
+}

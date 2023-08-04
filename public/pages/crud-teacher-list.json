@@ -1,7 +1,6 @@
 {
     "type":"page",
     "title": "教师列表",
-    "remark": "bla bla bla",
     "toolbar": [
         {
             "type": "button",
@@ -15,7 +14,7 @@
                 "title": "新增",
                 "body": {
                     "type": "form",
-                    "name": "new-form",
+                    "name": "teacher-new-form",
                     "api": {
                         "method": "post",
                         "url": "/mapi/teacher/create",
@@ -77,20 +76,6 @@
                                 }
                             ],
                             "required": true
-                        },
-                        {
-                            "type": "divider"
-                        },
-                        {
-                            "type": "input-text",
-                            "name": "teacher_capital",
-                            "label": "存额(元)",
-                            "addOn": {
-                                "type": "text",
-                                "label": "$"
-                            },
-                            "placeholder": "元为单位,只保留小数点后两位, 谨慎填写价格",
-                            "desc": "元为单位, 只保留小数点后两位, 谨慎填写价格, 为防止填写错误, 填写为增量累加, 默认0为不调整"
                         }
                     ]
                 }
@@ -128,7 +113,7 @@
                             "type": "input-excel",
                             "name": "excel",
                             "label": "批量上传",
-                            "desc":"上传内容不允许有空行和空列, 第一行格式固定: name, phone, nickname, sex, capital 其中capital为价格(数字, 单位元,只保留小数点后两位)"
+                            "desc":"上传内容不允许有空行和空列, 第一行格式固定: name, phone, nickname, sex"
                         }
                     ]
                 }
@@ -137,7 +122,6 @@
     ],
     "body": {
         "type": "crud",
-        "draggable": true,
         "api": {
             "method": "post",
             "url": "/mapi/teacher/lists",
@@ -146,7 +130,7 @@
         "perPage": 20,
         "syncLocation":false,
         "id":"teacher_list",
-        "labelTpl": "${id}",
+        "labelTpl": "${uid}",
         "filter": {
             "title": "条件搜索",
             "submitText": "",
@@ -156,21 +140,21 @@
                     "name": "nickname",
                     "label": "教师昵称",
                     "size" : "md",
-                    "placeholder": ""
+                    "placeholder": "模糊搜索"
                 },
                 {
                     "type": "input-text",
                     "name": "name",
                     "label": "登录名",
                     "size" : "md",
-                    "placeholder": ""
+                    "placeholder": "精确匹配"
                 },
                 {
                     "type": "input-text",
                     "name": "phone",
                     "label": "手机号",
                     "size" : "md",
-                    "placeholder": ""
+                    "placeholder": "精确匹配"
                 },
                 {
                     "label": "教师状态",
@@ -256,15 +240,18 @@
                 "label": "状态",
                 "type": "mapping",
                 "map": {
-                  "1": "<span class='label label-danger'>不可排课</span>",
-                  "0": "<span class='label label-success'>可排课</span>"
+                    "2": "<span class='label label-danger'>不可排课</span>",
+                    "1": "<span class='label label-success'>可排课</span>"
                 }
-              },
+            },
             {
-                "name": "sexInfo",
+                "name": "sex",
                 "label": "性别",
-                "type": "text",
-                "toggled": true
+                "type": "mapping",
+                "map": {
+                    "M": "男",
+                    "F": "女"
+                }
             },
             {
                 "name": "create_time",
@@ -273,104 +260,20 @@
                 "toggled": false
             },
             {
+                "name": "update_time",
+                "label": "更新时间",
+                "type": "text",
+                "toggled": false
+            },
+            {
                 "type": "operation",
                 "label": "操作",
-                "width": 100,
+                "width": 200,
                 "buttons": [
                     {
                         "type": "button",
-                        "icon": "fa fa-eye",
-                        "actionType": "dialog",
-                        "tooltip": "查看",
-                        "dialog": {
-                            "title": "查看",
-                            "body": {
-                                "type": "form",
-                                "body": [
-                                    {
-                                        "type": "static",
-                                        "name": "uid",
-                                        "label": "Uid"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "nickname",
-                                        "label": "昵称"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "name",
-                                        "label": "登录名"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "phone",
-                                        "label": "手机号"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "state_info",
-                                        "label": "状态"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "sexInfo",
-                                        "label": "性别"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "teacher_capital_format",
-                                        "label": "收入"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "create_time",
-                                        "label": "创建时间"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "static",
-                                        "name": "update_time",
-                                        "label": "编辑时间"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "html",
-                                        "html": "<p>如需添加其他信息, 请联系超管.</p>"
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        "type": "button",
-                        "icon": "fa fa-pencil",
-                        "tooltip": "编辑",
+                        "label":"编辑",
+                        "level":"info",
                         "actionType": "drawer",
                         "drawer": {
                             "position": "right",
@@ -378,7 +281,7 @@
                             "title": "编辑",
                             "body": {
                                 "type": "form",
-                                "name": "sample-edit-form",
+                                "name": "teacher-edit-form",
                                 "api": {
                                     "method": "post",
                                     "url": "/mapi/teacher/update",
@@ -439,11 +342,11 @@
                                         "options": [
                                             {
                                                 "label": "可排课",
-                                                "value": "0"
+                                                "value": "1"
                                             },
                                             {
                                                 "label": "不可排课",
-                                                "value": "1"
+                                                "value": "2"
                                             }
                                         ],
                                         "required": true
@@ -467,21 +370,6 @@
                                             }
                                         ],
                                         "required": true
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "input-text",
-                                        "name": "capital",
-                                        "label": "存额(元)",
-                                        "addOn": {
-                                            "type": "text",
-                                            "label": "$"
-                                        },
-                                        "value" : 0,
-                                        "placeholder": "元为单位, 谨慎填写价格",
-                                        "desc": "元为单位,只保留小数点后两位, 谨慎填写价格, 为防止填写错误, 填写为增量累加, 默认0为不调整"
                                     }
                                 ]
                             }
@@ -489,33 +377,121 @@
                     },
                     {
                         "type": "button",
-                        "icon": "fa fa-tag",
-                        "tooltip": "绑定",
+                        "label":"绑定科目",
+                        "level":"primary",
                         "actionType": "drawer",
                         "drawer": {
                             "position": "right",
                             "size": "lg",
-                            "title": "绑定课程",
-                            "id":"cards_list",
+                            "title": "绑定",
                             "body": [
                                 {
-                                    "type": "container",
+                                    "type": "service",
+                                    "api": "/mapi/column/lists?teacher_uid=$uid",
+                                    "name": "column_band_list",
                                     "body": {
-                                        "type": "service",
-                                        "id" : "bandcards",
-                                        "schemaApi": "/mapi/column/lists?&teacher_id=${uid}"
-                                    }
-                                },
-                                {
-                                    "type": "button",
-                                    "level" : "success",
-                                    "label" : "刷新绑定",
-                                    "onEvent": {
-                                        "click": {
+                                        "type": "cards",
+                                        "source": "$rows",
+                                        "card": {
+                                            "header" :{
+                                                "title":"科目: $subject_name"
+                                            },
+                                            "body":{
+                                                "type" : "tpl",
+                                                "tpl" : "$price_info"
+                                            },
                                             "actions": [
                                                 {
-                                                "actionType": "rebuild",
-                                                "componentId": "bandcards"
+                                                    "type": "button",
+                                                    "level": "link",
+                                                    "icon": "fa fa-edit",
+                                                    "actionType": "dialog",
+                                                    "dialog": {
+                                                        "size": "lg",
+                                                        "title": "编辑绑定",
+                                                        "body": {
+                                                            "type": "form",
+                                                            "name": "column-edit-form",
+                                                            "api": {
+                                                                "method": "post",
+                                                                "url": "/mapi/column/update",
+                                                                "dataType": "form"
+                                                            },
+                                                            "reload":"column_band_list",
+                                                            "body": [
+                                                                {
+                                                                    "type": "input-text",
+                                                                    "name": "column_id",
+                                                                    "label": "绑定ID",
+                                                                    "disabled": true
+                                                                },
+                                                                {
+                                                                    "type": "divider"
+                                                                },
+                                                                {
+                                                                    "type": "input-text",
+                                                                    "name": "teacher_uid",
+                                                                    "label": "教师ID",
+                                                                    "disabled": true
+                                                                },
+                                                                {
+                                                                    "type": "divider"
+                                                                },
+                                                                {
+                                                                    "type": "tree-select",
+                                                                    "name": "subject_id",
+                                                                    "onlyLeaf":true,
+                                                                    "label": "科目",
+                                                                    "source": "/mapi/subject/lists?is_select=1",
+                                                                    "disabled": true
+                                                                },
+                                                                {
+                                                                    "type": "divider"
+                                                                },
+                                                                {
+                                                                    "type": "combo",
+                                                                    "name": "price",
+                                                                    "label": "阈值客单价",
+                                                                    "multiple": true,
+                                                                    "required": true,
+                                                                    "items": [
+                                                                        {
+                                                                            "type": "input-text",
+                                                                            "name": "number",
+                                                                            "addOn": {
+                                                                                "type": "text",
+                                                                                "label": "人"
+                                                                            },
+                                                                            "value" : 0,
+                                                                            "desc": "人数阈值, 小于等于阈值则按照课时单价计算"
+                                                                        },
+                                                                        {
+                                                                            "type": "input-text",
+                                                                            "name": "price",
+                                                                            "addOn": {
+                                                                                "type": "text",
+                                                                                "label": "元"
+                                                                            },
+                                                                            "value" : 0,
+                                                                            "desc": "课时单价, 小于等于人数阈值则按照当前单价计算, 元单位"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "type": "button",
+                                                    "icon": "fa fa-remove",
+                                                    "actionType": "ajax",
+                                                    "level":"danger",
+                                                    "confirmText": "您确认要删除绑定信息么, 如果有绑定课程需要提前删除!",
+                                                    "api": {
+                                                        "method": "get",
+                                                        "url": "/mapi/column/delete?id=$column_id"
+                                                    },
+                                                    "reload":"column_band_list"
                                                 }
                                             ]
                                         }
@@ -563,6 +539,7 @@
                                                     "url": "/mapi/column/create",
                                                     "dataType": "form"
                                                 },
+                                                "reload":"column_band_list",
                                                 "body": [
                                                     {
                                                         "type": "input-text",
@@ -578,50 +555,40 @@
                                                         "name": "subject_id",
                                                         "onlyLeaf":true,
                                                         "label": "科目",
-                                                        "source": "/mapi/subject/lists?isSelect=1",
+                                                        "source": "/mapi/subject/lists?is_select=1",
                                                         "required": true
                                                     },
                                                     {
                                                         "type": "divider"
                                                     },
                                                     {
-                                                        "type": "input-text",
+                                                        "type": "combo",
                                                         "name": "price",
-                                                        "label": "课时单价",
-                                                        "addOn": {
-                                                            "type": "text",
-                                                            "label": "元"
-                                                        },
-                                                        "value" : 0,
-                                                        "desc": "一小时单价, 元为单位, 保留小数点后两位, 谨慎填写价格, 0为免费课"
-                                                    },
-                                                    {
-                                                        "type": "divider"
-                                                    },
-                                                    {
-                                                        "type": "input-text",
-                                                        "name": "number",
-                                                        "label": "人数阈值",
-                                                        "addOn": {
-                                                            "type": "text",
-                                                            "label": "人"
-                                                        },
-                                                        "value" : 0,
-                                                        "desc": "超过阈值人数可以按新价格给教师算价, 人数必须大于1人, 否则保存失败"
-                                                    },
-                                                    {
-                                                        "type": "divider"
-                                                    },
-                                                    {
-                                                        "type": "input-text",
-                                                        "name": "muilt_price",
-                                                        "label": "超阈值单价",
-                                                        "addOn": {
-                                                            "type": "text",
-                                                            "label": "元"
-                                                        },
-                                                        "value" : 0,
-                                                        "desc": "超阈值一小时单价, 元为单位, 保留小数点后两位, 谨慎填写价格, 0为免费课"
+                                                        "label": "阈值客单价",
+                                                        "multiple": true,
+                                                        "required": true,
+                                                        "items": [
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "number",
+                                                                "addOn": {
+                                                                    "type": "text",
+                                                                    "label": "人"
+                                                                },
+                                                                "value" : 0,
+                                                                "desc": "人数阈值, 小于等于阈值则按照课时单价计算"
+                                                            },
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "price",
+                                                                "addOn": {
+                                                                    "type": "text",
+                                                                    "label": "元"
+                                                                },
+                                                                "value" : 0,
+                                                                "desc": "课时单价, 小于等于人数阈值则按照当前单价计算, 元单位"
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             }
@@ -633,10 +600,11 @@
                     },
                     {
                         "type": "button",
-                        "icon": "fa fa-times text-danger",
+                        "label":"删除",
+                        "level":"danger",
                         "actionType": "ajax",
                         "tooltip": "删除",
-                        "confirmText": "删除教师, 会删除所有已经排好的课, 您确认要删除?",
+                        "confirmText": "删除教师, 需要提前删除教师绑定的排课",
                         "api": {
                             "method": "get",
                             "url": "/mapi/teacher/delete?uid=$uid"

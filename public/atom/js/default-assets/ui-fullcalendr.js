@@ -45,7 +45,7 @@
         },
         editable: false,
         eventLimit: true,
-        events: "/mapi/schedule/fscalendar?client=1"
+        events: "/mapi/schedule/calendarclient"
     });
 
 })(jQuery);

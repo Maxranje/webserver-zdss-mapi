@@ -12,7 +12,7 @@ class Zy_Core_Service {
     // 检测是否是超管,  管理员或老师
     public function checkAdmin () {
         if (empty($this->adption['type']) 
-            || !in_array($this->adption['type'], Service_Data_User_Profile::ADMIN_GRANT)) {
+            || !in_array($this->adption['type'], Service_Data_Profile::ADMIN_GRANT)) {
             return false;
         }
         return true;
@@ -20,7 +20,7 @@ class Zy_Core_Service {
 
     public function checkSuper () {
         if (empty($this->adption['type']) 
-            || $this->adption['type'] != Service_Data_User_Profile::USER_TYPE_SUPER) {
+            || $this->adption['type'] != Service_Data_Profile::USER_TYPE_SUPER) {
             return false;
         }
         return true;
@@ -28,7 +28,7 @@ class Zy_Core_Service {
 
     public function checkTeacher () {
         if (empty($this->adption['type']) 
-            || $this->adption['type'] != Service_Data_User_Profile::USER_TYPE_TEACHER) {
+            || $this->adption['type'] != Service_Data_Profile::USER_TYPE_TEACHER) {
             return false;
         }
         return true;
@@ -36,13 +36,14 @@ class Zy_Core_Service {
 
     public function checkStudent () {
         if (empty($this->adption['type']) 
-            || $this->adption['type'] != Service_Data_User_Profile::USER_TYPE_STUDENT) {
+            || $this->adption['type'] != Service_Data_Profile::USER_TYPE_STUDENT) {
             return false;
         }
         return true;
     }
 
-    public function getUserRolePage () {
+    // 获取用户的权限ID
+    public function getUserRolePageIds () {
         return empty($this->adption['pages']) ? array() : $this->adption['pages'];
     }
 }

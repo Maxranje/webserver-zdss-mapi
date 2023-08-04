@@ -7,23 +7,22 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $pn = empty($this->request['page']) ? 1 : intval($this->request['page']);
-        $rn = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
-
-        $pn = ($pn-1) * $rn;
         $nickname       = empty($this->request['nickname']) ? "" : $this->request['nickname'];
         $name           = empty($this->request['name']) ? "" : $this->request['name'];
         $phone          = empty($this->request['phone']) ? "" : $this->request['phone'];
         $state          = empty($this->request['state']) ? 0 : intval($this->request['state']);
-        $isSelect       = empty($this->request['isSelect']) ? false : true;
-        $isNoSubject    = empty($this->request['isNoSubject']) ? false : true;
+        $isSelect       = empty($this->request['is_select']) ? false : true;
+        $isSubject      = empty($this->request['is_subject']) ? false : true;
+        $pn             = empty($this->request['page']) ? 1 : intval($this->request['page']);
+        $rn             = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
+        $pn             = ($pn-1) * $rn;
 
         $conds = array(
-            'type' => Service_Data_User_Profile::USER_TYPE_TEACHER,
+            'type' => Service_Data_Profile::USER_TYPE_TEACHER,
         );
 
         if (!empty($name)) {
-            $conds[] = "name like '%".$name."%'";
+            $conds[] = "name = '$name'";
         }
 
         if (!empty($nickname)) {
@@ -31,14 +30,14 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
         }
 
         if (!empty($phone)) {
-            $conds[] = "phone = '".$phone."'";
+            $conds[] = "phone = '$phone'";
         }
         
-        if (!empty($state)) {
-            $conds[] = "state = " . ($state == 1 ? 0 : 1);
+        if ($state > 0) {
+            $conds[] = "state = $state";
         }
 
-        $serviceData = new Service_Data_User_Profile();
+        $serviceData = new Service_Data_Profile();
 
         $arrAppends[] = 'order by uid desc';
 
@@ -47,11 +46,8 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
         }   
 
         $lists = $serviceData->getListByConds($conds, false, NULL, $arrAppends);
-        if ($isSelect && !$isNoSubject) {
-            return $this->formatSchedule($lists);
-        }
-        if ($isSelect && $isNoSubject) {
-            return $this->formatSelect($lists);
+        if ($isSelect) {
+            return $this->formatSelect($lists, $isSubject);
         }
 
         $total = $serviceData->getTotalByConds($conds);
@@ -59,64 +55,13 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
             'rows' => $lists,
             'total' => $total,
         );
-        
     }
 
-    private function formatSchedule($lists) {
-        if (empty($lists)) {
-            return array();
-        }
+    private function formatSelect($lists, $isSubject) {
+        if ($isSubject) {
+            return $this->formatSubject($lists);
+        } 
 
-        $options = array();
-        $uids = array();
-        foreach ($lists as $item) {
-            $uids[intval($item['uid'])] = intval($item['uid']);
-        }
-        $uids = array_values($uids);
-
-        // 教师露出
-        $lists = array_column($lists, null , "uid");
-
-        // 查询所有的绑定
-        $serviceData = new Service_Data_Column();
-        $columnInfos = $serviceData->getListByConds(array(sprintf('teacher_id in (%s)', implode(',', $uids))));
-        if (empty($columnInfos)) {
-            return array();
-        }
-        $subjectIds = array();
-        foreach ($columnInfos as $item) {
-            $subjectIds[intval($item['subject_id'])] = intval($item['subject_id']);
-        }
-        $subjectIds = array_values($subjectIds);
-
-        # 查到所有科目名称
-        $servicSubject = new Service_Data_Subject();
-        $subjectInfos = $servicSubject->getListByConds(array(sprintf("id in (%s)", implode(",", $subjectIds))));
-        $subjectInfos = array_column($subjectInfos, null, "id");
-        
-        // 格式化数据
-        foreach ($columnInfos as $item) {
-            $tInfo = empty($lists[$item['teacher_id']]) ? array() : $lists[$item['teacher_id']];
-            $sInfo = empty($subjectInfos[$item['subject_id']]) ? array() : $subjectInfos[$item['subject_id']];
-
-            if (empty($options[$tInfo['uid']])) {
-                $options[$tInfo['uid']] = [
-                    'label' => $tInfo['nickname'],
-                    'value' => $tInfo['uid'],
-                    "children" => array(),
-                ];
-            }
-            if (!empty($subjectInfos[$item['subject_id']])) {
-                $options[$tInfo['uid']]['children'][] = array(
-                    'label' => $sInfo['name'],
-                    'value' => $sInfo['id'] . "_" . $tInfo['uid'],
-                );
-            }
-        }
-        return array_values($options);
-    }
-
-    private function formatSelect($lists) {
         $options = array();
         foreach ($lists as $item) {
             $optionsItem = [
@@ -126,5 +71,49 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
             $options[] = $optionsItem;
         }
         return $options;
+    }
+
+    private function formatSubject($lists) {
+        if (empty($lists)) {
+            return array();
+        }
+
+        $options = array();
+        $lists = array_column($lists, null , "uid");
+        $uids = Zy_Helper_Utils::arrayInt($lists, "uid");
+
+        // 查询所有的绑定
+        $serviceData = new Service_Data_Column();
+        $columnInfos = $serviceData->getListByConds(array(sprintf('teacher_uid in (%s)', implode(',', $uids))));
+        if (empty($columnInfos)) {
+            return array();
+        }
+        $subjectIds = Zy_Helper_Utils::arrayInt($columnInfos, "subject_id");
+
+        # 查到所有科目名称
+        $servicSubject = new Service_Data_Subject();
+        $subjectInfos = $servicSubject->getListByConds(array(sprintf("id in (%s)", implode(",", $subjectIds))));
+        $subjectInfos = array_column($subjectInfos, null, "id");
+        
+        // 格式化数据
+        foreach ($columnInfos as $item) {
+            $teacherInfo = empty($lists[$item['teacher_uid']]) ? array() : $lists[$item['teacher_uid']];
+            $subjectInfo = empty($subjectInfos[$item['subject_id']]) ? array() : $subjectInfos[$item['subject_id']];
+
+            if (empty($options[$teacherInfo['uid']])) {
+                $options[$teacherInfo['uid']] = [
+                    'label' => $teacherInfo['nickname'],
+                    'value' => $teacherInfo['uid'],
+                    "children" => array(),
+                ];
+            }
+            if (!empty($subjectInfo)) {
+                $options[$teacherInfo['uid']]['children'][] = array(
+                    'label' => $subjectInfo['name'],
+                    'value' => $subjectInfo['id'] . "_" . $teacherInfo['uid'],
+                );
+            }
+        }
+        return array_values($options);
     }
 }

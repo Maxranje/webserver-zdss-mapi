@@ -2,8 +2,6 @@
 
 class Service_Page_Schedule_Timelist extends Zy_Core_Service{
 
-    public $serviceSchedule;
-
     public function execute () {
         if (!$this->checkAdmin()) {
             throw new Zy_Core_Exception(405, "无权限查看");
@@ -15,43 +13,44 @@ class Service_Page_Schedule_Timelist extends Zy_Core_Service{
         $length     = empty($this->request['length']) ? 0 : intval($this->request['length']);
         $startDay   = empty($this->request['start_day']) ? 0 : intval($this->request['start_day']);
         $timeRange  = empty($this->request['time_range']) ? "" : strval($this->request['time_range']);
+        $isSimple   = empty($this->request['is_simple']) ? false : true;
 
         if (!in_array($type, array(1,2))){
-            throw new Zy_Core_Exception(405, "每周/隔周必须选一个");
+            throw new Zy_Core_Exception(405, "操作失败, 每周/隔周必须选一个");
         }
 
         if (empty($week) || !empty(array_diff($week, array("1","2","3","4","5","6","7")))){
-            throw new Zy_Core_Exception(405, "必须选择周几");
+            throw new Zy_Core_Exception(405, "操作失败, 必须选择周几");
         }
 
         if ($length <= 0 || $length >20){
-            throw new Zy_Core_Exception(405, "课时长度必须在20内且大于0");
+            throw new Zy_Core_Exception(405, "操作失败, 课时长度必须在20内且大于0");
         }
 
         if ($startDay <= 0) {
-            throw new Zy_Core_Exception(405, "起始时间不能为空");
+            throw new Zy_Core_Exception(405, "操作失败, 起始时间不能为空");
         }
 
         if (count($week) > $length) {
-            throw new Zy_Core_Exception(405, "配置中一周所上的课时不能大于总课时数, 请检查");
+            throw new Zy_Core_Exception(405, "操作失败, 配置中一周所上的课时不能大于总课时数, 请检查");
         }
 
         $timeRange = empty($timeRange) ? array() : explode(",", $timeRange);
         if (empty($timeRange) || count($timeRange) != 2) {
-            throw new Zy_Core_Exception(405, "必须设置模板时间");
+            throw new Zy_Core_Exception(405, "操作失败, 必须设置模板时间");
         }
 
         $needTimes = array();
         foreach ($timeRange as $item) {
             $range = explode(":", $item);
             if (empty($range) || count($range) != 2) {
-                throw new Zy_Core_Exception(405, "模板时间必须都要配置并且时间格式不能有错");
+                throw new Zy_Core_Exception(405, "操作失败, 模板时间必须都要配置并且时间格式不能有错");
             }
             $needTimes[] = ($range[0] * 3600) + ($range[1] * 60);
         }
 
         if (empty($needTimes)) {
-            throw new Zy_Core_Exception(405, "模板时间不正确, 请检查");
+            throw new Zy_Core_Exception(405, "操作失败, 模板时间不正确, 请检查");
         }
 
         $needTimes = array(
@@ -63,42 +62,23 @@ class Service_Page_Schedule_Timelist extends Zy_Core_Service{
         if ($needTimes['sts'] >= $needTimes['ets'] 
             || $needTimes['ets'] - $needTimes['sts'] > (4 * 3600)
             || $needTimes['ets'] - $needTimes['sts'] < 300) {
-            throw new Zy_Core_Exception(405, "模板时间必须在5分钟到4小时之间");
+            throw new Zy_Core_Exception(405, "操作失败, 模板时间必须在5分钟到4小时之间");
         }
 
         // 计算具体时间
         $needTimes = $this->initParamsTime($needTimes, $startDay, $type, $week, $length) ;
-        $ret = $this->checkParamsTime($needTimes) ;
+
+        $serviceData = new Service_Data_Schedule();
+        $ret = $serviceData->checkParamsTime($needTimes) ;
         if (!$ret) {
-            throw new Zy_Core_Exception(405, "保存的时间有冲突, 请查询后在配置");
+            throw new Zy_Core_Exception(405, "操作失败, 保存的时间有冲突, 请查询后在配置");
+        }
+
+        if ($isSimple) {
+            return $this->formatSimple($needTimes);
         }
         
         return  $this->formatBase($needTimes);
-    }
-
-    private function checkParamsTime ($needTimes) {
-        $times = $needTimes;
-        foreach ($times as $k1 => $item) {
-            foreach ($needTimes as $k2 => $t) {
-                // 比较, 开始时间大于存开始时间,  结束时间小于存结束时间
-                if ($k1 == $k2) {
-                    continue;
-                }
-                if ($t['sts'] > $item['sts'] && $t['sts'] < $item['ets']) {
-                    return false;
-                }
-                if ($t['ets'] > $item['sts'] && $t['ets'] < $item['ets']) {
-                    return false;
-                }
-                if ($t['sts'] < $item['sts'] && $t['ets'] > $item['ets']) {
-                    return false;
-                }
-                if ($t['sts'] == $item['sts'] || $t['ets'] == $item['ets']) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     private function initParamsTime ($needTimes, $startDay, $type, $week, $length) {
@@ -155,6 +135,18 @@ class Service_Page_Schedule_Timelist extends Zy_Core_Service{
                 'time_range' => $this->request['time_range'],
             );
             $result['value'][] = $v;
+        }
+        return $result;
+    }
+
+    private function formatSimple ($needTimes) {
+        $result = array();
+        foreach ($needTimes as $time) {
+            $v = array(
+                'date' => strtotime(date('Ymd', $time['sts'])),
+                'time_range' => $this->request['time_range'],
+            );
+            $result[] = $v;
         }
         return $result;
     }

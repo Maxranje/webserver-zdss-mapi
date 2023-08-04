@@ -7,5 +7,10 @@ class Controller_Teacher extends Zy_Core_Controller{
         "update"    => "actions/teacher/Update.php",
         "delete"    => "actions/teacher/Delete.php",
         "batchcreate"    => "actions/teacher/Batchcreate.php",
+
+        // 锁定
+        "locklists"     => "actions/teacher/Locklists.php",
+        "lockcreate"    => "actions/teacher/Lockcreate.php",
+        "lockdelete"    => "actions/teacher/Lockdelete.php",
     );
 }

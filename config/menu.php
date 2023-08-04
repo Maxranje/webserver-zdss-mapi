@@ -1,32 +1,74 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 return array(
-    "defualt_teacher" => array(
-        
-    ),
-    "defualt_amdins" => array(
-        1,2,3,41,42,101,102,51,72,
+    "head" => array(
+        'pages' => array(
+            array(
+                'label' => "Home",
+                'url' => '/',
+                "redirect" => "/index/1"
+            ),
+            array(
+                'children' => array(
+                    array(
+                        "id" => 1,
+                        "label" =>  "Dashboard",
+                        "url"=>"/index/1",
+                        "icon"=>"fa fa-home",
+                        "schemaApi"=>"get:/public/pages/dashboard.json"
+                    ),
+                ),
+            ),
+        ),
     ),
     "menu" => array(
         array(
             "id" => 2,
             "label"=>"学员管理",
             "url"=>"/student",
-            "icon"=>"fa fa-bars",
+            "icon"=>"fa fa-group",
+            "schemaApi"=>"get:/public/pages/crud-student-list.json"
+        ),
+        array(
+            "id" => 12,
+            "label"=>"订单中心",
+            "url"=>"/order",
+            "icon"=>"fa fa-newspaper-o",
             "children"=>[
                 array(
-                    "id" => 21,
-                    "label"=>"学员列表",
-                    "url"=>"/student/list",
+                    "id" => 121,
+                    "label"=>"订单列表",
+                    "url"=>"/order/list",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-student-list.json"
+                    "schemaApi"=>"get:/public/pages/crud-order-list.json"
                 ),
                 array(
-                    "id" => 22,
-                    "label"=>"订单列表",
-                    "url"=>"/student/orderlist",
-                    "icon"=>"fa fa-bars",
-                    "schemaApi"=>"get:/public/pages/crud-student-orders.json"
+                    "id" => 122,
+                    "label"=>"结转记录",
+                    "url"=>"/order/transfer",
+                    "icon"=>"fa fa-retweet",
+                    "schemaApi"=>"get:/public/pages/crud-order-transfer-list.json"
+                ),
+                array(
+                    "id" => 123,
+                    "label"=>"退款记录",
+                    "url"=>"/order/refund",
+                    "icon"=>"fa fa-reply",
+                    "schemaApi"=>"get:/public/pages/crud-order-refund-list.json"
+                ),
+                array(
+                    "id" => 124,
+                    "label"=>"存额调整记录",
+                    "url"=>"/order/recharge",
+                    "icon"=>"fa fa-random",
+                    "schemaApi"=>"get:/public/pages/crud-order-recharge-list.json"
+                ),
+                array(
+                    "id" => 125,
+                    "label"=>"绑定课程",
+                    "url"=>"/order/band",
+                    "icon"=>"fa fa-check-square-o",
+                    "schemaApi"=>"get:/public/pages/form-order-band.json"
                 )
             ]
         ),
@@ -36,13 +78,6 @@ return array(
             "url"=>"/group",
             "icon"=>"fa fa-envelope-o",
             "schemaApi"=>"get:/public/pages/crud-group-list.json"
-        ),
-        array(
-            "id" => 11,
-            "label"=>"个人课表",
-            "url"=>"/calendar",
-            "icon"=>"fa fa-calendar",
-            "link"=>"http://zdss.cn/mapi/dashboard/home"
         ),
         array(
             "id" => 4,
@@ -77,38 +112,23 @@ return array(
                     "label"=>"教室预览",
                     "url"=>"/schedule/arearoute",
                     "icon"=>"fa fa-calendar",
-                    "schemaApi"=>"get:/public/pages/crud-area-route.json"
+                    "schemaApi"=>"get:/public/pages/crud-schedule-area-detail.json"
                 ),
                 array(
                     "id" => 102,
                     "label"=>"配置教室",
-                    "url"=>"/schedule/pkarealist",
+                    "url"=>"/schedule/arealist",
                     "icon"=>"fa fa-bars",
-                    "schemaApi"=>"get:/public/pages/crud-pkarea-list.json"
+                    "schemaApi"=>"get:/public/pages/crud-schedule-area-list.json"
                 )
             ]
         ),
         array(
             "id" => 5,
             "label"=>"统计管理",
-            "url"=>"/statistics",
+            "url"=>"/records",
             "icon"=>"fa fa-bar-chart-o",
-            "children"=>[
-                array(
-                    "id" => 51,
-                    "label"=>"订单记录",
-                    "url"=>"/statistics/lists",
-                    "icon"=>"fa fa-bars",
-                    "schemaApi"=>"get:/public/pages/crud-statistics-list.json"
-                ),
-                array(
-                    "id" => 52,
-                    "label"=>"学班记录",
-                    "url"=>"/statistics/detaillists",
-                    "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-statistics-details.json"
-                )
-            ]
+            "schemaApi"=>"get:/public/pages/crud-records-list.json"
         ),
         array(
             "id" => 6,
@@ -132,10 +152,10 @@ return array(
                 ),
                 array(
                     "id" => 72,
-                    "label"=>"教师锁定",
+                    "label"=>"锁定时间",
                     "url"=>"/teacher/lock",
-                    "icon"=>"fa fa-bars",
-                    "schemaApi"=>"get:/public/pages/crud-teacherlock-list.json"
+                    "icon"=>"fa fa-lock",
+                    "schemaApi"=>"get:/public/pages/crud-teacher-lock-list.json"
                 ),
             ]
         ),
@@ -151,6 +171,7 @@ return array(
             "label"=>"系统信息",
             "url"=>"/system",
             "icon"=>"fa fa-cog",
+            "isSuper" => 1,
             "children"=>[
                 array(
                     "id" => 91,
@@ -168,5 +189,15 @@ return array(
                 )
             ]
         )
-    )
+    ),
+    "teacher" => array(
+        array(
+            "id" => 11,
+            "label"=>"个人课表",
+            "url"=>"/calendar",
+            "icon"=>"fa fa-calendar",
+            // "link"=>"http://zdss.cn/mapi/dashboard/home"
+            "link"=>"http://127.0.0.1:8060/mapi/dashboard/home"
+        ),
+    ),
 );

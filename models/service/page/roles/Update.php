@@ -14,14 +14,14 @@ class Service_Page_Roles_Update extends Zy_Core_Service{
         $uids       = empty($this->request['uids']) ? "" : strval($this->request['uids']);
 
         if ($id <= 0) {
-            throw new Zy_Core_Exception(405, "请求参数错误, 请检查");
+            throw new Zy_Core_Exception(405, "操作失败, 请求参数错误, 请检查");
         }
 
         $pageIds = explode(",", $pageIds);
         $newUids = explode(",", $uids);
 
         if (empty($name) || empty($pageIds) || empty($newUids)) {
-            throw new Zy_Core_Exception(405, "名称或归属页面或用户uid不能为空, 如果要把角色去掉权限, 请删掉角色");
+            throw new Zy_Core_Exception(405, "操作失败, 名称或归属页面或用户uid不能为空, 如果要把角色去掉权限, 请删掉角色");
         }
 
         $serviceData = new Service_Data_Roles();

@@ -7,34 +7,33 @@ class Service_Page_Subject_Create extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $category1 = empty($this->request['category1']) ? "" : $this->request['category1'];
-        $category2 = empty($this->request['category2']) ? "" : $this->request['category2'];
+        $category = empty($this->request['category']) ? "" : $this->request['category'];
         $name      = empty($this->request['name']) ? "" : $this->request['name'];
         $descs     = empty($this->request['descs']) ? "" : $this->request['descs'];
+        $price     = empty($this->request['price']) ? 0 : floatval($this->request['price']);
 
-        if (empty($category1) || empty($category2) || empty($name)) {
-            throw new Zy_Core_Exception(405, "部分参数为空, 请检查");
+        if (empty($category) ||  empty($name) || $price < 0) {
+            throw new Zy_Core_Exception(405, "分类和科目名不能为空, 客单价不能小于0, 请检查");
         }
 
         $serviceData = new Service_Data_Subject();
 
         $conds = array(
-            "category1" => $category1,
-            "category2" => $category2,
+            "category" => $category,
             "name" => $name,
         );
-        $subjectInfo = $serviceData->getListByConds($conds);
-        if (!empty($subjectInfo)) {
-            throw new Zy_Core_Exception(405, "科目名已存在, 请检查");
+        $subject = $serviceData->getRecordByConds($conds);
+        if (!empty($subject)) {
+            throw new Zy_Core_Exception(405, "分类和科目名已存在, 请检查");
         }
 
         $profile = [
-            "category1"  => $category1, 
-            "category2"  => $category2, 
-            "name"       => $name, 
-            "descs"      => $descs, 
-            "create_time" => time(),
-            "update_time" => time(),
+            "category"      => $category, 
+            "price"         => intval($price * 100), 
+            "name"          => $name, 
+            "descs"         => $descs, 
+            "create_time"   => time(),
+            "update_time"   => time(),
         ];
 
         $ret = $serviceData->createSubject($profile);

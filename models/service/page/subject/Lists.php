@@ -7,13 +7,13 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $pn = empty($this->request['page']) ? 1 : intval($this->request['page']);
-        $rn = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
+        $pn         = empty($this->request['page']) ? 1 : intval($this->request['page']);
+        $rn         = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
+        $name       = empty($this->request['name']) ? "" : strval($this->request['name']);
+        $isSelect   = empty($this->request['is_select']) ? false : true;
+        $isPrice    = empty($this->request['is_price']) ? false : true;
 
         $pn = ($pn-1) * $rn;
-
-        $name       = empty($this->request['name']) ? "" : strval($this->request['name']);
-        $isSelect   = empty($this->request['isSelect']) ? false : true;
 
         $conds = array();
 
@@ -31,7 +31,7 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
         
         $lists = $serviceData->getListByConds($conds, array(), NULL, $arrAppends);
         if ($isSelect) {
-            return $this->formatSelect($lists);
+            return $this->formatSelect($lists, $isPrice);
         }
 
         $total = $serviceData->getTotalByConds($conds);
@@ -41,34 +41,24 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
         );
     }
 
-    private function formatSelect($lists) {
+    private function formatSelect($lists, $isPrice = false) {
         if (empty($lists)) {
             return array();
         }
         
         $options = array();
         foreach ($lists as $item) {
-            if (!isset($options[$item['category1']])) {
-                $options[$item['category1']] = array(
-                    'label' => $item['category1'],
-                    'value' => $item['category1'],
-                );
-            }
-            if (!isset($options[$item['category1']]['children'][$item['category2']])) {
-                $options[$item['category1']]['children'][$item['category2']] = array(
-                    'label' => $item['category2'],
-                    'value' => $item['category2'],
+            if (!isset($options[$item['category']])) {
+                $options[$item['category']] = array(
+                    'label' => $item['category'],
+                    'value' => $item['category'],
                     'children' => array(),
                 );
             }
-            $options[$item['category1']]['children'][$item['category2']]['children'][] = array(
-                'label' => $item['name'],
+            $options[$item['category']]['children'][] = array(
+                'label' => $isPrice ? sprintf("%s (%s元)", $item['name'] , $item['price_info']) : $item['name'],
                 'value' => $item['id'],
             );
-        }
-        foreach ($options as $index => $item) {
-            $item['children'] = array_values($item['children']);
-            $options[$index] = $item;
         }
         return array('options' => array_values($options));
     }

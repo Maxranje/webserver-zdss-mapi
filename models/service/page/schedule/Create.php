@@ -3,24 +3,23 @@
 // 周期
 class Service_Page_Schedule_Create extends Zy_Core_Service{
 
-    public $serviceSchedule;
-
     public function execute () {
         if (!$this->checkAdmin()) {
             throw new Zy_Core_Exception(405, "无权限查看");
         }
         
-        $groupId    = empty($this->request['group_id']) ? 0 : intval($this->request['group_id']);
-        $teacherId  = empty($this->request['teacher_id']) ? "" : $this->request['teacher_id'];
-        $areaId     = empty($this->request['area_id']) ? 0 : intval($this->request['area_id']);
+        $teacherUid  = empty($this->request['teacher_uid']) ? "" : $this->request['teacher_uid'];
+        $groupId     = empty($this->request['group_id']) ? 0 : intval($this->request['group_id']);
+        $areaId      = empty($this->request['area_id']) ? 0 : intval($this->request['area_id']);
 
         // 教师信息获取
-        if (empty($teacherId) || strpos($teacherId, "_") === false) {
-            throw new Zy_Core_Exception(405, "教师不能为空");
+        if (empty($teacherUid) || strpos($teacherUid, "_") === false) {
+            throw new Zy_Core_Exception(405, "操作失败, 教师信息不能为空");
         }
-        list($subjectId, $teacherId) = explode("_", $teacherId);
-        if ($groupId <= 0 || $teacherId <= 0 || $subjectId <= 0){
-            throw new Zy_Core_Exception(405, "教师和班级不能为空");
+
+        list($subjectId, $teacherUid) = explode("_", $teacherUid);
+        if ($groupId <= 0 || $teacherUid <= 0 || $subjectId <= 0){
+            throw new Zy_Core_Exception(405, "操作失败, 教师和班级不能为空");
         }
         
         // 时间获取
@@ -31,10 +30,10 @@ class Service_Page_Schedule_Create extends Zy_Core_Service{
 
         // 时间没有, 则认为默认提交
         if (empty($times)) {
-            $timeList = new Service_Data_Timelist();
-            $times = $timeList->create($this->request);
+            $timeService = new Service_Page_Schedule_Timelist($this->request, $this->adption);
+            $times = $timeService->execute();
             if (empty($times)) {
-                throw new Zy_Core_Exception(405, "请求参数错误");
+                throw new Zy_Core_Exception(405, "操作失败, 格式化时间参数错误");
             }
         }
 
@@ -42,11 +41,11 @@ class Service_Page_Schedule_Create extends Zy_Core_Service{
         $needDays  = array();
         foreach ($times as $time) {
             if (empty($time['date']) || empty($time['time_range'])) {
-                throw new Zy_Core_Exception(405, "时间格式错误, 存在空情况");
+                throw new Zy_Core_Exception(405, "操作失败, 时间格式错误, 存在空情况");
             }
             $range = explode(",", $time['time_range']);
             if (!is_array($range) || count($range) != 2) {
-                throw new Zy_Core_Exception(405, "时间格式错误, 存在空情况");
+                throw new Zy_Core_Exception(405, "操作失败, 时间格式错误, 存在空情况");
             }
             $sts = explode(":", $range[0]);
             $ets = explode(":", $range[1]);
@@ -64,38 +63,44 @@ class Service_Page_Schedule_Create extends Zy_Core_Service{
         }
 
         if (empty($needTimes)) {
-            throw new Zy_Core_Exception(405, "时间格式错误, 请检查");
+            throw new Zy_Core_Exception(405, "操作失败, 时间格式错误, 请检查");
         }
 
-        $ret = $this->checkParamsTime($needTimes) ;
+        $serviceSchedule = new Service_Data_Schedule();
+        $ret = $serviceSchedule->checkParamsTime($needTimes) ;
         if (!$ret) {
-            throw new Zy_Core_Exception(405, "保存的时间有冲突, 请查询后在配置");
+            throw new Zy_Core_Exception(405, "操作失败, 保存的时间有冲突, 请查询后在配置");
         }
 
-        $serviceUser = new Service_Data_User_Profile();
-        $userInfo = $serviceUser->getUserInfoByUid(intval($teacherId));
-        if (empty($userInfo)) {
-            throw new Zy_Core_Exception(405, "无法查到老师信息");
+        $serviceData = new Service_Data_Profile();
+        $userInfo = $serviceData->getUserInfoByUid($teacherUid);
+        if (empty($userInfo) || $userInfo['state'] == Service_Data_Profile::STUDENT_DISABLE) {
+            throw new Zy_Core_Exception(405, "操作失败, 无法查到老师信息或教师下线");
         }
         
-        $serviceGroup = new Service_Data_Group();
-        $groupInfos = $serviceGroup->getGroupById($groupId);
-        if (empty($groupInfos)) {
-            throw new Zy_Core_Exception(405, "无法查到班级信息");
+        $serviceData = new Service_Data_Group();
+        $groupInfo = $serviceData->getGroupById($groupId);
+        if (empty($groupInfo) || $groupInfo['state'] == Service_Data_Group::GROUP_DISABLE) {
+            throw new Zy_Core_Exception(405, "操作失败, 无法查到班级信息或班级下线");
         }
-        $areaop = intval($groupInfos['area_op']);
 
-        $serviceColumn = new Service_Data_Column();
-        $columnInfos = $serviceColumn->getColumnByTSId($teacherId, $subjectId);
+        $serviceData = new Service_Data_Subject();
+        $subjectInfo = $serviceData->getSubjectById(intval($subjectId));
+        if (empty($subjectInfo)) {
+            throw new Zy_Core_Exception(405, "操作失败, 没有科目信息");
+        }
+
+        $serviceData = new Service_Data_Column();
+        $columnInfos = $serviceData->getColumnByTSId(intval($teacherUid), intval($subjectId));
         if (empty($columnInfos)) {
-            throw new Zy_Core_Exception(405, "无法查到教师绑定信息");
+            throw new Zy_Core_Exception(405, "操作失败, 无法查到教师绑定信息");
         }
 
         if ($areaId > 0) {
-            $serviceArea = new Service_Data_Area();
-            $areaInfo = $serviceArea->getAreaById($areaId, false);
+            $serviceData = new Service_Data_Area();
+            $areaInfo = $serviceData->getAreaById($areaId, false);
             if (empty($areaInfo)) {
-                throw new Zy_Core_Exception(405, "无法查到校区信息");
+                throw new Zy_Core_Exception(405, "操作失败, 无法查到校区信息");
             }
         }
 
@@ -103,20 +108,19 @@ class Service_Page_Schedule_Create extends Zy_Core_Service{
             "sts" => min($needDays),
             "ets" => max($needDays),
         );
-        $this->serviceSchedule = new Service_Data_Schedule();
 
-        $ret = $this->serviceSchedule->checkGroup ($needTimes, $needDays, $groupId);
+        $ret = $serviceSchedule->checkGroup ($needTimes, $needDays, $groupId);
         if ($ret === false) {
-            throw new Zy_Core_Exception(405, "查询班级排课冲突情况失败, 请重新提交");
+            throw new Zy_Core_Exception(405, "操作失败, 查询班级排课冲突情况失败, 请重新提交");
         }
         if (!empty($ret)) {
             $jobIds = implode(", ", array_column($ret, 'id'));
-            throw new Zy_Core_Exception(406, "班级时间有冲突, 请检查班级时间, 排课编号分别为" . $jobIds. " 仅做参考");
+            throw new Zy_Core_Exception(406, "操作失败, 班级时间有冲突, 请检查班级时间, 排课编号分别为" . $jobIds. " 仅做参考");
         }
 
-        $ret = $this->serviceSchedule->checkTeacherPk($needTimes, $needDays, $teacherId);
+        $ret = $serviceSchedule->checkTeacherPk($needTimes, $needDays, $teacherUid);
         if ($ret === false) {
-            throw new Zy_Core_Exception(405, "查询教师排课冲突情况失败, 请重新提交");
+            throw new Zy_Core_Exception(405, "操作失败, 查询教师排课冲突情况失败, 请重新提交");
         }
         if (!empty($ret['schedule']) || !empty($ret['lock'])) {
             $jobIds = implode(", ", array_column($ret['schedule'], 'id'));
@@ -133,44 +137,19 @@ class Service_Page_Schedule_Create extends Zy_Core_Service{
         }
 
         $profile = [
-            "column_id" => $columnInfos['id'],
-            'group_id' => $groupInfos['id'],
-            'area_op'  => $areaop,
-            'needTimes' => $needTimes,
-            'teacher_id' => $teacherId,
-            'area_id' => $areaId,
-            'state'   => 1,
+            "column_id"     => intval($columnInfos['id']),
+            'group_id'      => intval($groupInfo['id']),
+            'subject_id'    => intval($subjectId),
+            'area_operator' => intval($groupInfo['area_operator']),
+            'needTimes'     => $needTimes,
+            'teacher_uid'   => intval($teacherUid),
+            'area_id'       => $areaId,
         ];
 
-        $ret = $this->serviceSchedule->create($profile);
+        $ret = $serviceSchedule->create($profile);
         if ($ret === false) {
             throw new Zy_Core_Exception(405, "添加失败, 请重试");
         }
         return array();
-    }
-
-    private function checkParamsTime ($needTimes) {
-        $times = $needTimes;
-        foreach ($times as $k1 => $item) {
-            foreach ($needTimes as $k2 => $t) {
-                // 比较, 开始时间大于存开始时间,  结束时间小于存结束时间
-                if ($k1 == $k2) {
-                    continue;
-                }
-                if ($t['sts'] > $item['sts'] && $t['sts'] < $item['ets']) {
-                    return false;
-                }
-                if ($t['ets'] > $item['sts'] && $t['ets'] < $item['ets']) {
-                    return false;
-                }
-                if ($t['sts'] < $item['sts'] && $t['ets'] > $item['ets']) {
-                    return false;
-                }
-                if ($t['sts'] == $item['sts'] || $t['ets'] == $item['ets']) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }

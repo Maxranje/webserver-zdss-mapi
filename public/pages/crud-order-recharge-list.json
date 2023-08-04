@@ -1,0 +1,131 @@
+{
+    "type": "page",
+    "title": "存额调整记录",
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "id" : "recharge_list",
+        "api": {
+            "method": "post",
+            "url": "/mapi/order/rechargelists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "syncLocation":false,
+        "labelTpl": "${order_id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "order_id",
+                    "size" : "md",
+                    "label": "订单ID",
+                    "placeholder": "严格搜索"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "student_uid",
+                    "label": "学员",
+                    "size": "md",   
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term"
+                },
+                {
+                    "type": "input-date-range",
+                    "name": "date_range",
+                    "inline": true,
+                    "label": "时间范围"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "order_id",
+                "label": "订单ID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "student_uid",
+                "label": "UID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "student_name",
+                "label": "学员名",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "type",
+                "label": "类型",
+                "type": "mapping",
+                "map": {
+                    "3": "<span class='label label-primary'>创建订单</span>",
+                    "2": "<span class='label label-info'>结转配置</span>",
+                    "1": "<span class='label label-success'>余额修改</span>"
+                }
+            },
+            {
+                "name": "balance",
+                "label": "原金额(元)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "new_balance",
+                "label": "调整后余额(元)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "operator",
+                "label": "操作员",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "update_time",
+                "label": "修改时间",
+                "type": "text",
+                "toggled": true
+            }
+        ]
+    }
+}

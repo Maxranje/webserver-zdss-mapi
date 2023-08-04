@@ -1,0 +1,155 @@
+<?php
+
+class Service_Data_Profile {
+
+    private $daoUser ;
+
+    const USER_TYPE_SUPER   = 9;
+    const USER_TYPE_ADMIN   = 11;
+    const USER_TYPE_STUDENT = 12;
+    const USER_TYPE_TEACHER = 13;
+
+    const STUDENT_ABLE      = 1;
+    const STUDENT_DISABLE   = 2;
+
+    const ADMIN_GRANT       = [self::USER_TYPE_ADMIN, self::USER_TYPE_SUPER, self::USER_TYPE_TEACHER];
+    const STUDENT_STATE     = [self::STUDENT_ABLE, self::STUDENT_DISABLE];
+
+    public function __construct() {
+        $this->daoUser = new Dao_User () ;
+    }
+
+    // 根据用户名和密码获取用户信息
+    public function getUserInfoByNameAndPass ($username, $passport){
+        $arrConds = array(
+            'name'  => $username,
+            'phone'  => $passport,
+        );
+
+        $userinfo = $this->daoUser->getRecordByConds($arrConds, $this->daoUser->arrFieldsMap);
+        if (empty($userinfo)) {
+            return array();
+        }
+
+        $userinfo['create_time'] = date('Y-m-d H:i:s', $userinfo['create_time']);
+        $userinfo['update_time'] = date('Y-m-d H:i:s', $userinfo['update_time']);
+        return $userinfo;
+    }
+
+    // 根据uid获取用户信息
+    public function getUserInfoByUid ($uid){
+        $arrConds = array(
+            'uid'  => $uid,
+        );
+
+        $userinfo = $this->daoUser->getRecordByConds($arrConds, $this->daoUser->arrFieldsMap);
+        if (empty($userinfo)) {
+            return array();
+        }
+
+        $userinfo['create_time'] = date('Y-m-d H:i:s', $userinfo['create_time']);
+        return $userinfo;
+    }
+
+    // 根据用户uids 获取用户信息
+    public function getUserInfoByUids ($uids){
+        $arrConds = array(
+            sprintf("uid in (%s)", implode(",", $uids)),
+        );
+
+        $userinfos = $this->daoUser->getListByConds($arrConds, $this->daoUser->arrFieldsMap);
+        if (empty($userinfos)) {
+            return array();
+        }
+        return $userinfos;
+    }
+
+    // 修改
+    public function editUserInfo ($uid, $profile) {
+        return $this->daoUser->updateByConds(array('uid' => $uid), $profile);
+    }
+
+    // 添加
+    public function createUserInfo ($profile) {
+        return $this->daoUser->insertRecords($profile);
+    }
+
+    // 删除
+    public function deleteUserInfo ($uid, $type) {
+        // 需要处理删除后的订单情况
+        $this->daoUser->startTransaction();
+        $conds = array(
+            'uid' => $uid,
+        );
+        $ret = $this->daoUser->deleteByConds($conds);
+        if ($ret == false) {
+            $this->daoUser->rollback();
+            return false;
+        }
+        
+        // 删掉关联的权限
+        if ($type == self::USER_TYPE_ADMIN || $type == self::USER_TYPE_TEACHER) {
+            $daoRoles = new Dao_Rolesmap();
+            $ret = $daoRoles->deleteByConds($conds);
+            if ($ret == false) {
+                $this->daoUser->rollback();
+                return false;
+            }
+        }
+
+        // 如果是管理员, 会删掉课程和班级中区域管理者
+        if ($type == self::USER_TYPE_ADMIN) {
+            $daoGroup = new Dao_Group();
+            $ret = $daoGroup->updateByConds(array('area_operator' => $uid), array('area_operator' => 0));
+            if ($ret == false) {
+                $this->daoUser->rollback();
+                return false;
+            }
+            $daoSchedule = new Dao_Schedule();
+            $ret = $daoSchedule->updateByConds(array('area_operator' => $uid), array('area_operator' => 0));
+            if ($ret == false) {
+                $this->daoUser->rollback();
+                return false;
+            }
+        }
+
+        // 如果是教师, 删掉lock
+        if ($type == self::USER_TYPE_TEACHER) {
+            $daoLock = new Dao_Lock();
+            $ret = $daoLock->deleteByConds($conds);
+            if ($ret == false) {
+                $this->daoUser->rollback();
+                return false;
+            }
+        }
+
+        $this->daoUser->commit();
+        return $ret;
+    }
+
+    public function setUserSession ($userInfo) {
+        return Zy_Core_Session::getInstance()->setSessionUserInfo(
+            $userInfo['uid'], 
+            $userInfo['name'], 
+            $userInfo['phone'], 
+            $userInfo['type'],
+            $userInfo['pages']);
+    }
+
+    public function delUserSession () {
+        return Zy_Core_Session::getInstance()->delSessionAndCookie();
+    }
+
+    public function getListByConds($conds, $field = array(), $indexs = null, $appends = null) {
+        $field = empty($field) || !is_array($field)? $this->daoUser->arrFieldsMap : $field;
+        $lists = $this->daoUser->getListByConds($conds, $field, $indexs, $appends);
+        if (empty($lists)) {
+            return array();
+        }
+        return $lists;
+    }
+
+    public function getTotalByConds($conds) {
+        return  $this->daoUser->getCntByConds($conds);
+    }
+}

@@ -2,89 +2,44 @@
 
 class Service_Page_Group_Lists extends Zy_Core_Service{
 
-    public $serviceGroup;
-    public $serviceUsers;
-    public $serviceGroupMap;
-
     public function execute () {
         if (!$this->checkAdmin()) {
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $arrOutput = array("lists" => array(), 'total' => 0);
+        $name           = empty($this->request['name']) ? "" : trim($this->request['name']);
+        $state          = empty($this->request['state']) || !in_array($this->request['state'], [Service_Data_Group::GROUP_ABLE,Service_Data_Group::GROUP_DISABLE]) ? 0 : intval($this->request['state']);
+        $studentUid     = empty($this->request['student_uid']) ? "" : intval($this->request['student_uid']);
+        $areaOperator   = empty($this->request['area_operator']) ? 0 : intval($this->request['area_operator']);
+        $isSelect       = empty($this->request['is_select']) ? false : true;
+        $pn             = empty($this->request['page']) ? 0 : intval($this->request['page']);
+        $rn             = empty($this->request['perPage']) ? 0 : intval($this->request['perPage']);
+        $pn             = ($pn-1) * $rn;
 
-        $pn = empty($this->request['page']) ? 0 : intval($this->request['page']);
-        $rn = empty($this->request['perPage']) ? 0 : intval($this->request['perPage']);
-
-        $pn = ($pn-1) * $rn;
-
-        $name       = empty($this->request['name']) ? "" : $this->request['name'];
-        $studentId  = empty($this->request['student_id']) ? 0 : intval($this->request['student_id']);
-        $areaop     = empty($this->request['area_op']) ? 0 : intval($this->request['area_op']);
-        $nickname   = empty($this->request['student_nickname']) ? "" : $this->request['student_nickname'];
-        $isSelect   = empty($this->request['isSelect']) ? false : true;
-
-        $this->serviceGroup = new Service_Data_Group();
-        $this->serviceUsers = new Service_Data_User_Profile();
-        $this->serviceGroupMap = new Service_Data_User_Group();
-
-        $groupConds = array();
-        if (!empty($nickname)) {
-            $conds = array(
-                "nickname like '%".$nickname."%'"
-            );
-            $students = $this->serviceUsers->getListByConds($conds);
-            if (empty($students)) {
-                return $arrOutput;
-            }
-
-            $studentUids = array();
-            foreach ($students as $item) {
-                $studentUids[intval($item['uid'])] = intval($item['uid']);
-            }
-            $studentUids = array_values($studentUids);
-
-            $conds = array(
-                sprintf("student_id in (%s)", implode(",", $studentUids)),
-            );
-            $groupMap = $this->serviceGroupMap->getListByConds($conds);
-            if (empty($groupMap)) {
-                return $arrOutput;
-            }
-
-            $groupIds = array();
-            foreach ($groupMap as $item) {
-                $groupIds[intval($item['group_id'])] = intval($item['group_id']);
-            }
-            $groupIds = array_values($groupIds);
-            $groupConds[] = sprintf("id in (%s)", implode(",", $groupIds)); 
-        }
-
-        // 选择列表中的, 所以返回和正常返回不一样
-        if ($isSelect && $studentId > 0) {
-            $conds = array(
-                "student_id" => $studentId,
-            );
-
-            $groupMap = $this->serviceGroupMap->getListByConds($conds);
-            if (empty($groupMap)) {
+        $conds = array();
+        
+        if ($studentUid > 0) {
+            $serviceData = new Service_Data_Curriculum();
+            $lists = $serviceData->getListByConds(array("student_uid" => $studentUid), array("group_id"));
+            if (empty($lists)) {
                 return array();
             }
 
-            $groupIds = array();
-            foreach ($groupMap as $item) {
-                $groupIds[intval($item['group_id'])] = intval($item['group_id']);
-            }
-            $groupIds = array_values($groupIds);
-            $groupConds[] = sprintf("id in (%s)", implode(",", $groupIds)); 
+            $groupIds = Zy_Helper_Utils::arrayInt($lists, "group_id");
+
+            $conds[] = sprintf("id in (%s)", implode(",", $groupIds));
         }
 
         if (!empty($name)) {
-            $groupConds[] = "name like '%".$name."%'";
+            $conds[] = "name like '%".$name."%'";
         }
 
-        if ($areaop > 0) {
-            $groupConds[] = "area_op = " . $areaop;
+        if ($state > 0) {
+            $conds["state"] = $state;
+        }
+
+        if ($areaOperator > 0) {
+            $conds['area_operator'] = $areaOperator;
         }
 
         $arrAppends[] = 'order by id desc';
@@ -93,91 +48,56 @@ class Service_Page_Group_Lists extends Zy_Core_Service{
             $arrAppends[] = "limit {$pn} , {$rn}";
         }
 
-        $lists = $this->serviceGroup->getListByConds($groupConds, false, null, $arrAppends);
+        $serviceGroup = new Service_Data_Group();
+        $lists = $serviceGroup->getListByConds($conds, false, null, $arrAppends);
+        $lists = $this->formatDefault($lists);
+
         if ($isSelect) {
             return $this->formatSelect($lists);
         }
 
-        $total = $this->serviceGroup->getTotalByConds($groupConds);
-        $lists = $this->formatBase($lists);
+        $total = $serviceGroup->getTotalByConds($conds);
         return array(
             'rows' => $lists,
             'total' => $total,
         );
     }
 
-    private function formatBase($lists) {
+    // 格式化基础内容
+    private function formatDefault($lists) {
         if (empty($lists)) {
             return array();
         }
 
-        $groupIds = array();
-        $uids = array();
-        foreach ($lists as $item) {
-            $groupIds[intval($item['id'])] = intval($item['id']);
-            $uids[intval($item['area_op'])] = intval($item['area_op']);
-        }
-        $groupIds = array_values($groupIds);
+        $groupIds = Zy_Helper_Utils::arrayInt($lists, "id");
+        $uids = Zy_Helper_Utils::arrayInt($lists, "area_operator");
 
-        $groupMapInfo = array();
-        $conds = array(
-            sprintf("group_id in (%s)", implode(",", $groupIds))
-        );
-        $groupMap = $this->serviceGroupMap->getListByConds($conds);
-        foreach ($groupMap as $key => $item) {
-            if (!isset($groupMapInfo[$item['group_id']])) {
-                $groupMapInfo[$item['group_id']] = array();
-            }
-            $groupMapInfo[$item['group_id']][] = intval($item['student_id']);
-            $uids[intval($item['student_id'])] = intval($item['student_id']);
-        }
-        $uids = array_values($uids);
-
-        $conds = array(
-            sprintf("uid in (%s)", implode(",", $uids))
-        );
-        $userInfos = $this->serviceUsers->getListByConds($conds);
+        // 区域管理员信息
+        $serviceData = new Service_Data_Profile();
+        $userInfos = $serviceData->getUserInfoByUids($uids);
         $userInfos = array_column($userInfos, null, 'uid');
 
-        $serviceSchedule = new Service_Data_Schedule();
-        $scheduleCount = $serviceSchedule->getLastDuration($groupIds);
+        // 获取订单量
+        $serviceData = new Service_Data_Schedule();
+        $scheduleInfo = $serviceData->getSchduleCountByGroup($groupIds);
+        $scheduleInfo = array_column($scheduleInfo, null, 'group_id');
 
-        foreach ($lists as &$item) {
-            $gInfo = empty($groupMapInfo[$item['id']]) ? array() : $groupMapInfo[$item['id']];
-            $item['studentNames'] = array();
-            $item['studentCount'] = count($gInfo);
-            if (!empty($gInfo)) {
-                foreach ($gInfo as $index => $values) {
-                    if (!empty($userInfos[$values])) {
-                        $item['students'][] = $userInfos[$values];
-                        $item['studentNames'][] = $userInfos[$values]['nickname'];
-                    }
-                }
-                if (!empty($item['students'])) {
-                    $item['studentNames'] = implode(",", $item['studentNames']);     
-                }
+        $result = array();
+        foreach ($lists as $v) {
+            if (empty($userInfos[$v['area_operator']]['nickname'])) {
+                continue;
             }
-            if (isset($scheduleCount[$item['id']])) {
-                $item['lastDuration'] = $item['duration'] - $scheduleCount[$item['id']];
-            } else {
-                $item['lastDuration'] = $item['duration'];
-            }
-            $item['lastDurationInfo'] = $item['lastDuration'] . "课时";
+            
+            $item = $v;
+            $item['state'] = intval($item['state']);
+            $item['area_operator_name'] = $userInfos[$v['area_operator']]['nickname'];
+            $item['schedule_count'] = empty($scheduleInfo[$v['id']]) ? 0 : $scheduleInfo[$v['id']]['count'];
+            $item['create_time'] = date("Y年m月d日", $item['create_time']);
+            $item['update_time'] = date("Y年m月d日", $item['update_time']);
 
-            if ($item['lastDuration'] <= 0) {
-                $item["progress"] = 0 ;
-            } else {
-                $item["progress"] = intval(($item['lastDuration']/ $item['duration']) * 100);
-            }
-
-            if (!empty($item['area_op']) && !empty($userInfos[$item['area_op']]['nickname'])){
-                $item['area_op_name'] = $userInfos[$item['area_op']]['nickname'];
-            }
-            if (empty($item['area_op'])) {
-                $item['area_op'] = "";
-            }
+            $result[] = $item;
         }
-        return $lists;
+        return $result;
     }
 
     private function formatSelect($lists) {

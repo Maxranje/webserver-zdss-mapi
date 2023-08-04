@@ -7,38 +7,35 @@ class Service_Page_Column_Create extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $teacherId = empty($this->request['uid']) ? 0 : intval($this->request['uid']);
-        $subjectId = empty($this->request['subject_id']) ? 0 : intval($this->request['subject_id']);
-        $price      = empty($this->request['price']) ? 0 : $this->request['price'];
-        $duration   = empty($this->request['duration']) ? 0 : intval($this->request['duration']);
-        $number   = empty($this->request['number']) ? 0 : intval($this->request['number']);
-        $muiltPrice = empty($this->request['muilt_price']) ? 0 : $this->request['muilt_price'];
+        $teacherUid = empty($this->request['uid']) ? 0 : intval($this->request['uid']);
+        $subjectId  = empty($this->request['subject_id']) ? 0 : intval($this->request['subject_id']);
+        $price      = empty($this->request['price']) ? array() : $this->request['price'];
 
-        if ($teacherId <= 0 || $subjectId <= 0) {
-            throw new Zy_Core_Exception(405, "无法获取教师或科目, 请检查");
+        if ($teacherUid <= 0 || $subjectId <= 0 || empty($price)) {
+            throw new Zy_Core_Exception(405, "操作错误, 无法获取教师或科目或没有配置阈值客单价, 请检查");
         }
 
-        if ($number <= 1 && $muiltPrice > 0) {
-            throw new Zy_Core_Exception(405, "阈值数量必须大于1, 才能设置价格");
+        foreach ($price as &$item) {
+            if ($item['number'] <= 0 || $item["price"] <= 0) {
+                throw new Zy_Core_Exception(405, "操作失败, 人数和价格存在为空情况");
+            }
+            $item['number'] = intval($item['number']);
+            $item['price']  = intval($item['price']) * 100;
         }
 
-        if ($muiltPrice < 0 || $price < 0) {
-            throw new Zy_Core_Exception(405, "单价或超阈值价格不能是负数");
-        }
+        $price = array_column(array_values($price), null, 'number');
+        ksort($price);
 
         $serviceData = new Service_Data_Column();
-        $column = $serviceData->getColumnByTSId($teacherId, $subjectId);
+        $column = $serviceData->getColumnByTSId($teacherUid, $subjectId);
         if (!empty($column)) {
-            throw new Zy_Core_Exception(405, "已经绑定无需重新绑定");
+            throw new Zy_Core_Exception(405, "操作失败, 已经绑定无需重新绑定");
         }
 
         $profile = [
             "subject_id"    => $subjectId, 
-            "teacher_id"    => $teacherId, 
-            "price"         => intval($price) * 100, 
-            "duration"      => $duration, 
-            "number"        => $number,
-            "muilt_price"   => intval($muiltPrice) * 100,
+            "teacher_uid"   => $teacherUid, 
+            "price"         => json_encode($price), 
             'update_time'   => time(),
             'create_time'   => time(),
         ];

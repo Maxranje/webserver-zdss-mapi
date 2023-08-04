@@ -8,10 +8,10 @@ class Service_Page_Student_Batchcreate extends Zy_Core_Service{
         }
 
         if (empty($this->request['excel'])) {
-            throw new Zy_Core_Exception(405, "没有上传文件或无法解析, 请重试");
+            throw new Zy_Core_Exception(405, "操作失败, 没有上传文件或无法解析, 请重试");
         }
 
-        $serviceData = new Service_Data_User_Profile();
+        $serviceData = new Service_Data_Profile();
 
         $count = 0;
         foreach ($this->request['excel'] as $record) {
@@ -27,7 +27,7 @@ class Service_Page_Student_Batchcreate extends Zy_Core_Service{
                 continue;
             }
 
-            $userInfo = $serviceData->getUserInfo($record['name'], $record['phone']);
+            $userInfo = $serviceData->getUserInfoByNameAndPass($record['name'], $record['phone']);
             if (!empty($userInfo)) {
                 continue;
             }
@@ -44,32 +44,24 @@ class Service_Page_Student_Batchcreate extends Zy_Core_Service{
                 $record['sex'] = "M";
             }
 
-            if (empty($record['graduate'])) {
-                $record['graduate'] = "";
-            }
-
             if (empty($record['birthplace'])) {
                 $record['birthplace'] = "";
             }
 
-            if (empty($record['capital'])) {
-                $record['capital'] = 0;
-            }
-
             $profile = [
-                "type"  => Service_Data_User_Profile::USER_TYPE_STUDENT , 
-                "name"  => $record['name'] ,
-                "nickname"  => $record['nickname'] , 
-                "phone"  => $record['phone']  , 
-                "avatar" => "",
-                "school"  => $record['school']  , 
-                "birthplace" => $record['birthplace'],
-                "graduate"  => $record['graduate']  ,
-                "sex"  => $record['sex'] , 
-                "student_capital" => $record['capital'],
-                "teacher_capital" => 0,
-                "create_time"  => time() , 
-                "update_time"  => time() , 
+                "type"          => Service_Data_Profile::USER_TYPE_STUDENT , 
+                "name"          => $record['name'] ,
+                "nickname"      => $record['nickname'] , 
+                "phone"         => $record['phone'], 
+                "avatar"        => "",
+                "state"         => Service_Data_Profile::STUDENT_ABLE,
+                "school"        => $record['school']  , 
+                "birthplace"    => $record['birthplace'],
+                "graduate"      => $record['graduate']  ,
+                "sex"           => $record['sex'] , 
+                "balance"       => 0,
+                "create_time"   => time() , 
+                "update_time"   => time() , 
             ];
 
             $ret = $serviceData->createUserInfo($profile);

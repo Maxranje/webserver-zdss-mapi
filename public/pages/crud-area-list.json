@@ -1,11 +1,6 @@
 {
     "type": "page",
-    "cssVars": {
-        "--fontSizeBase": "10px",
-        "--borderRadius":"2px"
-    },
     "title": "校区管理",
-    "remark": "bla bla bla",
     "toolbar": [
         {
             "type": "button",
@@ -19,7 +14,7 @@
                 "title": "新增",
                 "body": {
                     "type": "form",
-                    "name": "new-form",
+                    "name": "area-new-form",
                     "api": {
                         "method": "post",
                         "url": "/mapi/area/create",
@@ -51,14 +46,28 @@
                             "name": "room_name",
                             "size":"md",
                             "label": "教室名称",
-                            "required": true
+                            "required": true,
+                            "description":"增的校区, 最小需要有一个教室."
                         },
                         {
                             "type": "divider"
                         },
                         {
-                            "type": "html",
-                            "html": "<p>新增的校区, 最小需要有一个教室.</p>"
+                            "type": "radios",
+                            "name": "is_online",
+                            "label": "是否线上",
+                            "value": "2",
+                            "options": [
+                                {
+                                    "label": "是",
+                                    "value": "1"
+                                },
+                                {
+                                    "label": "否",
+                                    "value": "2"
+                                }
+                            ],
+                            "description":"线上校区, 排课时不占用具体教室, 全地域建议只有一个线上校区"
                         }
                     ]
                 }
@@ -76,10 +85,10 @@
                 "title": "新增",
                 "body": {
                     "type": "form",
-                    "name": "new-form",
+                    "name": "room-new-form",
                     "api": {
                         "method": "post",
-                        "url": "/mapi/area/create",
+                        "url": "/mapi/area/roomcreate",
                         "dataType": "form"
                     },
                     "onEvent": {
@@ -100,7 +109,7 @@
                             "searchable":true,
                             "size":"md",
                             "label": "校区",
-                            "source": "/mapi/area/onlyarea",
+                            "source": "/mapi/area/lists?is_onlyarea=1",
                             "required": true
                         },
                         {
@@ -112,9 +121,6 @@
                             "size":"md",
                             "label": "教室名称",
                             "required": true
-                        },
-                        {
-                            "type": "divider"
                         }
                     ]
                 }
@@ -156,7 +162,7 @@
             "statistics",
             "switch-per-page"
         ],
-        "combineNum": 2,
+        "combineNum": 3,
         "columns": [
             {
                 "name": "aid",
@@ -169,6 +175,15 @@
                 "label": "校区名称",
                 "type": "text",
                 "toggled": true
+            },
+            {
+                "name": "is_online",
+                "label": "是否线上",
+                "type": "mapping",
+                "map": {
+                    "2": "<span class='label label-info'>线下课</span>",
+                    "1": "<span class='label label-success'>线上课</span>"
+                }
             },
             {
                 "name": "rid",
@@ -201,8 +216,8 @@
                 "buttons": [
                     {
                         "type": "button",
-                        "icon": "fa fa-pencil",
-                        "tooltip": "编辑",
+                        "label": "编辑",
+                        "level": "info",
                         "actionType": "drawer",
                         "drawer": {
                             "position": "right",
@@ -210,7 +225,7 @@
                             "title": "编辑",
                             "body": {
                                 "type": "form",
-                                "name": "sample-edit-form",
+                                "name": "area-edit-form",
                                 "api": {
                                     "method": "post",
                                     "url": "/mapi/area/update",
@@ -266,6 +281,22 @@
                                     },
                                     {
                                         "type": "divider"
+                                    },
+                                    {
+                                        "type": "radios",
+                                        "name": "is_online",
+                                        "label": "是否线上",
+                                        "options": [
+                                            {
+                                                "label": "是",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "label": "否",
+                                                "value": "2"
+                                            }
+                                        ],
+                                        "description":"只针对校区, 不区分教室, 线上校区, 排课时不占用具体教室, 全地域建议只有一个线上校区"
                                     }
                                 ]
                             }
@@ -273,10 +304,10 @@
                     },
                     {
                         "type": "button",
-                        "icon": "fa fa-times text-danger",
+                        "label": "删除",
+                        "level": "danger",
                         "actionType": "ajax",
-                        "tooltip": "删除",
-                        "confirmText": "您确认要删除, 如果校区没有班级则会删除校区?",
+                        "confirmText": "您确认要删除, 如果校区没有班级则会删除校区, 同时会删除课程中绑定的房间id和校区id?",
                         "api": {
                             "method": "get",
                             "url": "/mapi/area/delete?rid=$rid&aid=$aid"

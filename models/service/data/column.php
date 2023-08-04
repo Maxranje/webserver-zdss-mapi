@@ -12,9 +12,8 @@ class Service_Data_Column {
         $arrConds = array(
             'id'  => $id,
         );
-        $arrFields = $this->daoColumn->arrFieldsMap;
 
-        $Column = $this->daoColumn->getRecordByConds($arrConds, $arrFields);
+        $Column = $this->daoColumn->getRecordByConds($arrConds, $this->daoColumn->arrFieldsMap);
         if (empty($Column)) {
             return array();
         }
@@ -22,14 +21,13 @@ class Service_Data_Column {
         return $Column;
     }
 
-    public function getColumnByTSId ($teacherId, $subjectId){
+    public function getColumnByTSId ($teacherUid, $subjectId){
         $arrConds = array(
-            'teacher_id'  => $teacherId,
+            'teacher_uid'  => $teacherUid,
             'subject_id'  => $subjectId,
         );
-        $arrFields = $this->daoColumn->arrFieldsMap;
 
-        $Column = $this->daoColumn->getRecordByConds($arrConds, $arrFields);
+        $Column = $this->daoColumn->getRecordByConds($arrConds, $this->daoColumn->arrFieldsMap);
         if (empty($Column)) {
             return array();
         }
@@ -37,13 +35,11 @@ class Service_Data_Column {
         return $Column;
     }
 
-    public function getColumnByTId ($teacherId){
+    public function getColumnByTId ($teacherUid){
         $arrConds = array(
-            'teacher_id'  => $teacherId,
+            'teacher_uid'  => $teacherUid,
         );
-        $arrFields = $this->daoColumn->arrFieldsMap;
-
-        $Column = $this->daoColumn->getListByConds($arrConds, $arrFields);
+        $Column = $this->daoColumn->getListByConds($arrConds, $this->daoColumn->arrFieldsMap);
         if (empty($Column)) {
             return array();
         }
@@ -51,51 +47,30 @@ class Service_Data_Column {
         return $Column;
     }
 
-    public function editColumn ($conds, $profile) {
-        return $this->daoColumn->updateByConds($conds, $profile);
+    public function getColumnBySId ($subjectId){
+        $arrConds = array(
+            'subject_id'  => $subjectId,
+        );
+        $Column = $this->daoColumn->getListByConds($arrConds, $this->daoColumn->arrFieldsMap);
+        if (empty($Column)) {
+            return array();
+        }
+
+        return $Column;
     }
 
+    // 编辑
+    public function editColumn ($id, $profile) {
+        return $this->daoColumn->updateByConds(array('id' => $id), $profile);
+    }
+
+    // 创建
     public function createColumn ($profile) {
-        $ret = $this->daoColumn->insertRecords($profile);
-        if ($ret == false) {
-            return false;
-        }
-
-        $id = $this->daoColumn->getInsertId();
-
-        $profile['id'] = $id;
-        return $profile;
+        return $this->daoColumn->insertRecords($profile);
     }
 
-    public function deleteColumn ($teacherId, $subjectId) {
-        $columnInfo = $this->getColumnByTSId($teacherId, $subjectId);
-        if (empty($columnInfo)) {
-            return false;
-        }
-
-        $this->daoColumn->startTransaction();
-        $daoSchedule = new Dao_Schedule();
-
-        $conds = array(
-            'column_id' => $columnInfo['id'],
-            "state = 1",
-        );
-        $ret = $daoSchedule->deleteByConds($conds);
-        if ($ret === false) {
-            $this->daoColumn->rollback();
-            return false;
-        }
-
-        $conds = array(
-            "id" => $columnInfo['id'],
-        );
-        $ret = $this->daoColumn->deleteByConds($conds);
-        if ($ret === false) {
-            $this->daoColumn->rollback();
-            return false;
-        }
-        $this->daoColumn->commit();
-        return $ret;
+    public function deleteColumn ($id) {
+        return $this->daoColumn->deleteByConds(array('id' => $id));
     }
 
     public function getListByConds($conds, $field = array(), $indexs = null, $appends = null) {

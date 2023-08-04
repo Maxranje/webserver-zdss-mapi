@@ -11,21 +11,21 @@ class Service_Page_Roles_Create extends Zy_Core_Service{
         $descs = empty($this->request['descs']) ? "" : strval($this->request['descs']);
 
         if (empty($name)) {
-            throw new Zy_Core_Exception(405, "角色名称不能为空");
+            throw new Zy_Core_Exception(405, "操作失败, 角色名称不能为空");
         }
 
         $serviceData = new Service_Data_Roles();
         $roles = $serviceData->getRolesByName($name);
         if (!empty($roles)) {
-            throw new Zy_Core_Exception(405, "角色名字不能有重复");
+            throw new Zy_Core_Exception(405, "操作失败, 角色名字不能有重复");
         }
 
         $profile = [
-            "name"      => $name, 
-            "page_ids"  => "", 
-            "descs"     => $descs, 
-            "create_time"  => time() , 
-            "update_time"  => time() , 
+            "name"          => $name, 
+            "page_ids"      => "", 
+            "descs"         => $descs, 
+            "create_time"   => time() , 
+            "update_time"   => time() , 
         ];
 
         $ret = $serviceData->createRoles($profile);

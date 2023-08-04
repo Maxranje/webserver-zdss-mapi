@@ -5,7 +5,7 @@ class Dao_Room extends Zy_Core_Dao {
     public $arrFieldsMap;
 
     public function __construct() {
-        $this->_dbName      = "zy_mapi";
+        $this->_dbName      = "zy_mapiv2";
         $this->_table       = "tblRoom";
         $this->arrFieldsMap = array(
             "id"  => "id" , 
