@@ -13,6 +13,7 @@ class Dao_Refund extends Zy_Core_Dao {
             "student_uid" => "student_uid",
             "balance" => "balance",
             "operator" => "operator",
+            "schedule_nums" => "schedule_nums",
             "update_time" => "update_time",
             "create_time" => "create_time",
             "ext" => "ext",

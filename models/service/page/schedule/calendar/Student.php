@@ -56,6 +56,10 @@ class Service_Page_Schedule_Calendar_Student extends Zy_Core_Service{
         $subjectInfos = $serviceSubject->getListByConds(array('id in ('.implode(",", $subjectIds).')'));
         $subjectInfos = array_column($subjectInfos, null, 'id');
 
+        $subjectParentIds = Zy_Helper_Utils::arrayInt($subjectInfos, "parent_id");
+        $subjectParentInfos = $serviceSubject->getSubjectByIds($subjectParentIds);
+        $subjectParentInfos = array_column($subjectParentInfos, null, 'id');
+
         // 校区和房间
         $areaInfos = $roomInfos = array();
         if (!empty($roomIds)) {
@@ -80,9 +84,16 @@ class Service_Page_Schedule_Calendar_Student extends Zy_Core_Service{
             if (empty($subjectInfos[$columnInfos[$item['column_id']]['subject_id']]['name'])) {
                 continue;
             }
+            if (empty($subjectInfos[$columnInfos[$item['column_id']]['subject_id']]['parent_id'])) {
+                continue;
+            }
+            $subjectParentId = $subjectInfos[$columnInfos[$item['column_id']]['subject_id']]['parent_id'];
+            if (empty($subjectParentInfos[$subjectParentId]['name'])) {
+                continue;
+            }
 
             $teacherNickname = $userInfos[$item['teacher_uid']]['nickname'];
-            $subjectName = $subjectInfos[$columnInfos[$item['column_id']]['subject_id']]['name'];
+            $subjectName = sprintf("%s/%s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfos[$columnInfos[$item['column_id']]['subject_id']]['name']);
             
             // 校区信息
             $areaName = "";

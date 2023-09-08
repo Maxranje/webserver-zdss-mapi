@@ -7,21 +7,20 @@ class Service_Page_Group_Delete extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $id = empty($this->request['id']) ? 0 : intval($this->request['id']);
-        if ($id <= 0) {
+        $groupId = empty($this->request['group_id']) ? 0 : intval($this->request['group_id']);
+        if ($groupId <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 需要选择班级");
         }
 
         // 查看是否有排课
         $serviceData = new Service_Data_Schedule();
-        $scheduleInfo = $serviceData->getSchduleCountByGroup(array($id));
-        $scheduleInfo = array_column($scheduleInfo, null, 'group_id');
-        if (!empty($scheduleInfo[$id]['count'])) {
+        $count = $serviceData->getTotalByConds(array('group_id' => $groupId));
+        if ($count > 0) {
             throw new Zy_Core_Exception(405, "操作失败, 有关联的排课无法删除");
         }
 
         $serviceData = new Service_Data_Group();
-        $ret = $serviceData->delete($id);
+        $ret = $serviceData->delete($groupId);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "删除错误, 请重试");
         }

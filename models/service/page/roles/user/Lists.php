@@ -16,7 +16,7 @@ class Service_Page_Roles_User_Lists extends Zy_Core_Service{
 
         // 查询符合条件的人
         $conds = array(
-            sprintf("type in (%s)", implode(",", [Service_Data_Profile::USER_TYPE_TEACHER,Service_Data_Profile::USER_TYPE_ADMIN]))
+            sprintf("type in (%s)", implode(",", [Service_Data_Profile::USER_TYPE_TEACHER,Service_Data_Profile::USER_TYPE_ADMIN,Service_Data_Profile::USER_TYPE_PARTNER]))
         );
 
         if (!empty($nickname)) {
@@ -37,12 +37,22 @@ class Service_Page_Roles_User_Lists extends Zy_Core_Service{
                 "children" =>  []
             ),
             array(
+                "label" =>  "合作方",
+                "children" =>  []
+            ),
+            array(
                 "label" =>  "教师",
                 "children" =>  []
             ),
         );
         foreach ($lists as $item) {
-            $k = $item['type'] == Service_Data_Profile::USER_TYPE_ADMIN ? 0 : 1;
+            if ($item['type'] == Service_Data_Profile::USER_TYPE_TEACHER) {
+                $k = 2;
+            } else if ($item['type'] == Service_Data_Profile::USER_TYPE_PARTNER) {
+                $k = 1;
+            } else {
+                $k = 0;
+            }
             $options[$k]['children'][] = array(
                 'label' => $item['nickname'],
                 'value' => $item['uid'],

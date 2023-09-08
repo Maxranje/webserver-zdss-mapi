@@ -58,7 +58,7 @@ return array(
                 ),
                 array(
                     "id" => 124,
-                    "label"=>"存额调整记录",
+                    "label"=>"存额变更",
                     "url"=>"/order/recharge",
                     "icon"=>"fa fa-random",
                     "schemaApi"=>"get:/public/pages/crud-order-recharge-list.json"
@@ -128,7 +128,22 @@ return array(
             "label"=>"统计管理",
             "url"=>"/records",
             "icon"=>"fa fa-bar-chart-o",
-            "schemaApi"=>"get:/public/pages/crud-records-list.json"
+            "children"=>[
+                array(
+                    "id" => 51,
+                    "label"=>"结算报表",
+                    "url"=>"/records/lists",
+                    "icon"=>"fa fa-calendar",
+                    "schemaApi"=>"get:/public/pages/crud-records-schedule-list.json"
+                ),
+                array(
+                    "id" => 52,
+                    "label"=>"订单报表",
+                    "url"=>"/records/order",
+                    "icon"=>"fa fa-bars",
+                    "schemaApi"=>"get:/public/pages/crud-records-order-list.json"
+                )
+            ]
         ),
         array(
             "id" => 6,
@@ -175,7 +190,7 @@ return array(
             "children"=>[
                 array(
                     "id" => 91,
-                    "label"=>"管理员",
+                    "label"=>"操作人员",
                     "url"=>"/system/admins",
                     "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-admin-list.json"
@@ -186,7 +201,14 @@ return array(
                     "url"=>"/system/roles",
                     "icon"=>"fa fa-bars",
                     "schemaApi"=>"get:/public/pages/crud-roles-list.json"
-                )
+                ),
+                array(
+                    "id" => 93,
+                    "label"=>"生源地",
+                    "url"=>"/system/birthplace",
+                    "icon"=>"fa fa-server",
+                    "schemaApi"=>"get:/public/pages/crud-birthplace-list.json"
+                ),
             ]
         )
     ),

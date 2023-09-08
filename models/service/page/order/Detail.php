@@ -33,50 +33,52 @@ class Service_Page_Order_Detail extends Zy_Core_Service{
 
         // 排课数
         $serviceData = new Service_Data_Curriculum();
-        $orderCount  = $serviceData->getScheduleTimeCountByOrder(array($order['order_id']));
-        $orderCount  = empty($orderCount[$order['order_id']]['able_count']) ? 0 : intval($orderCount[$order['order_id']]['able_count']);
+        $orderCounts = $serviceData->getScheduleTimeCountByOrder(array(intval($order['order_id'])));
 
         if (empty($subjectInfo['name'])) {
-            return array();
+            return array(1);
         }
 
         if (empty($studentInfo['nickname'])) {
-            return array();
+            return array(2);
         }
 
-        $result = array();
-        $result['order_id']         = $order['order_id'] ;
-        $result['student_name']     = $studentInfo['nickname'];
-        $result['subject_name']     = $subjectInfo['name'];
-        $result['subject_price']    = sprintf("%.2f", $subjectInfo['price'] / 100);
-        $result['pic_name']         = mb_substr($result['subject_name'], 0, 1);
-        $result['discount_type']    = $order['discount_type'];
-        $result['is_transfer']      = intval($order['is_transfer']);
-        $result['is_refund']        = intval($order['is_refund']);
+        $extra = json_decode($order['ext'], true);
 
-        $result['schedule_count'] = "0";
-        $result['schedule_money'] = "0.00";
+        $item = array();
+        $item['order_id']       = $order['order_id'] ;
+        $item['student_name']   = $studentInfo['nickname'];
+        $item['subject_name']   = $subjectInfo['name'];
+        $item['student_uid']    = intval($order['student_uid']);
+        $item['update_time']    = date("Y年m月d日 H:i",$order['update_time']);
+        $item['create_time']    = date("Y年m月d日 H:i",$order['create_time']);
 
-        // y优惠数据
-        $discountType = "-";
-        $discountPrice = 0;
+        $item['origin_balance'] = sprintf("%.2f", $extra['origin_balance'] / 100);
+        $item['real_balance']   = sprintf("%.2f", $extra['real_balance'] / 100);
+        $item['origin_price']   = sprintf("%.2f", $extra['origin_price'] / 100);
+        $item['real_price']     = sprintf("%.2f", $extra['real_price'] / 100);
+        $item['schedule_nums']  = $extra['schedule_nums'];
+        $item['transfer_balance']   = empty($extra['transfer_balance']) ? "0.00" : sprintf("%.2f", $extra['transfer_balance'] / 100);
+        $item['refund_balance']     = empty($extra['refund_balance']) ? "0.00" : sprintf("%.2f", $extra['refund_balance'] / 100);
+        
+        $item['discount_info']  = "-";
         if ($order['discount_type'] == Service_Data_Order::DISCOUNT_Z) {
-            $discountPrice = intval($subjectInfo['price']) * ((100 - intval($order['discount'])) / 100);
-            $discountType  = sprintf("%s折", intval($order['discount']) / 10);
+            $item['discount_info'] = "折扣(" . $order['discount'] . "%)";
         } else if ($order['discount_type'] == Service_Data_Order::DISCOUNT_J) {
-            $discountPrice = intval($order['discount']);
-            $discountType  = "减免";
+            $item['discount_info'] = sprintf("减免(%.2f元)", $order['discount'] / 100);
         }
-        $result['discount_type']    = $discountType;
-        $result['discount_price']   = sprintf("%.2f", $discountPrice/100);
 
-        // 余下的价格,  余下的余额, 余下的可排的可课时
-        $realPrice  = intval($subjectInfo['price']) - $discountPrice;
-        $balance    = intval($order['balance']) - ($orderCount * $realPrice);
-        $balance    = $balance <= 0 ? 0 : $balance;
+        $item['band_duration']      = sprintf("%.2f", $orderCounts[$order['order_id']]['a']);
+        $item['band_balance']       = sprintf("%.2f", ($orderCounts[$order['order_id']]['a'] * $order['price']) / 100);
 
-        $result['balance']          = sprintf("%.2f", $balance / 100);
-        $result['schedule_count']   = sprintf("%.2f", $balance / $realPrice);
-        return $result;
+        // 余额减去待结算的
+        $item['able_balance'] = $order['balance'];
+        if ($orderCounts[$order['order_id']]['u'] > 0 ) {
+            $item['able_balance'] = $order['balance'] - ($orderCounts[$order['order_id']]['u'] * $order['price']);
+        }
+        
+        $item['able_duration'] = sprintf("%.2f", $item['able_balance'] / $order['price']);
+        $item['able_balance']  = sprintf("%.2f", $item['able_balance'] / 100);
+        return  $item;
     }
 }

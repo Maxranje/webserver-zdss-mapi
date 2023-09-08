@@ -12,6 +12,7 @@ class Service_Page_Order_Recharge_Lists extends Zy_Core_Service{
         $orderId        = empty($this->request['order_id']) ? 0 : intval($this->request['order_id']);
         $studentUid     = empty($this->request['student_uid']) ? 0 : intval($this->request['student_uid']);
         $dataRange      = empty($this->request['date_range']) ? "" : $this->request['date_range'];
+        $isExport       = empty($this->request['is_export']) ? false : true;
         $pn             = ($pn-1) * $rn;
         list($sts, $ets) = empty($dataRange) ? array(0,0) : explode(",", $dataRange);
 
@@ -33,9 +34,11 @@ class Service_Page_Order_Recharge_Lists extends Zy_Core_Service{
         }
 
         $arrAppends = array(
-            'order by update_time desc',
-            "limit {$pn} , {$rn}"
+            'order by id desc',
         );
+        if (!$isExport) {
+            $arrAppends[] = "limit {$pn} , {$rn}";
+        }
         
         $serviceData = new Service_Data_Recharge();
         $lists = $serviceData->getListByConds($conds, array(), NULL, $arrAppends);
@@ -44,6 +47,12 @@ class Service_Page_Order_Recharge_Lists extends Zy_Core_Service{
         }
         
         $lists = $this->formatDefault($lists);
+
+        if ($isExport) {
+            $data = $this->formatExcel($lists);
+            Zy_Helper_Utils::exportExcelSimple("order_balance", $data['title'], $data['lists']);
+        }
+
         $total = $serviceData->getTotalByConds($conds);
         return array(
             'rows' => $lists,
@@ -75,13 +84,36 @@ class Service_Page_Order_Recharge_Lists extends Zy_Core_Service{
             $v['order_id']          = $v['order_id'] ;
             $v['student_name']      = $userInfos[$v['student_uid']]['nickname'];
             $v['operator']          = $userInfos[$v['operator']]['nickname'];
-            $v['new_balance']       = sprintf("%.2f", intval($v['new_balance']) / 100);
             $v['balance']           = sprintf("%.2f", intval($v['balance']) / 100);
+            $v['schedule_nums']     = sprintf("%.2f", floatval($v['schedule_nums']));
             $v['update_time']       = date("Y年m月d日",$v['update_time']);
             $v['create_time']       = date("Y年m月d日",$v['create_time']);
 
             $result[] = $v;
         }
         return $result;
+    }
+
+    private function formatExcel($lists) {
+        $result = array(
+            'title' => array('订单ID', 'UID', '学员名', '类型', '金额(元)', '课时(小时)', '操作员',  '更新时间'),
+            'lists' => array(),
+        );
+        
+        foreach ($lists as $item) {
+            $tmp = array(
+                $item['order_id'],
+                $item['student_uid'],
+                $item['student_name'],
+                $item['type'] == Service_Data_Recharge::RECHARGE_ORDERCREATE? "创建" : "结转",
+                $item['balance'],
+                $item['schedule_nums'],
+                $item['operator'],
+                $item['update_time'],
+            );
+            $result['lists'][] = $tmp;
+        }
+        return $result;
+
     }
 }

@@ -13,7 +13,7 @@ class Service_Page_Student_Update extends Zy_Core_Service{
         $nickname   = empty($this->request['nickname']) ? "" : trim($this->request['nickname']);
         $school     = empty($this->request['school']) ? "" : trim($this->request['school']);
         $graduate   = empty($this->request['graduate']) ? "" : trim($this->request['graduate']);
-        $birthplace = empty($this->request['birthplace']) ? "" : trim($this->request['birthplace']);
+        $bpid       = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
         $sex        = empty($this->request['sex']) ? "M" : trim($this->request['sex']);
         $state      = empty($this->request["state"]) || !in_array($this->request['state'], Service_Data_Profile::STUDENT_STATE) ? Service_Data_Profile::STUDENT_ABLE : intval($this->request['state']);
 
@@ -28,6 +28,10 @@ class Service_Page_Student_Update extends Zy_Core_Service{
         if (!is_numeric($phone) || strlen($phone) < 6 || strlen($phone) > 12) {
             throw new Zy_Core_Exception(405, "操作失败, 手机号参数错误, 6-12位数字, 请检查");
         }
+
+        if ($bpid <= 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 生源地必须填写");
+        }
         
         $serviceData = new Service_Data_Profile();
         $userInfo = $serviceData->getUserInfoByUid($uid);
@@ -35,7 +39,7 @@ class Service_Page_Student_Update extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 无法查到相关用户");
         }
 
-        $userInfo = $serviceData->getUserInfoByNameAndPass($name, $phone);
+        $userInfo = $serviceData->getUserInfoByNameAndPhone($name, $phone);
         if (!empty($userInfo) && $userInfo['uid'] != $uid) {
             throw new Zy_Core_Exception(405, "操作失败, 用户名/手机号关联的账户已存在");
         }
@@ -45,7 +49,7 @@ class Service_Page_Student_Update extends Zy_Core_Service{
             "name"          => $name,
             "nickname"      => $nickname, 
             "phone"         => $phone, 
-            "birthplace"    => $birthplace, 
+            "bpid"          => $bpid,
             "avatar"        => "",
             "school"        => $school, 
             "graduate"      => $graduate,

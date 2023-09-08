@@ -51,6 +51,12 @@
             "filter-toggler",
             "bulkActions",
             {
+                "type": "action",
+                "actionType": "download",
+                "label": "导出Excel",
+                "api": "/mapi/order/rechargelists?order_id=${order_id}&student_uid=${student_uid}&date_range=${date_range}&is_export=1"
+            },
+            {
                 "type": "tpl",
                 "tpl": "共有 ${total} 条数据。",
                 "className": "v-middle"
@@ -97,20 +103,19 @@
                 "label": "类型",
                 "type": "mapping",
                 "map": {
-                    "3": "<span class='label label-primary'>创建订单</span>",
-                    "2": "<span class='label label-info'>结转配置</span>",
-                    "1": "<span class='label label-success'>余额修改</span>"
+                    "1": "<span class='label label-info'>结转订单</span>",
+                    "2": "<span class='label label-success'>创建订单</span>"
                 }
             },
             {
                 "name": "balance",
-                "label": "原金额(元)",
+                "label": "金额(元)",
                 "type": "text",
                 "toggled": true
             },
             {
-                "name": "new_balance",
-                "label": "调整后余额(元)",
+                "name": "schedule_nums",
+                "label": "课时数(小时)",
                 "type": "text",
                 "toggled": true
             },

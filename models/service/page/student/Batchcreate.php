@@ -11,6 +11,13 @@ class Service_Page_Student_Batchcreate extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 没有上传文件或无法解析, 请重试");
         }
 
+        $serviceBirthplace = new Service_Data_Birthplace();
+        $birthplace = $serviceBirthplace->getListByConds(array());
+        if (empty($birthplace)) {
+            throw new Zy_Core_Exception(405, "操作失败, 系统没有生源地配置, 请联系超管操作");
+        }
+        $birthplace = Zy_Helper_Utils::arrayInt($birthplace, "id");
+
         $serviceData = new Service_Data_Profile();
 
         $count = 0;
@@ -27,7 +34,11 @@ class Service_Page_Student_Batchcreate extends Zy_Core_Service{
                 continue;
             }
 
-            $userInfo = $serviceData->getUserInfoByNameAndPass($record['name'], $record['phone']);
+            if (empty($record['birthplace']) || !in_array($record['birthplace'], $birthplace)) {
+                continue;
+            }
+
+            $userInfo = $serviceData->getUserInfoByNameAndPhone($record['name'], $record['phone']);
             if (!empty($userInfo)) {
                 continue;
             }
@@ -44,15 +55,12 @@ class Service_Page_Student_Batchcreate extends Zy_Core_Service{
                 $record['sex'] = "M";
             }
 
-            if (empty($record['birthplace'])) {
-                $record['birthplace'] = "";
-            }
-
             $profile = [
                 "type"          => Service_Data_Profile::USER_TYPE_STUDENT , 
                 "name"          => $record['name'] ,
                 "nickname"      => $record['nickname'] , 
                 "phone"         => $record['phone'], 
+                "passport"      => $record['phone'],
                 "avatar"        => "",
                 "state"         => Service_Data_Profile::STUDENT_ABLE,
                 "school"        => $record['school']  , 

@@ -1,5 +1,11 @@
 {
     "type": "page",
+    "data": {
+        "transferData": {
+            "balance": 0,
+            "duration": 0
+        }
+    },
     "title": "订单列表",
     "toolbar": [
         {
@@ -39,7 +45,7 @@
                             "searchable":true,
                             "required": true,
                             "initiallyOpen":false,
-                            "source": "/mapi/subject/lists?is_select=1&is_price=1"
+                            "source": "/mapi/subject/lists?is_select=1&is_parent=1"
                         },
                         {
                             "type": "divider"
@@ -59,14 +65,15 @@
                         },
                         {
                             "type": "input-text",
-                            "name": "balance",
-                            "label": "存额",
+                            "name": "schedule_nums",
+                            "label": "总课时",
                             "addOn": {
                                 "type": "text",
-                                "label": "元"
+                                "label": "小时"
                             },
+                            "required": true,
                             "value" : 0,
-                            "desc": "填写具体钱数, 元为单位, 保留小数点后2位"
+                            "desc": "填写具体课时数, 小时为单位"
                         },
                         {
                             "type": "divider"
@@ -103,6 +110,41 @@
                                 "label": "折/元"
                             },
                             "desc": "折扣: 10>数字>0, 保留小数点后一位(例如:9.5/8) | 减免, 单课时减免金额, 元为单位, 保留小数点后2位 | 配置后实时生效"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "service",
+                            "name": "order_review_detail",
+                            "initFetch": false,
+                            "api": "/mapi/order/review?subject_id=$subject_id&student_uid=$student_uid&schedule_nums=$schedule_nums&discount_type=$discount_type&discount=$discount",
+                            "body": {
+                                "type": "property",
+                                "labelStyle": {
+                                    "fontWeight": "bold",
+                                    "textTransform": "capitalize"
+                                },
+                                "column": 2,
+                                "items": [
+                                    {
+                                        "label": "订单原价",
+                                        "content": "$origin_balance 元"
+                                    },
+                                    {
+                                        "label": "课单价原价",
+                                        "content": "$origin_price 元"
+                                    },
+                                    {
+                                        "label": "实际缴费",
+                                        "content": "$real_balance 元"
+                                    },
+                                    {
+                                        "label": "惠后单价",
+                                        "content": "$real_price 元"
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -133,25 +175,15 @@
                     "type": "input-text",
                     "name": "order_id",
                     "size": "md",
-                    "label": "订单ID",
-                    "placeholder": "精确匹配"
+                    "label": "订单",
+                    "placeholder": "精确匹配,某订单ID"
                 },
                 {
                     "type": "input-text",
                     "name": "schedule_id",
                     "size": "md",
-                    "label": "排课ID",
-                    "placeholder": "精确匹配,某排课绑定订单信息"
-                },
-                {
-                    "type": "tree-select",
-                    "name": "group_id",
-                    "onlyLeaf":true,
-                    "label": "班级",
-                    "size": "md",
-                    "searchable":true,
-                    "initiallyOpen":false,
-                    "source": "/mapi/group/lists?is_select=1"
+                    "label": "排课",
+                    "placeholder": "精确匹配,某排课ID绑定的订单"
                 },
                 {
                     "type": "tree-select",
@@ -161,7 +193,7 @@
                     "size": "md",
                     "searchable":true,
                     "initiallyOpen":false,
-                    "source": "/mapi/subject/lists?is_select=1"
+                    "source": "/mapi/subject/lists?is_select=1&is_parent=1"
                 },
                 {
                     "type": "tree-select",
@@ -174,27 +206,22 @@
                     "source": "/mapi/student/lists?is_select=1&nickname=$term"
                 },
                 {
+                    "label": "预警状态",
                     "type": "select",
-                    "name": "state",
-                    "label": "状态",
-                    "size":"md",
-                    "value": "0",
+                    "name": "warning",
+                    "value" : "0",
                     "options": [
                         {
                             "label": "请选择",
                             "value": "0"
                         },
                         {
-                            "label": "已结转",
+                            "label": "预警",
                             "value": "1"
                         },
                         {
-                            "label": "已退款",
+                            "label": "无预警",
                             "value": "2"
-                        },
-                        {
-                            "label": "无退款无结转",
-                            "value": "3"
                         }
                     ]
                 },
@@ -228,72 +255,64 @@
         "card": {
             "header": {
                 "className": "bg-white",
-                "title": "$student_name - $subject_name",
+                "title": "$student_name - 科目: $subject_name",
                 "subTitle": "订单ID: $order_id",
-                "description": "",
+                "description" : "<table style='margin-left: -2.5px;'><tr><td>订单原价: $origin_balance元 </td>  <td class='p-l'>课单价原价: $origin_price元</td></tr><tr><td>实际缴费: $real_balance元</td>  <td class='p-l'>惠后单价: $real_price元</td></tr><tr><td>优惠: $discount_info</td></tr><tr><td>总课时数: $schedule_nums小时</td></tr><tr><td>结转流出金额: $transfer_balance元</td>  <td class='p-l'>退款流出金额: $refund_balance元</td></tr></table>",
                 "avatarText": "$pic_name",
                 "avatarTextBackground": [
-                    "#FFB900",
-                    "#D83B01",
-                    "#B50E0E",
-                    "#E81123",
-                    "#B4009E",
-                    "#5C2D91",
-                    "#0078D7",
-                    "#00B4FF",
-                    "#008272"
+                    "#ed7011",
+                    "#1a0603"
                 ]
             },
-            "body": {
-                "type": "property",
-                "labelStyle": {
-                    "fontWeight": "bold",
-                    "textTransform": "capitalize"
+            "body": [
+
+                {
+                    "type": "property",
+                    "labelStyle": {
+                        "fontWeight": "bold",
+                        "textTransform": "capitalize"
+                    },
+                    "column": 2,
+                    "items": [
+                        {
+                            "label": "当前余额",
+                            "content": "$balance 元"
+                        },
+                        {
+                            "label": "剩余总课时数",
+                            "content": "$last_duration 小时"
+                        },
+                        {
+                            "label": "已结算课时数",
+                            "content": "$check_duration 小时",
+                            "span":2
+                        },
+                        {
+                            "label": "已绑定课时数",
+                            "content": "$band_duration 小时"
+                        },
+                        {
+                            "label": "绑定待结算课时数",
+                            "content": "$band_uncheck_duration 小时"
+                        }
+                    ]
                 },
-                "column": 2,
-                "items": [
-                    {
-                        "label": "历史总存额",
-                        "content": "$total_balance 元"
-                    },
-                    {
-                        "label": "当前存额",
-                        "content": "$balance 元"
-                    },
-                    {
-                        "label": "科目课时价",
-                        "content": "$subject_price 元"
-                    },
-                    {
-                        "label": "优惠价格",
-                        "content": "$discount_price 元 ($discount_type_info)"
-                    },
-                    {
-                        "label": "排课总课时",
-                        "content": "$schedule_all_count 小时"
-                    },
-                    {
-                        "label": "待结算课时",
-                        "content": "$schedule_able_count 小时"
-                    },
-                    {
-                        "label": "结转ID",
-                        "content": "$transfer_id"
-                    },
-                    {
-                        "label": "退款ID",
-                        "content": "$refund_id"
-                    }
-                ]
-            },
+                {
+                    "type": "tpl",
+                    "className": "m-t text-right",
+                    "tpl" :"<p><span>操作员: $operator_name</span>  <span class='m-l'> 创建时间 $create_time</span></p>"
+                }
+            ],
             "toolbar": [
                 {
-                    "type": "tpl",
-                    "tpl": "\n<% if (this.is_transfer === 1) { %>\n  <span class=\"label label-success m-l\">未结转</span>\n <% } else { %>\n <span class=\"label label-default m-l\">已结转</span>\n  <% } %>\n "
-                },
-                {
-                    "type": "tpl",
-                    "tpl": "\n<% if (this.is_refund === 1) { %>\n  <span class=\"label label-success m-l\">未退款</span>\n <% } else { %>\n <span class=\"label label-default m-l\">已退款</span>\n  <% } %>\n "
+                    "type": "button",
+                    "className": "m-l",
+                    "label" : "结转原订单",
+                    "level" : "link",
+                    "icon": "fa fa-reply",
+                    "hiddenOn" : "this.transfer_id === '0'",
+                    "actionType" : "reload",
+                    "target": "order_list?order_id=$transfer_id"
                 },
                 {
                     "type": "dropdown-button",
@@ -305,20 +324,22 @@
                     "buttons": [
                         {
                             "type": "button",
-                            "label": "调整存额",
-                            "disabledOn": "this.is_transfer === 2 || this.is_refund === 2",
+                            "label": "结转",
                             "actionType": "dialog",
+                            "disabledOn": "this.balance <= 0",  
                             "dialog": {
                                 "size": "md",
-                                "title": "调整存额",
-                                "body": {
+                                "name":"transfer_dialog",
+                                "title": "结转",
+                                "body":{
                                     "type": "form",
-                                    "name": "order-recharge-form",
                                     "api": {
                                         "method": "post",
-                                        "url": "/mapi/order/rechargecreate",
+                                        "url": "/mapi/order/transfercreate",
                                         "dataType": "form"
                                     },
+                                    "title": "",
+                                    "autoFocus": true,
                                     "body": [
                                         {
                                             "type": "input-text",
@@ -330,60 +351,27 @@
                                             "type": "divider"
                                         },
                                         {
-                                            "type": "input-text",
+                                            "type": "input-number",
                                             "name": "balance",
-                                            "label": "当前存额",
-                                            "addOn": {
-                                                "type": "text",
-                                                "label": "元"
-                                            },
-                                            "disabled": true
+                                            "label": "结转金额"
                                         },
                                         {
                                             "type": "divider"
                                         },
                                         {
-                                            "type": "input-text",
-                                            "name": "new_balance",
-                                            "label": "变更存额",
-                                            "addOn": {
-                                                "type": "text",
-                                                "label": "元"
-                                            },
-                                            "desc": "累加当前存额, 正负数都可以, 元为单位, 保留小数点后两位, 谨慎填写"
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        {
-                            "type": "button",
-                            "label": "优惠配置",
-                            "disabledOn": "this.is_transfer === 2 || this.is_refund === 2",
-                            "actionType": "dialog",
-                            "dialog": {
-                                "size": "md",
-                                "title": "优惠配置",
-                                "body": {
-                                    "type": "form",
-                                    "name": "order-discount-form",
-                                    "api": {
-                                        "method": "post",
-                                        "url": "/mapi/order/discountupdate",
-                                        "dataType": "form"
-                                    },
-                                    "body": [
-                                        {
-                                            "type": "input-text",
-                                            "name": "order_id",
-                                            "label": "订单ID",
-                                            "disabled": true
+                                            "type": "tree-select",
+                                            "name": "subject_id",
+                                            "onlyLeaf":true,
+                                            "label": "科目",
+                                            "searchable":true,
+                                            "initiallyOpen":false,
+                                            "source": "/mapi/subject/lists?is_select=1&is_parent=1"
                                         },
                                         {
                                             "type": "divider"
                                         },
                                         {
-                                            "label": "类型",
+                                            "label": "优惠类型",
                                             "type": "select",
                                             "name": "discount_type",
                                             "value" : "0",
@@ -413,162 +401,50 @@
                                                 "type": "text",
                                                 "label": "折/元"
                                             },
-                                            "value" : "discount",
                                             "desc": "折扣: 10>数字>0, 保留小数点后一位(例如:9.5/8) | 减免, 单课时减免金额, 元为单位, 保留小数点后2位 | 配置后实时生效"
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        {
-                            "type": "button",
-                            "label": "结转",
-                            "actionType": "dialog",
-                            "disabledOn": "this.is_transfer === 2 || this.is_refund === 2  || this.schedule_able_count > 0",
-                            "dialog": {
-                                "size": "md",
-                                "name":"transfer_dialog",
-                                "title": "结转",
-                                "actions": [],
-                                "body": {
-                                    "type": "tabs",
-                                    "tabsMode": "radio",
-                                    "tabs": [
+                                        },
                                         {
-                                            "title": "结转已有订单",
+                                            "type": "divider"
+                                        },
+                                        {
+                                            "type": "service",
+                                            "name": "order_review_detailv1",
+                                            "initFetch": false,
+                                            "api": "/mapi/order/transferreview?order_id=$order_id&balance=$balance&subject_id=$subject_id&student_uid=$student_uid&schedule_nums=$schedule_nums&discount_type=$discount_type&discount=$discount",
                                             "body": {
-                                                "type": "form",
-                                                "api": {
-                                                    "method": "post",
-                                                    "url": "/mapi/order/transfercreate?type=1",
-                                                    "dataType": "form"
+                                                "type": "property",
+                                                "labelStyle": {
+                                                    "fontWeight": "bold",
+                                                    "textTransform": "capitalize"
                                                 },
-                                                "title": "",
-                                                "autoFocus": true,
-                                                "body": [
+                                                "column": 2,
+                                                "items": [
                                                     {
-                                                        "type": "input-text",
-                                                        "name": "order_id",
-                                                        "label": "订单ID",
-                                                        "disabled": true
+                                                        "label": "订单原价",
+                                                        "content": "$transfer_origin_balance元"
                                                     },
                                                     {
-                                                        "type": "divider"
+                                                        "label": "课单价原价",
+                                                        "content": "$transfer_origin_price元"
                                                     },
                                                     {
-                                                        "type": "tree-select",
-                                                        "name": "transfer_id",
-                                                        "onlyLeaf":true,
-                                                        "label": "目标订单",
-                                                        "searchable":true,
-                                                        "source": "/mapi/order/lists?is_select=1&student_uid=$student_uid&filter_id=$order_id&state=3"
-                                                    }
-                                                ],
-                                                "actions": [
+                                                        "label": "实际缴费",
+                                                        "content": "$transfer_real_balance元"
+                                                    },
                                                     {
-                                                        "type": "button",
-                                                        "label": "提交",
-                                                        "level": "primary",
-                                                        "actionType":"submit",
-                                                        "reload":"order_list",
-                                                        "close" : "transfer_dialog"
+                                                        "label": "惠后单价",
+                                                        "content": "$transfer_real_price元"
+                                                    },
+                                                    {
+                                                        "label": "结转总课时",
+                                                        "content": "$transfer_schedule_nums小时"
                                                     }
                                                 ]
                                             }
                                         },
                                         {
-                                            "title": "结转新订单",
-                                            "body": {
-                                                "type": "form",
-                                                "api": {
-                                                    "method": "post",
-                                                    "url": "/mapi/order/transfercreate?type=2",
-                                                    "dataType": "form"
-                                                },
-                                                "title": "",
-                                                "autoFocus": true,
-                                                "body": [
-                                                    {
-                                                        "type": "input-text",
-                                                        "name": "order_id",
-                                                        "label": "订单ID",
-                                                        "disabled": true
-                                                    },
-                                                    {
-                                                        "type": "divider"
-                                                    },
-                                                    {
-                                                        "type": "tree-select",
-                                                        "name": "subject_id",
-                                                        "onlyLeaf":true,
-                                                        "label": "科目",
-                                                        "searchable":true,
-                                                        "initiallyOpen":false,
-                                                        "source": "/mapi/subject/lists?is_select=1"
-                                                    },
-                                                    {
-                                                        "type": "divider"
-                                                    },
-                                                    {
-                                                        "type": "input-text",
-                                                        "name": "new_balance",
-                                                        "label": "存额",
-                                                        "addOn": {
-                                                            "type": "text",
-                                                            "label": "元"
-                                                        },
-                                                        "value" : "",
-                                                        "desc": "填写具体钱数, 元为单位, 保留小数点后2位"
-                                                    },
-                                                    {
-                                                        "type": "divider"
-                                                    },
-                                                    {
-                                                        "label": "优惠类型",
-                                                        "type": "select",
-                                                        "name": "discount_type",
-                                                        "value" : "0",
-                                                        "options": [
-                                                            {
-                                                                "label": "无",
-                                                                "value": "0"
-                                                            },
-                                                            {
-                                                                "label": "折扣",
-                                                                "value": "1"
-                                                            },
-                                                            {
-                                                                "label": "减免",
-                                                                "value": "2"
-                                                            }
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "divider"
-                                                    },
-                                                    {
-                                                        "type": "input-text",
-                                                        "name": "discount",
-                                                        "label": "优惠",
-                                                        "addOn": {
-                                                            "type": "text",
-                                                            "label": "折/元"
-                                                        },
-                                                        "value" : "discount",
-                                                        "desc": "折扣: 10>数字>0, 保留小数点后一位(例如:9.5/8) | 减免, 单课时减免金额, 元为单位, 保留小数点后2位 | 配置后实时生效"
-                                                    }
-                                                ],
-                                                "actions": [
-                                                    {
-                                                        "type": "button",
-                                                        "label": "提交",
-                                                        "level": "primary",
-                                                        "actionType":"submit",
-                                                        "reload":"order_list",
-                                                        "close" : "transfer_dialog"
-                                                    }
-                                                ]
-                                            }
+                                            "type": "html",
+                                            "html": "<p>结转金额为实际缴费, 计算公示如下</p><p>减免: 订单原价=实际缴费+减免金额, 结转课时=订单原价/课单原价, 惠后价格=实际价格/结转课时</p><p>折扣: 订单原价=实际收费/折扣比例, 结转课时=订单原价/课单原价, 惠后价格=实际价格/结转课时</p>"
                                         }
                                     ]
                                 }
@@ -577,7 +453,7 @@
                         {
                             "type": "button",
                             "label": "退款",
-                            "disabledOn": "this.is_transfer === 2 || this.is_refund === 2  || this.schedule_able_count > 0",
+                            "disabledOn": "this.balance <= 0",
                             "actionType": "dialog",
                             "dialog": {
                                 "size": "md",
@@ -607,8 +483,38 @@
                                             "addOn": {
                                                 "type": "text",
                                                 "label": "元"
-                                            },
-                                            "disabled": true
+                                            }
+                                        },
+                                        {
+                                            "type": "service",
+                                            "name": "order_review_detailv2",
+                                            "api": "/mapi/order/refundreview?order_id=$order_id&balance=$balance",
+                                            "body": {
+                                                "type": "property",
+                                                "labelStyle": {
+                                                    "fontWeight": "bold",
+                                                    "textTransform": "capitalize"
+                                                },
+                                                "column": 2,
+                                                "items": [
+                                                    {
+                                                        "label": "订单当前余额",
+                                                        "content": "$refund_real_balance元"
+                                                    },
+                                                    {
+                                                        "label": "订单单价",
+                                                        "content": "$refund_real_price元"
+                                                    },
+                                                    {
+                                                        "label": "剩余总课时",
+                                                        "content": "$refund_origin_schedule_nums小时"
+                                                    },
+                                                    {
+                                                        "label": "退款课时",
+                                                        "content": "$refund_schedule_nums小时"
+                                                    }
+                                                ]
+                                            }
                                         }
                                     ]
                                 }
@@ -618,7 +524,7 @@
                             "type": "button",
                             "label": "删除",
                             "actionType": "ajax",
-                            "disabledOn": "this.is_refund === 2 || this.is_transfer === 2  || this.schedule_all_count > 0",
+                            "disabledOn": "this.band_duration > 0 || this.transfer_id !== '0'",
                             "level":"danger",
                             "confirmText": "您确认要删除订单么, 只能删除无排课记录, 无结转, 无退款, 无余额的订单, 如果存在余额不会做退款处理!",
                             "api": {

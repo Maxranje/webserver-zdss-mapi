@@ -94,25 +94,49 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
         $servicSubject = new Service_Data_Subject();
         $subjectInfos = $servicSubject->getListByConds(array(sprintf("id in (%s)", implode(",", $subjectIds))));
         $subjectInfos = array_column($subjectInfos, null, "id");
+
+        $subjectParentIds = Zy_Helper_Utils::arrayInt($subjectInfos, "parent_id");
+        $subjectParentInfos = $servicSubject->getListByConds(array(sprintf("id in (%s)", implode(",", $subjectParentIds))));
+        $subjectParentInfos = array_column($subjectParentInfos, null, "id");
         
         // 格式化数据
         foreach ($columnInfos as $item) {
-            $teacherInfo = empty($lists[$item['teacher_uid']]) ? array() : $lists[$item['teacher_uid']];
-            $subjectInfo = empty($subjectInfos[$item['subject_id']]) ? array() : $subjectInfos[$item['subject_id']];
+            if (empty($lists[$item['teacher_uid']])) {
+                continue;
+            }
+            if (empty($subjectInfos[$item['subject_id']])) {
+                continue;
+            }
+            $teacher = $lists[$item['teacher_uid']];
+            $subject = $subjectInfos[$item['subject_id']];
+            if (empty($subjectParentInfos[$subject['parent_id']])) {
+                continue;
+            }
+            $subjectParentInfo = $subjectParentInfos[$subject['parent_id']];
 
-            if (empty($options[$teacherInfo['uid']])) {
-                $options[$teacherInfo['uid']] = [
-                    'label' => $teacherInfo['nickname'],
-                    'value' => $teacherInfo['uid'],
+            if (!isset($options[$teacher['uid']])) {
+                $options[$teacher['uid']] = [
+                    'label' => $teacher['nickname'],
+                    'value' => $teacher['uid'],
                     "children" => array(),
                 ];
             }
-            if (!empty($subjectInfo)) {
-                $options[$teacherInfo['uid']]['children'][] = array(
-                    'label' => $subjectInfo['name'],
-                    'value' => $subjectInfo['id'] . "_" . $teacherInfo['uid'],
+            // 父节点
+            if (empty($options[$teacher['uid']]['children'][$subjectParentInfo['id']])) {
+                $options[$teacher['uid']]['children'][$subjectParentInfo['id']] = array(
+                    'label' => $subjectParentInfo['name'],
+                    'value' => $subjectParentInfo['id'],
+                    "children" => array(),
                 );
             }
+            $options[$teacher['uid']]['children'][$subjectParentInfo['id']]['children'][] = array(
+                'label' => $subject['name'],
+                'value' => $subject['id'] . "_" . $teacher['uid'],
+            );
+        }
+
+        foreach ($options as &$item) {
+            $item['children'] = array_values($item['children']);
         }
         return array_values($options);
     }

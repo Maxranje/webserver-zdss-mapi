@@ -86,8 +86,8 @@ class Service_Page_Schedule_Create extends Zy_Core_Service{
 
         $serviceData = new Service_Data_Subject();
         $subjectInfo = $serviceData->getSubjectById(intval($subjectId));
-        if (empty($subjectInfo)) {
-            throw new Zy_Core_Exception(405, "操作失败, 没有科目信息");
+        if (empty($subjectInfo) || empty($subjectInfo['parent_id'])) {
+            throw new Zy_Core_Exception(405, "操作失败, 没有科目信息, 或绑定不是科目单项, 无法排课");
         }
 
         $serviceData = new Service_Data_Column();

@@ -4,7 +4,7 @@
 	"body": [{
 			"type": "alert",
 			"level": "success",
-			"body": "温馨提示：欢迎使用 Pk-System v2.0.0"
+			"body": "温馨提示：欢迎使用排课系统 V2.0.0"
 		},
 		{
 			"type": "alert",

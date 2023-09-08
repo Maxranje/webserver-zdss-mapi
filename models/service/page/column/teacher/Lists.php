@@ -19,13 +19,18 @@ class Service_Page_Column_Teacher_Lists extends Zy_Core_Service{
             return array();
         }
 
+        $subjectParentInfo = $serviceData->getSubjectById(intval($subjectInfo['parent_id']));
+        if (empty($subjectParentInfo)) {
+            return array();
+        }
+
         $serviceData = new Service_Data_Column();
 
         $lists = $serviceData->getColumnBySId($subjectId);
-        return $this->formatSelect($lists, $subjectInfo);
+        return $this->formatSelect($lists, $subjectInfo, $subjectParentInfo);
     }
 
-    private function formatSelect($lists, $subjectInfo) {
+    private function formatSelect($lists, $subjectInfo, $subjectParentInfo) {
         if (empty($lists)) {
             return array();
         }
@@ -55,7 +60,7 @@ class Service_Page_Column_Teacher_Lists extends Zy_Core_Service{
         }
 
         $options = array(
-            "label" => $subjectInfo['name'],
+            "label" => sprintf("%s / %s", $subjectParentInfo['name'], $subjectInfo['name']),
             "value" => $subjectInfo['id'],
             "children" => $children,
         );

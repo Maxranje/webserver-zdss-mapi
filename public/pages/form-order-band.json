@@ -26,7 +26,7 @@
                     "searchable":true,
                     "onlyLeaf":true,
                     "source": "/mapi/student/lists?is_select=1&nickname=$term&is_defer=1",
-                    "deferApi": "/mapi/order/lists?is_select=1&student_uid=$value&state=3"
+                    "deferApi": "/mapi/order/lists?is_select=1&student_uid=$value&is_hasbalance=1"
                 }
             ]
         },
@@ -39,56 +39,40 @@
                 "type": "card",
                 "header": {
                     "className": "bg-white",
-                    "title": "$student_name - $subject_name",
+                    "title": "$student_name - 科目: $subject_name",
                     "subTitle": "订单ID: $order_id",
-                    "description": "扣除已排好课, 剩余存量",
-                    "avatarText": "$pic_name",
-                    "avatarTextBackground": [
-                        "#FFB900",
-                        "#D83B01",
-                        "#B50E0E",
-                        "#E81123",
-                        "#B4009E",
-                        "#5C2D91",
-                        "#0078D7",
-                        "#00B4FF",
-                        "#008272"
-                    ]
+                    "description" : "<table style='margin-left: -2.5px;'><tr><td>订单原价: $origin_balance元 </td>  <td class='p-l'>课单价原价: $origin_price元</td></tr><tr><td>实际缴费: $real_balance元</td>  <td class='p-l'>惠后单价: $real_price元</td></tr><tr><td>优惠: $discount_info</td></tr><tr><td>总课时数: $schedule_nums小时</td></tr><tr><td>结转流出金额: $transfer_balance元</td>  <td class='p-l'>退款流出金额: $refund_balance元</td></tr></table>"
                 },
-                "body": {
-                    "type": "property",
-                    "labelStyle": {
-                        "fontWeight": "bold",
-                        "textTransform": "capitalize"
-                    },
-                    "column": 4,
-                    "items": [
-                        {
-                            "label": "可用存额",
-                            "content": "$balance 元"
-                        },
-                        {
-                            "label": "科目课时价",
-                            "content": "$subject_price 元"
-                        },
-                        {
-                            "label": "优惠信息",
-                            "content": "$discount_price 元 ($discount_type)"
-                        },
-                        {
-                            "label": "可绑定课时数",
-                            "content": "$schedule_count 小时"
-                        }
-                    ]
-                },
-                "toolbar": [
+                "body": [
                     {
-                        "type": "tpl",
-                        "tpl": "\n<% if (this.is_transfer === 1) { %>\n  <span class=\"label label-success m-l\">未结转</span>\n <% } else if(this.is_transfer === 2) { %>\n <span class=\"label label-default m-l\">已结转</span>\n  <% } else { %>\n  <% } %>\n"
+                        "type":"html",
+                        "html":"<p style='color:red'>订单扣除待结算费用后, 剩余的课时数和余额记录</p>"
                     },
                     {
-                        "type": "tpl",
-                        "tpl": "\n<% if (this.is_refund === 1) { %>\n  <span class=\"label label-success m-l\">未退款</span>\n <% } else if(this.is_refund === 2) { %>\n <span class=\"label label-default m-l\">已退款</span>\n  <% } else { %>\n  <% } %>\n"
+                        "type": "property",
+                        "labelStyle": {
+                            "fontWeight": "bold",
+                            "textTransform": "capitalize"
+                        },
+                        "column": 4,
+                        "items": [
+                            {
+                                "label": "可用余额",
+                                "content": "$able_balance元"
+                            },
+                            {
+                                "label": "可绑定课时数",
+                                "content": "$able_duration小时"
+                            },
+                            {
+                                "label": "已绑定课时数",
+                                "content": "$band_duration小时"
+                            },
+                            {
+                                "label": "已绑定金额",
+                                "content": "$band_balance元"
+                            }
+                        ]
                     }
                 ]
             }
@@ -100,6 +84,10 @@
             "id" : "schedule_lists",
             "resultListModeFollowSelect" : true,
             "columns": [
+                {
+                    "name": "id",
+                    "label": "ID"
+                },
                 {
                     "name": "label",
                     "label": "排课时间"
@@ -127,7 +115,7 @@
             "level":"success",
             "actionType": "ajax",
             "api": "/mapi/schedule/bandcreate?group_id=$search_group_id&order_id=$search_order_id&schedule_ids=$schedule_ids",
-            "reload": "schedule_ids"
+            "reload": "schedule_ids,order_detail"
         }
     ]
 }

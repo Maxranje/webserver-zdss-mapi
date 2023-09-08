@@ -93,6 +93,12 @@
         ],
         "columns": [
             {
+                "name": "create_time",
+                "label": "日期",
+                "type": "text",
+                "toggled": true
+            },
+            {
                 "name": "uid",
                 "label": "UID",
                 "type": "text",
@@ -129,6 +135,12 @@
                 }
             },
             {
+                "name": "schedule_id",
+                "label": "排课ID",
+                "type": "text",
+                "toggled": true
+            },
+            {
                 "name": "money_info",
                 "label": "金额(元)",
                 "type": "text",
@@ -160,9 +172,9 @@
             },
             {
                 "name": "update_time",
-                "label": "更新时间",
+                "label": "更新日期",     
                 "type": "text",
-                "toggled": true
+                "toggled": false
             }
         ]
     }

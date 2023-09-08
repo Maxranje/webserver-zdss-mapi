@@ -10,6 +10,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         $pn         = empty($this->request['page']) ? 0 : intval($this->request['page']);
         $rn         = empty($this->request['perPage']) ? 0 : intval($this->request['perPage']);
         $uid        = empty($this->request['uid']) ? 0 : intval($this->request['uid']);
+        $scheduleId = empty($this->request['schedule_id']) ? 0 : intval($this->request['schedule_id']);
         $category   = empty($this->request['category']) ? 0 : intval($this->request['category']);
         $dataRange  = empty($this->request['daterangee']) ? array() : explode(",", $this->request['daterangee']);
         $isExport   = empty($this->request['is_export']) ? false : true;
@@ -22,6 +23,9 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         }
         if ($category > 0) {
             $conds['category'] = $category;
+        }
+        if ($scheduleId > 0) {
+            $conds['schedule_id'] = $scheduleId;
         }
         if (!empty($dataRange)) {
             $conds[] = sprintf("create_time >= %d", $dataRange[0]);
@@ -68,6 +72,11 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         $userInfos = $serviceUsers->getUserInfoByUids($uids);
         $userInfos = array_column($userInfos, null, "uid");
 
+        $birthplaceIds = Zy_Helper_Utils::arrayInt($userInfos, "bpid");
+        $serviceBirthplace = new Service_Data_Birthplace();
+        $birthplace = $serviceBirthplace->getBirthplaceByIds($birthplaceIds);
+        $birthplace = array_column($birthplace, null, "id");
+
         $serviceGroup = new Service_Data_Group();
         $groupInfos = $serviceGroup->getListByConds(array(sprintf("id in (%s)", implode(",", $groupIds))));
         $groupInfos = array_column($groupInfos, null, "id");
@@ -79,13 +88,14 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
             if (empty($userInfos[$item['operator']]['nickname'])) {
                 continue;
             }
+
             $item['type']           = $item['type'] == Service_Data_Profile::USER_TYPE_STUDENT ? "学员" : "教师";
             $item['nickname']       = $userInfos[$item['uid']]['nickname'];
             $item['operator']       = $userInfos[$item['operator']]['nickname'];
             $item['create_time']    = date("Y年m月d日 H:i:s", $item['create_time']);
             $item['update_time']    = date("Y年m月d日 H:i:s", $item['update_time']);
             $item['group_name']     = empty($groupInfos[$item['group_id']]['name']) ? "-" : $groupInfos[$item['group_id']]['name'];
-            $item['birthplace']     = empty($userInfos[$item['uid']]['birthplace']) ? "-" : $userInfos[$item['uid']]['birthplace'];
+            $item['birthplace']     = empty($birthplace[$userInfos[$item['uid']]['bpid']]['name']) ? "" :$birthplace[$userInfos[$item['uid']]['bpid']]['name'];
             $item['money_info']     = sprintf("%.2f元", $item['money'] / 100);
             $item['order_id']       = empty($item['order_id']) ? "-" : $item['order_id'];
         }
@@ -94,7 +104,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('UID', '用户名', '用户类型', '状态', '场景', '金额(元)', "生源地", '班级', '订单ID', '操作员', '更新时间'),
+            'title' => array('日期', 'UID', '用户名', '用户类型', '状态', '场景', '排课ID', '金额(元)', "生源地", '班级', '订单ID', '操作员', "更新日期"),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -103,11 +113,13 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         
         foreach ($lists as $item) {
             $tmp = array(
+                $item['create_time'],
                 $item['uid'],
                 $item['nickname'],
                 $item['type'],
                 $item['state'] == Service_Data_Records::RECORDS_NOMARL ? "正常" : "撤销",
                 $item['category'] == Service_Data_Schedule::CATEGORY_STUDENT_PAID ? "学员消费" : "教师收入",
+                $item['schedule_id'],
                 $item['money_info'],
                 $item['birthplace'],
                 $item['group_name'],

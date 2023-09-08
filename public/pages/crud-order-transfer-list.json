@@ -51,6 +51,12 @@
             "filter-toggler",
             "bulkActions",
             {
+                "type": "action",
+                "actionType": "download",
+                "label": "导出Excel",
+                "api": "/mapi/order/transferlists?order_id=${order_id}&student_uid=${student_uid}&date_range=${date_range}&is_export=1"
+            },
+            {
                 "type": "tpl",
                 "tpl": "共有 ${total} 条数据。",
                 "className": "v-middle"
@@ -105,17 +111,14 @@
                 "toggled": true
             },
             {
-                "name": "type",
-                "label": "结转类型",
-                "type": "mapping",
-                "map": {
-                    "2": "<span class='label label-info'>新订单</span>",
-                    "1": "<span class='label label-success'>已有订单</span>"
-                }
+                "name": "balance",
+                "label": "结转金额(元)",
+                "type": "text",
+                "toggled": true
             },
             {
-                "name": "balance",
-                "label": "结转金额",
+                "name": "schedule_nums",
+                "label": "结转课时(小时)",
                 "type": "text",
                 "toggled": true
             },

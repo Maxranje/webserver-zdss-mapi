@@ -68,6 +68,9 @@ class Zy_Helper_Utils {
 
     // 数组内数据做为整数
     public static function arrayInt ($arr, $key = "") {
+        if (empty($arr) || !is_array($arr)) {
+            return array();
+        }
         $result = array();
         if (empty($key)) {
             foreach ($arr as $item) {
@@ -105,5 +108,14 @@ class Zy_Helper_Utils {
             $duration = "0 Hour";
         }
         return $duration;
+    }
+
+    public static function checkStr($str) {
+        $str = trim($str);
+        preg_match_all('/[\x{4e00}-\x{9fa5}a-zA-Z0-9]+/u',$str,$result);
+        if (empty($result[0][0]) || mb_strlen($str, "utf-8") != mb_strlen($result[0][0], "utf-8")) {
+            return false;
+        }
+        return true;
     }
 }

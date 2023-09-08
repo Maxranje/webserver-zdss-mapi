@@ -119,8 +119,12 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
         $columnInfos = array_column($columnInfos, null, "id");
 
         $serviceSubject = new Service_Data_Subject();
-        $subjectInfo = $serviceSubject->getListByConds(array('id in ('.implode(',', $subjectIds).')'));
+        $subjectInfo = $serviceSubject->getSubjectByIds($subjectIds);
         $subjectInfo = array_column($subjectInfo, null, 'id');
+
+        $subjectParentIds = Zy_Helper_Utils::arrayInt($subjectInfo, "parent_id");
+        $subjectParentInfos = $serviceSubject->getSubjectByIds($subjectParentIds);
+        $subjectParentInfos = array_column($subjectParentInfos, null, 'id');
 
         $serviceGroup = new Service_Data_Group();
         $groupInfos = $serviceGroup->getListByConds(array('id in ('.implode(",", $groupIds).')'));
@@ -154,6 +158,13 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
             if (empty($subjectInfo[$item['subject_id']]['name'])) {
                 continue;
             }
+            if (empty($subjectInfo[$item['subject_id']]['parent_id'])) {
+                continue;
+            }
+            $subjectParentId = $subjectInfo[$item['subject_id']]['parent_id'];
+            if (empty($subjectParentInfos[$subjectParentId]['name'])) {
+                continue;
+            }
             if (empty($groupInfos[$item['group_id']]['name'])) {
                 continue;
             }
@@ -171,7 +182,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
             $item['state']          = intval($item['state']);
             $item['s_t_id']         = sprintf("%d_%d", $item['subject_id'], $item['teacher_uid']);
             $item['teacher_name']   = $userInfos[$item['teacher_uid']]['nickname'];
-            $item['subject_name']   = $subjectInfo[$item['subject_id']]['name'];
+            $item['subject_name']   = sprintf("%s / %s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfo[$item['subject_id']]['name']);
             $item['group_name']     = $groupInfos[$item['group_id']]['name'];
             $item['order_count']    = empty($orderCountInfos[$item['id']]['count']) ? 0 : intval($orderCountInfos[$item['id']]['count']);
             

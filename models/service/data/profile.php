@@ -6,13 +6,14 @@ class Service_Data_Profile {
 
     const USER_TYPE_SUPER   = 9;
     const USER_TYPE_ADMIN   = 11;
+    const USER_TYPE_PARTNER = 10;
     const USER_TYPE_STUDENT = 12;
     const USER_TYPE_TEACHER = 13;
 
     const STUDENT_ABLE      = 1;
     const STUDENT_DISABLE   = 2;
 
-    const ADMIN_GRANT       = [self::USER_TYPE_ADMIN, self::USER_TYPE_SUPER, self::USER_TYPE_TEACHER];
+    const ADMIN_GRANT       = [self::USER_TYPE_ADMIN, self::USER_TYPE_SUPER, self::USER_TYPE_TEACHER, self::USER_TYPE_PARTNER];
     const STUDENT_STATE     = [self::STUDENT_ABLE, self::STUDENT_DISABLE];
 
     public function __construct() {
@@ -23,7 +24,24 @@ class Service_Data_Profile {
     public function getUserInfoByNameAndPass ($username, $passport){
         $arrConds = array(
             'name'  => $username,
-            'phone'  => $passport,
+            'passport'  => $passport,
+        );
+
+        $userinfo = $this->daoUser->getRecordByConds($arrConds, $this->daoUser->arrFieldsMap);
+        if (empty($userinfo)) {
+            return array();
+        }
+
+        $userinfo['create_time'] = date('Y-m-d H:i:s', $userinfo['create_time']);
+        $userinfo['update_time'] = date('Y-m-d H:i:s', $userinfo['update_time']);
+        return $userinfo;
+    }
+
+    // 根据用户名和手机获取用户信息
+    public function getUserInfoByNameAndPhone ($username, $phone){
+        $arrConds = array(
+            'name'  => $username,
+            'phone'  => $phone,
         );
 
         $userinfo = $this->daoUser->getRecordByConds($arrConds, $this->daoUser->arrFieldsMap);
@@ -131,6 +149,7 @@ class Service_Data_Profile {
         return Zy_Core_Session::getInstance()->setSessionUserInfo(
             $userInfo['uid'], 
             $userInfo['name'], 
+            $userInfo['passport'],
             $userInfo['phone'], 
             $userInfo['type'],
             $userInfo['pages']);
