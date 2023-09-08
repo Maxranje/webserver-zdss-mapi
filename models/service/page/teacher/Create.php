@@ -17,7 +17,7 @@ class Service_Page_Teacher_Create extends Zy_Core_Service{
         }
 
         $serviceData = new Service_Data_Profile();
-        $userInfo = $serviceData->getUserInfoByNameAndPass($name, $phone);
+        $userInfo = $serviceData->getUserInfoByNameAndPhone($name, $phone);
         if (!empty($userInfo)) {
             throw new Zy_Core_Exception(405, "操作失败, 用户名/手机号绑定的用户已存在");
         }
@@ -27,6 +27,7 @@ class Service_Page_Teacher_Create extends Zy_Core_Service{
             "name"      => $name, 
             "nickname"  => $nickname, 
             "phone"     => $phone, 
+            "passport"  => $phone,
             "avatar"    => "",
             "sex"       => $sex, 
             "state"     => Service_Data_Profile::STUDENT_ABLE,

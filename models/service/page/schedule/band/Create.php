@@ -20,8 +20,11 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
         // check order信息
         $serviceOrder = new Service_Data_Order();
         $orderInfo = $serviceOrder->getOrderById($orderId);
-        if (empty($orderInfo) || $orderInfo['is_transfer'] == Service_Data_Order::ORDER_DONE || $orderInfo['is_refund'] == Service_Data_Order::ORDER_DONE) {
-            throw new Zy_Core_Exception(405, "操作失败, 无法获取订单信息或订单已结转或退款");
+        if (empty($orderInfo)) {
+            throw new Zy_Core_Exception(405, "操作失败, 无法获取订单信息");
+        }
+        if ($orderInfo['balance'] <= 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 订单没有余额了");
         }
 
         //check  group 信息
@@ -33,11 +36,12 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
 
         // check 科目信息
         $serviceData = new Service_Data_Subject();
-        $subjectInfo = $serviceData->getSubjectById(intval($orderInfo['subject_id']));
+        $subjectInfo = $serviceData->getSubjectByParentID(intval($orderInfo['subject_id']));
         if (empty($subjectInfo)) {
             throw new Zy_Core_Exception(405, "操作失败, 科目不存在, 无法绑定");
         }
-
+        $subjectIds = Zy_Helper_Utils::arrayInt($subjectInfo, "id");
+        
         // 学生的存量排课
         $serviceCurriculum = new Service_Data_Curriculum();
         $curriculum = $serviceCurriculum->getListByConds(array('order_id'=>$orderId));
@@ -55,6 +59,7 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
                     $delScheduleIds[] = intval($item['schedule_id']);
                 }
             }
+            // 所有当前已经排好的课时
             if ($item['state'] == Service_Data_Schedule::SCHEDULE_ABLE) {
                 $duration += $item['end_time'] - $item['start_time'];
             }
@@ -62,71 +67,87 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
 
         $hasScheduleIds = Zy_Helper_Utils::arrayInt($curriculum, "schedule_id");
         $newScheduleIds = array_diff($scheduleIds, $hasScheduleIds);
-        if (empty($newScheduleIds)) {
-            throw new Zy_Core_Exception(405, "操作失败, 没有新增课程, 所以已选择课程都已经排好");
+        if (empty($newScheduleIds) && empty($delScheduleIds)) {
+            throw new Zy_Core_Exception(405, "操作失败, 没有新增课程也没有删掉的排课");
         }
 
-        // 获取新增的, 
+        $newSchedules = array();
+
         $serviceSchedule = new Service_Data_Schedule();
-        $schedules = $serviceSchedule->getScheduleByIds($newScheduleIds);
-        if (empty($schedules)) {
-            throw new Zy_Core_Exception(405, "操作失败, 获取排课信息失败");
-        }
-        $schedules = array_column($schedules, null, "id");
+        // 获取新增的, 
+        if (!empty($newScheduleIds)) {
+            $newSchedules = $serviceSchedule->getScheduleByIds($newScheduleIds);
+            if (empty($newSchedules)) {
+                throw new Zy_Core_Exception(405, "操作失败, 获取新增排课信息失败");
+            }
+            $newSchedules = array_column($newSchedules, null, "id");
+    
+            foreach ($newScheduleIds as $id) {
+                if (empty($newSchedules[$id])) {
+                    throw new Zy_Core_Exception(405, "操作失败, 无法查询到新增排课信息, 排课ID:" . $id);
+                }
+                if ($newSchedules[$id]['state'] != Service_Data_Schedule::SCHEDULE_ABLE) {
+                    throw new Zy_Core_Exception(405, "操作失败, 新增相关排课已经结算结束, 排课ID:" . $id);
+                }
+                if (!in_array($newSchedules[$id]['subject_id'] , $subjectIds)) {
+                    throw new Zy_Core_Exception(405, "操作失败, 新增排课的科目与当前订单不同, 无法排课, 排课ID:" . $id);
+                }
+                $needDays[] = $newSchedules[$id]['start_time'];
+                $needDays[] = $newSchedules[$id]['end_time'];
+                $needTimes1[] = array(
+                    'id'        => $id,
+                    'order_id'  => $orderId,
+                    'sts'       => $newSchedules[$id]['start_time'],
+                    'ets'       => $newSchedules[$id]['end_time'],
+                );
+                $duration += $newSchedules[$id]['end_time'] - $newSchedules[$id]['start_time'];
+            }
 
-        foreach ($newScheduleIds as $id) {
-            if (empty($schedules[$id])) {
-                throw new Zy_Core_Exception(405, "操作失败, 无法查询到新增排课信息, 排课ID:" . $id);
-            }
-            if ($schedules[$id]['state'] != Service_Data_Schedule::SCHEDULE_ABLE) {
-                throw new Zy_Core_Exception(405, "操作失败, 新增相关排课已经结算结束, 排课ID:" . $id);
-            }
-            if ($schedules[$id]['subject_id'] != $subjectInfo['id']) {
-                throw new Zy_Core_Exception(405, "操作失败, 新增排课的科目与当前订单不同, 无法排课, 排课ID:" . $id);
-            }
-            $needDays[] = $schedules[$id]['start_time'];
-            $needDays[] = $schedules[$id]['end_time'];
-            $needTimes1[] = array(
-                'id'    => $id,
-                'sts'   => $schedules[$id]['start_time'],
-                'ets'   => $schedules[$id]['end_time'],
+            // check 时间冲突
+            $needDays = array(
+                'sts' => strtotime(date('Ymd', min($needDays))),
+                'ets' => strtotime(date('Ymd 23:59:59', max($needDays))),
             );
-            $duration += $schedules[$id]['end_time'] - $schedules[$id]['start_time'];
+
+            // 判断当前这些排课中是否有order排进去, 和时间是否有冲突
+            $ret = $serviceCurriculum->checkStudentTimes($needTimes1, $needDays, intval($orderInfo['student_uid']));
+            if ($ret === false) {
+                throw new Zy_Core_Exception(405, "操作失败, 查询学生排课冲突情况失败, 请重新提交");
+            }
+            if (!empty($ret)) {
+                throw new Zy_Core_Exception(406, "操作失败, 学生时间有冲突, 请检查, 排课编号分别为" . implode(", ", array_column($ret, 'id')) . " 仅做参考");
+            }
         }
 
-        // check 优惠信息
-        $discountPrice = 0;
-        if ($orderInfo['discount_type'] == Service_Data_Order::DISCOUNT_Z) {
-            $discountPrice = (100 - intval($orderInfo['discount'])) / 100 *  intval($subjectInfo['price']);
-        } else if ($orderInfo['discount_type'] == Service_Data_Order::DISCOUNT_J) {
-            $discountPrice = intval($orderInfo['discount']);
+        // 删除的排课要从预算中减掉
+        if (!empty($delScheduleIds)) {
+            $schedules = $serviceSchedule->getScheduleByIds($delScheduleIds);
+            if (empty($schedules)) {
+                throw new Zy_Core_Exception(405, "操作失败, 获取删除排课信息失败");
+            }
+            $schedules = array_column($schedules, null, "id");
+    
+            foreach ($delScheduleIds as $id) {
+                if (empty($schedules[$id])) {
+                    throw new Zy_Core_Exception(405, "操作失败, 无法查询到删除排课信息, 排课ID:" . $id);
+                }
+                if ($schedules[$id]['state'] != Service_Data_Schedule::SCHEDULE_ABLE) {
+                    throw new Zy_Core_Exception(405, "操作失败, 删除相关排课已经结算结束, 排课ID:" . $id);
+                }
+                $duration -= $schedules[$id]['end_time'] - $schedules[$id]['start_time'];
+            }
         }
-
+        
         // 判断选定课程是否够排
         $duration = $duration / 3600;
-        if ($orderInfo['balance'] < $duration * (intval($subjectInfo['price']) - $discountPrice)) {
+        if ($orderInfo['balance'] < $duration * $orderInfo['price']) {
             throw new Zy_Core_Exception(405, "操作失败, 余额不足, 无法排这么多课");
         }
-
-        // check 时间冲突
-        $needDays = array(
-            'sts' => strtotime(date('Ymd', min($needDays))),
-            'ets' => strtotime(date('Ymd 23:59:59', max($needDays))),
-        );
-
-        // 判断当前这些排课中是否有order排进去, 和时间是否有冲突
-        $ret = $serviceCurriculum->checkStudentTimes($needTimes1, $needDays, intval($orderInfo['student_uid']));
-        if ($ret === false) {
-            throw new Zy_Core_Exception(405, "操作失败, 查询学生排课冲突情况失败, 请重新提交");
-        }
-        if (!empty($ret)) {
-            throw new Zy_Core_Exception(406, "操作失败, 学生时间有冲突, 请检查, 排课编号分别为" . implode(", ", array_column($ret, 'id')) . " 仅做参考");
-        }
-
+        
         // 创建
         $profile = array(
             "order_info"        => $orderInfo,
-            "schedules"         => $schedules,
+            "newSchedules"      => $newSchedules,
             "delScheduleIds"    => $delScheduleIds,
         );
         $ret = $serviceCurriculum->create($profile);

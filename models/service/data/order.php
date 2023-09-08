@@ -6,9 +6,6 @@ class Service_Data_Order {
     const DISCOUNT_J = 2;  // 减免
     const DISCOUNT_TYPE = [self::DISCOUNT_Z, self::DISCOUNT_J];
 
-    const ORDER_ABLE = 1; // 未结转或未退款
-    const ORDER_DONE = 2; // 已结转或已退款
-
     private $daoOrder ;
 
     public function __construct() {
@@ -17,30 +14,28 @@ class Service_Data_Order {
 
     // 根据id获取订单
     public function getOrderById ($orderId){
-        $arrConds = array(
-            'order_id'  => $orderId,
-        );
-
-        $Order = $this->daoOrder->getRecordByConds($arrConds, $this->daoOrder->arrFieldsMap);
-        if (empty($Order)) {
-            return array();
-        }
-
-        return $Order;
+        return $this->daoOrder->getRecordByConds(array('order_id' => $orderId), $this->daoOrder->arrFieldsMap);
     }
 
     // 根据ids获取订单
     public function getOrderByIds ($orderIds){
-        $arrConds = array(
-            sprintf("order_id in (%s)", implode(",", $orderIds))
-        );
+        return $this->daoOrder->getListByConds(array(sprintf('order_id in (%s)',implode(",", $orderIds))), $this->daoOrder->arrFieldsMap);
+    }
 
-        $Order = $this->daoOrder->getListByConds($arrConds, $this->daoOrder->arrFieldsMap);
-        if (empty($Order)) {
-            return array();
-        }
+    // 获取列表
+    public function getListByConds($conds, $field = array(), $indexs = null, $appends = null) {
+        $field = empty($field) || !is_array($field) ? $this->daoOrder->arrFieldsMap : $field;
+        return $this->daoOrder->getListByConds($conds, $field, $indexs, $appends);
+    }
 
-        return $Order;
+    // 获取单条
+    public function getRecordByConds($conds, $field = array(), $indexs = null, $appends = null) {
+        $field = empty($field) || !is_array($field) ? $this->daoOrder->arrFieldsMap : $field;
+        return $this->daoOrder->getRecordByConds($conds, $field, $indexs, $appends);
+    }
+    
+    public function getTotalByConds($conds) {
+        return  $this->daoOrder->getCntByConds($conds);
     }
 
     // 根据uids获取订单量
@@ -78,12 +73,13 @@ class Service_Data_Order {
             return false;
         }
 
+        $ext = json_decode($profile['ext'], true);
         $rechargeProfile = array(
             "order_id"          => $orderId, 
             "student_uid"       => intval($profile['student_uid']), 
-            "balance"           => 0, 
             "type"              => Service_Data_Recharge::RECHARGE_ORDERCREATE,
-            "new_balance"       => intval($profile['balance']),
+            "balance"           => intval($profile['balance']),
+            "schedule_nums"     => $ext['schedule_nums'],
             "operator"          => OPERATOR, 
             'update_time'       => time(),
             'create_time'       => time(),
@@ -98,37 +94,78 @@ class Service_Data_Order {
         return true;
     }
 
-    // 修改优惠价格
-    public function update ($orderId, $profile) {
-        return $this->daoOrder->updateByConds(array('order_id' => $orderId), $profile);
-    }
-
     // 删除
     public function delete ($orderId) {
         return $this->daoOrder->deleteByConds(array('order_id' => $orderId));
     }
 
-    // 获取列表
-    public function getListByConds($conds, $field = array(), $indexs = null, $appends = null) {
-        $field = empty($field) || !is_array($field) ? $this->daoOrder->arrFieldsMap : $field;
-        $lists = $this->daoOrder->getListByConds($conds, $field, $indexs, $appends);
+
+    public function getDataList ($params) {
+        $sql = "select 
+                u.uid, u.nickname, u.bpid, o.*
+            from 
+                tblUser u left join tblOrder o
+            on 
+                u.uid = o.student_uid
+            where u.type=12 ";
+
+        $where = "";
+        if (!empty($params['nickname'])) {
+            $where .= " and u.nickname like '%" . $params['nickname'] . "%' ";
+        }
+        if ($params['bpid'] > 0) {
+            $where .= " and u.bpid = " .$params['bpid']. " ";
+        }
+        if (!empty($params['start_time'])) {
+            $where .= " and o.update_time >= " .$params['start_time']. " ";
+            $where .= " and o.update_time <= " .$params['end_time']. " ";
+        }
+        if (!empty($where)) {
+            $sql .= $where;
+        }
+
+        if (empty($params['is_export'])) {
+            $sql .= " limit " . $params['pn'] . ", " . $params['rn'];
+        }
+
+        $lists = $this->daoOrder->query($sql);
         if (empty($lists)) {
             return array();
         }
+        
         return $lists;
     }
 
-    // 获取单条
-    public function getRecordByConds($conds, $field = array(), $indexs = null, $appends = null) {
-        $field = empty($field) || !is_array($field) ? $this->daoOrder->arrFieldsMap : $field;
-        $record = $this->daoOrder->getRecordByConds($conds, $field, $indexs, $appends);
-        if (empty($record)) {
-            return array();
+    public function getDataTotal ($params) {
+        $sql = "select 
+                count(*) as count
+            from 
+                tblUser u left join tblOrder o
+            on 
+                u.uid = o.student_uid
+            where u.type=12 ";
+
+        $where = "";
+        if (!empty($params['nickname'])) {
+            $where .= " and u.nickname like '%" . $params['nickname'] . "%' ";
         }
-        return $record;
+        if ($params['bpid'] > 0) {
+            $where .= " and u.bpid = " .$params['bpid']. " ";
+        }
+        if (!empty($params['start_time'])) {
+            $where .= " and o.update_time >= " .$params['start_time']. " ";
+            $where .= " and o.update_time <= " .$params['end_time']. " ";
+        }
+        if (!empty($where)) {
+            $sql .= $where;
+        }
+
+        if (empty($params['is_export'])) {
+            $sql .= " limit " . $params['pn'] . ", " . $params['rn'];
+        }
+
+        $data = $this->daoOrder->query($sql);
+        return  empty($data[0]['count']) ? 0 : intval($data[0]['count']);
     }
-    
-    public function getTotalByConds($conds) {
-        return  $this->daoOrder->getCntByConds($conds);
-    }
+
 }

@@ -14,8 +14,24 @@ class Service_Page_Order_Delete extends Zy_Core_Service{
 
         $serviceOrder = new Service_Data_Order();
         $orderInfo = $serviceOrder->getOrderById($orderId);
-        if ($orderInfo['is_transfer'] == Service_Data_Order::ORDER_DONE || $orderInfo['is_refund'] == Service_Data_Order::ORDER_DONE) {
-            throw new Zy_Core_Exception(405, "操作失败, 已结转, 已退款的订单不能删除");
+        if (empty($orderInfo)) {
+            throw new Zy_Core_Exception(405, "操作失败, 要删除的订单不存在");
+        }
+
+        if (!empty($orderInfo['transfer_id'])) {
+            throw new Zy_Core_Exception(405, "操作失败, 结转的订单不能删除");
+        }
+
+        $serviceData  = new Service_Data_Transfer() ;
+        $count = $serviceData->getTotalByConds(array('order_id' => $orderId));
+        if ($count > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 存在结转记录的订单不能删除");
+        }
+
+        $serviceData  = new Service_Data_Refund() ;
+        $count = $serviceData->getTotalByConds(array('order_id' => $orderId));
+        if ($count > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 存在退款记录的订单不能删除");
         }
 
         $serviceData = new Service_Data_Curriculum();

@@ -13,9 +13,9 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
         $scheduleId     = empty($this->request['schedule_id']) ? 0 : intval($this->request['schedule_id']);
         $filterId       = empty($this->request['filter_id']) ? 0 : intval($this->request['filter_id']); // is_select时候需要过滤的.
         $subjectId      = empty($this->request['subject_id']) ? 0 : intval($this->request['subject_id']);
-        $groupId        = empty($this->request['group_id']) ? 0 : intval($this->request['group_id']);
         $studentUid     = empty($this->request['student_uid']) ? 0 : intval($this->request['student_uid']);
-        $state          = empty($this->request['state']) ? 0 : intval($this->request['state']);  // 0 全部, 1已结转, 2已退款, 3没退款和结转
+        $warning        = empty($this->request['warning']) ? 0 : intval($this->request['warning']);
+        $isHasbalance   = empty($this->request['is_hasbalance']) ? false : true;
         $isSelect       = empty($this->request['is_select']) ? false : true;
         $pn             = ($pn-1) * $rn;
 
@@ -33,22 +33,14 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             $conds['subject_id'] = $subjectId;
         }
 
-        if (in_array($state, [1,2])) {
-            $conds[] = $state == 1 ? sprintf("is_transfer=%d", Service_Data_Order::ORDER_DONE) : sprintf("is_refund=%d", Service_Data_Order::ORDER_DONE);
+        if ($isHasbalance) {
+            $conds[] = "balance > 0";
         }
 
-        if ($state == 3) {
-            $conds[] = sprintf("is_transfer=%d", Service_Data_Order::ORDER_ABLE);
-            $conds[] = sprintf("is_refund=%d", Service_Data_Order::ORDER_ABLE);   
-        }
-
-        if ($groupId > 0) {
-            $serviceData = new Service_Data_Curriculum();
-            $orderIds = $serviceData->getOrderListByGroup(array($groupId));
-            $orderIds = Zy_Helper_Utils::arrayInt($orderIds, "order_id");
-            if (!empty($orderIds)) {
-                $conds[] = sprintf("order_id in (%s)", implode(",", $orderIds));
-            }
+        if ($warning == 1) {
+            $conds[] = "balance <= 100000 and balance > 0";
+        } else if ($warning == 2) {
+            $conds[] = "balance > 100000";
         }
 
         if ($scheduleId > 0) {
@@ -60,7 +52,7 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             }
         }
 
-        $arrAppends[] = 'order by create_time desc';
+        $arrAppends[] = 'order by order_id';
         if(!$isSelect) {
             $arrAppends[] = "limit {$pn} , {$rn}";
         }
@@ -89,14 +81,17 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
         $studentUids = Zy_Helper_Utils::arrayInt($lists, 'student_uid');
         $subjectIds  = Zy_Helper_Utils::arrayInt($lists, 'subject_id');
         $orderIds    = Zy_Helper_Utils::arrayInt($lists, 'order_id');
+        $operatorIds = Zy_Helper_Utils::arrayInt($lists, 'operator');
+
+        $uids = array_unique(array_merge($studentUids, $operatorIds));
 
         $serviceData = new Service_Data_Subject();
         $subjectInfos = $serviceData->getListByConds(array(sprintf("id in (%s)", implode(",", $subjectIds))));
         $subjectInfos = array_column($subjectInfos, null, 'id');
 
         $serviceData = new Service_Data_Profile();
-        $studentInfos = $serviceData->getListByConds(array(sprintf("uid in (%s)", implode(",", $studentUids))));
-        $studentInfos = array_column($studentInfos, null, 'uid');
+        $userInfos = $serviceData->getListByConds(array(sprintf("uid in (%s)", implode(",", $uids))));
+        $userInfos = array_column($userInfos, null, 'uid');
 
         // 排课数
         $serviceData = new Service_Data_Curriculum();
@@ -107,48 +102,42 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             if (empty($subjectInfos[$v['subject_id']]['name'])) {
                 continue;
             }
-            if (empty($studentInfos[$v['student_uid']]['nickname'])) {
+            if (empty($userInfos[$v['student_uid']]['nickname'])) {
                 continue;
             }
             
+            $extra = json_decode($v['ext'], true);
             $item = array();
             $item['order_id']       = $v['order_id'] ;
-            $item['student_name']   = $studentInfos[$v['student_uid']]['nickname'];
+            $item['student_name']   = $userInfos[$v['student_uid']]['nickname'];
+            $item['operator_name']  = $userInfos[$v['operator']]['nickname'];
             $item['subject_name']   = $subjectInfos[$v['subject_id']]['name'];
-            $item['subject_price']  = sprintf("%.2f", $subjectInfos[$v['subject_id']]['price'] / 100);
-            $item['pic_name']       = mb_substr($item['subject_name'], 0, 1);
-            $item['total_balance']  = sprintf("%.2f", $v['total_balance'] / 100);
-            $item['balance']        = sprintf("%.2f", $v['balance'] / 100);
             $item['student_uid']    = intval($v['student_uid']);
-            $item['is_transfer']    = intval($v['is_transfer']);
-            $item['transfer_id']    = empty($v['transfer_id']) ? "-" : $v['transfer_id'];
-            $item['is_refund']      = intval($v['is_refund']);
-            $item['refund_id']      = empty($v['refund_id']) ? "-" : $v['refund_id'];
-            $item['discount_type']  = $v['discount_type'];
-            $item['update_time']    = date("Y年m月d日",$v['update_time']);
-            $item['create_time']    = date("Y年m月d日",$v['create_time']);
+            $item['update_time']    = date("Y年m月d日 H:i",$v['update_time']);
+            $item['create_time']    = date("Y年m月d日 H:i",$v['create_time']);
+            $item['pic_name']       = $v['balance'] <= 0 ? "完结" : ($v['balance'] <= 100000 ? "预警" : "");
+            $item['balance']        = sprintf("%.2f", $v['balance'] / 100);
+            $item['price']          = sprintf("%.2f", $v['price'] / 100);
 
-            $item['schedule_all_count'] = "0";
-            $item['schedule_able_count'] = "0";
-
-            $item['discount_type_info'] = "-";
-            $item['discount'] = "-";
-            $item['discount_price'] = sprintf("%.2f", 0);
+            $item['origin_balance'] = sprintf("%.2f", $extra['origin_balance'] / 100);
+            $item['real_balance']   = sprintf("%.2f", $extra['real_balance'] / 100);
+            $item['origin_price']   = sprintf("%.2f", $extra['origin_price'] / 100);
+            $item['real_price']     = sprintf("%.2f", $extra['real_price'] / 100);
+            $item['schedule_nums']  = $extra['schedule_nums'];
+            $item['discount_info']  = "-";
             if ($v['discount_type'] == Service_Data_Order::DISCOUNT_Z) {
-                $item['discount_type_info'] = ($v['discount'] / 10) . "折";
-                $item['discount'] = $v['discount'] / 10;
-                $item['discount_price'] = sprintf("%.2f", ($item['subject_price'] * (1 - $v['discount'] / 100)));
+                $item['discount_info'] = "折扣(" . $v['discount'] . "%)";
             } else if ($v['discount_type'] == Service_Data_Order::DISCOUNT_J) {
-                $item['discount_type_info'] = "减免";
-                $item['discount'] = $v['discount'] / 100;
-                $item['discount_price'] = $v['discount'] / 100;
+                $item['discount_info'] = sprintf("减免(%.2f元)", $v['discount'] / 100);
             }
 
-            if (!empty($orderCounts[$v['order_id']])) {
-                $item['schedule_all_count'] = empty($orderCounts[$v['order_id']]['all_count']) ? 0 : sprintf("%.1f", $orderCounts[$v['order_id']]['all_count']);
-                $item['schedule_able_count'] = empty($orderCounts[$v['order_id']]['able_count']) ? 0 : sprintf("%.1f", $orderCounts[$v['order_id']]['able_count']);
-            }
-            
+            $item['last_duration']      = sprintf("%.2f", $v['balance'] / $v['price']);
+            $item['check_duration']     = sprintf("%.2f", $orderCounts[$v['order_id']]['c']);
+            $item['band_duration']      = sprintf("%.2f", $orderCounts[$v['order_id']]['a']);
+            $item['band_uncheck_duration'] = sprintf("%.2f", $orderCounts[$v['order_id']]['u']);
+            $item['transfer_id']        =  $v['transfer_id'];
+            $item['transfer_balance']   = empty($extra['transfer_balance']) ? "0.00" : sprintf("%.2f", $extra['transfer_balance'] / 100);
+            $item['refund_balance']     = empty($extra['refund_balance']) ? "0.00" : sprintf("%.2f", $extra['refund_balance'] / 100);
             $result[] = $item;
         }
         return $result;

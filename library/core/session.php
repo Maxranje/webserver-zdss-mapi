@@ -30,25 +30,27 @@ class Zy_Core_Session  {
 
         $userid = $this->getSessionUserId ();
         $name = $this->getSessionUserName ();
+        $passport = $this->getSessionUserPassport();
         $phone = $this->getSessionUserPhone ();
         $type = $this->getSessionUserType ();
         $pages = $this->getSessionUserPages();
 
-        if (empty($userid) || empty($name) || empty($phone) || empty($type)) {
+        if (empty($userid) || empty($name) || empty($phone) || empty($type) || empty($passport)) {
             return [];
         }
 
         return [
-            'userid' => $userid,
-            'name'   => $name,
-            'phone'  => $phone,
-            'type'   => $type,
-            'pages'  => $pages,
+            'userid'    => $userid,
+            'name'      => $name,
+            'phone'     => $phone,
+            'type'      => $type,
+            'pages'     => $pages,
+            'passport'  => $passport,
         ];
     }
 
-    public function setSessionUserInfo ($userid, $name, $phone, $type, $pages = array(), $avatar = "") {
-        if (empty($userid) || empty($name) || empty($phone) || empty($type)) {
+    public function setSessionUserInfo ($userid, $name, $passport, $phone, $type, $pages = array(), $avatar = "") {
+        if (empty($userid) || empty($name) || empty($phone) || empty($type) || empty($passport)) {
             return false;
         }
 
@@ -66,7 +68,8 @@ class Zy_Core_Session  {
         $this->setSessionUserType($type);
         $this->setSessionUserPages($pages);
         $this->setSessionUserAvatar($avatar);
-
+        $this->setSessionUserPassport($passport);
+        
         return true;
     }
 
@@ -82,6 +85,10 @@ class Zy_Core_Session  {
 
     public function getSessionUserId () {
         return isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
+    }
+
+    public function getSessionUserPassport () {
+        return isset($_SESSION['passport']) ? $_SESSION['passport'] : '';
     }
 
     public function getSessionUserPhone () {
@@ -114,6 +121,10 @@ class Zy_Core_Session  {
 
     public function setSessionUserPhone ($phone) {
         $_SESSION['phone'] = $phone;
+    }
+
+    public function setSessionUserPassport ($passport) {
+        $_SESSION['passport'] = $passport;
     }
 
     public function setSessionUserAvatar ($avatar) {

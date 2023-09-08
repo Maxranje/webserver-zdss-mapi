@@ -21,7 +21,7 @@ class Service_Page_Teacher_Create extends Zy_Core_Service{
                 continue;
             }
 
-            $userInfo = $serviceData->getUserInfoByNameAndPass($record['name'], $record['phone']);
+            $userInfo = $serviceData->getUserInfoByNameAndPhone($record['name'], $record['phone']);
             if (!empty($userInfo)) {
                 continue;
             }
@@ -39,6 +39,7 @@ class Service_Page_Teacher_Create extends Zy_Core_Service{
                 "state"     => Service_Data_Profile::STUDENT_ABLE,
                 "name"      => $record['name'] , 
                 "phone"     => $record['phone']  , 
+                "passport"  => $record['phone'],
                 "nickname"  => $record['nickname'],
                 "avatar"    => "",
                 "sex"       => $record['sex'] , 

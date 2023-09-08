@@ -25,6 +25,12 @@ class Service_Page_Column_Create extends Zy_Core_Service{
 
         $price = array_column(array_values($price), null, 'number');
         ksort($price);
+    
+        $serviceData = new Service_Data_Subject () ;
+        $subjectInfo = $serviceData->getSubjectById($subjectId);
+        if (empty($subjectInfo) || empty($subjectInfo['parent_id'])) {
+            throw new Zy_Core_Exception(405, "操作失败, 科目不存在, 或不是科目单项");
+        }
 
         $serviceData = new Service_Data_Column();
         $column = $serviceData->getColumnByTSId($teacherUid, $subjectId);

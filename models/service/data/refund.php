@@ -3,15 +3,13 @@
 class Service_Data_Refund {
 
     private $daoRefund ;
-    private $daoOrder;
 
     public function __construct() {
         $this->daoRefund = new Dao_Refund () ;
-        $this->daoOrder = new Dao_Order();
     }
 
     // 创建
-    public function create ($profile) {
+    public function create ($profile, $orderInfo) {
         $this->daoRefund->startTransaction();
 
         $ret = $this->daoRefund->insertRecords($profile);
@@ -26,16 +24,24 @@ class Service_Data_Refund {
             return false;
         }
 
+        // 退款金额更新
+        $extra = json_decode($orderInfo['ext'], true);
+        if (!isset($extra['refund_balance'])) {
+            $this->daoRefund->rollback();
+            return false;
+        }
+        $extra['refund_balance'] = intval($extra['refund_balance']) + intval($profile['balance']);
+
         $orderData = array(
-            "is_refund" => Service_Data_Order::ORDER_DONE,
-            "refund_id" => intval($refundId),
-            "balance"   => 0,
-            "update_time" => time(),
+            sprintf("balance=balance-%d", $profile['balance']),
+            'ext' => json_encode($extra),
+            'update_time' => time(),
         );
         $conds = array(
             "order_id" => intval($profile['order_id']),
         );
-        $ret = $this->daoOrder->updateByConds($conds, $orderData);
+        $daoOrder = new Dao_Order();
+        $ret = $daoOrder->updateByConds($conds, $orderData);
         if ($ret == false) {
             $this->daoRefund->rollback();
             return false;
@@ -47,21 +53,13 @@ class Service_Data_Refund {
     // 获取列表
     public function getListByConds($conds, $field = array(), $indexs = null, $appends = null) {
         $field = empty($field) || !is_array($field) ? $this->daoRefund->arrFieldsMap : $field;
-        $lists = $this->daoRefund->getListByConds($conds, $field, $indexs, $appends);
-        if (empty($lists)) {
-            return array();
-        }
-        return $lists;
+        return $this->daoRefund->getListByConds($conds, $field, $indexs, $appends);
     }
 
     // 获取单条
     public function getRecordByConds($conds, $field = array(), $indexs = null, $appends = null) {
         $field = empty($field) || !is_array($field) ? $this->daoRefund->arrFieldsMap : $field;
-        $record = $this->daoRefund->getRecordByConds($conds, $field, $indexs, $appends);
-        if (empty($record)) {
-            return array();
-        }
-        return $record;
+        return $this->daoRefund->getRecordByConds($conds, $field, $indexs, $appends);
     }
 
     public function getTotalByConds($conds) {

@@ -83,6 +83,10 @@ class Service_Page_Schedule_Calendar_Client extends Zy_Core_Service{
         $subjectInfo = $serviceSubject->getListByConds(array('id in ('.implode(',', $subjectIds).')'));
         $subjectInfo = array_column($subjectInfo, null, 'id');
 
+        $subjectParentIds = Zy_Helper_Utils::arrayInt($subjectInfo, "parent_id");
+        $subjectParentInfos = $serviceSubject->getSubjectByIds($subjectParentIds);
+        $subjectParentInfos = array_column($subjectParentInfos, null, 'id');
+
         $serviceUser = new Service_Data_Profile();
         $userInfos = $serviceUser->getListByConds(array('uid in ('.implode(',', $uids).')'));
         $userInfos = array_column($userInfos, null, 'uid');
@@ -119,6 +123,13 @@ class Service_Page_Schedule_Calendar_Client extends Zy_Core_Service{
                 if (empty($groupInfos[$item['group_id']]['name'])) {
                     continue;
                 }
+                if (empty($subjectInfo[$item['subject_id']]['parent_id'])) {
+                    continue;
+                }
+                $subjectParentId = $subjectInfo[$item['subject_id']]['parent_id'];
+                if (empty($subjectParentInfos[$subjectParentId]['name'])) {
+                    continue;
+                }
             } else {
                 if (empty($userInfos[$item['teacher_uid']]['nickname']) && empty($userInfos[$item['uid']]['nickname'])) {
                     continue;
@@ -127,6 +138,13 @@ class Service_Page_Schedule_Calendar_Client extends Zy_Core_Service{
                     continue;
                 }
                 if (isset($item['teacher_uid']) && empty($groupInfos[$item['group_id']]['name'])) {
+                    continue;
+                }
+                if (empty($subjectInfo[$item['subject_id']]['parent_id'])) {
+                    continue;
+                }
+                $subjectParentId = $subjectInfo[$item['subject_id']]['parent_id'];
+                if (empty($subjectParentInfos[$subjectParentId]['name'])) {
                     continue;
                 }
             }
@@ -148,12 +166,12 @@ class Service_Page_Schedule_Calendar_Client extends Zy_Core_Service{
                     $areaName = sprintf("%s(%s)", $areaName, "线上");
                 }
             }
-
-
+            $scheduleState = $item['state'] == Service_Data_Schedule::SCHEDULE_ABLE ? "待上课" : "已下课";
+            $subjectName = sprintf("%s/%s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfo[$item['subject_id']]['name']);
             if ($type == Service_Data_Profile::USER_TYPE_TEACHER) {
 		        $duration = sprintf("%.2f", ($item['end_time'] - $item['start_time']) / 3600) . "小时";
                 if (isset($item['teacher_uid'])) {
-                    $tmp['title'] = sprintf("%s %s %s %s", $duration, $groupInfos[$item['group_id']]['name'], $subjectInfo[$item['subject_id']]['name'], $areaName);  
+                    $tmp['title'] = sprintf("%s %s %s %s %s", $duration, $groupInfos[$item['group_id']]['name'], $subjectName, $areaName, $scheduleState);  
                     $tmp['title'] .= $item['state'] == Service_Data_Schedule::SCHEDULE_DONE ? "(已结算)" : "";
                 } else {
                     $tmp['title'] = $userInfos[$item['uid']]['nickname'] . "锁定时间";
@@ -162,7 +180,7 @@ class Service_Page_Schedule_Calendar_Client extends Zy_Core_Service{
                 if (isset($ext['is_online']) && $ext['is_online'] == 1) {
                     $areaName = "线上";
                 }
-                $tmp['title'] = sprintf("%s %s %s", $subjectInfo[$item['subject_id']]['name'], $userInfos[$item['teacher_uid']]['nickname'], $areaName);
+                $tmp['title'] = sprintf("%s %s %s %s", $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName, $scheduleState);
             }
 
             $result[] = $tmp;            

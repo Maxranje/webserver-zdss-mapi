@@ -19,23 +19,16 @@ class Service_Page_Schedule_Revoke extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 排课记录查询失败或该记录未结算");
         }
 
+        $serviceCurriculum  = new Service_Data_Curriculum();
+        $curriculumList = $serviceCurriculum->getListByConds(array('schedule_id' => $id));
+        $orderIds = Zy_Helper_Utils::arrayInt($curriculumList, "order_id");
+
         $serviceRecords = new Service_Data_Records();
         $recordList = $serviceRecords->getListByConds(array('schedule_id' => $id, 'state' => Service_Data_Records::RECORDS_NOMARL));
-        $orderIds = Zy_Helper_Utils::arrayInt($recordList, "order_id");
         
-        $orderInfos = array();
-        if (!empty($orderIds)) {
-            $serviceOrder = new Service_Data_Order();
-            $orderInfos = $serviceOrder->getOrderByIds($orderIds);
-            foreach ($orderInfos as $item) {
-                if ($item['is_transfer'] == Service_Data_Order::ORDER_DONE || $item['is_refund'] == Service_Data_Order::ORDER_DONE) {
-                    throw new Zy_Core_Exception(405, "操作失败, 排课中关联的订单存在结转或退款, 无法操作");
-                }
-            }
-        }
 
         $profile = array(
-            'orderInfos'    => $orderInfos,
+            'orderids'      => $orderIds,
             'schedule'      => $info,
             'records'       => $recordList,
         );

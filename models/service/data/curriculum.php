@@ -37,25 +37,25 @@ class Service_Data_Curriculum {
         $result = array();
         foreach ($lists as $item) {
             if (!isset($result[$item['order_id']])) {
-                $result[$item['order_id']] = array(
-                    "able_count" => 0,
-                    "disable_count" => 0,
-                    "all_count" => 0,
-                );
+                $result[$item['order_id']] = array("c" => 0,"u" => 0,"a" => 0);
             }
 
+            $result[$item['order_id']]['a'] += $item['end_time'] - $item['start_time'];
+
             if ($item['state'] == Service_Data_Schedule::SCHEDULE_DONE) {
-                $result[$item['order_id']]['disable_count'] += $item['end_time'] - $item['start_time'];
+                $result[$item['order_id']]['c'] += $item['end_time'] - $item['start_time'];
             }else {
-                $result[$item['order_id']]['able_count'] += $item['end_time'] - $item['start_time'];
+                $result[$item['order_id']]['u'] += $item['end_time'] - $item['start_time'];
             }
-            $result[$item['order_id']]['all_count'] += $item['end_time'] - $item['start_time'];
         }
         
-        foreach ($result as $key => &$value) {
-            $value['able_count'] = empty($value['able_count']) ? 0 : $value['able_count'] / 3600;
-            $value['disable_count'] = empty($value['disable_count']) ? 0 : $value['disable_count'] / 3600;
-            $value['all_count'] = empty($value['all_count']) ? 0 : $value['all_count'] / 3600;
+        foreach ($ids as $orderId) {
+            if (!isset($result[$orderId])) {
+                $result[$orderId] = array("c" => 0,"u" => 0,"a" => 0);
+            }
+            $result[$orderId]['c'] = empty($result[$orderId]['c']) ? 0 : $result[$orderId]['c'] / 3600;
+            $result[$orderId]['u'] = empty($result[$orderId]['u']) ? 0 : $result[$orderId]['u'] / 3600;
+            $result[$orderId]['a'] = empty($result[$orderId]['a']) ? 0 : $result[$orderId]['a'] / 3600;
         }
 
         return $result;
@@ -83,7 +83,7 @@ class Service_Data_Curriculum {
     // 创建
     public function create ($profile) {
         $this->daoCurriculum->startTransaction();
-        foreach ($profile['schedules'] as $item) {
+        foreach ($profile['newSchedules'] as $item) {
             $p1 = array(
                 "schedule_id"       => intval($item["id"]),
                 "student_uid"       => intval($profile['order_info']["student_uid"]),
@@ -109,6 +109,7 @@ class Service_Data_Curriculum {
         if (!empty($profile['delScheduleIds'])) {
             $conds = array(
                 sprintf("schedule_id in (%s)", implode(",", $profile['delScheduleIds'])),
+                "order_id" => intval($profile['order_info']["order_id"]),
                 "state" => Service_Data_Schedule::SCHEDULE_ABLE,
             );
             $ret = $this->daoCurriculum->deleteByConds($conds);

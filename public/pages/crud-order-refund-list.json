@@ -51,6 +51,12 @@
             "filter-toggler",
             "bulkActions",
             {
+                "type": "action",
+                "actionType": "download",
+                "label": "导出Excel",
+                "api": "/mapi/order/refundlists?order_id=${order_id}&student_uid=${student_uid}&date_range=${date_range}&is_export=1"
+            },
+            {
                 "type": "tpl",
                 "tpl": "共有 ${total} 条数据。",
                 "className": "v-middle"
@@ -94,7 +100,13 @@
             },
             {
                 "name": "balance",
-                "label": "退款金额",
+                "label": "退款金额(元)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "schedule_nums",
+                "label": "退款课时(小时)",
                 "type": "text",
                 "toggled": true
             },

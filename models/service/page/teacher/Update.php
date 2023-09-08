@@ -24,7 +24,7 @@ class Service_Page_Teacher_Update extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 无法查到相关用户");
         }
 
-        $userInfo = $serviceData->getUserInfoByNameAndPass($name, $phone);
+        $userInfo = $serviceData->getUserInfoByNameAndPhone($name, $phone);
         if (!empty($userInfo) && $userInfo['uid'] != $uid) {
             throw new Zy_Core_Exception(405, "操作失败, 用户名/手机号关联的账户已存在");
         }

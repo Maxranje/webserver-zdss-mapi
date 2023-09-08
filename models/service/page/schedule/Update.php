@@ -28,7 +28,7 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
 
         $serviceSchedule = new Service_Data_Schedule();
         $info = $serviceSchedule->getScheduleById($id);
-        if (empty($info) || $info['state'] != 1) {
+        if (empty($info) || $info['state'] != Service_Data_Schedule::SCHEDULE_ABLE) {
             throw new Zy_Core_Exception(405, "操作失败, 订单已不存在或已结束");
         }
 
@@ -73,7 +73,7 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
 
         $serviceUser = new Service_Data_Profile();
         $userInfo = $serviceUser->getUserInfoByUid($teacherUid);
-        if (empty($userInfo) || $userInfo['state'] != 1) {
+        if (empty($userInfo) || $userInfo['state'] != Service_Data_Profile::STUDENT_ABLE) {
             throw new Zy_Core_Exception(405, "操作失败, 无法查到老师信息或教师已下线");
         }
 
@@ -132,16 +132,11 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
             }
         }
 
-        $serviceOrder = new Service_Data_Order();
-        $orderList = $serviceOrder->getListByConds(array('schedule_id' => $id));
-        $orderList = Zy_Helper_Utils::arrayInt($orderList, "order_id");
-
         $profile = [
             "id"            => $id,
             "column_id"     => $columnInfos['id'],
 	        'needTimes'     => $needTimes,
             "area_op"       => $areaOperator,
-            "order_ids"     => $orderList,
 	        'teacher_uid'   => $teacherUid,
             'subject_id'    => $subjectId,
         ];

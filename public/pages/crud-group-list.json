@@ -240,7 +240,7 @@
                     {
                         "type": "button",
                         "label": "编辑",
-                        "level":"primary",
+                        "level":"default",
                         "actionType": "drawer",
                         "drawer": {
                             "position": "right",
@@ -328,15 +328,16 @@
                     },
                     {
                         "type": "button",
-                        "label":"订单列表",
+                        "label":"排课列表",
+                        "level":"default",
                         "actionType": "link",
-                        "link":"/order/list?group_id=$id"
+                        "link":"/schedule/schedulelist?group_ids=$id"
                     },
                     {
                         "type": "button",
                         "disabledOn": "this.state === 2",
-                        "label":"配置订单",
-                        "level":"info",
+                        "label":"绑定订单",
+                        "level":"default",
                         "actionType": "link",
                         "link":"/order/band?search_group_id=$id"
                     },
@@ -349,7 +350,7 @@
                         "confirmText": "您确认要删除么, 如果班级有关联的排课, 无法删除班级, 建议下线操作?",
                         "api": {
                             "method": "get",
-                            "url": "/mapi/group/delete?id=$id"
+                            "url": "/mapi/group/delete?group_id=$id"
                         }
                     }
                 ],

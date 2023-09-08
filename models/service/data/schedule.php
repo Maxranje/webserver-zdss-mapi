@@ -271,14 +271,7 @@ class Service_Data_Schedule {
 
         // 学生消费记录 和 删除订单中钱
         foreach ($orderInfos as $order) {
-            $price = intval($subject['price']);
-            if ($order['discount_type'] == Service_Data_Order::DISCOUNT_Z) {
-                $price = $price * (intval($order['discount']) / 100); 
-            } else if ($order['discount_type'] == Service_Data_Order::DISCOUNT_J) {
-                $price = $price - intval($order['discount']);
-            }
-
-            $price = $price * $timeLength;
+            $price = intval($order['price']) * $timeLength;
 
             $recordsProfile = array(
                 "uid"               => intval($order['student_uid']),
@@ -310,7 +303,8 @@ class Service_Data_Schedule {
                 "order_id" => intval($order['order_id']),
             );
             $orderProfile = array(
-                sprintf("balance=balance-%d", $price)
+                sprintf("balance=balance-%d", $price),
+                'update_time' => time(),
             );
             $ret = $daoOrder->updateByConds($conds, $orderProfile);
             if ($ret == false) {
@@ -325,6 +319,7 @@ class Service_Data_Schedule {
         );
         $profile = array(
             'state' => self::SCHEDULE_DONE,
+            "update_time" => time(),
         );
         $ret = $this->daoSchedule->updateByConds($conds, $profile);
         if ($ret == false) {
@@ -338,6 +333,7 @@ class Service_Data_Schedule {
         );
         $profile = array(
             'state' => self::SCHEDULE_DONE,
+            "update_time" => time(),
         );
         $ret = $daoCurriculum->updateByConds($conds, $profile);
         if ($ret == false) {
@@ -351,29 +347,28 @@ class Service_Data_Schedule {
 
     // 撤销
     public function revoke($params) {
-        $now = time();
         $daoRecords = new Dao_Records();
         $daoOrder = new Dao_Order();
         $daoCurriculum = new Dao_Curriculum();
 
         
         $schedule       = $params['schedule'];
-        $orderInfos     = $params['orderInfos'];
+        $orderIds       = $params['orderids'];
         $records        = $params['records'];
         $orderRecords   = array_column($records, null, 'order_id');
 
         $this->daoSchedule->startTransaction();
 
         // 加回学生的钱
-        foreach ($orderInfos as $order) {
-            if (empty($orderRecords[$order['order_id']]['money'])) {
+        foreach ($orderIds as $orderId) {
+            if (empty($orderRecords[$orderId]['money'])) {
                 continue;
             }
             $conds = array(
-                'order_id' => intval($order['order_id']),
+                'order_id' => intval($orderId),
             );
             $profile = array(
-                sprintf("balance=balance+%d", intval($orderRecords[$order['order_id']]['money']))
+                sprintf("balance=balance+%d", intval($orderRecords[$orderId]['money']))
             );
             $ret = $daoOrder->updateByConds($conds, $profile);
             if ($ret == false) {
@@ -398,6 +393,9 @@ class Service_Data_Schedule {
         // 更新学生关联排课状态
         $conds = array(
             'schedule_id' => intval($schedule['id']),
+        );
+        $profile = array(
+            'state' => self::SCHEDULE_ABLE,
         );
         $ret = $daoCurriculum->updateByConds($conds, $profile);
         if ($ret == false) {

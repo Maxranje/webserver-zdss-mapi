@@ -19,8 +19,6 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-
-
         $groupId        = empty($this->request['group_ids']) ? "" : strval($this->request['group_ids']);
         $teacherUid     = empty($this->request['teacher_uid']) ? 0 : intval($this->request['teacher_uid']);
         $areaId         = empty($this->request['area_id']) ? 0 : intval($this->request['area_id']);
@@ -125,6 +123,10 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
         $subjectInfo = $serviceSubject->getListByConds(array('id in ('.implode(',', $subjectIds).')'));
         $subjectInfo = array_column($subjectInfo, null, 'id');
 
+        $subjectParentIds = Zy_Helper_Utils::arrayInt($subjectInfo, "parent_id");
+        $subjectParentInfos = $serviceSubject->getSubjectByIds($subjectParentIds);
+        $subjectParentInfos = array_column($subjectParentInfos, null, 'id');
+
         $serviceGroup = new Service_Data_Group();
         $groupInfos = $serviceGroup->getListByConds(array('id in ('.implode(",", $groupIds).')'));
         $groupInfos = array_column($groupInfos, null, 'id');
@@ -154,6 +156,13 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
             if (empty($subjectInfo[$item['subject_id']]['name'])) {
                 continue;
             }
+            if (empty($subjectInfo[$item['subject_id']]['parent_id'])) {
+                continue;
+            }
+            $subjectParentId = $subjectInfo[$item['subject_id']]['parent_id'];
+            if (empty($subjectParentInfos[$subjectParentId]['name'])) {
+                continue;
+            }
             if (empty($groupInfos[$item['group_id']]['name'])) {
                 continue;
             }
@@ -170,7 +179,7 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
             $item['state']          = intval($item['state']);
             $item['s_t_id']         = sprintf("%d_%d", $item['subject_id'], $item['teacher_uid']);
             $item['teacher_name']   = $userInfos[$item['teacher_uid']]['nickname'];
-            $item['subject_name']   = $subjectInfo[$item['subject_id']]['name'];
+            $item['subject_name']   = sprintf("%s / %s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfo[$item['subject_id']]['name']);
             $item['group_name']     = $groupInfos[$item['group_id']]['name'];
             
             // 校区信息

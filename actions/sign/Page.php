@@ -8,6 +8,7 @@ class Actions_Page extends Zy_Core_Actions {
             $this->displayTemplate("login");
         }
         if ($this->_userInfo['type'] == Service_Data_Profile::USER_TYPE_ADMIN
+            || $this->_userInfo['type'] == Service_Data_Profile::USER_TYPE_PARTNER
             || $this->_userInfo['type'] == Service_Data_Profile::USER_TYPE_SUPER) {
             $this->redirect("/mapi/dashboard/page");
         }
