@@ -61,6 +61,38 @@ class Service_Data_Curriculum {
         return $result;
     }
 
+    // 根据student_uid 获取所有的schedule_课时数
+    public function getScheduleTimeCountByStudentUid($uids) {
+        $conds = array(
+            sprintf("student_uid in (%s)", implode(",", $uids)),
+            "state" => Service_Data_Schedule::SCHEDULE_ABLE,
+        );
+        $field = array(
+            "start_time",
+            "end_time",
+            "student_uid",
+        );
+        $lists = $this->getListByConds($conds, $field);
+        if (empty($lists)) {
+            return array();
+        }
+        $scheduleNums = array();
+        foreach ($lists as $item) {
+            if (!isset($scheduleNums[$item['student_uid']])) {
+                $scheduleNums[$item['student_uid']] = 0;
+            }
+            $scheduleNums[$item['student_uid']] += $item['end_time'] - $item['start_time'];
+        }
+        foreach ($uids as $uid) {
+            if (empty($scheduleNums[$uid])) {
+                $scheduleNums[$uid] = 0;
+            } else {
+                $scheduleNums[$uid] = $scheduleNums[$uid] / 3600;
+            }
+        }
+        return $scheduleNums;
+    }
+
        // group_id 获取所有的order
     public function getOrderListByGroup($ids) {
         $conds = array(

@@ -8,8 +8,7 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
         }
 
         $nickname       = empty($this->request['nickname']) ? "" : $this->request['nickname'];
-        $name           = empty($this->request['name']) ? "" : $this->request['name'];
-        $phone          = empty($this->request['phone']) ? "" : $this->request['phone'];
+        $subjectId      = empty($this->request['search_subject_id']) ? 0 : intval($this->request['search_subject_id']);
         $state          = empty($this->request['state']) ? 0 : intval($this->request['state']);
         $isSelect       = empty($this->request['is_select']) ? false : true;
         $isSubject      = empty($this->request['is_subject']) ? false : true;
@@ -21,20 +20,22 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
             'type' => Service_Data_Profile::USER_TYPE_TEACHER,
         );
 
-        if (!empty($name)) {
-            $conds[] = "name = '$name'";
-        }
-
         if (!empty($nickname)) {
             $conds[] = "nickname like '%".$nickname."%'";
         }
 
-        if (!empty($phone)) {
-            $conds[] = "phone = '$phone'";
-        }
-        
         if ($state > 0) {
             $conds[] = "state = $state";
+        }
+
+        if ($subjectId > 0) {
+            $serviceColumn = new Service_Data_Column();
+            $columnList = $serviceColumn->getColumnBySId($subjectId);
+            if (empty($columnList)) {
+                return array();
+            }
+            $teacherUids = Zy_Helper_Utils::arrayInt($columnList, "teacher_uid");
+            $conds[] = sprintf("uid in (%s)", implode(",", $teacherUids));
         }
 
         $serviceData = new Service_Data_Profile();
@@ -70,7 +71,7 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
             ];
             $options[] = $optionsItem;
         }
-        return $options;
+        return array('options' => array_values($options));
     }
 
     private function formatSubject($lists) {

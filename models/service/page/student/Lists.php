@@ -82,10 +82,14 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
         $orderInfos = $serviceData->getOrderCountByStudentUids($studentUids);
         $orderInfos = array_column($orderInfos, null, 'student_uid');
 
+        // 获取待结算
+        $serviceData = new Service_Data_Curriculum();
+        $scheduleCount = $serviceData->getScheduleTimeCountByStudentUid($studentUids);
+
         $result = array();
         foreach ($lists as $item) {
             $item['order_count'] = empty($orderInfos[$item['uid']]['order_count']) ? "-" : $orderInfos[$item['uid']]['order_count'];
-            $item['balance']     = empty($orderInfos[$item['uid']]['balance']) ? "0元" : sprintf("%.2f元", $orderInfos[$item['uid']]['balance'] / 100);
+            $item['uncheck_schedule_nums'] = empty($scheduleCount[$item['uid']]) ? "-" : sprintf("%.2f小时", $scheduleCount[$item['uid']]);
             $item['birthplace']  = empty($birthplaces[$item['bpid']]['name']) ? "" : $birthplaces[$item['bpid']]['name'];
             $item['create_time'] = date("Y年m月d日", $item['create_time']);
             $item['update_time'] = date("Y年m月d日", $item['update_time']);

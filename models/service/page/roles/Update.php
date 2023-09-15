@@ -11,6 +11,7 @@ class Service_Page_Roles_Update extends Zy_Core_Service{
         $name       = empty($this->request['name']) ? "" : strval($this->request['name']);
         $descs      = empty($this->request['descs']) ? "" : strval($this->request['descs']);
         $pageIds    = empty($this->request['page_ids']) ? "" : strval($this->request['page_ids']);
+        $modeIds    = empty($this->request['mode_ids']) ? "" : strval($this->request['mode_ids']);
         $uids       = empty($this->request['uids']) ? "" : strval($this->request['uids']);
 
         if ($id <= 0) {
@@ -18,6 +19,7 @@ class Service_Page_Roles_Update extends Zy_Core_Service{
         }
 
         $pageIds = explode(",", $pageIds);
+        $modeIds = explode(",", $modeIds);
         $newUids = explode(",", $uids);
 
         if (empty($name) || empty($pageIds) || empty($newUids)) {
@@ -32,7 +34,7 @@ class Service_Page_Roles_Update extends Zy_Core_Service{
         $diff1 = array_diff($oldUids, $newUids);
 
 
-        $ret = $serviceData->updateRoles($id, $name, $descs, $pageIds, $diff2, $diff1);
+        $ret = $serviceData->updateRoles($id, $name, $descs, $pageIds, $modeIds, $diff2, $diff1);
         if ($ret === false) {
             throw new Zy_Core_Exception(405, "更新失败, 请重试");
         }

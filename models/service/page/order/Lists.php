@@ -13,6 +13,7 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
         $scheduleId     = empty($this->request['schedule_id']) ? 0 : intval($this->request['schedule_id']);
         $filterId       = empty($this->request['filter_id']) ? 0 : intval($this->request['filter_id']); // is_select时候需要过滤的.
         $subjectId      = empty($this->request['subject_id']) ? 0 : intval($this->request['subject_id']);
+        $birthplace     = empty($this->request['birthplace']) ? 0 : intval($this->request['birthplace']);
         $studentUid     = empty($this->request['student_uid']) ? 0 : intval($this->request['student_uid']);
         $warning        = empty($this->request['warning']) ? 0 : intval($this->request['warning']);
         $isHasbalance   = empty($this->request['is_hasbalance']) ? false : true;
@@ -52,7 +53,16 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             }
         }
 
-        $arrAppends[] = 'order by order_id';
+        if ($birthplace > 0) {
+            $serviceData = new Service_Data_Profile();
+            $userInfos = $serviceData->getListByConds(array("bpid" => $birthplace), array("uid"));
+            $uids = Zy_Helper_Utils::arrayInt($userInfos, "uid");
+            if (!empty($uids)) {
+                $conds[] = sprintf("student_uid in (%s)", implode(",", $uids));
+            }
+        }
+
+        $arrAppends[] = 'order by order_id desc';
         if(!$isSelect) {
             $arrAppends[] = "limit {$pn} , {$rn}";
         }
@@ -124,11 +134,12 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             $item['origin_price']   = sprintf("%.2f", $extra['origin_price'] / 100);
             $item['real_price']     = sprintf("%.2f", $extra['real_price'] / 100);
             $item['schedule_nums']  = $extra['schedule_nums'];
-            $item['discount_info']  = "-";
-            if ($v['discount_type'] == Service_Data_Order::DISCOUNT_Z) {
-                $item['discount_info'] = "折扣(" . $v['discount'] . "%)";
-            } else if ($v['discount_type'] == Service_Data_Order::DISCOUNT_J) {
-                $item['discount_info'] = sprintf("减免(%.2f元)", $v['discount'] / 100);
+            $item['discount_info']  = "";
+            if (!empty($v['discount_z'])) {
+                $item['discount_info'] .= "折扣(" . $v['discount_z'] . "%) ";
+            } 
+            if (!empty($v['discount_j'])) {
+                $item['discount_info'] .= sprintf("减免(%.2f元)", $v['discount_j'] / 100);
             }
 
             $item['last_duration']      = sprintf("%.2f", $v['balance'] / $v['price']);

@@ -5,7 +5,7 @@ class Actions_Home extends Zy_Core_Actions {
     // 执行入口
     public function execute() {
         if (!$this->isLogin() ) {
-            $this->redirectLogin();
+            $this->error(405, "请先登录");
         }
 
         $serivce = new Service_Page_Api_Page ($this->_request, $this->_userInfo);
@@ -17,7 +17,7 @@ class Actions_Home extends Zy_Core_Actions {
         );
 
         $this->_output['data'] = $result;
-        $this->displayTemplate("calendar");
+        $this->displayTemplate("client");
     }
 
 }

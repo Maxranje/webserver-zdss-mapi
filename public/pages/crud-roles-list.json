@@ -129,6 +129,18 @@
                                             "required": true
                                         }
                                     ]
+                                },
+                                {
+                                    "title": "核心权限",
+                                    "body": [
+                                        {
+                                            "label": "选择功能",
+                                            "name": "mode_ids",
+                                            "type": "transfer",
+                                            "source": "/mapi/roles/modelists",
+                                            "selectMode": "list"
+                                        }
+                                    ]
                                 }
                             ]
                         }

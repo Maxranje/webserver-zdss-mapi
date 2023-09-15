@@ -3,8 +3,8 @@
 class Service_Page_Schedule_Delete extends Zy_Core_Service{
 
     public function execute () {
-        if (!$this->checkAdmin()) {
-            throw new Zy_Core_Exception(405, "无权限查看");
+        if (!$this->checkAdmin() || !$this->isModeAble(Service_Data_Roles::ROLE_MODE_SCHEDULE_DELETE)) {
+            throw new Zy_Core_Exception(405, "无权限操作");
         }
 
         $id = empty($this->request['id']) ? 0 : intval($this->request['id']);

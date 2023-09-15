@@ -2,46 +2,6 @@
     "type": "page",
     "body": [
         {
-            "type": "panel",
-            "title": "排课查询 (两者互斥, 优先班级, 前后6个月数据, 红色已结算, 绿色未结算)",
-            "body": [
-                {
-                    "type": "tree-select",
-                    "name": "search_group_id",
-                    "onlyLeaf":true,
-                    "searchable":true,
-                    "size": "md",
-                    "mode": "inline",
-                    "label": "班级",
-                    "placeholder": "请选择班级",
-                    "source": "/mapi/group/lists?is_select=1&state=1"
-                },
-                {
-                    "type": "tree-select",
-                    "name": "search_teacher_uid",
-                    "onlyLeaf":true,
-                    "label": "教师",
-                    "mode": "inline",
-                    "searchable":true,
-                    "size": "md",
-                    "source": "/mapi/teacher/lists?is_select=1"
-                },
-                {
-                    "type": "divider"
-                },
-                {
-                    "type": "service",
-                    "api": "/mapi/schedule/calendarstartsearch?teacher_uid=${search_teacher_uid}&group_id=${search_group_id}",
-                    "body" : {
-                        "type": "calendar",
-                        "largeMode": true,
-                        "value": "NOW()",
-                        "schedules": "$schedules"
-                    }
-                }
-            ]
-        },
-        {
             "type": "tabs",
             "tabsMode": "radio",
             "tabs": [

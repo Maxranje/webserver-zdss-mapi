@@ -19,7 +19,7 @@ class Service_Page_Account_SignIn extends Zy_Core_Service{
 
         // 获取权限
         $serviceRoles = new Service_Data_Roles();
-        $userInfo['pages'] = $serviceRoles->getPageIdsByUid($userInfo['uid'], $userInfo['type']);
+        list($userInfo['pages'], $userInfo['modes']) = $serviceRoles->getPageIdsByUid($userInfo['uid'], $userInfo['type']);
         $data = $serviceData->setUserSession($userInfo);
         if (empty($data)) {
             throw new Zy_Core_Exception(405, "系统错误请重试");

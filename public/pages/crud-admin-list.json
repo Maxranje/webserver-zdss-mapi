@@ -315,10 +315,10 @@
                                     },
                                     {
                                         "type": "tree-select",
-                                        "name": "birthplace",
+                                        "name": "bpid",
                                         "onlyLeaf":true,
-                                        "disabledOn": "type === '11'",
                                         "label": "生源地",
+                                        "disabledOn": "type === '11'",
                                         "searchable":true,
                                         "initiallyOpen":false,
                                         "source": "/mapi/birthplace/lists?is_select=1",

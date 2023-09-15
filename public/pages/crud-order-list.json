@@ -79,37 +79,27 @@
                             "type": "divider"
                         },
                         {
-                            "label": "优惠类型",
-                            "type": "select",
-                            "name": "discount_type",
-                            "value" : "0",
-                            "options": [
-                                {
-                                    "label": "无",
-                                    "value": "0"
-                                },
-                                {
-                                    "label": "折扣",
-                                    "value": "1"
-                                },
-                                {
-                                    "label": "减免",
-                                    "value": "2"
-                                }
-                            ]
+                            "type": "input-text",
+                            "name": "discount_z",
+                            "label": "折扣",
+                            "addOn": {
+                                "type": "text",
+                                "label": "折"
+                            },
+                            "desc": "选填, 折扣: 10>数字>0, 保留小数点后一位(例如:9.5/8)"
                         },
                         {
                             "type": "divider"
                         },
                         {
                             "type": "input-text",
-                            "name": "discount",
-                            "label": "优惠",
+                            "name": "discount_j",
+                            "label": "减免",
                             "addOn": {
                                 "type": "text",
-                                "label": "折/元"
+                                "label": "元"
                             },
-                            "desc": "折扣: 10>数字>0, 保留小数点后一位(例如:9.5/8) | 减免, 单课时减免金额, 元为单位, 保留小数点后2位 | 配置后实时生效"
+                            "desc": "选填, 减免, 单课时减免金额, 元为单位, 保留小数点后2位"
                         },
                         {
                             "type": "divider"
@@ -118,7 +108,7 @@
                             "type": "service",
                             "name": "order_review_detail",
                             "initFetch": false,
-                            "api": "/mapi/order/review?subject_id=$subject_id&student_uid=$student_uid&schedule_nums=$schedule_nums&discount_type=$discount_type&discount=$discount",
+                            "api": "/mapi/order/review?subject_id=$subject_id&student_uid=$student_uid&schedule_nums=$schedule_nums&discount_j=$discount_j&discount_z=$discount_z",
                             "body": {
                                 "type": "property",
                                 "labelStyle": {
@@ -145,6 +135,10 @@
                                     }
                                 ]
                             }
+                        },
+                        {   
+                            "type" : "html",
+                            "html" : "<p style='color:red;'>优惠计算方式: 先折扣后减免</p>"
                         }
                     ]
                 }
@@ -204,6 +198,16 @@
                     "searchable":true,
                     "onlyLeaf":true,
                     "source": "/mapi/student/lists?is_select=1&nickname=$term"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "birthplace",
+                    "onlyLeaf":true,
+                    "label": "生源地",
+                    "size": "md",  
+                    "searchable":true,
+                    "initiallyOpen":false,
+                    "source": "/mapi/birthplace/lists?is_select=1"
                 },
                 {
                     "label": "预警状态",
@@ -371,37 +375,27 @@
                                             "type": "divider"
                                         },
                                         {
-                                            "label": "优惠类型",
-                                            "type": "select",
-                                            "name": "discount_type",
-                                            "value" : "0",
-                                            "options": [
-                                                {
-                                                    "label": "无",
-                                                    "value": "0"
-                                                },
-                                                {
-                                                    "label": "折扣",
-                                                    "value": "1"
-                                                },
-                                                {
-                                                    "label": "减免",
-                                                    "value": "2"
-                                                }
-                                            ]
+                                            "type": "input-text",
+                                            "name": "discount_z",
+                                            "label": "折扣",
+                                            "addOn": {
+                                                "type": "text",
+                                                "label": "折"
+                                            },
+                                            "desc": "选填, 折扣: 10>数字>0, 保留小数点后一位(例如:9.5/8)"
                                         },
                                         {
                                             "type": "divider"
                                         },
                                         {
                                             "type": "input-text",
-                                            "name": "discount",
-                                            "label": "优惠",
+                                            "name": "discount_j",
+                                            "label": "减免",
                                             "addOn": {
                                                 "type": "text",
-                                                "label": "折/元"
+                                                "label": "元"
                                             },
-                                            "desc": "折扣: 10>数字>0, 保留小数点后一位(例如:9.5/8) | 减免, 单课时减免金额, 元为单位, 保留小数点后2位 | 配置后实时生效"
+                                            "desc": "选填, 减免, 单课时减免金额, 元为单位, 保留小数点后2位"
                                         },
                                         {
                                             "type": "divider"
@@ -410,7 +404,7 @@
                                             "type": "service",
                                             "name": "order_review_detailv1",
                                             "initFetch": false,
-                                            "api": "/mapi/order/transferreview?order_id=$order_id&balance=$balance&subject_id=$subject_id&student_uid=$student_uid&schedule_nums=$schedule_nums&discount_type=$discount_type&discount=$discount",
+                                            "api": "/mapi/order/transferreview?order_id=$order_id&balance=$balance&subject_id=$subject_id&student_uid=$student_uid&schedule_nums=$schedule_nums&discount_j=$discount_j&discount_z=$discount_z",
                                             "body": {
                                                 "type": "property",
                                                 "labelStyle": {

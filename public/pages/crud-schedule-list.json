@@ -210,7 +210,7 @@
                 "label": "状态",
                 "type": "mapping",
                 "map": {
-                    "2": "<span class='label label-danger'>结束</span>",
+                    "2": "<span class='label label-danger'>已结算</span>",
                     "1": "<span class='label label-success'>待开始</span>"
                 }
             },
@@ -296,7 +296,7 @@
                         "type": "button",
                         "level" : "success",
                         "label" : "结算",
-                        "disabledOn": "this.state === 2",
+                        "disabledOn": "this.state === 2 || this.order_count === 0",
                         "hiddenOn" : "this.order_count > 1",
                         "actionType": "ajax",
                         "api": {
@@ -309,7 +309,7 @@
                         "level" : "warning",
                         "label" : "撤销",
                         "disabledOn": "this.state === 1",
-                        "hiddenOn" : "this.isSuper === 0",
+                        "hiddenOn" : "this.is_super === 0",
                         "actionType": "ajax",
                         "confirmText": "是否确认撤销操作?",
                         "api": {
@@ -329,7 +329,7 @@
                         "type": "button",
                         "level" : "primary",
                         "label" : "编辑",
-                        "disabledOn": "this.state === 2",
+                        "disabledOn": "this.state === 2 || this.is_u !== 1",
                         "actionType": "drawer",
                         "drawer": {
                             "position": "right",
@@ -409,7 +409,7 @@
                         "type": "button",
                         "level" : "danger",
                         "label" : "删除",
-                        "disabledOn": "this.state === 2",
+                        "disabledOn": "this.state === 2 || this.is_d !== 1",
                         "actionType": "ajax",
                         "tooltip": "删除",
                         "confirmText": "您确认要删除?",

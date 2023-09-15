@@ -54,6 +54,19 @@ class Service_Data_Profile {
         return $userinfo;
     }
 
+    public function getStudentInfoByPhone ($phone){
+        $arrConds = array(
+            'phone'  => $phone,
+            'type'   => self::USER_TYPE_STUDENT,
+        );
+
+        $userinfo = $this->daoUser->getRecordByConds($arrConds, $this->daoUser->arrFieldsMap);
+        if (empty($userinfo)) {
+            return array();
+        }
+        return $userinfo;
+    }
+
     // 根据uid获取用户信息
     public function getUserInfoByUid ($uid){
         $arrConds = array(
@@ -152,7 +165,8 @@ class Service_Data_Profile {
             $userInfo['passport'],
             $userInfo['phone'], 
             $userInfo['type'],
-            $userInfo['pages']);
+            $userInfo['pages'],
+            $userInfo['modes']);
     }
 
     public function delUserSession () {

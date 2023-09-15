@@ -143,18 +143,14 @@
                     "placeholder": "模糊搜索"
                 },
                 {
-                    "type": "input-text",
-                    "name": "name",
-                    "label": "登录名",
-                    "size" : "md",
-                    "placeholder": "精确匹配"
-                },
-                {
-                    "type": "input-text",
-                    "name": "phone",
-                    "label": "手机号",
-                    "size" : "md",
-                    "placeholder": "精确匹配"
+                    "type": "tree-select",
+                    "name": "search_subject_id",
+                    "onlyLeaf":true,
+                    "label": "绑定科目",
+                    "size": "md",
+                    "searchable":true,
+                    "initiallyOpen":false,
+                    "source": "/mapi/subject/lists?is_select=1"
                 },
                 {
                     "label": "教师状态",

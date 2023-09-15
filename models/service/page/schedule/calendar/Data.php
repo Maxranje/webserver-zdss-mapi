@@ -1,67 +1,64 @@
 <?php
-// 学生/教师端显示
-class Service_Page_Schedule_Calendar_Client extends Zy_Core_Service{
+
+class Service_Page_Schedule_Calendar_Data extends Zy_Core_Service{
 
     public function execute () {
-        if (!$this->checkStudent() && !$this->checkTeacher()) {
+        if (!$this->checkAdmin()) {
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $sts = empty($this->request['start']) ? strtotime(date('Y-m-d',  strtotime("-45 day"))) : strtotime($this->request['start']);
-        $ets = empty($this->request['end']) ? strtotime(date('Y-m-d',  strtotime("+45 day"))) : strtotime($this->request['end']);
-
-        $uid = $this->adption['userid'];
-        $type = $this->adption['type'];
-
-        $lock = array();
-        if ($type == Service_Data_Profile::USER_TYPE_TEACHER) {
-            $lists = $this->getTeacherData($uid, $sts, $ets, $lock);
-        } else {
-            $lists = $this->getStudentData($uid, $sts, $ets);
-        }
+        $type   = empty($this->request['type']) ? "" : $this->request['type'];
+        $id     = empty($this->request['value']) ? 0 : intval($this->request['value']);
+        $sts    = empty($this->request['start']) ? strtotime(date('Y-m-d',  strtotime("-45 day"))) : strtotime($this->request['start']);
+        $ets    = empty($this->request['end']) ? strtotime(date('Y-m-d',  strtotime("+45 day"))) : strtotime($this->request['end']);
         
-        echo json_encode($this->formatBase($lists, $lock, $type));
-        exit;
-    }
-
-    // 获取教师数据
-    private function getTeacherData ($uid, $sts, $ets, &$lock) {
-        $serviceData = new Service_Data_Schedule();
-        $conds = array(
-            sprintf("start_time >= %d", $sts),
-            sprintf("end_time <= %d", $ets),
-            sprintf("teacher_uid = %d", intval($uid))
-        );
-        $lists = $serviceData->getListByConds($conds);
-
-        // 锁定时间
-        $conds = array(
-            sprintf("start_time >= %d", $sts),
-            sprintf("end_time <= %d", $ets),
-            sprintf("uid = %d", intval($uid))
-        ) ;
-        $serviceData = new Service_Data_Lock();
-        $lock = $serviceData->getListByConds($conds);
-
-        if (empty($lists)) {
+        if (!in_array($type, ["group", "teacher", "student"]) || $id <= 0) {
             return array();
         }
-        return $lists;
-    }
 
-    // 获取学生数据
-    private function getStudentData ($uid, $sts, $ets) {
-        $serviceData = new Service_Data_Curriculum();
+        $conds = array();
+
         $conds = array(
             sprintf("start_time >= %d", $sts),
             sprintf("end_time <= %d", $ets),
-            sprintf("student_uid = %d", intval($uid))
         );
-        $lists = $serviceData->getListByConds($conds);
-        if (empty($lists)) {
-            return array();
-        }   
-        return $lists;
+
+        $lists = $lock = array();
+        if ($type == "student" || $type == "teacher") {
+            $serviceUser = new Service_Data_Profile();
+            $userInfo = $serviceUser->getUserInfoByUid($id);
+            if (empty($userInfo)) {
+                return array();
+            }
+            if ($type == "student") {
+                $conds[] = sprintf("student_uid = %d", intval($id));
+                $serviceData = new Service_Data_Curriculum();
+                $lists = $serviceData->getListByConds($conds);
+            } else {
+                $conds[] = sprintf("teacher_uid = %d", intval($id));
+                $serviceSchedule = new Service_Data_Schedule();
+                $lists = $serviceSchedule->getListByConds($conds);
+            }
+        } else {
+            $serviceGroup = new Service_Data_Group();
+            $groupInfo = $serviceGroup->getGroupById($id);
+            if (empty($groupInfo)) {
+                return array();
+            }
+            $conds[] = sprintf("group_id = %d", intval($id));
+            $serviceSchedule = new Service_Data_Schedule();
+            $lists = $serviceSchedule->getListByConds($conds);
+        }
+
+        // 是否有锁的日程
+        if ($type == "teacher") {
+            $serviceLock = new Service_Data_Lock();
+            $lock = $serviceLock->getListByUid($id, $sts, $ets);
+        }
+
+        $lists = $this->formatBase($lists, $lock, $type);
+        echo json_encode($lists);
+        exit;
     }
 
     // 格式化
@@ -111,7 +108,7 @@ class Service_Page_Schedule_Calendar_Client extends Zy_Core_Service{
         
         $result = array();
         foreach ($lists as $key => $item) {
-            if ($type == Service_Data_Profile::USER_TYPE_STUDENT) {
+            if ($type == "student") {
                 if (empty($userInfos[$item['student_uid']]['nickname'])) {
                     continue;
                 }
@@ -170,13 +167,13 @@ class Service_Page_Schedule_Calendar_Client extends Zy_Core_Service{
                     $areaName = sprintf("%s(%s)", $areaName, "线上");
                 }
             }
-            $scheduleState = $item['state'] == Service_Data_Schedule::SCHEDULE_ABLE ? "待上课" : "已下课";
             $subjectName = sprintf("%s/%s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfo[$item['subject_id']]['name']);
-            if ($type == Service_Data_Profile::USER_TYPE_TEACHER) {
-		        $duration = sprintf("%.2f", ($item['end_time'] - $item['start_time']) / 3600) . "小时";
-                $tmp['title'] = sprintf("%s %s %s %s %s", $duration, $groupInfos[$item['group_id']]['name'], $subjectName, $areaName, $scheduleState);  
-            } else {
-                $tmp['title'] = sprintf("%s %s %s %s", $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName, $scheduleState);
+            if ($type == "teacher") {
+                $tmp['title'] = sprintf("%s %s %s", $groupInfos[$item['group_id']]['name'], $subjectName, $areaName);  
+            } else if ($type == "student"){
+                $tmp['title'] = sprintf("%s %s %s", $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
+            } else if ($type == "group"){
+                $tmp['title'] = sprintf("%s %s %s", $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
             }
 
             $result[] = $tmp;            

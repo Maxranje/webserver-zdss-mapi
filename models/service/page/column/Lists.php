@@ -29,15 +29,26 @@ class Service_Page_Column_Lists extends Zy_Core_Service{
         $serviceData = new Service_Data_Subject();
         $subjectInfos = $serviceData->getListByConds(array(sprintf("id in (%s)", implode(",", $subjectIds))));
         $subjectInfos = array_column($subjectInfos, null, 'id');
+
+        $subjectParentIds = Zy_Helper_Utils::arrayInt($subjectInfos, "parent_id");
+        $subjectParentInfos = $serviceData->getSubjectByIds($subjectParentIds);
+        $subjectParentInfos = array_column($subjectParentInfos, null, 'id');
         
         $result = array();
         foreach ($lists as $item) {
             if (empty($subjectInfos[$item['subject_id']]['name'])) {
                 continue;
             }
+            if (empty($subjectInfos[$item['subject_id']]['parent_id'])) {
+                continue;
+            }
+            $subjectParentId = $subjectInfos[$item['subject_id']]['parent_id'];
+            if (empty($subjectParentInfos[$subjectParentId]['name'])) {
+                continue;
+            }
             $tmp = array(
                 'column_id' => $item['id'], 
-                'subject_name' => $subjectInfos[$item['subject_id']]['name'],
+                'subject_name' => sprintf("%s/%s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfos[$item['subject_id']]['name']),
                 'teacher_uid' => $item['teacher_uid'],
                 'subject_id' => $item['subject_id'],
                 "price" => json_decode($item['price'], true),

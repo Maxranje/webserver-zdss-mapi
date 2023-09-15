@@ -307,8 +307,8 @@
                 "toggled": true
             },
             {
-                "name": "balance",
-                "label": "总订单余额",
+                "name": "uncheck_schedule_nums",
+                "label": "未结算课时数",
                 "type": "text",
                 "toggled": true
             },
@@ -321,7 +321,7 @@
             {
                 "type": "operation",
                 "label": "操作",
-                "width": 270,
+                "width": 220,
                 "buttons": [
                     {
                         "type": "button",
@@ -329,26 +329,6 @@
                         "level":"primary",
                         "actionType": "link",
                         "link":"/order/list?student_uid=$uid"
-                    },
-                    {
-                        "type": "button",
-                        "label":"课表",
-                        "actionType": "drawer",
-                        "drawer": {
-                            "position": "right",
-                            "size": "xl",
-                            "title": "课表(前后3个月数据, 红色已结算, 绿色未结算)",
-                            "body": {
-                                "type": "service",
-                                "api": "/mapi/schedule/calendarstudent?student_uid=${uid}",
-                                "body" : {
-                                    "type": "calendar",
-                                    "largeMode": true,
-                                    "value": "NOW()",
-                                    "schedules": "$schedules"
-                                }
-                            }
-                        }
                     },
                     {
                         "type": "button",

@@ -34,6 +34,7 @@ class Zy_Core_Session  {
         $phone = $this->getSessionUserPhone ();
         $type = $this->getSessionUserType ();
         $pages = $this->getSessionUserPages();
+        $modes = $this->getSessionUserModes();
 
         if (empty($userid) || empty($name) || empty($phone) || empty($type) || empty($passport)) {
             return [];
@@ -45,11 +46,12 @@ class Zy_Core_Session  {
             'phone'     => $phone,
             'type'      => $type,
             'pages'     => $pages,
+            'modes'     => $modes,
             'passport'  => $passport,
         ];
     }
 
-    public function setSessionUserInfo ($userid, $name, $passport, $phone, $type, $pages = array(), $avatar = "") {
+    public function setSessionUserInfo ($userid, $name, $passport, $phone, $type, $pages = array(), $modes=array(), $avatar = "") {
         if (empty($userid) || empty($name) || empty($phone) || empty($type) || empty($passport)) {
             return false;
         }
@@ -67,6 +69,7 @@ class Zy_Core_Session  {
         $this->setSessionUserPhone($phone);
         $this->setSessionUserType($type);
         $this->setSessionUserPages($pages);
+        $this->setSessionUserModes($modes);
         $this->setSessionUserAvatar($avatar);
         $this->setSessionUserPassport($passport);
         
@@ -111,6 +114,10 @@ class Zy_Core_Session  {
         return isset($_SESSION['pages']) && is_array($_SESSION['pages']) ? $_SESSION['pages'] : array();
     }
 
+    public function getSessionUserModes () {
+        return isset($_SESSION['modes']) && is_array($_SESSION['modes']) ? $_SESSION['modes'] : array();
+    }
+
     public function setSessionUserName ($name) {
         $_SESSION['name'] = $name;
     }
@@ -137,6 +144,10 @@ class Zy_Core_Session  {
 
     public function setSessionUserPages ($pages) {
         $_SESSION['pages'] = $pages;
+    }
+
+    public function setSessionUserModes ($modes) {
+        $_SESSION['modes'] = $modes;
     }
 
     public function getSessionUserVerify () {

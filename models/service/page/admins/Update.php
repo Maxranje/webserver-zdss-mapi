@@ -12,7 +12,7 @@ class Service_Page_Admins_Update extends Zy_Core_Service{
         $phone      = empty($this->request['phone']) ? "" : trim($this->request['phone']);
         $nickname   = empty($this->request['nickname']) ? "" : trim($this->request['nickname']);
         $type       = empty($this->request['type']) ? 0 : intval($this->request['type']);
-        $bpid       = empty($this->request['birthplace']) ? 0 : intval($this->request['birthplace']);
+        $bpid       = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
 
         if ($uid <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 需要选中管理员");

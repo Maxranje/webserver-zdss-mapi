@@ -38,7 +38,7 @@ class Service_Page_Student_Batchcreate extends Zy_Core_Service{
                 continue;
             }
 
-            $userInfo = $serviceData->getUserInfoByNameAndPhone($record['name'], $record['phone']);
+            $userInfo = $serviceData->getStudentInfoByPhone($record['phone']);
             if (!empty($userInfo)) {
                 continue;
             }

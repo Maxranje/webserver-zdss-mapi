@@ -61,12 +61,14 @@ class Service_Page_Order_Detail extends Zy_Core_Service{
         $item['transfer_balance']   = empty($extra['transfer_balance']) ? "0.00" : sprintf("%.2f", $extra['transfer_balance'] / 100);
         $item['refund_balance']     = empty($extra['refund_balance']) ? "0.00" : sprintf("%.2f", $extra['refund_balance'] / 100);
         
-        $item['discount_info']  = "-";
-        if ($order['discount_type'] == Service_Data_Order::DISCOUNT_Z) {
-            $item['discount_info'] = "折扣(" . $order['discount'] . "%)";
-        } else if ($order['discount_type'] == Service_Data_Order::DISCOUNT_J) {
-            $item['discount_info'] = sprintf("减免(%.2f元)", $order['discount'] / 100);
+        $item['discount_info']  = "";
+        if (!empty($order['discount_z'])) {
+            $item['discount_info'] .= "折扣(" . $order['discount_z'] . "%)  ";
+        } 
+        if (!empty($order['discount_j'])) {
+            $item['discount_info'] .= sprintf("减免(%.2f元)", $order['discount_j'] / 100);
         }
+        $item['discount_info'] = empty($item['discount_info']) ? "-" : $item['discount_info'];
 
         $item['band_duration']      = sprintf("%.2f", $orderCounts[$order['order_id']]['a']);
         $item['band_balance']       = sprintf("%.2f", ($orderCounts[$order['order_id']]['a'] * $order['price']) / 100);

@@ -68,7 +68,9 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
         foreach ($lists as $item) {
             $tmp = array();
             $tmp['subject_id']      = $item['id'];
+            $tmp['subject_id_info'] = $item['id'];
             $tmp['subject_name']    = $item['name'];
+            $tmp['is_parent']       = 1;
             $tmp['subject_desc']    = $item['descs'];
             $tmp['price']           = $item['price'];   
             $tmp['price_info']      = sprintf("%.2f", $tmp['price'] / 100);
@@ -81,10 +83,12 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
                 }
                 $tmp['children'][] = array(
                     'subject_id'   => $v['id'],
+                    'subject_id_info' => "-",
                     'subject_name' => $v['name'],
                     'subject_desc' => $v['descs'],
                     'price'        => "-",
                     'price_info'   => "-",
+                    'is_parent'    => 0,
                     'parent_id'    => $v['parent_id'],
                     'create_time'  => date("Y-m-d H:i:s", $v['create_time']),
                     'update_time'  => date("Y-m-d H:i:s", $v['update_time']),

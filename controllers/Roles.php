@@ -12,5 +12,8 @@ class Controller_Roles extends Zy_Core_Controller{
         
         // 页面pageids
         "pagelists"     => "actions/roles/Pagelists.php",
+
+        // mode
+        "modelists"     => "actions/roles/Modelists.php",
     );
 }

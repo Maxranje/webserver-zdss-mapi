@@ -4,6 +4,7 @@ class Zy_Core_Service {
     
     public $request ;
     public $adption ; 
+
     public function __construct($request = array(), $adption = array()) {
         $this->request = $request;
         $this->adption = $adption;
@@ -53,5 +54,19 @@ class Zy_Core_Service {
     // 获取用户的权限ID
     public function getUserRolePageIds () {
         return empty($this->adption['pages']) ? array() : $this->adption['pages'];
+    }
+
+    // 获取用户功能权限id
+    public function getUserRoleModeIds () {
+        return empty($this->adption['modes']) ? array() : $this->adption['modes'];
+    }
+
+    // 功能是否可用
+    public function isModeAble ($modeId) {
+        if ($this->checkSuper()) {
+            return true;
+        }
+        $modes = $this->getUserRoleModeIds();
+        return in_array($modeId, $modes) ? true : false;
     }
 }

@@ -7,6 +7,7 @@ CREATE TABLE `tblRole` (
   `name` varchar(200) NOT NULL DEFAULT '' COMMENT '权限名称',
   `descs` varchar(200) NOT NULL DEFAULT '' COMMENT '权限描述',
   `page_ids` varchar(200) NOT NULL DEFAULT '' COMMENT '能操作的页面',
+  `mode_ids` varchar(200) NOT NULL DEFAULT '' COMMENT '能操作的功能',
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
@@ -42,7 +43,13 @@ CREATE TABLE `tblSchedule` (
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `group_id` (`group_id`, `start_time`),
+  KEY `teacher_uid` (`teacher_uid`, `start_time`),
+  KEY `area_id` (`area_id`, `start_time`),
+  KEY `room_id` (`room_id`, `start_time`),
+  KEY `area_operator` (`area_operator`),
+  KEY `start_time` (`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='上课记录表';
 
 CREATE TABLE `tblCurriculum` (
@@ -62,7 +69,11 @@ CREATE TABLE `tblCurriculum` (
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `schedule_id` (`schedule_id`, `start_time`),
+  KEY `student_uid` (`student_uid`, `start_time`),
+  KEY `order_id` (`order_id`, `start_time`),
+  KEY `start_time` (`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='学生上课记录表';
 
 
@@ -75,7 +86,8 @@ CREATE TABLE `tblSubject` (
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `parent_id` (`parent_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='科目分类表';
 
 
@@ -98,7 +110,9 @@ CREATE TABLE `tblUser` (
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
   PRIMARY KEY (`uid`),
   KEY `nick` (`nickname`),
-  KEY `n_p` (`name`,`passport`)
+  KEY `n_p1` (`name`,`phone`),
+  KEY `n_p` (`name`,`passport`),
+  KEY `bpid` (`bpid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=101000 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
 
@@ -111,14 +125,19 @@ CREATE TABLE `tblOrder` (
   `student_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学员uid',
   `balance` int(11) NOT NULL DEFAULT '0' COMMENT '实际存额',
   `price` int(11) NOT NULL DEFAULT '0' COMMENT '实际价格',  
-  `discount` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '优惠信息',
-  `discount_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '优惠类型, 1折扣,2减免',
+  `discount_z` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '优惠信息',
+  `discount_j` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '优惠信息',
   `operator` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '操作员UID',
   `transfer_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '结转源id',
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`order_id`)
+  PRIMARY KEY (`order_id`),
+  KEY `balance` (`balance`),
+  KEY `transfer_id` (`transfer_id`),
+  KEY `subject_id` (`subject_id`, `create_time`),
+  KEY `student_uid` (`student_uid`, `create_time`),
+  KEY `create_time` (`create_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1010001001 DEFAULT CHARSET=utf8 COMMENT='订单表';
 
 CREATE TABLE `tblTransfer` (
@@ -132,7 +151,9 @@ CREATE TABLE `tblTransfer` (
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `order_id` (`order_id`),
+  KEY `student_uid` (`student_uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='结转记录';
 
 CREATE TABLE `tblRefund` (
@@ -145,7 +166,9 @@ CREATE TABLE `tblRefund` (
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `order_id` (`order_id`),
+  KEY `student_uid` (`student_uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='退款记录';
 
 CREATE TABLE `tblRecharge` (
@@ -159,7 +182,9 @@ CREATE TABLE `tblRecharge` (
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `order_id` (`order_id`),
+  KEY `student_uid` (`student_uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='充值记录';
 
 CREATE TABLE `tblRecords` (
@@ -179,7 +204,9 @@ CREATE TABLE `tblRecords` (
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
   PRIMARY KEY (`id`),
-  KEY `uid` (`uid`)
+  KEY `uid` (`uid`),
+  KEY `state` (`state`),
+  KEY `schedule_id` (`schedule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='消费记录';
 
 CREATE TABLE `tblArea` (
@@ -200,7 +227,8 @@ CREATE TABLE `tblRoom` (
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `area_id` (`area_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='教室表';
 
 CREATE TABLE `tblColumn` (

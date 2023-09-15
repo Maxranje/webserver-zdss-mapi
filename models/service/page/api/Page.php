@@ -20,6 +20,7 @@ class Service_Page_Api_Page extends Zy_Core_Service{
     private function getStudentData() {
         $result = array(
             'lm_duration' => 0,
+            'nm_duration' => 0,
             'all_duration' => 0,
             'able_duration' => 0,
         );
@@ -44,6 +45,23 @@ class Service_Page_Api_Page extends Zy_Core_Service{
             }
         }
 
+
+        // 下个月
+        $sts = strtotime(date('Y-m-d', strtotime(date('Y-m-01') . ' +1 month')));
+        $ets = strtotime(date('Y-m-d', strtotime(date('Y-m-01') . ' +2 month')));
+        $conds = array(
+            sprintf("start_time >= %d", $sts),
+            sprintf("end_time <= %d", $ets),
+            sprintf("student_uid = %d", intval($this->adption['userid']))
+        );
+        $lists = $serviceData->getListByConds($conds);
+
+        if (!empty($lists)) {
+            foreach ($lists as $item) {
+                $result['nm_duration'] += $item['end_time'] - $item['start_time'];
+            }
+        }
+
         // 本月
         $sts = strtotime(date("Y-m-1"));
         $ets = strtotime(date('Y-m-d', strtotime('first day of next month')));
@@ -70,12 +88,14 @@ class Service_Page_Api_Page extends Zy_Core_Service{
         $result['all_duration'] = Zy_Helper_Utils::formatDurationForTime($result['all_duration']);
         $result['able_duration'] = Zy_Helper_Utils::formatDurationForTime($result['able_duration']);
         $result['lm_duration'] = Zy_Helper_Utils::formatDurationForTime($result['lm_duration']);
+        $result['nm_duration'] = Zy_Helper_Utils::formatDurationForTime($result['nm_duration']);
         return $result;
     }
 
     private function getTeacherData() {
         $result = array(
             'lm_duration' => 0,
+            'nm_duration' => 0,
             'all_duration' => 0,
             'able_duration' => 0,
         );
@@ -95,6 +115,22 @@ class Service_Page_Api_Page extends Zy_Core_Service{
         if (!empty($lists)) {
             foreach ($lists as $item) {
                 $result['lm_duration'] += $item['end_time'] - $item['start_time'];
+            }
+        }
+
+        // 下个月
+        $sts = strtotime(date('Y-m-d', strtotime(date('Y-m-01') . ' +1 month')));
+        $ets = strtotime(date('Y-m-d', strtotime(date('Y-m-01') . ' +2 month')));
+        $conds = array(
+            sprintf("start_time >= %d", $sts),
+            sprintf("end_time <= %d", $ets),
+            sprintf("teacher_uid = %d", intval($this->adption['userid']))
+        );
+        $lists = $serviceData->getListByConds($conds);
+
+        if (!empty($lists)) {
+            foreach ($lists as $item) {
+                $result['nm_duration'] += $item['end_time'] - $item['start_time'];
             }
         }
 
@@ -120,6 +156,7 @@ class Service_Page_Api_Page extends Zy_Core_Service{
         $result['all_duration'] = Zy_Helper_Utils::formatDurationForTime($result['all_duration']);
         $result['able_duration'] = Zy_Helper_Utils::formatDurationForTime($result['able_duration']);
         $result['lm_duration'] = Zy_Helper_Utils::formatDurationForTime($result['lm_duration']);
+        $result['nm_duration'] = Zy_Helper_Utils::formatDurationForTime($result['nm_duration']);
         return $result;
     }
 }

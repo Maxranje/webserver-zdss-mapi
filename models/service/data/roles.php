@@ -5,6 +5,9 @@ class Service_Data_Roles {
     private $daoRole ;
     private $daoRoleMap ;
 
+    const ROLE_MODE_SCHEDULE_UPDATE = "4001";
+    const ROLE_MODE_SCHEDULE_DELETE = "4002";
+
     public function __construct() {
         $this->daoRole = new Dao_Roles () ;
         $this->daoRoleMap = new Dao_Rolesmap () ;
@@ -69,8 +72,9 @@ class Service_Data_Roles {
     // 根据uid获取页面ids (基础session用, 不要改, 重启一个接口)
     public function getPageIdsByUid($uid, $type) {
         // 超管权限为空, 默认就是全部, 学生返回空, 就是真的没有
+        $pageIds = $modeIds = array();
         if (in_array($type, array(Service_Data_Profile::USER_TYPE_STUDENT, Service_Data_Profile::USER_TYPE_SUPER))) {
-            return array();
+            return array($pageIds, $modeIds);
         }
 
         // 正常从数据库查权限
@@ -79,7 +83,7 @@ class Service_Data_Roles {
         );
         $data = $this->daoRoleMap->getListByConds($conds, array("role_id"));
         if (empty($data)) {
-            return array();  // 不配置谁都没权限
+            return array($pageIds, $modeIds);  // 不配置谁都没权限
         }
 
         $rolesIds = Zy_Helper_Utils::arrayInt($data, 'role_id');
@@ -88,18 +92,21 @@ class Service_Data_Roles {
         $conds = array(
             sprintf("id in (%s)", implode(",", $rolesIds))
         );
-        $data2 = $this->daoRole->getListByConds($conds, array("page_ids"));
+        $data2 = $this->daoRole->getListByConds($conds, array("page_ids", "mode_ids"));
         if (empty($data2)) {
-            return array();
+            return array($pageIds, $modeIds);
         }
 
-        $pageIds = array();
         foreach ($data2 as $item) {
             $pageIds = array_merge($pageIds, explode(",", $item['page_ids']));
+            $modeIds = array_merge($modeIds, explode(",", $item['mode_ids']));
         }
         $pageIds = array_unique($pageIds);
         $pageIds = array_values($pageIds);
-        return $pageIds;
+
+        $modeIds = array_unique($modeIds);
+        $modeIds = array_values($modeIds);
+        return array($pageIds, $modeIds);
     }
 
     // 创建权限
@@ -108,7 +115,7 @@ class Service_Data_Roles {
     }
 
     // 更新权限
-    public function updateRoles ($id, $name, $descs, $pageIds, $insetUids, $delUids){
+    public function updateRoles ($id, $name, $descs, $pageIds, $modeIds, $insetUids, $delUids){
         $this->daoRole->startTransaction();
         $conds = array(
             'id' => $id,
@@ -117,6 +124,7 @@ class Service_Data_Roles {
             "name" => $name,
             "descs" => $descs,
             "page_ids" => implode(",", $pageIds),
+            "mode_ids" => implode(",", $modeIds),
             "update_time" => time(),
         );
         $ret = $this->daoRole->updateByConds($conds, $profile);

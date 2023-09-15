@@ -14,27 +14,19 @@ class Service_Page_Order_Create extends Zy_Core_Service{
         $originBalance  = empty($this->request['origin_balance']) ? 0 : intval(floatval($this->request['origin_balance']) * 100);
         $realBalance    = empty($this->request['real_balance']) ? 0 : intval(floatval($this->request['real_balance']) * 100);
         $realPrice      = empty($this->request['real_price']) ? 0 : intval(floatval($this->request['real_price']) * 100);
-        $discount       = empty($this->request['discount']) ? 0 : floatval($this->request['discount']);
-        $discountType   = empty($this->request["discount_type"]) || !in_array($this->request["discount_type"], Service_Data_Order::DISCOUNT_TYPE) ? 0 : intval($this->request['discount_type']);
+        $discountZ      = empty($this->request['discount_z']) ? 0 : intval($this->request['discount_z'] * 10);
+        $discountJ      = empty($this->request['discount_j']) ? 0 : intval($this->request['discount_j'] * 100);
 
         if ($studentUid <= 0 || $subjectId <= 0 || $scheduleNums <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 学员, 科目, 总课时数为必填项, 不能为空");
         }
 
-        if ($discountType == Service_Data_Order::DISCOUNT_J && ($discount <= 0)) {
-            throw new Zy_Core_Exception(405, "操作失败, 减免优惠配置错误, 需要配置具体价格");
+        if ($discountJ < 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 减免优惠配置错误, 需要配置大于0的具体价格");
         }
 
-        if ($discountType == Service_Data_Order::DISCOUNT_Z && ($discount <= 0 || $discount >= 10)) {
+        if ($discountZ < 0 || $discountZ >= 100) {
             throw new Zy_Core_Exception(405, "操作失败, 折扣优惠配置错误, 折扣必须在 x>0 并且 x<10 之间, 小数点后一位");
-        }
-
-        if ($discountType == 0) {
-            $discount = 0;
-        } else if ($discountType == Service_Data_Order::DISCOUNT_Z){
-            $discount = intval($discount * 10);
-        } else if ($discountType == Service_Data_Order::DISCOUNT_J) {
-            $discount = intval($discount * 100);
         }
 
         $serviceProfile = new Service_Data_Profile();
@@ -58,8 +50,8 @@ class Service_Page_Order_Create extends Zy_Core_Service{
             "student_uid"       => $studentUid, 
             "balance"           => $realBalance, 
             "price"             => $realPrice,
-            "discount"          => $discount, 
-            "discount_type"     => $discountType,
+            "discount_z"        => $discountZ, 
+            "discount_j"        => $discountJ,
             "transfer_id"       => 0,
             "operator"          => OPERATOR,
             'update_time'       => time(),

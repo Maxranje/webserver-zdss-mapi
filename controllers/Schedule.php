@@ -13,9 +13,9 @@ class Controller_Schedule extends Zy_Core_Controller{
         "revoke"        => "actions/schedule/Revoke.php",
 
         // 日历
-        "calendarstartsearch"       => "actions/schedule/Calendarstartsearch.php",
-        "calendarstudent"           => "actions/schedule/Calendarstudent.php",
+        "calendardata"              => "actions/schedule/Calendardata.php",
         "calendarclient"            => "actions/schedule/Calendarclient.php",
+        "calendarplatform"          => "actions/schedule/Calendarplatform.php",
 
         // 绑定列表
         "bandlists"           => "actions/schedule/Bandlists.php",

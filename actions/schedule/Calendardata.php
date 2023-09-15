@@ -1,6 +1,6 @@
 <?php
 
-class Actions_Calendarstudent extends Zy_Core_Actions {
+class Actions_Calendardata extends Zy_Core_Actions {
 
     // 执行入口
     public function execute() {
@@ -8,7 +8,7 @@ class Actions_Calendarstudent extends Zy_Core_Actions {
             $this->error(405, "请先登录");
         }
 
-        $serivce = new Service_Page_Schedule_Calendar_Student ($this->_request, $this->_userInfo);
+        $serivce = new Service_Page_Schedule_Calendar_Data ($this->_request, $this->_userInfo);
         $this->_data = $serivce->execute();
         return $this->_data;
     }

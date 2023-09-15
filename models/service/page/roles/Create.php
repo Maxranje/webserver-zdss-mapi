@@ -23,6 +23,7 @@ class Service_Page_Roles_Create extends Zy_Core_Service{
         $profile = [
             "name"          => $name, 
             "page_ids"      => "", 
+            "mode_ids"      => "",
             "descs"         => $descs, 
             "create_time"   => time() , 
             "update_time"   => time() , 

@@ -10,8 +10,8 @@ class Service_Page_Order_Transfer_Create extends Zy_Core_Service{
         $orderId        = empty($this->request['order_id']) ? 0 : intval($this->request['order_id']);
         $balance        = empty($this->request['balance']) ? 0 : intval(floatval($this->request['balance']) * 100);
         $subjectId      = empty($this->request['subject_id']) ? 0 : intval($this->request['subject_id']);
-        $discount       = empty($this->request['discount']) ? 0 : floatval($this->request['discount']);
-        $discountType   = empty($this->request["discount_type"]) || !in_array($this->request["discount_type"], Service_Data_Order::DISCOUNT_TYPE) ? 0 : intval($this->request['discount_type']);
+        $discountZ      = empty($this->request['discount_z']) ? 0 : intval($this->request['discount_z'] *10);
+        $discountJ      = empty($this->request['discount_j']) ? 0 : intval($this->request['discount_j'] * 100);
 
         $originPrice    = empty($this->request['transfer_origin_price']) ? 0 : intval(floatval($this->request['transfer_origin_price']) * 100);
         $originBalance  = empty($this->request['transfer_origin_balance']) ? 0 : intval(floatval($this->request['transfer_origin_balance']) * 100);
@@ -28,20 +28,12 @@ class Service_Page_Order_Transfer_Create extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 未生成预览信息, 无法直接结转");
         }
 
-        if ($discountType ==  Service_Data_Order::DISCOUNT_J && ($discount <= 0)) {
-            throw new Zy_Core_Exception(405, "操作失败, 优惠配置错误, 需要配置具体价格");
+        if ($discountJ < 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 减免配置错误, 需要配置具体价格");
         }
 
-        if ($discountType == Service_Data_Order::DISCOUNT_Z && ($discount <= 0 || $discount >= 10)) {
+        if ($discountZ < 0 || $discountZ >= 100) {
             throw new Zy_Core_Exception(405, "操作失败, 折扣必须在 10 > x > 0, 小数点后一位");
-        }
-
-        if ($discountType == 0) {
-            $discount = 0;
-        } else if ($discountType == Service_Data_Order::DISCOUNT_Z){
-            $discount = intval($discount * 10);
-        } else if ($discountType == Service_Data_Order::DISCOUNT_J) {
-            $discount = intval($discount * 100);
         }
 
         $serviceOrder = new Service_Data_Order();
@@ -89,8 +81,8 @@ class Service_Page_Order_Transfer_Create extends Zy_Core_Service{
             "student_uid"       => intval($orderInfo['student_uid']), 
             "balance"           => $realBalance, 
             "price"             => $realPrice,
-            "discount"          => $discount, 
-            "discount_type"     => $discountType,
+            "discount_z"        => $discountZ, 
+            "discount_j"        => $discountJ,
             "transfer_id"       => $orderId,
             "operator"          => OPERATOR,
             'update_time'       => time(),

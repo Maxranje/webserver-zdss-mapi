@@ -28,9 +28,9 @@ class Service_Page_Student_Create extends Zy_Core_Service{
         }
 
         $serviceData = new Service_Data_Profile();
-        $userInfo = $serviceData->getUserInfoByNameAndPhone($name, $phone);
+        $userInfo = $serviceData->getStudentInfoByPhone($phone);
         if (!empty($userInfo)) {
-            throw new Zy_Core_Exception(405, "操作失败, 用户名/手机号绑定的用户已存在");
+            throw new Zy_Core_Exception(405, "操作失败, 手机号与已创建的学生重复, 请重新填写");
         }
 
         $profile = [

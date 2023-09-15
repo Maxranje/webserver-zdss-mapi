@@ -1,5 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+const HOSTNAME = "http://127.0.0.1:8060/";
+//const HOSTNAME = "http://zdss.cn/";
 return array(
     "head" => array(
         'pages' => array(
@@ -98,6 +100,13 @@ return array(
                     "url"=>"/schedule/schedulelist",
                     "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-schedule-list.json"
+                ),
+                array(
+                    "id" => 43,
+                    "label"=>"课表",
+                    "url"=>"/schedule/calendar",
+                    "icon"=>"fa fa-calendar",
+                    "link"=>HOSTNAME . "/mapi/schedule/calendarplatform"
                 )
             ]
         ),
@@ -218,8 +227,17 @@ return array(
             "label"=>"个人课表",
             "url"=>"/calendar",
             "icon"=>"fa fa-calendar",
-            // "link"=>"http://zdss.cn/mapi/dashboard/home"
-            "link"=>"http://127.0.0.1:8060/mapi/dashboard/home"
+            "link"=>HOSTNAME . "/mapi/dashboard/home"
+        ),
+    ),
+    "mode" => array(
+        array(
+            "id" => 4001,
+            "label"=>"课程编辑",
+        ),
+        array(
+            "id" => 4002,
+            "label"=>"课程删除",
         ),
     ),
 );

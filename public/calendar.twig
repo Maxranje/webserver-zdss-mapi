@@ -13,6 +13,7 @@
 
     <!-- These plugins only need for the run this page -->
     <link rel="stylesheet" href="/public/atom/css/fullcalendar.min.css">
+    <link rel="stylesheet" href="/public/atom/css/default-assets/garessi-notif.css">
 
     <!-- Master Stylesheet [If you remove this CSS file, your file will be broken undoubtedly.] -->
     <link rel="stylesheet" href="/public/atom/style.css">
@@ -40,29 +41,6 @@
                 </div>
 
                 <div class="right-side-navbar d-flex align-items-center justify-content-end" style="padding-right:10px">
-                    <!-- Top Bar Nav -->
-                    <ul class="d-flex align-items-center">
-
-                        <li class="nav-item dropdown">
-                            {# <a class="btn dropdown-toggle" href="javascript:singout()">
-                                <img src="/public/atom/img/profile-img/avatar_default.jpeg" alt="">
-                            </a> #}
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="/public/atom/img/profile-img/avatar_default.jpeg" alt=""></button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <!-- User Profile Area -->
-                                <div class="user-profile-area">
-                                    <div class="user-profile-heading">
-                                        <!-- Profile Text -->
-                                        <div class="profile-text">
-                                            <h6>{{ data.user.name }}</h6>
-                                            {# <span>samanthasarah@example.com</span> #}
-                                        </div>
-                                    </div>
-                                    <a href="javascript:singout()" class="dropdown-item"><i class="ti-unlink text-warning" aria-hidden="true"></i> 登出</a>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
                 </div>
             </header>
 
@@ -71,91 +49,34 @@
                 <!-- Profile area Start -->
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-xl-4 mb-30">
-
-                            <div class="card bg-boxshadow">
-                                <div class="card-body">
-                                    {% if data.user.type == 13 %}
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-download"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">上月剩余总课时数 </a>
-                                            <p class="mb-0">{{ data.lists.lm_duration }} </p>
-                                        </div>
-                                    </div>
-                                    <!-- Link area -->
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-check"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">本月剩余总课时数 </a>
-                                            <p class="mb-0">{{ data.lists.all_duration }} </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Link area -->
-                                    <div class="link--area d-flex align-items-center ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-money"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">本月待完结课时数</a>
-                                            <p class="mb-0">{{ data.lists.able_duration }} </p>
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                    {% if data.user.type == 12 %}
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-download"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">上月剩余总课时数 </a>
-                                            <p class="mb-0">{{ data.lists.lm_duration }} </p>
-                                        </div>
-                                    </div>
-                                    <!-- Link area -->
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-check"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">本月剩余总课时数 </a>
-                                            <p class="mb-0">{{ data.lists.all_duration }} </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Link area -->
-                                    <div class="link--area d-flex align-items-center ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-money"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">本月待完结课时数</a>
-                                            <p class="mb-0">{{ data.lists.able_duration }} </p>
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                </div>
+                        <div class="col-xl-3 mb-4">
+                            <select name="make" class="form-control" id="select1">
+                                <option value="none" selected>选择分类</option>
+                                <option value="group" >班级</option>
+                                <option value="teacher" >教师</option>
+                                <option value="student" >学员</option>
+                            </select>
+                        </div>
+                        <div class="col-xl-3 mb-5">
+                            <select name="make" class="form-control" id="select2">
+                            </select>
+                        </div>
+                        <div class="col-lg-6 col-xl-2">
+                            <a class="btn- btn-primary btn-1 btn-1f" id="updateBtn">
+                                搜索
+                            </a>
+                        </div>
+                        <div class="col-lg-6 col-xl-4">
+                            <div class="alert alert-outline-danger text-danger display-none" role="alert" id="tips">
+                                <i class=" ti-close  close text-black" onclick="$('#tips').hide();"></i>
+                                <strong>Error!</strong>
+                                <span id="tips-content"></span>
                             </div>
                         </div>
-
-                        <div class="col-xl-8">
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12">
                             <div class="card bg-boxshadow mb-30">
                                 <div class="card-body">
                                     <div id='fullcalendar-default-view'></div>
@@ -181,15 +102,108 @@
     <!-- These plugins only need for the run this page -->
     <script src="/public/atom/js/default-assets/fullcalendar-moment.min.js"></script>
     <script src="/public/atom/js/fullcalendar.min.js"></script>
-    <script src="/public/atom/js/default-assets/ui-fullcalendr.js"></script>
+    <script> 
+(function ($) {
+    'use strict';
+
+    var today = new Date();
+    var y = today.getFullYear();
+    var m = today.getMonth();
+    var d = today.getDate();
+
+    
+    // Default view
+    $('#fullcalendar-default-view').fullCalendar({
+        themeSystem: 'bootstrap4',
+        bootstrapFontAwesome: {
+            close: ' ion ion-md-close',
+            prev: ' fa fa-angle-left scaleX--1-rtl',
+            next: ' fa fa-angle-right scaleX--1-rtl',
+            prevYear: ' fa fa-angle-left scaleX--1-rtl',
+            nextYear: ' fa fa-angle-right scaleX--1-rtl'
+        },
+        
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+        },
+        timeZone: 'PRC',
+        contentHeight:600,
+        dayMaxEventRows: 1, //最大事件行数
+        moreLinkContent(jsEvent) {
+            console.log(jsEvent)
+            return jsEvent.shortText;
+        },
+        defaultDate: today,
+        navLinks: true,
+        selectable: true,
+        selectHelper: true,
+        weekNumbers: false,
+        nowIndicator: true,
+        firstDay: 1,
+        businessHours: {
+            dow: [1, 2, 3, 4, 5],
+            start: '9:00',
+            end: '18:00',
+        },
+        editable: false,
+        eventLimit: true,
+        events: "/mapi/schedule/calendardata"
+    });
+
+    var lastEventSource= "/mapi/schedule/calendardata";
+
+    $('#select1').change(function() {  
+        var selectedOption = $(this).val();  
+        $('#select2').empty(); // 清空第二个select的选项  
+        $('#select2').niceSelect('update');
+        var path = "";
+        if (selectedOption == "group") {  
+            path = "/mapi/group/lists?state=1&is_select=1";
+        } else if (selectedOption == "student") {
+            path = "/mapi/student/lists?state=1&is_select=1";
+        } else if (selectedOption == "teacher") {
+            path = "/mapi/teacher/lists?state=1&is_select=1";
+        }
+        if (path == "") {
+            return ;
+        }
+
+        $.get(path, function(data, status)  {  
+            if (status != "success" || !data.data.options || data.data.options.length <= 0) {
+                return;
+            }
+            $('#select2').append('<option value="0">请选择</option>');  
+            var options = data.data.options; // 假设服务器返回的数据结构为 { "options": ["选项1", "选项2", "选项3"] }  
+            for (var i = 0; i < options.length; i++) {  
+                $('#select2').append('<option value="' + options[i]["value"] + '">' + options[i]["label"] + '</option>');  
+            }  
+            $('#select2').niceSelect('update');
+        });  
+    });  
+
+    $('#updateBtn').click(function() {  
+        var select1Val = $('#select1').val();  
+        var select2Val = $('#select2').val();  
+        $("#notifyinfo").attr("data-content", "")
+        if (!select1Val || select1Val == "none") {
+            $('#tips-content').html("需要选择类型和对应的成员");
+            $('#tips').css('display', 'block').show();
+            return ;
+        }
+        $('#fullcalendar-default-view').fullCalendar( 'removeEventSource', lastEventSource)
+        lastEventSource = "/mapi/schedule/calendardata?type="+select1Val+"&value="+select2Val
+        $('#fullcalendar-default-view').fullCalendar( 'addEventSource', lastEventSource )
+        
+    });      
+
+})(jQuery);
+    </script>
 
     <!-- Active JS -->
     <script src="/public/atom/js/default-assets/active.js"></script>
-    <script>
-    function singout () {
-        $.post("/mapi/sign/out",function(data){window.location.reload();});
-    }
-    </script>
+    <script src="/public/atom/js/default-assets/garessi-notif.js"></script>
 
 </body>
 

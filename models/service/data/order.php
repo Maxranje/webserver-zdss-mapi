@@ -2,10 +2,6 @@
 
 class Service_Data_Order {
 
-    const DISCOUNT_Z = 1;  // 折扣
-    const DISCOUNT_J = 2;  // 减免
-    const DISCOUNT_TYPE = [self::DISCOUNT_Z, self::DISCOUNT_J];
-
     private $daoOrder ;
 
     public function __construct() {

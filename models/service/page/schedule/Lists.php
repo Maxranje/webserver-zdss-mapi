@@ -146,6 +146,9 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
             $areaInfos = array_column($areaInfos, null, 'id');
         }
         
+        $isModeUpdate = $this->isModeAble(Service_Data_Roles::ROLE_MODE_SCHEDULE_UPDATE);
+        $isModeDelete = $this->isModeAble(Service_Data_Roles::ROLE_MODE_SCHEDULE_DELETE);
+        
         $sum_duration = 0;
         $result = array();
         foreach ($lists as $key => &$item) {
@@ -169,7 +172,9 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
                 continue;
             }
 
-            $item['isSuper']    = $this->checkSuper() ? 1 : 0;
+            $item['is_super']   = $this->checkSuper() ? 1 : 0;
+            $item['is_u']       = $isModeUpdate ? 1 : 0;
+            $item['is_d']       = $isModeDelete ? 1 : 0;
             $item["week_time"]  = $this->weekName[date("w", $item['start_time'])];
             $item['time_day']   = strtotime(date("Y-m-d", $item['start_time']));
             $item['time_range'] = sprintf("%s,%s", date("H:i", $item['start_time']), date("H:i", $item['end_time']));
@@ -243,7 +248,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
                 $item['area_mark'],
                 $item['operator_name'],
                 $item['area_op_name'],
-                $item['state'] == 1 ? "待开始" : "结束",
+                $item['state'] == 1 ? "待开始" : "已结算",
                 $item['week_time'],
                 $item['duration'],
                 $item['range_time'],

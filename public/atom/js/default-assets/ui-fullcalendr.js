@@ -17,14 +17,13 @@
             prevYear: ' fa fa-angle-left scaleX--1-rtl',
             nextYear: ' fa fa-angle-right scaleX--1-rtl'
         },
-
+        
         header: {
-            left: 'title',
-            center: 'month,agendaDay',
-            right: 'prev,next today'
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
         },
         timeZone: 'PRC',
-
         contentHeight:550,
         dayMaxEventRows: 1, //最大事件行数
         moreLinkContent(jsEvent) {

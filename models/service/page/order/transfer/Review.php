@@ -11,18 +11,18 @@ class Service_Page_Order_Transfer_Review extends Zy_Core_Service{
         $balance        = empty($this->request['balance']) ? 0 : intval(floatval($this->request['balance']) * 100);
         $studentUid     = empty($this->request['student_uid']) ? 0 : intval($this->request['student_uid']);
         $subjectId      = empty($this->request['subject_id']) ? 0 : intval($this->request['subject_id']);
-        $discount       = empty($this->request['discount']) ? 0 : floatval($this->request['discount']);
-        $discountType   = empty($this->request["discount_type"]) || !in_array($this->request["discount_type"], Service_Data_Order::DISCOUNT_TYPE) ? 0 : intval($this->request['discount_type']);
+        $discountZ      = empty($this->request['discount_z']) ? 0 : intval($this->request['discount_z'] * 10);
+        $discountJ      = empty($this->request['discount_j']) ? 0 : intval($this->request['discount_j'] * 100);
 
         if ($studentUid <= 0 || $subjectId <= 0 || $balance <=0 ) {
             return array();
         }
 
-        if ($discountType == Service_Data_Order::DISCOUNT_J && ($discount <= 0)) {
+        if ($discountJ < 0) {
             return array();
         }
 
-        if ($discountType == Service_Data_Order::DISCOUNT_Z && ($discount <= 0 || $discount >= 10)) {
+        if ($discountZ < 0 || $discountZ >= 100) {
             return array();
         }
         
@@ -44,22 +44,16 @@ class Service_Page_Order_Transfer_Review extends Zy_Core_Service{
 
         $originPrice = $realPrice = intval($subjectInfo['price']);
         $originBalance = $realBalance = $balance;
-        $scheduleNums = 0;
 
-        if ($discountType == 0) {
-            $scheduleNums = sprintf("%.2f", $realBalance / $realPrice);
-            $discount = 0;
-        } else if ($discountType == Service_Data_Order::DISCOUNT_Z){
-            $discount = intval($discount * 10);
-            $realPrice = intval($realPrice / 100 * $discount);
-            $originBalance = $originBalance / $discount * 100;
-            $scheduleNums = sprintf("%.2f", $realBalance / $realPrice);
-        } else if ($discountType == Service_Data_Order::DISCOUNT_J) {
-            $discount = intval($discount * 100);
-            $originBalance = $originBalance + $discount;
-            $scheduleNums = sprintf("%.2f", $originBalance / $originPrice);
-            $realPrice = $realBalance / $scheduleNums;
+        if ($discountZ > 0){
+            $originBalance = intval($originBalance / $discountZ * 100);
+        } 
+        if ($discountJ > 0) {
+            $originBalance = $originBalance + $discountJ;
         }
+        $scheduleNums = sprintf("%.2f",$originBalance / $originPrice);
+        $realPrice = $realBalance / $scheduleNums;
+
 
         return array(
             "transfer_origin_price" => sprintf("%.2f", $originPrice / 100),
