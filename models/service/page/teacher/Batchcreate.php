@@ -21,6 +21,11 @@ class Service_Page_Teacher_Create extends Zy_Core_Service{
                 continue;
             }
 
+            $userInfo = $serviceData->getUserInfoByName($record['name']);
+            if (!empty($userInfo)) {
+                continue;
+            }
+
             $userInfo = $serviceData->getUserInfoByNameAndPhone($record['name'], $record['phone']);
             if (!empty($userInfo)) {
                 continue;

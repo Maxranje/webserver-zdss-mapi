@@ -8,7 +8,7 @@ class Service_Page_Api_Areaoperator extends Zy_Core_Service{
         }
 
         $conds = array(
-            'type' => Service_Data_Profile::USER_TYPE_ADMIN,
+            sprintf('type in (%s)', implode(",",[Service_Data_Profile::USER_TYPE_ADMIN, Service_Data_Profile::USER_TYPE_TEACHER])),
         );
         
         $serviceData = new Service_Data_Profile();

@@ -229,16 +229,9 @@ class Service_Data_Schedule {
         $timeLength     = ($schedule['end_time'] - $schedule['start_time']) / 3600;
 
         // 获取教师的price
-        $teacherPrice   = 0;
-        if (!empty($column['price'])){
-            $column['price'] = json_decode($column['price'], true);
-            foreach ($column['price'] as $item) {
-                if (count($studentUids) > $item['number']) {
-                    continue;
-                }
-                $teacherPrice = intval($item['price'] * $timeLength);
-                break;
-            }
+        $teacherPrice = intval($column['price'] * $timeLength);
+        if (intval($column['muilt_num']) > 0 && intval($column['muilt_price']) > 0 && count($studentUids) >= $column['muilt_num']){
+            $teacherPrice = intval($column['muilt_price'] * $timeLength);
         }
 
         $this->daoSchedule->startTransaction();

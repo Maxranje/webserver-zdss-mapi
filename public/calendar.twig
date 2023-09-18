@@ -180,8 +180,25 @@
                 $('#select2').append('<option value="' + options[i]["value"] + '">' + options[i]["label"] + '</option>');  
             }  
             $('#select2').niceSelect('update');
+            //$('#select2').next().attr("contentEditable", true);
         });  
     });  
+
+    // 监听搜索框的输入事件  
+    //$('#select2').on('input', function() {  
+    //    var searchTerm = $(this).val();  
+
+        // 遍历nice-select的所有选项并显示匹配的选项  
+    //    $('#select2').next().children("ul").each(function() {  
+            //var optionText = $(this).text();  
+
+            //if (optionText.indexOf(searchTerm) > -1) {  
+            //    $(this).show();  
+            //} else {  
+            //    $(this).hide();  
+        //}  
+        //});  
+    //});
 
     $('#updateBtn').click(function() {  
         var select1Val = $('#select1').val();  

@@ -10,6 +10,8 @@ class Dao_Column extends Zy_Core_Dao {
             "teacher_uid"  => "teacher_uid" , 
             "subject_id"  => "subject_id" , 
             "price"  => "price" , 
+            "muilt_price" => "muilt_price",
+            "muilt_num" => "muilt_num",
             "create_time"  => "create_time" , 
             "update_time"  => "update_time" , 
             "ext"  => "ext" , 

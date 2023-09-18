@@ -456,33 +456,40 @@
                                                                     "type": "divider"
                                                                 },
                                                                 {
-                                                                    "type": "combo",
+                                                                    "type": "input-text",
                                                                     "name": "price",
-                                                                    "label": "阈值客单价",
-                                                                    "multiple": true,
-                                                                    "required": true,
-                                                                    "items": [
-                                                                        {
-                                                                            "type": "input-text",
-                                                                            "name": "number",
-                                                                            "addOn": {
-                                                                                "type": "text",
-                                                                                "label": "人"
-                                                                            },
-                                                                            "value" : 0,
-                                                                            "desc": "人数阈值, 小于等于阈值则按照课时单价计算"
-                                                                        },
-                                                                        {
-                                                                            "type": "input-text",
-                                                                            "name": "price",
-                                                                            "addOn": {
-                                                                                "type": "text",
-                                                                                "label": "元"
-                                                                            },
-                                                                            "value" : 0,
-                                                                            "desc": "课时单价, 小于等于人数阈值则按照当前单价计算, 元单位"
-                                                                        }
-                                                                    ]
+                                                                    "label": "课时单价",
+                                                                    "addOn": {
+                                                                        "type": "text",
+                                                                        "label": "元"
+                                                                    },
+                                                                    "desc": "一小时单价, 元为单位, 保留小数点后两位, 谨慎填写价格, 0为免费课"
+                                                                },
+                                                                {
+                                                                    "type": "divider"
+                                                                },
+                                                                {
+                                                                    "type": "input-text",
+                                                                    "name": "muilt_num",
+                                                                    "label": "人数阈值",
+                                                                    "addOn": {
+                                                                        "type": "text",
+                                                                        "label": "人"
+                                                                    },
+                                                                    "desc": "超过(>=)阈值人数可以按新价格给教师算价, 人数必须大于1人, 不填写默认不存在"
+                                                                },
+                                                                {
+                                                                    "type": "divider"
+                                                                },
+                                                                {
+                                                                    "type": "input-text",
+                                                                    "name": "muilt_price",
+                                                                    "label": "超阈值单价",
+                                                                    "addOn": {
+                                                                        "type": "text",
+                                                                        "label": "元"
+                                                                    },
+                                                                    "desc": "超阈值一小时单价, 元为单位, 保留小数点后两位, 谨慎填写价格"
                                                                 }
                                                             ]
                                                         }
@@ -569,33 +576,43 @@
                                                         "type": "divider"
                                                     },
                                                     {
-                                                        "type": "combo",
+                                                        "type": "input-text",
                                                         "name": "price",
-                                                        "label": "阈值客单价",
-                                                        "multiple": true,
-                                                        "required": true,
-                                                        "items": [
-                                                            {
-                                                                "type": "input-text",
-                                                                "name": "number",
-                                                                "addOn": {
-                                                                    "type": "text",
-                                                                    "label": "人"
-                                                                },
-                                                                "value" : 0,
-                                                                "desc": "人数阈值, 小于等于阈值则按照课时单价计算"
-                                                            },
-                                                            {
-                                                                "type": "input-text",
-                                                                "name": "price",
-                                                                "addOn": {
-                                                                    "type": "text",
-                                                                    "label": "元"
-                                                                },
-                                                                "value" : 0,
-                                                                "desc": "课时单价, 小于等于人数阈值则按照当前单价计算, 元单位"
-                                                            }
-                                                        ]
+                                                        "label": "课时单价",
+                                                        "addOn": {
+                                                            "type": "text",
+                                                            "label": "元"
+                                                        },
+                                                        "value" : 0,
+                                                        "desc": "一小时单价, 元为单位, 保留小数点后两位, 谨慎填写价格, 0为免费课"
+                                                    },
+                                                    {
+                                                        "type": "divider"
+                                                    },
+                                                    {
+                                                        "type": "input-text",
+                                                        "name": "muilt_num",
+                                                        "label": "人数阈值",
+                                                        "addOn": {
+                                                            "type": "text",
+                                                            "label": "人"
+                                                        },
+                                                        "value" : 0,
+                                                        "desc": "超过(>=)阈值人数可以按新价格给教师算价, 人数必须大于1人, 否则保存失败"
+                                                    },
+                                                    {
+                                                        "type": "divider"
+                                                    },
+                                                    {
+                                                        "type": "input-text",
+                                                        "name": "muilt_price",
+                                                        "label": "超阈值单价",
+                                                        "addOn": {
+                                                            "type": "text",
+                                                            "label": "元"
+                                                        },
+                                                        "value" : 0,
+                                                        "desc": "超阈值一小时单价, 元为单位, 保留小数点后两位, 谨慎填写价格"
                                                     }
                                                 ]
                                             }

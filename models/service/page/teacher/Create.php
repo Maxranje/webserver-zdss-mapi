@@ -17,6 +17,12 @@ class Service_Page_Teacher_Create extends Zy_Core_Service{
         }
 
         $serviceData = new Service_Data_Profile();
+
+        $userInfo = $serviceData->getUserInfoByName($name);
+        if (!empty($userInfo)) {
+            throw new Zy_Core_Exception(405, "操作失败, 登录名已经存在");
+        }
+
         $userInfo = $serviceData->getUserInfoByNameAndPhone($name, $phone);
         if (!empty($userInfo)) {
             throw new Zy_Core_Exception(405, "操作失败, 用户名/手机号绑定的用户已存在");

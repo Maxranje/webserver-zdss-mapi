@@ -54,6 +54,19 @@ class Service_Data_Profile {
         return $userinfo;
     }
 
+    public function getUserInfoByName ($name){
+        $arrConds = array(
+            'name'  => $name,
+        );
+
+        $userinfo = $this->daoUser->getRecordByConds($arrConds, $this->daoUser->arrFieldsMap);
+        if (empty($userinfo)) {
+            return array();
+        }
+        return $userinfo;
+    }
+
+
     public function getStudentInfoByPhone ($phone){
         $arrConds = array(
             'phone'  => $phone,

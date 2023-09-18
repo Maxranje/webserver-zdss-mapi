@@ -32,8 +32,8 @@ class Service_Page_Schedule_Checkout_Single extends Zy_Core_Service{
         // check 教师绑定获取教师收入信息
         $serviceColumn = new Service_Data_Column();
         $columnInfo = $serviceColumn->getColumnById(intval($record['column_id']));
-        if (empty($columnInfo)) {
-            throw new Zy_Core_Exception(405, "操作失败, 获取教师绑定信息失败");
+        if (empty($columnInfo) || $columnInfo['price'] < 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 获取教师绑定信息失败或绑定价格错误");
         }
 
         // check 科目信息获取学生收费情况

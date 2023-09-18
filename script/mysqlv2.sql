@@ -117,6 +117,7 @@ CREATE TABLE `tblUser` (
 
 
 INSERT INTO `tblUser` VALUES (101001,'maxranje','maxranje','3192161', 1,9,'3192161','','','',0,'M',0,0,0,'');
+INSERT INTO `tblUser` VALUES (101002,'caoj','曹俊斌','chris,900531', 1,9,'15718883189','','','',0,'M',0,0,0,'');
 
 
 CREATE TABLE `tblOrder` (
@@ -235,7 +236,9 @@ CREATE TABLE `tblColumn` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
   `subject_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '学科id',
   `teacher_uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '老师id',
-  `price` VARCHAR(500) NOT NULL DEFAULT '' COMMENT '价格列表',
+  `price` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '1个人价格',
+  `muilt_num` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '阈值人数',
+  `muilt_price` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '阈值人数',
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',

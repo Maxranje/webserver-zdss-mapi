@@ -51,16 +51,15 @@ class Service_Page_Column_Lists extends Zy_Core_Service{
                 'subject_name' => sprintf("%s/%s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfos[$item['subject_id']]['name']),
                 'teacher_uid' => $item['teacher_uid'],
                 'subject_id' => $item['subject_id'],
-                "price" => json_decode($item['price'], true),
+                'price' => sprintf("%.2f", intval($item['price']) / 100),
+                'muilt_num' => $item['muilt_num'],
+                'muilt_price' => sprintf("%.2f", intval($item['muilt_price']) / 100),
                 "price_info" => "",
             );
-            foreach ($tmp['price'] as &$v) {
-                $v['number'] = intval($v['number']);
-                $v['price']  = sprintf("%.2f", intval($v['price']) / 100);
-                $tmp['price_info'] .= sprintf("【%s元/%s人】\r\n", $v['price'], $v['number']);
+            $tmp['price_info'] = sprintf("【%s元/%s人】\r\n", $tmp['price'], 1);
+            if ($tmp['muilt_num'] > 0) {
+                $tmp['price_info'] .= sprintf("【%s元/%s人】\r\n", $tmp['muilt_price'], $tmp['muilt_num']);
             }
-            $tmp['price'] = array_values($tmp['price']);
-
             $result[] = $tmp;
         }
 
