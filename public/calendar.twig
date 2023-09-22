@@ -17,6 +17,8 @@
 
     <!-- Master Stylesheet [If you remove this CSS file, your file will be broken undoubtedly.] -->
     <link rel="stylesheet" href="/public/atom/style.css">
+    <link rel="stylesheet" href="/public/atom/css/default-assets/select2.min.css">
+    <link rel="stylesheet" href="/public/atom/css/default-assets/select2-b.min.css">
 
 </head>
 
@@ -97,10 +99,10 @@
     <script src="/public/atom/js/jquery.min.js"></script>
     <script src="/public/atom/js/popper.min.js"></script>
     <script src="/public/atom/js/bootstrap.min.js"></script>
-    <script src="/public/atom/js/admetro.bundle.js"></script>
 
     <!-- These plugins only need for the run this page -->
     <script src="/public/atom/js/default-assets/fullcalendar-moment.min.js"></script>
+    <script src="/public/atom/js/default-assets/select2.min.js"></script>
     <script src="/public/atom/js/fullcalendar.min.js"></script>
     <script> 
 (function ($) {
@@ -154,10 +156,12 @@
 
     var lastEventSource= "/mapi/schedule/calendardata";
 
+    $('#select2').select2();
+    $('#select1').select2();
     $('#select1').change(function() {  
         var selectedOption = $(this).val();  
         $('#select2').empty(); // 清空第二个select的选项  
-        $('#select2').niceSelect('update');
+        //$('#select2').niceSelect('update');
         var path = "";
         if (selectedOption == "group") {  
             path = "/mapi/group/lists?state=1&is_select=1";
@@ -179,26 +183,9 @@
             for (var i = 0; i < options.length; i++) {  
                 $('#select2').append('<option value="' + options[i]["value"] + '">' + options[i]["label"] + '</option>');  
             }  
-            $('#select2').niceSelect('update');
-            //$('#select2').next().attr("contentEditable", true);
+            $('#select2').select2();
         });  
     });  
-
-    // 监听搜索框的输入事件  
-    //$('#select2').on('input', function() {  
-    //    var searchTerm = $(this).val();  
-
-        // 遍历nice-select的所有选项并显示匹配的选项  
-    //    $('#select2').next().children("ul").each(function() {  
-            //var optionText = $(this).text();  
-
-            //if (optionText.indexOf(searchTerm) > -1) {  
-            //    $(this).show();  
-            //} else {  
-            //    $(this).hide();  
-        //}  
-        //});  
-    //});
 
     $('#updateBtn').click(function() {  
         var select1Val = $('#select1').val();  

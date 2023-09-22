@@ -6050,7 +6050,7 @@ img.mfp-img {
 .form-group .file-upload-default {
   display: none; }
 
-[type="checkbox"]:not(:checked),
+/* [type="checkbox"]:not(:checked),
 [type="checkbox"]:checked {
   position: absolute;
   opacity: 0;
@@ -6105,7 +6105,7 @@ img.mfp-img {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   -webkit-transform-origin: 100% 100%;
-  transform-origin: 100% 100%; }
+  transform-origin: 100% 100%; } */
 
 #a-footer {
   margin: 20px 0; }

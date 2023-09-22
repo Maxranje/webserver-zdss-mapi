@@ -39,9 +39,9 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
         }
 
         if ($warning == 1) {
-            $conds[] = "balance <= 100000 and balance > 0";
+            $conds[] = sprintf("balance <= %d and balance > 0", Service_Data_Order::WARNING_BALANCE);
         } else if ($warning == 2) {
-            $conds[] = "balance > 100000";
+            $conds[] = sprintf("balance > %d", Service_Data_Order::WARNING_BALANCE);
         }
 
         if ($scheduleId > 0) {
@@ -125,7 +125,7 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             $item['student_uid']    = intval($v['student_uid']);
             $item['update_time']    = date("Y年m月d日 H:i",$v['update_time']);
             $item['create_time']    = date("Y年m月d日 H:i",$v['create_time']);
-            $item['pic_name']       = $v['balance'] <= 0 ? "完结" : ($v['balance'] <= 100000 ? "预警" : "");
+            $item['pic_name']       = $v['balance'] <= 0 ? "完结" : ($v['balance'] <= Service_Data_Order::WARNING_BALANCE ? "预警" : "");
             $item['balance']        = sprintf("%.2f", $v['balance'] / 100);
             $item['price']          = sprintf("%.2f", $v['price'] / 100);
 
@@ -149,6 +149,7 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             $item['transfer_id']        =  $v['transfer_id'];
             $item['transfer_balance']   = empty($extra['transfer_balance']) ? "0.00" : sprintf("%.2f", $extra['transfer_balance'] / 100);
             $item['refund_balance']     = empty($extra['refund_balance']) ? "0.00" : sprintf("%.2f", $extra['refund_balance'] / 100);
+            $item['remark']             = empty($extra['remark']) ? "" : $extra['remark'];
             $result[] = $item;
         }
         return $result;

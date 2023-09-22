@@ -16,9 +16,14 @@ class Service_Page_Order_Create extends Zy_Core_Service{
         $realPrice      = empty($this->request['real_price']) ? 0 : intval(floatval($this->request['real_price']) * 100);
         $discountZ      = empty($this->request['discount_z']) ? 0 : intval($this->request['discount_z'] * 10);
         $discountJ      = empty($this->request['discount_j']) ? 0 : intval($this->request['discount_j'] * 100);
+        $remark         = empty($this->request['remark']) ? "" : trim($this->request['remark']);
 
         if ($studentUid <= 0 || $subjectId <= 0 || $scheduleNums <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 学员, 科目, 总课时数为必填项, 不能为空");
+        }
+
+        if (mb_strlen($remark) > 100) {
+            throw new Zy_Core_Exception(405, "操作失败, 备注限定100字內");
         }
 
         if ($discountJ < 0) {
@@ -64,6 +69,7 @@ class Service_Page_Order_Create extends Zy_Core_Service{
                 "schedule_nums"     => $scheduleNums,
                 "transfer_balance"  => 0,
                 "refund_balance"    => 0,
+                "remark"            => $remark,
             )),
         ];
 

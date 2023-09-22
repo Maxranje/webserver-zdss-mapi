@@ -137,11 +137,19 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
             $tmp['transfer_balance'] = sprintf("%.2f", $extra['transfer_balance'] / 100);
             $tmp['refund_schedule_nums'] = sprintf("%.2f", $extra['refund_balance'] / $item['price']);
             $tmp['refund_balance'] = sprintf("%.2f", $extra['refund_balance'] / 100);
+            $tmp['remark']         = empty($extra['remark']) ? "" : $extra['remark'];
+
             $tmp['uncheck_schedule_nums'] = "0.00";
+            $tmp['check_schedule_nums'] = "0.00";
+            $tmp['check_schedule_balance'] = "0.00";
             $tmp['order_state'] = "无排课";
             if (!empty($orderCounts[$item['order_id']]['u'])) {
                 $tmp['uncheck_schedule_nums'] = sprintf("%.2f", $orderCounts[$item['order_id']]['u']);
                 $tmp['order_state'] = "有排课";
+            }
+            if (!empty($orderCounts[$item['order_id']]['c'])) {
+                $tmp['check_schedule_nums'] = sprintf("%.2f", $orderCounts[$item['order_id']]['c']);
+                $tmp['check_schedule_balance'] = sprintf("%.2f", ($orderCounts[$item['order_id']]['c'] * $item['price']) / 100);
             }
 
             $result[] = $tmp;

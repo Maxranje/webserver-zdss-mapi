@@ -15,7 +15,7 @@ class Service_Page_Api_Resetv1 extends Zy_Core_Service{
         }
 
         if (!Zy_Helper_Utils::checkStr($reset) || !Zy_Helper_Utils::checkStr($passport) || !Zy_Helper_Utils::checkStr($username)) {
-            throw new Zy_Core_Exception(405, "操作失败, 输入内容必须是中文, 英文或数字");
+            throw new Zy_Core_Exception(405, "操作失败, 输入内容必须是中文,英文,数字或逗号");
         }
 
         if (mb_strlen($passport) > 12 || mb_strlen($passport) < 6) {

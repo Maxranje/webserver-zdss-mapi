@@ -4,6 +4,8 @@ class Service_Data_Order {
 
     private $daoOrder ;
 
+    const WARNING_BALANCE = 500000; // 分为单位
+
     public function __construct() {
         $this->daoOrder = new Dao_Order () ;
     }

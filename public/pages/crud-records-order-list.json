@@ -155,6 +155,18 @@
                 "toggled": true
             },
             {
+                "name": "check_schedule_nums",
+                "label": "已消课时",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "check_schedule_balance",
+                "label": "已消金额",
+                "type": "text",
+                "toggled": true
+            },
+            {
                 "name": "transfer_schedule_nums",
                 "label": "结转课时",
                 "type": "text",
@@ -177,6 +189,16 @@
                 "label": "退款金额",
                 "type": "text",
                 "toggled": true
+            },
+            {
+                "type": "container",
+                "label" : "备注",
+                "popOver": {
+                    "body": {
+                        "type": "tpl",
+                        "tpl": "${remark}"
+                    }
+                }
             },
             {
                 "name": "create_time",

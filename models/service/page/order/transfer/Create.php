@@ -18,10 +18,15 @@ class Service_Page_Order_Transfer_Create extends Zy_Core_Service{
         $realPrice      = empty($this->request['transfer_real_price']) ? 0 : intval(floatval($this->request['transfer_real_price']) * 100);
         $realBalance    = empty($this->request['transfer_real_balance']) ? 0 : intval(floatval($this->request['transfer_real_balance']) * 100);
         $scheduleNums   = empty($this->request['transfer_schedule_nums']) ? 0 : floatval($this->request['transfer_schedule_nums']);
+        $remark         = empty($this->request['remarku']) ? "" : trim($this->request['remarku']);
 
 
         if ($orderId <= 0 || $balance <= 0 || $subjectId <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 原订单不能为空");
+        }
+
+        if (mb_strlen($remark) > 100) {
+            throw new Zy_Core_Exception(405, "操作失败, 备注限定100字內");
         }
 
         if ($originPrice <= 0 || $originBalance <= 0 || $realPrice <= 0 || $realBalance <=0 || $scheduleNums <= 0) {
@@ -95,6 +100,7 @@ class Service_Page_Order_Transfer_Create extends Zy_Core_Service{
                 "schedule_nums"     => $scheduleNums,
                 "transfer_balance"  => 0,
                 "refund_balance"    => 0,
+                "remark"            => $remark,
             )),
         ];
 

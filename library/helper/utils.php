@@ -112,7 +112,7 @@ class Zy_Helper_Utils {
 
     public static function checkStr($str) {
         $str = trim($str);
-        preg_match_all('/[\x{4e00}-\x{9fa5}a-zA-Z0-9]+/u',$str,$result);
+        preg_match_all('/[\x{4e00}-\x{9fa5}a-zA-Z0-9,]+/u',$str,$result);
         if (empty($result[0][0]) || mb_strlen($str, "utf-8") != mb_strlen($result[0][0], "utf-8")) {
             return false;
         }

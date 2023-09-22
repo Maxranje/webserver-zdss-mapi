@@ -105,6 +105,15 @@
                             "type": "divider"
                         },
                         {
+                            "type": "input-text",
+                            "name": "remark",
+                            "label": "备注",
+                            "desc": "选填, 限定100字內"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
                             "type": "service",
                             "name": "order_review_detail",
                             "initFetch": false,
@@ -303,6 +312,12 @@
                 },
                 {
                     "type": "tpl",
+                    "hiddenOn" : "this.remark === ''",
+                    "className": "m-t text-right",
+                    "tpl" :"<p><span>备注: $remark</span></p>"
+                },
+                {
+                    "type": "tpl",
                     "className": "m-t text-right",
                     "tpl" :"<p><span>操作员: $operator_name</span>  <span class='m-l'> 创建时间 $create_time</span></p>"
                 }
@@ -396,6 +411,15 @@
                                                 "label": "元"
                                             },
                                             "desc": "选填, 减免, 单课时减免金额, 元为单位, 保留小数点后2位"
+                                        },
+                                        {
+                                            "type": "divider"
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "remarku",
+                                            "label": "备注",
+                                            "desc": "选填, 限定100字內"
                                         },
                                         {
                                             "type": "divider"
