@@ -89,6 +89,8 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
                 continue;
             }
 
+            $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
+
             $item['type']           = $item['type'] == Service_Data_Profile::USER_TYPE_STUDENT ? "学员" : "教师";
             $item['nickname']       = $userInfos[$item['uid']]['nickname'];
             $item['operator']       = $userInfos[$item['operator']]['nickname'];
@@ -98,13 +100,21 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
             $item['birthplace']     = empty($birthplace[$userInfos[$item['uid']]['bpid']]['name']) ? "" :$birthplace[$userInfos[$item['uid']]['bpid']]['name'];
             $item['money_info']     = sprintf("%.2f元", $item['money'] / 100);
             $item['order_id']       = empty($item['order_id']) ? "-" : $item['order_id'];
+            $item['isfree']         = "-";
+            if (isset($ext['order'])) {
+                $item['isfree'] = "否";
+                if (!empty($ext['order']['isfree'])) {
+                    $item['isfree'] = "是";
+                    $item['money_info'] = "0.00元";
+                }
+            }
         }
         return $lists;
     }
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('日期', 'UID', '用户名', '用户类型', '状态', '场景', '排课ID', '金额(元)', "生源地", '班级', '订单ID', '操作员', "更新日期"),
+            'title' => array('日期', 'UID', '用户名', '用户类型', '状态', '场景', '排课ID', '金额(元)', "生源地", '班级', '订单ID',"是否免费订单", '操作员', "更新日期"),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -124,6 +134,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
                 $item['birthplace'],
                 $item['group_name'],
                 $item['order_id'],
+                $item['isfree'],
                 $item['operator'],
                 $item['update_time'],
             );

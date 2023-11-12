@@ -52,7 +52,7 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
             if ($groupId == $item['group_id']) {
                 // 没有在最新课id里, 并且已经结束, 不能删除
                 if (!in_array($item['schedule_id'], $scheduleIds) && $item['state'] == Service_Data_Schedule::SCHEDULE_DONE) {
-                    throw new Zy_Core_Exception(405, "操作失败, 原有相关排课已经结算结束, 不能取消勾选, 排课ID:" . $item['schedule_id']);
+                    continue;
                 }
                 // 没有在最新课id里, 需要删掉
                 if (!in_array($item['schedule_id'], $scheduleIds)) {

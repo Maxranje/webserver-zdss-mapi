@@ -63,7 +63,7 @@ class Service_Data_Clasze {
         
         // 删掉学生关联
         $daoUser = new Dao_Claszemap();
-        $ret = $daoUser->deleteByConds(array("c_id" => $id));
+        $ret = $daoUser->deleteByConds(array("cid" => $id));
         if ($ret == false) {
             $this->daoClasze->rollback();
             return false;

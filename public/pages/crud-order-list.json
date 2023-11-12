@@ -77,6 +77,8 @@
                             "name": "isfree",
                             "type": "switch",
                             "label": "限免课",
+                            "trueValue": 1,
+                            "falseValue": 0,
                             "option": "标记限免课, 依然会产出总价和课单价, 但不会从账户扣款, 结算报表中消耗金额为0"
                         },
                         {

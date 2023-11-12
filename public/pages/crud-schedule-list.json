@@ -30,7 +30,7 @@
                     "onlyLeaf":true,
                     "multiple": true,
                     "searchable":true,
-                    "size":"md",
+                    "size":"lg",
                     "label": "班级",
                     "source": "/mapi/group/lists?is_select=1"
                 },
@@ -69,7 +69,7 @@
                     "name": "area_operator",
                     "searchable":true,
                     "onlyLeaf":true,
-                    "label": "区域管理",
+                    "label": "学管",
                     "size":"md",
                     "source": "/mapi/api/areaoperator"
                 },
