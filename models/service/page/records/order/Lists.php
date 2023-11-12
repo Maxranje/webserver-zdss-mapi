@@ -32,59 +32,59 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
             }
         }
 
-        $serviceOrder = new Service_Data_Order();
-        if (!empty($nickname) || $bpid > 0) {
-            $params = array(
-                'nickname' => $nickname,
-                'bpid' => $bpid,
-                "is_export" => $isExport,
-                "pn" => $pn,
-                'rn' => $rn,
-            );
-            if (!empty($dataRange)) {
-                $params['start_time'] = intval($dataRange[0]);
-                $params['end_time'] = intval($dataRange[1]) + 1;
-            }
-            $lists = $serviceOrder->getDataList($params);
-            $lists = $this->formatBasev1($lists);
-            if ($isExport) {
-                $data = $this->formatExcel($lists);
-                Zy_Helper_Utils::exportExcelSimple("payrecords", $data['title'], $data['lists']);
-            }
-            if (empty($lists)) {
-                return array();
-            }
-            $total = $serviceOrder->getDataTotal($params);            
-        } else {
-            $conds = array();
-            if (!empty($dataRange)) {
-                $conds[] = sprintf("create_time >= %d", intval($dataRange[0]));
-                $conds[] = sprintf("create_time <= %d", intval($dataRange[1]) + 1);
-            }
-            
-            $arrAppends[] = 'order by order_id desc';
-            if (!$isExport) {
-                $arrAppends[] = "limit {$pn} , {$rn}";
-            }
-            $lists = $serviceOrder->getListByConds($conds, array(), null, $arrAppends);
-            $lists = $this->formatBasev2($lists);
-            if ($isExport) {
-                $data = $this->formatExcel($lists);
-                Zy_Helper_Utils::exportExcelSimple("payrecords", $data['title'], $data['lists']);
-            }
-            if (empty($lists)) {
-                return array();
-            }
-            $total = $serviceOrder->getTotalByConds($conds);
+        $uids = array();
+        if (!empty($nickname)) {
+            $serviceData = new Service_Data_Profile();
 
+            $conds = array(
+                "nickname like '%".$nickname."%'",
+            );
+            if ($bpid > 0) {
+                $conds[] = sprintf("bpid=%d", $bpid);
+            }
+            $userInfos = $serviceData->getListByConds($conds, array("uid"));
+            if (empty($userInfos)) {
+                return array();
+            }
+            $uids = Zy_Helper_Utils::arrayInt($userInfos, "uid");
         }
+
+        $serviceOrder = new Service_Data_Order();
+        $conds = array();
+        if (!empty($uids)) {
+            $conds[] = sprintf("student_uid in (%s)", implode(",", $uids));
+        }
+        if ($bpid > 0) {
+            $conds[] = sprintf("bpid=%d", $bpid);
+        }
+
+        if (!empty($dataRange)) {
+            $conds[] = sprintf("create_time >= %d", intval($dataRange[0]));
+            $conds[] = sprintf("create_time <= %d", intval($dataRange[1]) + 1);
+        }
+            
+        $arrAppends[] = 'order by order_id desc';
+        if (!$isExport) {
+            $arrAppends[] = "limit {$pn} , {$rn}";
+        }
+        $lists = $serviceOrder->getListByConds($conds, array(), null, $arrAppends);
+        $lists = $this->formatBase($lists);
+        if ($isExport) {
+            $data = $this->formatExcel($lists);
+            Zy_Helper_Utils::exportExcelSimple("payrecords", $data['title'], $data['lists']);
+        }
+        if (empty($lists)) {
+            return array();
+        }
+        $total = $serviceOrder->getTotalByConds($conds);
+
         return array(
             'rows' => $lists,
             'total' => $total,
         );
     }
 
-    private function formatBasev2($lists) {
+    private function formatBase($lists) {
 
         if (empty($lists)) {
             return array();
@@ -93,6 +93,8 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
         $subjectIds = Zy_Helper_Utils::arrayInt($lists, "subject_id");
         $uids = Zy_Helper_Utils::arrayInt($lists, 'student_uid');
         $orderIds = Zy_Helper_Utils::arrayInt($lists, 'order_id');
+        $cids = Zy_Helper_Utils::arrayInt($lists, 'cid');
+        $bpids = Zy_Helper_Utils::arrayInt($lists, 'bpid');
 
         $serviceUsers = new Service_Data_Profile();
         $userInfos = $serviceUsers->getUserInfoByUids($uids);
@@ -102,10 +104,13 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
         $subjectInfos = $serviceSubject->getSubjectByIds($subjectIds);
         $subjectInfos = array_column($subjectInfos, null, "id");
 
-        $birthplaceIds = Zy_Helper_Utils::arrayInt($userInfos, "bpid");
         $serviceBirthplace = new Service_Data_Birthplace();
-        $birthplace = $serviceBirthplace->getBirthplaceByIds($birthplaceIds);
+        $birthplace = $serviceBirthplace->getBirthplaceByIds($bpids);
         $birthplace = array_column($birthplace, null, "id");
+
+        $serviceData = new Service_Data_Clasze();
+        $claszes = $serviceData->getClaszeByIds($cids);
+        $claszes = array_column($claszes, null, "id");
 
         // 排课数
         $serviceData = new Service_Data_Curriculum();
@@ -126,17 +131,17 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
             $tmp['create_time']     = date('Y年m月d日 H:i:s', $item['create_time']);
             $tmp['nickname']        = $userInfos[$item['student_uid']]['nickname'];
             $tmp['subject_name']    = $subjectInfos[$item['subject_id']]['name'];
-            $tmp['birthplace']      = $birthplace[$userInfos[$item['student_uid']]['bpid']]['name'];
+            $tmp['birthplace']      = $birthplace[$item['bpid']]['name'];
+            $tmp['clasze_name']     = $claszes[$item['cid']]['name'];
+            $tmp['isfree']          = empty($item['isfree']) ? "否" : "是";
             $tmp['schedule_nums']   = sprintf("%.2f", $extra['schedule_nums']);
             $tmp['origin_balance']  = sprintf("%.2f", $extra['origin_balance'] / 100);
             $tmp['origin_price']    = sprintf("%.2f", $extra['origin_price'] / 100);
             $tmp['real_balance']    = sprintf("%.2f", $extra['real_balance'] / 100);
             $tmp['real_price']      = sprintf("%.2f", $item['price'] / 100);
             $tmp['balance']         = sprintf("%.2f", $item['balance'] / 100);
-            $tmp['transfer_schedule_nums'] = sprintf("%.2f", $extra['transfer_balance'] / $item['price']);
-            $tmp['transfer_balance'] = sprintf("%.2f", $extra['transfer_balance'] / 100);
-            $tmp['refund_schedule_nums'] = sprintf("%.2f", $extra['refund_balance'] / $item['price']);
-            $tmp['refund_balance'] = sprintf("%.2f", $extra['refund_balance'] / 100);
+            $tmp['change_duration'] = sprintf("%.2f", $extra['change_balance'] / $item['price']);
+            $tmp['change_balance']  = sprintf("%.2f", $extra['change_balance'] / 100);
             $tmp['remark']         = empty($extra['remark']) ? "" : $extra['remark'];
 
             $tmp['uncheck_schedule_nums'] = "0.00";
@@ -157,66 +162,9 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
         return $result;
     }
 
-    private function formatBasev1($lists) {
-
-        if (empty($lists)) {
-            return array();
-        }
-
-        $subjectIds = Zy_Helper_Utils::arrayInt($lists, "subject_id");
-        $orderIds = Zy_Helper_Utils::arrayInt($lists, 'order_id');
-        $birthplaceIds = Zy_Helper_Utils::arrayInt($lists, 'bpid');
-
-        $serviceSubject = new Service_Data_Subject();
-        $subjectInfos = $serviceSubject->getSubjectByIds($subjectIds);
-        $subjectInfos = array_column($subjectInfos, null, "id");
-
-        $serviceBirthplace = new Service_Data_Birthplace();
-        $birthplace = $serviceBirthplace->getBirthplaceByIds($birthplaceIds);
-        $birthplace = array_column($birthplace, null, "id");
-
-        // 排课数
-        $serviceData = new Service_Data_Curriculum();
-        $orderCounts = $serviceData->getScheduleTimeCountByOrder($orderIds);
-
-        $result = array();
-        foreach ($lists as $item) {
-            $extra = json_decode($item['ext'], true);
-            if (empty($extra)) {
-                continue;
-            }
-
-            $tmp = array();
-            $tmp['update_time']     = date('Y年m月d日', $item['update_time']);
-            $tmp['create_time']     = date('Y年m月d日 H:i:s', $item['create_time']);
-            $tmp['nickname']        = $item['nickname'];
-            $tmp['subject_name']    = $subjectInfos[$item['subject_id']]['name'];
-            $tmp['birthplace']      = $birthplace[$item['bpid']]['name'];
-            $tmp['schedule_nums']   = sprintf("%.2f", $extra['schedule_nums']);
-            $tmp['origin_balance']  = sprintf("%.2f", $extra['origin_balance'] / 100);
-            $tmp['origin_price']    = sprintf("%.2f", $extra['origin_price'] / 100);
-            $tmp['real_balance']    = sprintf("%.2f", $extra['real_balance'] / 100);
-            $tmp['real_price']      = sprintf("%.2f", $item['price'] / 100);
-            $tmp['balance']         = sprintf("%.2f", $item['balance'] / 100);
-            $tmp['transfer_schedule_nums'] = sprintf("%.2f", $extra['transfer_balance'] / $item['price']);
-            $tmp['transfer_balance'] = sprintf("%.2f", $extra['transfer_balance'] / 100);
-            $tmp['refund_schedule_nums'] = sprintf("%.2f", $extra['refund_balance'] / $item['price']);
-            $tmp['refund_balance'] = sprintf("%.2f", $extra['refund_balance'] / 100);
-            $tmp['uncheck_schedule_nums'] = "0.00";
-            $tmp['order_state'] = "无排课";
-            if (!empty($orderCounts[$item['order_id']]['u'])) {
-                $tmp['uncheck_schedule_nums'] = sprintf("%.2f", $orderCounts[$item['order_id']]['u']);
-                $tmp['order_state'] = "有排课";
-            }
-
-            $result[] = $tmp;
-        }
-        return $result;
-    }
-
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('日期', '学员名', '生源地' , '科目','订单课时', '订单原价', '课单价原价', '实际缴费', '惠后单价', '订单状态', "未消课时", '订单当前余额', '结转课时', '结转金额', "退款课时", "退款金额", "创建时间"),
+            'title' => array('日期', '学员名', '生源地' , '科目', '班型', "是否免费", '订单课时', '订单原价', '课单价原价', '实际缴费', '惠后单价', '订单状态', "未消课时", '订单当前余额', '结转账户课时', '结转账户金额', "备注", "创建时间"),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -229,6 +177,8 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
                 $item['nickname'],
                 $item['birthplace'],
                 $item['subject_name'],
+                $item['clasze_name'],
+                $item['isfree'],
                 $item['schedule_nums'],
                 $item['origin_balance'],
                 $item['origin_price'],
@@ -237,10 +187,9 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
                 $item['order_state'],
                 $item['uncheck_schedule_nums'],
                 $item['balance'],
-                $item['transfer_schedule_nums'],
-                $item['transfer_balance'],
-                $item['refund_schedule_nums'],
-                $item['refund_balance'],
+                $item['change_duration'],
+                $item['change_balance'],
+                $item['remark'],
                 $item['create_time'],
             );
             $result['lists'][] = $tmp;
@@ -248,4 +197,4 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
         return $result;
 
     }
-}
+}   

@@ -15,23 +15,28 @@ class Service_Page_Schedule_Band_Lists extends Zy_Core_Service{
             return array();
         }
 
-        $conds = array(
-            "state" => Service_Data_Group::GROUP_ABLE,
-            "group_id" => $groupId,
-        );
+        $serviceData = new Service_Data_Group();
+        $group = $serviceData->getGroupById($groupId);
+        if (empty($group)) {
+            throw new Zy_Core_Exception(405, "操作失败, 班级信息不存在");
+        }
 
         if ($orderId > 0) {
             $serviceData = new Service_Data_Order();
             $order = $serviceData->getOrderById($orderId);
-            if (empty($order) || empty($order['subject_id'])) {
+            if (empty($order)) {
                 throw new Zy_Core_Exception(405, "操作失败, 订单信息不存在");
             }
 
-            $serviceData = new Service_Data_Subject();
-            $subjectIds = $serviceData->getSubjectByParentID(intval($order['subject_id']));
-            $subjectIds = Zy_Helper_Utils::arrayInt($subjectIds, "id");
-            $conds[] = sprintf("subject_id in (%s)", implode(",", $subjectIds));
+            if ($order['subject_id'] != $group['subject_id'] || $order['cid'] != $group['cid']) {
+                return array();
+            }
         }
+
+        $conds = array(
+            "state" => Service_Data_Group::GROUP_ABLE,
+            "group_id" => $groupId,
+        );
 
         $serviceData = new Service_Data_Schedule();
         $lists = $serviceData->getListByConds($conds, false, NULL, NULL);

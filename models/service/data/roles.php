@@ -7,6 +7,8 @@ class Service_Data_Roles {
 
     const ROLE_MODE_SCHEDULE_UPDATE = "4001";
     const ROLE_MODE_SCHEDULE_DELETE = "4002";
+    const ROLE_MODE_STUDENT_RECHARGE = "4003";
+    const ROLE_MODE_STUDENT_REFUND = "4004";
 
     public function __construct() {
         $this->daoRole = new Dao_Roles () ;

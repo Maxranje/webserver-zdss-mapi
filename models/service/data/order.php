@@ -56,7 +56,11 @@ class Service_Data_Order {
 
     // 创建订单
     public function create ($profile) {
-        $daoRecharge = new Dao_Recharge();
+        $daoChange = new Dao_Orderchange();
+        $daoUser = new Dao_User();
+
+        $orderInfo = $profile['order_info'];
+        unset($profile['order_info']);
 
         $this->daoOrder->startTransaction();
         $ret = $this->daoOrder->insertRecords($profile);
@@ -71,19 +75,35 @@ class Service_Data_Order {
             return false;
         }
 
+        if ($profile['isfree'] == 0) {
+            $p2 = array(
+                sprintf("balance=balance-%d", $profile['balance']),
+            );
+            $conds = array(
+                "uid" => $profile['student_uid'],
+            );
+            $ret = $daoUser->updateByConds($conds, $p2);
+            if ($ret == false) {
+                $this->daoOrder->rollback();
+                return false;
+            }
+        }
+
         $ext = json_decode($profile['ext'], true);
-        $rechargeProfile = array(
+        $changePorfile = array(
             "order_id"          => $orderId, 
             "student_uid"       => intval($profile['student_uid']), 
-            "type"              => Service_Data_Recharge::RECHARGE_ORDERCREATE,
+            "type"              => Service_Data_Orderchange::CHANGE_CREATE,
             "balance"           => intval($profile['balance']),
-            "schedule_nums"     => $ext['schedule_nums'],
+            "duration"          => $ext['schedule_nums'],
+            "order_info"        => $orderInfo,
             "operator"          => OPERATOR, 
             'update_time'       => time(),
             'create_time'       => time(),
+            'ext'               => json_encode(array('isfree' => $profile['isfree'])),
         );
 
-        $ret = $daoRecharge->insertRecords($rechargeProfile);
+        $ret = $daoChange->insertRecords($changePorfile);
         if ($ret == false) {
             $this->daoOrder->rollback();
             return false;
@@ -93,8 +113,34 @@ class Service_Data_Order {
     }
 
     // 删除
-    public function delete ($orderId) {
-        return $this->daoOrder->deleteByConds(array('order_id' => $orderId));
+    public function delete ($orderId, $order, $orderInfo) {
+        $this->daoOrder->startTransaction();
+        $daoChange = new Dao_Orderchange();
+        $changePorfile = array(
+            "order_id"          => $orderId, 
+            "student_uid"       => intval($order['student_uid']), 
+            "type"              => Service_Data_Orderchange::CHANGE_DELETE,
+            "balance"           => 0,
+            "duration"          => 0,
+            "order_info"        => $orderInfo,
+            "operator"          => OPERATOR, 
+            'update_time'       => time(),
+            'create_time'       => time(),
+            'ext'               => json_encode(array('isfree' => $order['isfree'])),
+        );
+
+        $ret = $daoChange->insertRecords($changePorfile);
+        if ($ret == false) {
+            $this->daoOrder->rollback();
+            return false;
+        }
+        $ret = $this->daoOrder->deleteByConds(array('order_id' => $orderId));
+        if ($ret == false) {
+            $this->daoOrder->rollback();
+            return false;
+        }
+        $this->daoOrder->commit();
+        return true;
     }
 
 

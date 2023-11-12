@@ -69,13 +69,23 @@ class Service_Page_Group_Lists extends Zy_Core_Service{
             return array();
         }
 
-        $groupIds = Zy_Helper_Utils::arrayInt($lists, "id");
-        $uids = Zy_Helper_Utils::arrayInt($lists, "area_operator");
+        $groupIds   = Zy_Helper_Utils::arrayInt($lists, "id");
+        $uids       = Zy_Helper_Utils::arrayInt($lists, "area_operator");
+        $subjectIds = Zy_Helper_Utils::arrayInt($lists, 'subject_id');
+        $cids       = Zy_Helper_Utils::arrayInt($lists, 'cid');
 
         // 区域管理员信息
         $serviceData = new Service_Data_Profile();
         $userInfos = $serviceData->getUserInfoByUids($uids);
         $userInfos = array_column($userInfos, null, 'uid');
+
+        $serviceData = new Service_Data_Subject();
+        $subjects = $serviceData->getSubjectByIds($subjectIds);
+        $subjects = array_column($subjects, null, 'id');
+
+        $serviceData = new Service_Data_Clasze();
+        $claszes = $serviceData->getClaszeByIds($cids);
+        $claszes = array_column($claszes, null, 'id');
 
         // 获取订单量
         $serviceData = new Service_Data_Schedule();
@@ -87,9 +97,17 @@ class Service_Page_Group_Lists extends Zy_Core_Service{
             if (empty($userInfos[$v['area_operator']]['nickname'])) {
                 continue;
             }
+            if (empty($subjects[$v['subject_id']]['name'])) {
+                continue;
+            }
+            if (empty($claszes[$v['cid']]['name'])) {
+                continue;
+            }
             
             $item = $v;
             $item['state'] = intval($item['state']);
+            $item['subject_name'] = $subjects[$v['subject_id']]['name'];
+            $item['clasze_name'] = $claszes[$v['cid']]['name'];
             $item['area_operator_name'] = $userInfos[$v['area_operator']]['nickname'];
             $item['schedule_count'] = empty($scheduleInfo[$v['id']]) ? 0 : $scheduleInfo[$v['id']]['count'];
             $item['create_time'] = date("Y年m月d日", $item['create_time']);
@@ -104,7 +122,7 @@ class Service_Page_Group_Lists extends Zy_Core_Service{
         $options = array();
         foreach ($lists as $item) {
             $options[] = array(
-                'label' => $item['name'],
+                'label' => sprintf("%s - %s", $item['name'], $item['identify']),
                 'value' => $item['id'],
             );
         }

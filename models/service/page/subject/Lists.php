@@ -70,10 +70,9 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
             $tmp['subject_id']      = $item['id'];
             $tmp['subject_id_info'] = $item['id'];
             $tmp['subject_name']    = $item['name'];
+            $tmp["identify"]        = $item['identify'];
             $tmp['is_parent']       = 1;
             $tmp['subject_desc']    = $item['descs'];
-            $tmp['price']           = $item['price'];   
-            $tmp['price_info']      = sprintf("%.2f", $tmp['price'] / 100);
             $tmp['create_time']     = date("Y-m-d H:i:s", $item['create_time']);
             $tmp['update_time']     = date("Y-m-d H:i:s", $item['update_time']);
             
@@ -86,8 +85,7 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
                     'subject_id_info' => "-",
                     'subject_name' => $v['name'],
                     'subject_desc' => $v['descs'],
-                    'price'        => "-",
-                    'price_info'   => "-",
+                    'identify'     => "-",
                     'is_parent'    => 0,
                     'parent_id'    => $v['parent_id'],
                     'create_time'  => date("Y-m-d H:i:s", $v['create_time']),

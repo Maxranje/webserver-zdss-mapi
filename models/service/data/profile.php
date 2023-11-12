@@ -16,6 +16,9 @@ class Service_Data_Profile {
     const ADMIN_GRANT       = [self::USER_TYPE_ADMIN, self::USER_TYPE_SUPER, self::USER_TYPE_TEACHER, self::USER_TYPE_PARTNER];
     const STUDENT_STATE     = [self::STUDENT_ABLE, self::STUDENT_DISABLE];
 
+    const RECHARGE          = 1; 
+    const REFUND            = 2;
+
     public function __construct() {
         $this->daoUser = new Dao_User () ;
     }
@@ -60,6 +63,18 @@ class Service_Data_Profile {
         );
 
         $userinfo = $this->daoUser->getRecordByConds($arrConds, $this->daoUser->arrFieldsMap);
+        if (empty($userinfo)) {
+            return array();
+        }
+        return $userinfo;
+    }
+
+    public function getUserInfoLikeName ($name){
+        $arrConds = array(
+            "nickname like '%".$name."%'",
+        );
+
+        $userinfo = $this->daoUser->getListByConds($arrConds, $this->daoUser->arrFieldsMap);
         if (empty($userinfo)) {
             return array();
         }
@@ -116,6 +131,72 @@ class Service_Data_Profile {
     // 添加
     public function createUserInfo ($profile) {
         return $this->daoUser->insertRecords($profile);
+    }
+
+    // 学生充值
+    public function rechargeUser ($uid, $balance) {
+        $this->daoUser->startTransaction();
+
+        $rechargeProfile = array(
+            sprintf("balance=balance+%d", $balance),
+            'update_time' => time(),
+        );
+        $ret = $this->editUserInfo($uid, $rechargeProfile);
+        if ($ret == false) {
+            $this->daoUser->rollback();
+            return false;
+        }
+
+        $profile = array(
+            "uid"           => $uid, 
+            "type"          => self::RECHARGE,
+            "operator"      => OPERATOR,
+            "capital"       => $balance,
+            "update_time"   => time(),
+            "create_time"   => time(),
+        );
+        $daoCapital = new Dao_Capital();
+        $ret = $daoCapital->insertRecords($profile);
+        if ($ret == false) {
+            $this->daoUser->rollback();
+            return false;
+        }
+
+        $this->daoUser->commit();
+        return true;
+    }
+
+    // 学生退款
+    public function refundUser ($uid, $balance) {
+        $this->daoUser->startTransaction();
+
+        $rechargeProfile = array(
+            sprintf("balance=balance-%d", $balance),
+            'update_time' => time(),
+        );
+        $ret = $this->editUserInfo($uid, $rechargeProfile);
+        if ($ret == false) {
+            $this->daoUser->rollback();
+            return false;
+        }
+
+        $profile = array(
+            "uid"           => $uid, 
+            "type"          => self::REFUND,
+            "operator"      => OPERATOR,
+            "capital"       => $balance,
+            "update_time"   => time(),
+            "create_time"   => time(),
+        );
+        $daoCapital = new Dao_Capital();
+        $ret = $daoCapital->insertRecords($profile);
+        if ($ret == false) {
+            $this->daoUser->rollback();
+            return false;
+        }
+
+        $this->daoUser->commit();
+        return true;
     }
 
     // 删除

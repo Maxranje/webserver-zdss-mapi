@@ -8,6 +8,9 @@ class Dao_Group extends Zy_Core_Dao {
         $this->arrFieldsMap = array(
             "id" => "id",
             "name" => "name",
+            "identify" => "identify",
+            "subject_id" => "subject_id",
+            "cid"   => "cid",
             "descs" => "descs",
             "state" => "state",
             "area_operator" => "area_operator",

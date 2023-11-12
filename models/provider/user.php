@@ -17,6 +17,7 @@ class Dao_User extends Zy_Core_Dao {
             "bpid" => "bpid",
             "school"  => "school" , 
             "graduate"  => "graduate" , 
+            "balance"   => "balance",
             "sex"  => "sex" , 
             "create_time"  => "create_time" , 
             "update_time"  => "update_time" , 

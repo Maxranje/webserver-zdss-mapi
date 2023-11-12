@@ -6,5 +6,8 @@ class Controller_Subject extends Zy_Core_Controller{
         "create"    => "actions/subject/Create.php",
         "update"    => "actions/subject/Update.php",
         "delete"    => "actions/subject/Delete.php",
+
+        // 班型
+        "claszelists" => "actions/subject/Claszelists.php",
     );
 }

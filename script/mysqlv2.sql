@@ -80,7 +80,7 @@ CREATE TABLE `tblCurriculum` (
 CREATE TABLE `tblSubject` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
   `name` varchar(200) NOT NULL DEFAULT '' COMMENT '科目名称',
-  `price` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '科目价格',
+  `identify` varchar(50) NOT NULL DEFAULT '' COMMENT '科目标识',
   `descs` varchar(200) NOT NULL DEFAULT '' COMMENT '描述',
   `parent_id` int(11) NOT NULL DEFAULT '0' COMMENT '父id',
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
@@ -124,61 +124,34 @@ CREATE TABLE `tblOrder` (
   `order_id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'order_id',
   `subject_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'subject_id',
   `student_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学员uid',
+  `bpid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '生源地id',
+  `cid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '班型id',
   `balance` int(11) NOT NULL DEFAULT '0' COMMENT '实际存额',
   `price` int(11) NOT NULL DEFAULT '0' COMMENT '实际价格',  
+  `isfree` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '是否免费',  
   `discount_z` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '优惠信息',
   `discount_j` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '优惠信息',
   `operator` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '操作员UID',
-  `transfer_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '结转源id',
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
   PRIMARY KEY (`order_id`),
   KEY `balance` (`balance`),
-  KEY `transfer_id` (`transfer_id`),
   KEY `subject_id` (`subject_id`, `create_time`),
   KEY `student_uid` (`student_uid`, `create_time`),
+  KEY `bpid` (`bpid`, `create_time`),
+  KEY `cid` (`cid`, `create_time`),
   KEY `create_time` (`create_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1010001001 DEFAULT CHARSET=utf8 COMMENT='订单表';
 
-CREATE TABLE `tblTransfer` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `order_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'order_id',
-  `student_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'student_uid',
-  `transfer_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'transfer_id',
-  `balance` int(11) NOT NULL DEFAULT '0' COMMENT '结转金额',
-  `schedule_nums` VARCHAR(100) NOT NULL DEFAULT '0' COMMENT '课时数',
-  `operator` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '操作员UID',
-  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
-  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`),
-  KEY `order_id` (`order_id`),
-  KEY `student_uid` (`student_uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='结转记录';
-
-CREATE TABLE `tblRefund` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `order_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'order_id',
-  `student_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'student_uid',
-  `balance` int(11) NOT NULL DEFAULT '0' COMMENT '退款金额',
-  `schedule_nums` VARCHAR(100) NOT NULL DEFAULT '0' COMMENT '课时',
-  `operator` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '操作员UID',
-  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
-  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`),
-  KEY `order_id` (`order_id`),
-  KEY `student_uid` (`student_uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='退款记录';
-
-CREATE TABLE `tblRecharge` (
+CREATE TABLE `tblOrderChange` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
   `order_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'order_id',
   `student_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'student_uid',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '充值类型, 1充值,2结转',
   `balance` int(11) NOT NULL DEFAULT '0' COMMENT '金额',
-  `schedule_nums` VARCHAR(11) NOT NULL DEFAULT '0' COMMENT '课程数',
+  `duration` VARCHAR(11) NOT NULL DEFAULT '0' COMMENT '课程数',
+  `order_info` VARCHAR(2000) NOT NULL DEFAULT '0' COMMENT '订单信息',
   `operator` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '操作员UID',
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
@@ -251,6 +224,9 @@ CREATE TABLE `tblColumn` (
 CREATE TABLE `tblGroup` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
   `name` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
+  `identify` varchar(200) NOT NULL DEFAULT '' COMMENT '班号',
+  `subject_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '科目id',
+  `cid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '班型id',
   `descs` varchar(200) NOT NULL DEFAULT '' COMMENT '描述',
   `state` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态, 1正常, 2关闭',
   `area_operator` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '区域管理者',
@@ -259,6 +235,7 @@ CREATE TABLE `tblGroup` (
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
   PRIMARY KEY (`id`),
   KEY `n` (`name`),
+  KEY `i` (`identify`),
   KEY `s_u` (`state`, `update_time`),
   KEY `area_operator` (`area_operator`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='班级表';
@@ -286,3 +263,40 @@ CREATE TABLE `tblBirthplace` (
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='生源地';
+
+CREATE TABLE `tblClasze` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
+  `identify` varchar(200) NOT NULL DEFAULT '' COMMENT '标记',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='班型';
+
+CREATE TABLE `tblClaszemap` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `cid` int(11) unsigned NOT NULL COMMENT 'claszeid',
+  `bpid` int(11) unsigned NOT NULL COMMENT '生源地id',
+  `subject_id` int(11) unsigned NOT NULL COMMENT '科目ID',
+  `price` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '价格',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
+  PRIMARY KEY (`id`),
+  KEY `cid` (`cid`),
+  KEY `b_s` (`bpid`, `subject_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='班型映射';
+
+CREATE TABLE `tblCapital` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `uid` int(11) unsigned NOT NULL  COMMENT 'uid',
+  `type` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '类型, 1用户充值, 2.退费',
+  `operator` int(11) unsigned NOT NULL  COMMENT 'uid',
+  `capital` int(11) NOT NULL COMMENT 'capital',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `ext` VARCHAR(2000) NOT NULL DEFAULT '' COMMENT "冗余",
+  PRIMARY KEY (`id`),
+  KEY `uid_type` (`uid`, `type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='学生金额变更表';

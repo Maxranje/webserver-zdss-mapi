@@ -42,14 +42,10 @@
                         },
                         {
                             "type": "input-text",
-                            "name": "price",
-                            "label": "科目课时价",
+                            "name": "identify",
+                            "label": "科目标识",
                             "required": true,
-                            "addOn": {
-                                "type": "text",
-                                "label": "元"
-                            },
-                            "desc": "按小时填写具体钱数, 元为单位, 保留小数点后2位, | 配置价格不会对已绑定科目的订单生效, 需要重新创建订单"
+                            "desc" : "托福: TF, 主要作用于班号行程, 建议用英文缩写"
                         },
                         {
                             "type": "divider"
@@ -57,11 +53,7 @@
                         {
                             "type": "input-text",
                             "name": "subject_desc",
-                            "label": "科目描述",
-                            "required": true
-                        },
-                        {
-                            "type": "divider"
+                            "label": "科目描述"
                         }
                     ]
                 }
@@ -141,8 +133,8 @@
                 "toggled": true
             },
             {
-                "name": "price_info",
-                "label": "科目课时价(元)",
+                "name": "identify",
+                "label": "科目标识",
                 "type": "text",
                 "toggled": true
             },
@@ -269,26 +261,24 @@
                                         "required": true
                                     },
                                     {
+                                        "type": "divider",
+                                        "hiddenOn" : "this.is_parent == 0"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "identify",
+                                        "label": "科目标识",
+                                        "required": true,
+                                        "hiddenOn" : "this.is_parent == 0",
+                                        "desc" : "托福: TF, 主要作用于班号行程, 建议用英文缩写"
+                                    },
+                                    {
                                         "type": "divider"
                                     },
                                     {
                                         "type": "input-text",
                                         "name": "subject_desc",
                                         "label": "科目描述"
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "input-text",
-                                        "name": "price_info",
-                                        "label": "科目课时价",
-                                        "hiddenOn" : "this.is_parent == 0",
-                                        "addOn": {
-                                            "type": "text",
-                                            "label": "元"
-                                        },
-                                        "desc": "按小时填写具体钱数, 元为单位, 保留小数点后2位, | 配置价格不会对已绑定科目的订单生效, 需要重新创建订单"
                                     }
                                 ]
                             }

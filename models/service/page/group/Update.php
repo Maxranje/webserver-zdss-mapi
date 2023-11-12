@@ -14,13 +14,13 @@ class Service_Page_Group_Update extends Zy_Core_Service{
         $areaOperator   = empty($this->request['area_operator']) ? 0 : intval($this->request['area_operator']);
         
         if ($id <= 0 || empty($name) || $areaOperator <= 0){
-            throw new Zy_Core_Exception(405, "操作失败, 班级ID, 班级名称, 区域管理员不能为空");
+            throw new Zy_Core_Exception(405, "操作失败, 班级ID, 班级名称, 学管不能为空");
         }
 
         $serviceProfile = new Service_Data_Profile();
         $userInfo = $serviceProfile->getUserInfoByUid($areaOperator);
         if (empty($userInfo) || $userInfo['state'] != Service_Data_Profile::STUDENT_ABLE) {
-            throw new Zy_Core_Exception(405, "操作失败, 管理员不存在或已下线");
+            throw new Zy_Core_Exception(405, "操作失败, 学管不存在或已下线");
         }
 
         $serviceData = new Service_Data_Group();

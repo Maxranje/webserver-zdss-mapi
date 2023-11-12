@@ -44,27 +44,34 @@ return array(
                     "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-order-list.json"
                 ),
+                // array(
+                //     "id" => 122,
+                //     "label"=>"结转记录",
+                //     "url"=>"/order/transfer",
+                //     "icon"=>"fa fa-retweet",
+                //     "schemaApi"=>"get:/public/pages/crud-order-transfer-list.json"
+                // ),
+                // array(
+                //     "id" => 123,
+                //     "label"=>"退款记录",
+                //     "url"=>"/order/refund",
+                //     "icon"=>"fa fa-reply",
+                //     "schemaApi"=>"get:/public/pages/crud-order-refund-list.json"
+                // ),
+                // array(
+                //     "id" => 124,
+                //     "label"=>"存额变更",
+                //     "url"=>"/order/recharge",
+                //     "icon"=>"fa fa-random",
+                //     "schemaApi"=>"get:/public/pages/crud-order-recharge-list.json"
+                // ),
                 array(
-                    "id" => 122,
-                    "label"=>"结转记录",
-                    "url"=>"/order/transfer",
+                    "id" => 126,
+                    "label"=>"变更记录",
+                    "url"=>"/order/change",
                     "icon"=>"fa fa-retweet",
-                    "schemaApi"=>"get:/public/pages/crud-order-transfer-list.json"
-                ),
-                array(
-                    "id" => 123,
-                    "label"=>"退款记录",
-                    "url"=>"/order/refund",
-                    "icon"=>"fa fa-reply",
-                    "schemaApi"=>"get:/public/pages/crud-order-refund-list.json"
-                ),
-                array(
-                    "id" => 124,
-                    "label"=>"存额变更",
-                    "url"=>"/order/recharge",
-                    "icon"=>"fa fa-random",
-                    "schemaApi"=>"get:/public/pages/crud-order-recharge-list.json"
-                ),
+                    "schemaApi"=>"get:/public/pages/crud-order-change-list.json"
+                ),                
                 array(
                     "id" => 125,
                     "label"=>"绑定课程",
@@ -151,15 +158,37 @@ return array(
                     "url"=>"/records/order",
                     "icon"=>"fa fa-bars",
                     "schemaApi"=>"get:/public/pages/crud-records-order-list.json"
+                ),
+                array(
+                    "id" => 52,
+                    "label"=>"账户报表",
+                    "url"=>"/records/account",
+                    "icon"=>"fa fa-server",
+                    "schemaApi"=>"get:/public/pages/crud-records-account-list.json"
                 )
             ]
         ),
         array(
             "id" => 6,
-            "label"=>"科目分类",
+            "label"=>"科目管理",
             "url"=>"/subject",
             "icon"=>"fa fa-server",
-            "schemaApi"=>"get:/public/pages/crud-subject-list.json"
+            "children"=>[
+                array(
+                    "id" => 61,
+                    "label"=>"科目分类",
+                    "url"=>"/subject/lists",
+                    "icon"=>"fa fa-list",
+                    "schemaApi"=>"get:/public/pages/crud-subject-list.json"
+                ),
+                array(
+                    "id" => 63,
+                    "label"=>"绑定班型",
+                    "url"=>"/subject/claszemap",
+                    "icon"=>"fa fa-retweet",
+                    "schemaApi"=>"get:/public/pages/crud-claszemap-list.json"
+                ),
+            ], 
         ),
         array(
             "id" => 7,
@@ -192,7 +221,7 @@ return array(
         ),
         array(
             "id" => 9,
-            "label"=>"系统信息",
+            "label"=>"系统配置",
             "url"=>"/system",
             "icon"=>"fa fa-cog",
             "isSuper" => 1,
@@ -218,6 +247,13 @@ return array(
                     "icon"=>"fa fa-server",
                     "schemaApi"=>"get:/public/pages/crud-birthplace-list.json"
                 ),
+                array(
+                    "id" => 94,
+                    "label"=>"班型配置",
+                    "url"=>"/subject/clasze",
+                    "icon"=>"fa fa-calendar",
+                    "schemaApi"=>"get:/public/pages/crud-clasze-list.json"
+                ),
             ]
         )
     ),
@@ -238,6 +274,14 @@ return array(
         array(
             "id" => 4002,
             "label"=>"课程删除",
+        ),
+        array(
+            "id" => 4003,
+            "label"=>"学员充值",
+        ),
+        array(
+            "id" => 4004,
+            "label"=>"学员退款",
         ),
     ),
 );

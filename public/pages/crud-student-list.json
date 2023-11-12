@@ -307,10 +307,11 @@
                 "toggled": true
             },
             {
-                "name": "uncheck_schedule_nums",
-                "label": "未结算课时数",
+                "name": "balance_info",
+                "label": "账户存额",
                 "type": "text",
-                "toggled": true
+                "toggled": true,
+                "classNameExpr": "<%= data.balance < 0 ? 'bg-danger' : (data.balance > 0 ? 'bg-success' : 'bg-default' ) %>"
             },
             {
                 "name": "update_time",
@@ -329,6 +330,152 @@
                         "level":"primary",
                         "actionType": "link",
                         "link":"/order/list?student_uid=$uid"
+                    },
+                    {
+                        "type": "button",
+                        "label": "充值",
+                        "actionType": "dialog",
+                        "disabledOn": "this.is_re !== 1",
+                        "dialog": {
+                            "size": "lg",
+                            "title": "充值",
+                            "body": {
+                                "type": "form",
+                                "name": "sample-rechage-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/student/recharge",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                            "actionType": "reload",
+                                            "componentId": "student_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "uid",
+                                        "label": "Uid",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "nickname",
+                                        "label": "昵称",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "balance_info",
+                                        "label": "账户存额",
+                                        "disabled": true,
+                                        "addOn": {
+                                            "type": "text",
+                                            "label": "元"
+                                        }
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "recharge_balance",
+                                        "label": "充值金额",
+                                        "required": true,
+                                        "addOn": {
+                                            "type": "text",
+                                            "label": "元"
+                                        },
+                                        "desc" : "充值金额, 元为单位, 必须大于0"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "退款",
+                        "actionType": "dialog",
+                        "disabledOn": "this.is_rd !== 1",
+                        "dialog": {
+                            "size": "lg",
+                            "title": "退款",
+                            "body": {
+                                "type": "form",
+                                "name": "sample-refund-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/student/refund",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                            "actionType": "reload",
+                                            "componentId": "student_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "uid",
+                                        "label": "Uid",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "nickname",
+                                        "label": "昵称",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "balance_info",
+                                        "label": "账户存额",
+                                        "disabled": true,
+                                        "addOn": {
+                                            "type": "text",
+                                            "label": "元"
+                                        }
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "recharge_balance",
+                                        "label": "退款金额",
+                                        "required": true,
+                                        "addOn": {
+                                            "type": "text",
+                                            "label": "元"
+                                        },
+                                        "desc" : "充值金额, 元为单位, 必须大于0"
+                                    }
+                                ]
+                            }
+                        }
                     },
                     {
                         "type": "button",

@@ -107,6 +107,18 @@
                 "toggled": true
             },
             {
+                "name": "clasze_name",
+                "label": "班型",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "isfree",
+                "label": "是否免费",
+                "type": "text",
+                "toggled": true
+            },
+            {
                 "name": "schedule_nums",
                 "label": "订单课时",
                 "type": "text",
@@ -167,26 +179,14 @@
                 "toggled": true
             },
             {
-                "name": "transfer_schedule_nums",
-                "label": "结转课时",
+                "name": "change_duration",
+                "label": "结转账户课时",
                 "type": "text",
                 "toggled": true
             },
             {
-                "name": "transfer_balance",
-                "label": "结转金额",
-                "type": "text",
-                "toggled": true
-            },
-            {
-                "name": "refund_schedule_nums",
-                "label": "退款课时",
-                "type": "text",
-                "toggled": true
-            },
-            {
-                "name": "refund_balance",
-                "label": "退款金额",
+                "name": "change_balance",
+                "label": "结转账户金额",
                 "type": "text",
                 "toggled": true
             },

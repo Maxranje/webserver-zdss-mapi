@@ -66,6 +66,28 @@ class Service_Page_Schedule_Create extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 时间格式错误, 请检查");
         }
 
+        $serviceData = new Service_Data_Column();
+        $columnInfos = $serviceData->getColumnByTSId(intval($teacherUid), intval($subjectId));
+        if (empty($columnInfos)) {
+            throw new Zy_Core_Exception(405, "操作失败, 无法查到教师绑定信息");
+        }
+
+        $serviceData = new Service_Data_Subject();
+        $subjectInfo = $serviceData->getSubjectById(intval($subjectId));
+        if (empty($subjectInfo) || empty($subjectInfo['parent_id'])) {
+            throw new Zy_Core_Exception(405, "操作失败, 没有科目信息, 或绑定不是科目单项, 无法排课");
+        }
+
+        $serviceData = new Service_Data_Group();
+        $groupInfo = $serviceData->getGroupById($groupId);
+        if (empty($groupInfo) || $groupInfo['state'] == Service_Data_Group::GROUP_DISABLE) {
+            throw new Zy_Core_Exception(405, "操作失败, 无法查到班级信息或班级下线");
+        }
+
+        if ($subjectInfo['parent_id'] != $groupInfo['subject_id']) {
+            throw new Zy_Core_Exception(405, "操作失败, 班级所绑定的科目与老师绑定的科目不同, 无法创建课程");
+        }
+
         $serviceSchedule = new Service_Data_Schedule();
         $ret = $serviceSchedule->checkParamsTime($needTimes) ;
         if (!$ret) {
@@ -76,24 +98,6 @@ class Service_Page_Schedule_Create extends Zy_Core_Service{
         $userInfo = $serviceData->getUserInfoByUid($teacherUid);
         if (empty($userInfo) || $userInfo['state'] == Service_Data_Profile::STUDENT_DISABLE) {
             throw new Zy_Core_Exception(405, "操作失败, 无法查到老师信息或教师下线");
-        }
-        
-        $serviceData = new Service_Data_Group();
-        $groupInfo = $serviceData->getGroupById($groupId);
-        if (empty($groupInfo) || $groupInfo['state'] == Service_Data_Group::GROUP_DISABLE) {
-            throw new Zy_Core_Exception(405, "操作失败, 无法查到班级信息或班级下线");
-        }
-
-        $serviceData = new Service_Data_Subject();
-        $subjectInfo = $serviceData->getSubjectById(intval($subjectId));
-        if (empty($subjectInfo) || empty($subjectInfo['parent_id'])) {
-            throw new Zy_Core_Exception(405, "操作失败, 没有科目信息, 或绑定不是科目单项, 无法排课");
-        }
-
-        $serviceData = new Service_Data_Column();
-        $columnInfos = $serviceData->getColumnByTSId(intval($teacherUid), intval($subjectId));
-        if (empty($columnInfos)) {
-            throw new Zy_Core_Exception(405, "操作失败, 无法查到教师绑定信息");
         }
 
         if ($areaId > 0) {

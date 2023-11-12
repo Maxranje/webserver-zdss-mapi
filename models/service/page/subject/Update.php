@@ -10,7 +10,7 @@ class Service_Page_Subject_Update extends Zy_Core_Service{
         $subjectId      = empty($this->request['subject_id']) ? 0 : intval($this->request['subject_id']);
         $subjectName    = empty($this->request['subject_name']) ? "" : $this->request['subject_name'];
         $subjectDesc    = empty($this->request['subject_desc']) ? "" : $this->request['subject_desc'];
-        $price          = empty($this->request['price_info']) ? 0 : floatval($this->request['price_info']);
+        $identify       = empty($this->request['identify']) ? "" : $this->request['identify'];
 
         if ($subjectId <= 0 || empty($subjectName)) {
             throw new Zy_Core_Exception(405, "操作错误, 请求参数错误, 请检查");
@@ -23,10 +23,9 @@ class Service_Page_Subject_Update extends Zy_Core_Service{
         }
 
         if ($subjectInfo['parent_id'] == 0) {
-            if ($price < 0) {
-                throw new Zy_Core_Exception(405, "操作错误, 客单价不能小于0");
+            if (empty($identify)) {
+                throw new Zy_Core_Exception(405, "操作失败, 科目标识不能为空");
             }
-            
             // check name 
             $subInfo2 = $serviceData->getParentSubjectByName($subjectName);
             if (!empty($subInfo2) && $subInfo2['id'] != $subjectInfo['id']) {
@@ -41,8 +40,8 @@ class Service_Page_Subject_Update extends Zy_Core_Service{
 
         $profile = [
             "name"          => $subjectName, 
-            "price"         => intval($price * 100), 
             "descs"         => $subjectDesc, 
+            "identify"      => $identify,
             "update_time"   => time(),
         ];
 

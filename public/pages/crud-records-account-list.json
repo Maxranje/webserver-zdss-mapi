@@ -1,0 +1,119 @@
+{
+    "type": "page",
+    "title": "消费记录",
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "api": {
+            "method": "post",
+            "url":"/mapi/records/accountlists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "syncLocation":false,
+        "id" : "records_lists",
+        "name" : "records_lists",
+        "columnsTogglable": false,
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "nickname",
+                    "label": "学员姓名",
+                    "size": "md",
+                    "placeholder": ""
+                },
+                {
+                    "type": "input-date-range",
+                    "name": "daterangee",
+                    "inline": true,
+                    "label": "时间范围"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "action",
+                "actionType": "download",
+                "label": "导出Excel",
+                "api": "/mapi/records/accountlists?nickname=${nickname}&daterangee=${daterangee}&is_export=1"
+            },
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "update_time",
+                "label": "日期",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "uid",
+                "label": "学员UID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "nickname",
+                "label": "学员名",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "type",
+                "label": "类型",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "capital",
+                "label": "金额",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "operator",
+                "label": "操作员",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "create_time",
+                "label": "创建时间",
+                "type": "text",
+                "toggled": true
+            }
+        ]
+    }
+}

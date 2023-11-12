@@ -28,6 +28,12 @@ class Service_Page_Order_Detail extends Zy_Core_Service{
         $serviceData = new Service_Data_Subject();
         $subjectInfo = $serviceData->getSubjectById(intval($order['subject_id']));
 
+        $serviceData = new Service_Data_Birthplace();
+        $birthplace = $serviceData->getBirthplaceById(intval($order['bpid']));
+
+        $serviceData = new Service_Data_Clasze();
+        $claszeInfo = $serviceData->getClaszeById(intval($order['cid']));
+
         $serviceData = new Service_Data_Profile();
         $studentInfo = $serviceData->getUserInfoByUid(intval($order['student_uid']));
 
@@ -35,12 +41,12 @@ class Service_Page_Order_Detail extends Zy_Core_Service{
         $serviceData = new Service_Data_Curriculum();
         $orderCounts = $serviceData->getScheduleTimeCountByOrder(array(intval($order['order_id'])));
 
-        if (empty($subjectInfo['name'])) {
-            return array(1);
+        if (empty($subjectInfo['name']) || empty($claszeInfo['name']) || empty($birthplace['name'])) {
+            return array();
         }
 
         if (empty($studentInfo['nickname'])) {
-            return array(2);
+            return array();
         }
 
         $extra = json_decode($order['ext'], true);
@@ -49,17 +55,24 @@ class Service_Page_Order_Detail extends Zy_Core_Service{
         $item['order_id']       = $order['order_id'] ;
         $item['student_name']   = $studentInfo['nickname'];
         $item['subject_name']   = $subjectInfo['name'];
+        $item['clasze_name']    = $claszeInfo['name'];
+        $item['birthplace']     = $birthplace['name'];
         $item['student_uid']    = intval($order['student_uid']);
         $item['update_time']    = date("Y年m月d日 H:i",$order['update_time']);
         $item['create_time']    = date("Y年m月d日 H:i",$order['create_time']);
+
+        if ($order['isfree'] == 1) {
+            $item['pic_name'] = "免费";
+        } else {
+            $item['pic_name'] = "";
+        }
 
         $item['origin_balance'] = sprintf("%.2f", $extra['origin_balance'] / 100);
         $item['real_balance']   = sprintf("%.2f", $extra['real_balance'] / 100);
         $item['origin_price']   = sprintf("%.2f", $extra['origin_price'] / 100);
         $item['real_price']     = sprintf("%.2f", $extra['real_price'] / 100);
         $item['schedule_nums']  = $extra['schedule_nums'];
-        $item['transfer_balance']   = empty($extra['transfer_balance']) ? "0.00" : sprintf("%.2f", $extra['transfer_balance'] / 100);
-        $item['refund_balance']     = empty($extra['refund_balance']) ? "0.00" : sprintf("%.2f", $extra['refund_balance'] / 100);
+        $item['change_balance'] = empty($extra['change_balance']) ? "0.00" : sprintf("%.2f", $extra['change_balance'] / 100);
         
         $item['discount_info']  = "";
         if (!empty($order['discount_z'])) {
@@ -69,9 +82,6 @@ class Service_Page_Order_Detail extends Zy_Core_Service{
             $item['discount_info'] .= sprintf("减免(%.2f元)", $order['discount_j'] / 100);
         }
         $item['discount_info'] = empty($item['discount_info']) ? "-" : $item['discount_info'];
-
-        $item['band_duration']      = sprintf("%.2f", $orderCounts[$order['order_id']]['a']);
-        $item['band_balance']       = sprintf("%.2f", ($orderCounts[$order['order_id']]['a'] * $order['price']) / 100);
 
         // 余额减去待结算的
         $item['able_balance'] = $order['balance'];

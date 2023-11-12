@@ -14,6 +14,7 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
         $filterId       = empty($this->request['filter_id']) ? 0 : intval($this->request['filter_id']); // is_select时候需要过滤的.
         $subjectId      = empty($this->request['subject_id']) ? 0 : intval($this->request['subject_id']);
         $birthplace     = empty($this->request['birthplace']) ? 0 : intval($this->request['birthplace']);
+        $claszeId       = empty($this->request['clasze_id']) ? 0 : intval($this->request['clasze_id']);
         $studentUid     = empty($this->request['student_uid']) ? 0 : intval($this->request['student_uid']);
         $warning        = empty($this->request['warning']) ? 0 : intval($this->request['warning']);
         $isHasbalance   = empty($this->request['is_hasbalance']) ? false : true;
@@ -34,6 +35,14 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             $conds['subject_id'] = $subjectId;
         }
 
+        if ($claszeId > 0) {
+            $conds['cid'] = $claszeId;
+        }
+
+        if ($birthplace > 0) {
+            $conds['bpid'] = $birthplace;
+        }
+
         if ($isHasbalance) {
             $conds[] = "balance > 0";
         }
@@ -41,7 +50,9 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
         if ($warning == 1) {
             $conds[] = sprintf("balance <= %d and balance > 0", Service_Data_Order::WARNING_BALANCE);
         } else if ($warning == 2) {
-            $conds[] = sprintf("balance > %d", Service_Data_Order::WARNING_BALANCE);
+            $conds[] = "isfree=1";
+        } else if ($warning == 3) {
+            $conds[] = "balance <= 0";
         }
 
         if ($scheduleId > 0) {
@@ -50,15 +61,6 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             $orderIds = Zy_Helper_Utils::arrayInt($orderIds, "order_id");
             if (!empty($orderIds)) {
                 $conds[] = sprintf("order_id in (%s)", implode(",", $orderIds));
-            }
-        }
-
-        if ($birthplace > 0) {
-            $serviceData = new Service_Data_Profile();
-            $userInfos = $serviceData->getListByConds(array("bpid" => $birthplace), array("uid"));
-            $uids = Zy_Helper_Utils::arrayInt($userInfos, "uid");
-            if (!empty($uids)) {
-                $conds[] = sprintf("student_uid in (%s)", implode(",", $uids));
             }
         }
 
@@ -87,11 +89,12 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
 
     // 默认格式化
     private function formatDefault ($lists) {
-
         $studentUids = Zy_Helper_Utils::arrayInt($lists, 'student_uid');
         $subjectIds  = Zy_Helper_Utils::arrayInt($lists, 'subject_id');
         $orderIds    = Zy_Helper_Utils::arrayInt($lists, 'order_id');
         $operatorIds = Zy_Helper_Utils::arrayInt($lists, 'operator');
+        $bpdis       = Zy_Helper_Utils::arrayInt($lists, 'bpid');
+        $cids        = Zy_Helper_Utils::arrayInt($lists, 'cid');
 
         $uids = array_unique(array_merge($studentUids, $operatorIds));
 
@@ -102,6 +105,14 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
         $serviceData = new Service_Data_Profile();
         $userInfos = $serviceData->getListByConds(array(sprintf("uid in (%s)", implode(",", $uids))));
         $userInfos = array_column($userInfos, null, 'uid');
+
+        $serviceData = new Service_Data_Birthplace();
+        $birthplaces = $serviceData->getBirthplaceByIds($bpdis);
+        $birthplaces = array_column($birthplaces, null, 'id');
+
+        $serviceData = new Service_Data_Clasze();
+        $claszes = $serviceData->getClaszeByIds($cids);
+        $claszes = array_column($claszes, null, 'id');
 
         // 排课数
         $serviceData = new Service_Data_Curriculum();
@@ -125,15 +136,26 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             $item['student_uid']    = intval($v['student_uid']);
             $item['update_time']    = date("Y年m月d日 H:i",$v['update_time']);
             $item['create_time']    = date("Y年m月d日 H:i",$v['create_time']);
-            $item['pic_name']       = $v['balance'] <= 0 ? "完结" : ($v['balance'] <= Service_Data_Order::WARNING_BALANCE ? "预警" : "");
+            if ($v['balance'] <= 0) {
+                $item['pic_name'] = "完结";
+            } else if ($v['isfree'] == 1) {
+                $item['pic_name'] = "免费";
+            } else if ($v['balance'] <= Service_Data_Order::WARNING_BALANCE) {
+                $item['pic_name'] = "预警";
+            } else {
+                $item['pic_name'] = "";
+            }
             $item['balance']        = sprintf("%.2f", $v['balance'] / 100);
             $item['price']          = sprintf("%.2f", $v['price'] / 100);
 
+            $item['birthplace']     = empty($birthplaces[$v['bpid']]['name']) ? "" : $birthplaces[$v['bpid']]['name'];
+            $item['clasze_name']    = empty($claszes[$v['cid']]['name']) ? "" : $claszes[$v['cid']]['name'];
             $item['origin_balance'] = sprintf("%.2f", $extra['origin_balance'] / 100);
             $item['real_balance']   = sprintf("%.2f", $extra['real_balance'] / 100);
             $item['origin_price']   = sprintf("%.2f", $extra['origin_price'] / 100);
             $item['real_price']     = sprintf("%.2f", $extra['real_price'] / 100);
             $item['schedule_nums']  = $extra['schedule_nums'];
+            $item['isfree']         = empty($v['isfree']) ? 0 : 1;
             $item['discount_info']  = "";
             if (!empty($v['discount_z'])) {
                 $item['discount_info'] .= "折扣(" . $v['discount_z'] . "%) ";
@@ -142,13 +164,13 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
                 $item['discount_info'] .= sprintf("减免(%.2f元)", $v['discount_j'] / 100);
             }
 
-            $item['last_duration']      = sprintf("%.2f", $v['balance'] / $v['price']);
             $item['check_duration']     = sprintf("%.2f", $orderCounts[$v['order_id']]['c']);
             $item['band_duration']      = sprintf("%.2f", $orderCounts[$v['order_id']]['a']);
-            $item['band_uncheck_duration'] = sprintf("%.2f", $orderCounts[$v['order_id']]['u']);
-            $item['transfer_id']        =  $v['transfer_id'];
-            $item['transfer_balance']   = empty($extra['transfer_balance']) ? "0.00" : sprintf("%.2f", $extra['transfer_balance'] / 100);
-            $item['refund_balance']     = empty($extra['refund_balance']) ? "0.00" : sprintf("%.2f", $extra['refund_balance'] / 100);
+            $item['uncheck_duration']   = sprintf("%.2f", $orderCounts[$v['order_id']]['u']);
+
+            $item['last_balance']       = sprintf("%.2f", ($v['balance'] - ($orderCounts[$v['order_id']]['u'] * $v['price'])) / 100);
+            $item['unband_duration']    = sprintf("%.2f", ($v['balance'] - ($orderCounts[$v['order_id']]['u'] * $v['price'])) / $v['price']);
+            $item['change_balance']     = empty($extra['change_balance']) ? "0.00" : sprintf("%.2f", $extra['change_balance'] / 100);
             $item['remark']             = empty($extra['remark']) ? "" : $extra['remark'];
             $result[] = $item;
         }
@@ -166,7 +188,7 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
                 continue;
             }
             $options[] = array(
-                'label' => sprintf("订单ID:%s, 科目:%s", $item['order_id'], $item['subject_name']),
+                'label' => sprintf("%s %s / %s", $item['order_id'], $item['subject_name'], $item['clasze_name']),
                 'value' => intval($item['order_id']),
             );
         }

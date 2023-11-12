@@ -8,12 +8,12 @@ class Service_Page_Order_Review extends Zy_Core_Service{
         }
 
         $studentUid     = empty($this->request['student_uid']) ? 0 : intval($this->request['student_uid']);
-        $subjectId      = empty($this->request['subject_id']) ? 0 : intval($this->request['subject_id']);
+        $claszemapId    = empty($this->request['claszemap_id']) ? 0 : intval($this->request['claszemap_id']);
         $scheduleNums   = empty($this->request['schedule_nums']) ? 0 : floatval($this->request['schedule_nums']);
         $discountZ      = empty($this->request['discount_z']) ? 0 : intval($this->request['discount_z'] * 10);
         $discountJ      = empty($this->request['discount_j']) ? 0 : intval($this->request['discount_j'] * 100);
 
-        if ($studentUid <= 0 || $subjectId <= 0 || $scheduleNums <= 0) {
+        if ($studentUid <= 0 || $claszemapId <= 0 || $scheduleNums <= 0) {
             return array(); 
         }
 
@@ -25,14 +25,14 @@ class Service_Page_Order_Review extends Zy_Core_Service{
             return array();
         }
 
-        $serviceSubject = new Service_Data_Subject();
-        $subjectInfo = $serviceSubject->getSubjectById($subjectId);
-        if (empty($subjectInfo)) {
+        $serviceClaszemap = new Service_Data_Claszemap();
+        $clasze = $serviceClaszemap->getClaszemapById($claszemapId);
+        if (empty($clasze)) {
             return array();
         }
 
-        $originPrice = $realPrice = intval($subjectInfo['price']);
-        $originBalance = $realBalance = intval($subjectInfo['price'] * $scheduleNums);
+        $originPrice = $realPrice = intval($clasze['price']);
+        $originBalance = $realBalance = intval($clasze['price'] * $scheduleNums);
 
         if ($discountZ > 0){
             $realBalance = ($realBalance * $discountZ) / 100;

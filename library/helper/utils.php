@@ -118,4 +118,9 @@ class Zy_Helper_Utils {
         }
         return true;
     }
+
+    public static function autoID ($k1, $k2) {
+        $t = date("mdHis") . mt_rand(100, 999);
+        return sprintf("%s%s%s", $k1, $k2, $t);
+    }
 }
