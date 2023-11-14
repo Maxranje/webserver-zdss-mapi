@@ -160,7 +160,7 @@ return array(
                     "schemaApi"=>"get:/public/pages/crud-records-order-list.json"
                 ),
                 array(
-                    "id" => 52,
+                    "id" => 53,
                     "label"=>"账户报表",
                     "url"=>"/records/account",
                     "icon"=>"fa fa-server",

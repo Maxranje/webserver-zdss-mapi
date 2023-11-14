@@ -78,19 +78,22 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
                 continue;
             }
 
+            $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
+
             $item['type']           = $item['type'] == Service_Data_Profile::RECHARGE ? "充值" : "退费";
             $item['nickname']       = $userInfos[$item['uid']]['nickname'];
             $item['operator']       = $userInfos[$item['operator']]['nickname'];
             $item['create_time']    = date("Y年m月d日 H:i:s", $item['create_time']);
             $item['update_time']    = date("Y年m月d日 H:i:s", $item['update_time']);
             $item['capital']        = sprintf("%.2f元", $item['capital'] / 100);
+            $item['remark']         = empty($ext['remark']) ? "" : $ext['remark'];
         }
         return $lists;
     }
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('日期', 'UID', '用户名', '用户类型', '金额(元)',  '操作员', "更新日期"),
+            'title' => array('日期', 'UID', '用户名', '用户类型', '金额(元)',  '备注', '操作员', "更新日期"),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -104,6 +107,7 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
                 $item['nickname'],
                 $item['type'],
                 $item['capital'],
+                $item['remark'],
                 $item['operator'],
                 $item['update_time'],
             );

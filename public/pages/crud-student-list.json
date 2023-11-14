@@ -399,6 +399,14 @@
                                             "label": "元"
                                         },
                                         "desc" : "充值金额, 元为单位, 必须大于0"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "remark",
+                                        "label": "备注"
                                     }
                                 ]
                             }
@@ -472,6 +480,14 @@
                                             "label": "元"
                                         },
                                         "desc" : "充值金额, 元为单位, 必须大于0"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "remark",
+                                        "label": "备注"
                                     }
                                 ]
                             }

@@ -27,17 +27,28 @@
                                         "label": "班级",
                                         "searchable":true,
                                         "size": "full",
-                                        "source": "/mapi/group/lists?is_select=1&state=1"
+                                        "source": "/mapi/group/lists?is_select=1&state=1",
+                                        "onEvent": {
+                                            "change": {
+                                                "actions": [
+                                                    {
+                                                        "actionType": "reload",
+                                                        "componentId": "search_teacher_uid"
+                                                    }
+                                                ]
+                                            }
+                                        }
                                     },
                                     {
                                         "type": "tree-select",
+                                        "id" : "search_teacher_uid",
                                         "name": "teacher_uid",
                                         "onlyLeaf":true,
                                         "searchable":true,
                                         "label": "教师",
                                         "initiallyOpen":false,
                                         "size": "full",
-                                        "source": "/mapi/teacher/lists?is_select=1&is_subject=1&state=1"
+                                        "source": "/mapi/teacher/schedulelists?is_select=1&group_id=$group_id"
                                     }
                                 ]
                             },
@@ -199,17 +210,28 @@
                                         "label": "班级",
                                         "searchable":true,
                                         "size": "full",
-                                        "source": "/mapi/group/lists?is_select=1"
+                                        "source": "/mapi/group/lists?is_select=1",
+                                        "onEvent": {
+                                            "change": {
+                                                "actions": [
+                                                    {
+                                                        "actionType": "reload",
+                                                        "componentId": "search_teacher_uidv2"
+                                                    }
+                                                ]
+                                            }
+                                        }
                                     },
                                     {
                                         "type": "tree-select",
+                                        "id" : "search_teacher_uidv2",
                                         "name": "teacher_uid",
                                         "onlyLeaf":true,
                                         "label": "教师",
                                         "searchable":true,
                                         "initiallyOpen": false,
                                         "size": "full",
-                                        "source": "/mapi/teacher/lists?is_select=1&is_subject=1&state=1"
+                                        "source": "/mapi/teacher/schedulelists?is_select=1&group_id=$group_id"
                                     }
                                 ]
                             },

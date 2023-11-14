@@ -134,7 +134,7 @@ class Service_Data_Profile {
     }
 
     // 学生充值
-    public function rechargeUser ($uid, $balance) {
+    public function rechargeUser ($uid, $balance, $remark) {
         $this->daoUser->startTransaction();
 
         $rechargeProfile = array(
@@ -154,6 +154,7 @@ class Service_Data_Profile {
             "capital"       => $balance,
             "update_time"   => time(),
             "create_time"   => time(),
+            "ext"           => json_encode(array('remark'=>$remark)),
         );
         $daoCapital = new Dao_Capital();
         $ret = $daoCapital->insertRecords($profile);
@@ -167,7 +168,7 @@ class Service_Data_Profile {
     }
 
     // 学生退款
-    public function refundUser ($uid, $balance) {
+    public function refundUser ($uid, $balance, $remark) {
         $this->daoUser->startTransaction();
 
         $rechargeProfile = array(
@@ -187,6 +188,7 @@ class Service_Data_Profile {
             "capital"       => $balance,
             "update_time"   => time(),
             "create_time"   => time(),
+            "ext"           => json_encode(array('remark'=>$remark)),
         );
         $daoCapital = new Dao_Capital();
         $ret = $daoCapital->insertRecords($profile);

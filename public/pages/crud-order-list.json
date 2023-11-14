@@ -310,8 +310,11 @@
                     "items": [
                         {
                             "label": "订单余额",
-                            "content": "$last_balance 元",
-                            "span":2
+                            "content": "$last_balance 元"
+                        },
+                        {
+                            "label": "可绑定课时",
+                            "content": "$unband_duration 小时"
                         },
                         {
                             "label": "绑定总课时",

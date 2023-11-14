@@ -12,5 +12,8 @@ class Controller_Teacher extends Zy_Core_Controller{
         "locklists"     => "actions/teacher/Locklists.php",
         "lockcreate"    => "actions/teacher/Lockcreate.php",
         "lockdelete"    => "actions/teacher/Lockdelete.php",
+
+        // 排课
+        "schedulelists"     => "actions/teacher/Schedulelists.php",
     );
 }

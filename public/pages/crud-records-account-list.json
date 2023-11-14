@@ -103,6 +103,16 @@
                 "toggled": true
             },
             {
+                "type": "container",
+                "label" : "备注",
+                "popOver": {
+                    "body": {
+                        "type": "tpl",
+                        "tpl": "${remark}"
+                    }
+                }
+            },
+            {
                 "name": "operator",
                 "label": "操作员",
                 "type": "text",

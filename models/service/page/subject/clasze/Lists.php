@@ -33,7 +33,6 @@ class Service_Page_Subject_Clasze_Lists extends Zy_Core_Service{
                 return array();
             }
     
-    
             $serviceClaszeMap = new Service_Data_Claszemap();
             $mapLists = $serviceClaszeMap->getListByConds(array("bpid" => $bpid));
             if (empty($mapLists)) {
@@ -45,18 +44,14 @@ class Service_Page_Subject_Clasze_Lists extends Zy_Core_Service{
 
         // 按照subject查所有
         if  ($type == 2) {
-            $serviceData = new Service_Data_Subject();
-            $subjectInfos = $serviceData->getListByConds(array("parent_id"=> 0), array("name", "id"));
-            $subjectInfos = array_column($subjectInfos, null, "id");
+            $serviceClaszeMap = new Service_Data_Claszemap();
+            $mapLists = $serviceClaszeMap->getListByConds(array(), array("subject_id", "cid"), null, array("group by subject_id, cid"));
+            if (empty($mapLists)) {
+                return array();
+            }
 
-            $serviceData = new Service_Data_Clasze();
-            $claszeInfos = $serviceData->getListByConds(array("id > 0"), array("id", "name"));
-            $claszeInfos = array_column($claszeInfos, null, "id");
-
-            return $this->formatSimple ($subjectInfos, $claszeInfos) ;
+            return $this->formatSimple ($mapLists) ;
         }
-
-
     }
 
     public function formatBase($bpid, $lists) {
@@ -114,25 +109,42 @@ class Service_Page_Subject_Clasze_Lists extends Zy_Core_Service{
     }
 
 
-    public function formatSimple($subjectInfos, $claszeInfos) {
-        if (empty($subjectInfos) || empty($claszeInfos)) {
+    public function formatSimple($lists) {
+        if (empty($lists)) {
             return array();
         }
 
+        $subjectIds= Zy_Helper_Utils::arrayInt($lists, "subject_id");
+        $cids= Zy_Helper_Utils::arrayInt($lists, "cid");
+
+        $serviceData = new Service_Data_Subject();
+        $subjectInfos = $serviceData->getSubjectByIds($subjectIds);
+        $subjectInfos = array_column($subjectInfos, null, "id");
+
+        $serviceData = new Service_Data_Clasze();
+        $claszeInfos = $serviceData->getClaszeByIds($cids);
+        $claszeInfos = array_column($claszeInfos, null, "id");
+
         $result = array();
-        foreach ($subjectInfos as $subjectId => $subject) {
-            $tmp =array(
-                'label' => $subject['name'],
-                "children" => array(),
-            );
-            foreach ($claszeInfos as $claszeId => $clasze) {
-                $tmp['children'][] = array(
-                    'label' => $clasze['name'],
-                    'value' => sprintf("%s_%s", $subjectId, $claszeId),
+        foreach ($lists as $item) {
+            if (empty($subjectInfos[$item['subject_id']])) {
+                continue;
+            }
+            if (empty($claszeInfos[$item['cid']])) {
+                continue;
+            }
+
+            if (!isset($result[$item['subject_id']])) {
+                $result[$item['subject_id']] = array(
+                    'label' => $subjectInfos[$item['subject_id']]['name'],
+                    'children' => array(),
                 );
             }
-            $result[] = $tmp;
+            $result[$item['subject_id']]['children'][] = array(
+                'label' => $claszeInfos[$item['cid']]['name'],
+                'value' => sprintf("%s_%s", $item['subject_id'], $item['cid']),
+            );
         }
-        return $result;
+        return array_values($result);
     }
 }

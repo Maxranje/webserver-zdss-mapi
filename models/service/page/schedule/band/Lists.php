@@ -29,7 +29,7 @@ class Service_Page_Schedule_Band_Lists extends Zy_Core_Service{
             }
 
             if ($order['subject_id'] != $group['subject_id'] || $order['cid'] != $group['cid']) {
-                return array();
+                return array("options" => array(), "value" => "");
             }
         }
 
@@ -45,7 +45,7 @@ class Service_Page_Schedule_Band_Lists extends Zy_Core_Service{
 
     private function formatDefault ($lists, $orderId) {
         if (empty($lists)) {
-            return array();
+            return array("options" => array(), "value" => "");
         }
 
         // 初始化参数
