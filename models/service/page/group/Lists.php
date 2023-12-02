@@ -74,7 +74,7 @@ class Service_Page_Group_Lists extends Zy_Core_Service{
         $subjectIds = Zy_Helper_Utils::arrayInt($lists, 'subject_id');
         $cids       = Zy_Helper_Utils::arrayInt($lists, 'cid');
 
-        // 区域管理员信息
+        // 助教信息
         $serviceData = new Service_Data_Profile();
         $userInfos = $serviceData->getUserInfoByUids($uids);
         $userInfos = array_column($userInfos, null, 'uid');

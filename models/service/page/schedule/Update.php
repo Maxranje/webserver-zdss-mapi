@@ -11,11 +11,15 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
         $date           = empty($this->request['date']) ? 0 : intval($this->request['date']);
         $timeRange      = empty($this->request['time_range']) ? "" : $this->request['time_range'];
         $teacherUid     = empty($this->request['teacher_uid']) ? "" : $this->request['teacher_uid'];
+        $arIds          = empty($this->request['a_r_id']) ? "" : explode("_", $this->request['a_r_id']);
         $areaOperator   = empty($this->request['area_opreator']) ? 0 : intval($this->request['area_opreator']);
 
         if ($id <= 0){
             throw new Zy_Core_Exception(405, "请求参数错误");
         }
+
+        $areaId = empty($arIds[0]) ? 0 : intval($arIds[0]);
+        $roomId = empty($arIds[1]) ? 0 : intval($arIds[1]);
 
         // 教师信息获取
         if (empty($teacherUid) || strpos($teacherUid, "_") === false) {
@@ -117,10 +121,17 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
         }
 
         // 排查教室 (3.15线上不管)
+        if ($info['room_id'] != $roomId) {
+            $info['room_id'] = $roomId;
+        }
+
+        if ($info['area_id'] != $areaId) {
+            $info['area_id'] = $areaId;
+        }
         if (!empty($info['area_id']) && !empty($info['room_id'])) {
             $serviceData = new Service_Data_Area();
             $areaInfo = $serviceData->getAreaById(intval($info['area_id']));
-            if (empty($areaInfo['is_online'])) {
+            if (isset($areaInfo['is_online']) && $areaInfo['is_online'] != Service_Data_Area::ONLINE) {
                 $ret = $serviceSchedule->checkRoom (array($needTimes), $needDays, $info);
                 if ($ret === false) {
                     throw new Zy_Core_Exception(405, "操作失败, 查询教室冲突情况失败, 请重新提交");
@@ -138,6 +149,8 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
 	        'needTimes'     => $needTimes,
             "area_op"       => $areaOperator,
 	        'teacher_uid'   => $teacherUid,
+            "area_id"       => $areaId,
+            "room_id"       => $roomId,
             'subject_id'    => $subjectId,
         ];
 

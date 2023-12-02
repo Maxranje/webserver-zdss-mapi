@@ -13,8 +13,8 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
         $scheduleIds    = empty($this->request['schedule_ids']) ? array() : explode(",", $this->request['schedule_ids']);
         $scheduleIds    = Zy_Helper_Utils::arrayInt($scheduleIds);
 
-        if ($groupId <= 0 || $orderId <= 0 || empty($scheduleIds)) {
-            throw new Zy_Core_Exception(405, "操作失败, 必须选定订单和具体排课以及班级");
+        if ($groupId <= 0 || $orderId <= 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 必须选定订单和班级");
         }
 
         // check order信息

@@ -311,7 +311,7 @@
                 "label": "账户存额",
                 "type": "text",
                 "toggled": true,
-                "classNameExpr": "<%= data.balance < 0 ? 'bg-danger' : (data.balance > 0 ? 'bg-success' : 'bg-default' ) %>"
+                "classNameExpr": "<%= data.balance > 500000 ? 'bg-success' : (data.balance > 0 ? 'bg-warning' : 'bg-default' ) %>"
             },
             {
                 "name": "update_time",
@@ -390,14 +390,12 @@
                                         "type": "divider"
                                     },
                                     {
-                                        "type": "input-text",
+                                        "type": "input-number",
                                         "name": "recharge_balance",
                                         "label": "充值金额",
                                         "required": true,
-                                        "addOn": {
-                                            "type": "text",
-                                            "label": "元"
-                                        },
+                                        "kilobitSeparator" : true,
+                                        "suffix": "元",
                                         "desc" : "充值金额, 元为单位, 必须大于0"
                                     },
                                     {
@@ -475,10 +473,8 @@
                                         "name": "recharge_balance",
                                         "label": "退款金额",
                                         "required": true,
-                                        "addOn": {
-                                            "type": "text",
-                                            "label": "元"
-                                        },
+                                        "kilobitSeparator" : true,
+                                        "suffix": "元",
                                         "desc" : "充值金额, 元为单位, 必须大于0"
                                     },
                                     {

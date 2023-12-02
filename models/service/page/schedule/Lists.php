@@ -195,10 +195,13 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
             $item['area_name'] = "";
             $item['room_name'] = "";
             $item['area_mark'] = "";
+            $item["a_r_id"] = ""; 
             if (!empty($item['area_id']) && !empty($areaInfos[$item['area_id']]['name'])) {
                 $item['area_name'] = $areaInfos[$item['area_id']]['name'];
+                $item['a_r_id'] = $item['area_id'];
                 if (!empty($item['room_id']) && !empty($roomInfos[$item['room_id']]['name'])) {
                     $item['room_name'] = $roomInfos[$item['room_id']]['name'];
+                    $item['a_r_id'] .= "_" . $item['room_id'];
                 } else {
                     $item['room_name'] = "无教室";
                 }
@@ -233,7 +236,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('ID', '教师名', '班级名', '课程名', '校区', '教室', '校区说明',  '排课人员', '区域管理', '状态', '星期', '时长', '时间', '创建时间'),
+            'title' => array('ID', '教师名', '班级名', '课程名', '校区', '教室', '校区说明',  '排课人员', '助教', '状态', '星期', '时长', '时间', '创建时间'),
             'lists' => array(),
         );
         

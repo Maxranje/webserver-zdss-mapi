@@ -224,7 +224,7 @@ class Service_Data_Profile {
             }
         }
 
-        // 如果是管理员, 会删掉课程和班级中区域管理者
+        // 如果是管理员, 会删掉课程和班级中助教
         if ($type == self::USER_TYPE_ADMIN) {
             $daoGroup = new Dao_Group();
             $ret = $daoGroup->updateByConds(array('area_operator' => $uid), array('area_operator' => 0));

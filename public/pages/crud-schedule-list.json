@@ -37,7 +37,7 @@
                 {
                     "type": "tree-select",
                     "name": "order_id",
-                    "label": "学员订单",
+                    "label": "订单",
                     "mode": "inline",
                     "size":"lg",
                     "initiallyOpen":false,
@@ -121,11 +121,11 @@
                 "type": "action",
                 "actionType": "download",
                 "label": "导出Excel",
-                "api": "/mapi/schedule/lists?ids=${ids}&group_ids=${group_ids}&teacher_uid=${teacher_uid}&daterange=${daterange}&area_id=${area_id}&area_operator=${area_operator}&state=${state}&is_export=1"
+                "api": "/mapi/schedule/lists?ids=${ids}&group_ids=${group_ids}&teacher_uid=${teacher_uid}&daterange=${daterange}&order_id=${order_id}&area_id=${area_id}&area_operator=${area_operator}&state=${state}&is_export=1"
             },
             {
                 "type": "tpl",
-                "tpl": "共有 ${total} 条数据。",
+                "tpl": "有筛选, 先搜后导, 共有 ${total} 条数据。",
                 "className": "v-middle"
             },
             {
@@ -195,7 +195,7 @@
             },
             {
                 "name": "area_op_name",
-                "label": "区域管理",
+                "label": "助教",
                 "type": "text",
                 "toggled": true
             },
@@ -391,15 +391,26 @@
                                     },
                                     {
                                         "type": "tree-select",
+                                        "name": "a_r_id",
+                                        "onlyLeaf":true,
+                                        "label": "校区教室",
+                                        "searchable":true,
+                                        "size":"md",
+                                        "value": "${a_r_id}",
+                                        "initiallyOpen":false,
+                                        "source": "/mapi/area/lists?aid=$a_r_id&is_withroom=1"
+                                    },
+                                    {
+                                        "type": "tree-select",
                                         "name": "area_opreator",
                                         "onlyLeaf":true,
-                                        "label": "区域管理",
+                                        "label": "助教",
                                         "searchable":true,
                                         "size":"md",
                                         "initiallyOpen":false,
                                         "value":"${area_operator}",
                                         "source": "/mapi/api/areaoperator",
-                                        "description": "区域管理非必选"
+                                        "description": "助教非必选"
                                     }
                                 ]
                             }

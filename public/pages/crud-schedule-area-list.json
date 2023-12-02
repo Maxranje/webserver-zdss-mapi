@@ -41,6 +41,7 @@
                     "name": "area_id",
                     "searchable":true,
                     "onlyLeaf":true,
+                    "multiple": true,
                     "label": "校区",
                     "size":"md",
                     "source": "/mapi/area/lists?is_onlyarea=1&is_tips=1"
@@ -50,7 +51,7 @@
                     "name": "area_operator",
                     "searchable":true,
                     "onlyLeaf":true,
-                    "label": "区域管理",
+                    "label": "助教",
                     "size":"md",
                     "source": "/mapi/api/areaoperator"
                 },
@@ -133,6 +134,7 @@
             {
                 "name": "group_name",
                 "label": "班级名",
+                "sortable" : true,
                 "type": "text",
                 "toggled": true
             },
@@ -150,7 +152,7 @@
             },
             {
                 "name": "area_op_name",
-                "label": "区域管理",
+                "label": "助教",
                 "type": "text",
                 "toggled": true
             },

@@ -229,7 +229,7 @@ CREATE TABLE `tblGroup` (
   `cid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '班型id',
   `descs` varchar(200) NOT NULL DEFAULT '' COMMENT '描述',
   `state` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态, 1正常, 2关闭',
-  `area_operator` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '区域管理者',
+  `area_operator` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '助教',
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',

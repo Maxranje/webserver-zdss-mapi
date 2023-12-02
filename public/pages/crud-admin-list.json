@@ -343,7 +343,7 @@
                         "label": "删除",
                         "level": "danger",
                         "actionType": "ajax",
-                        "confirmText": "您确认要删除, 管理员类型会删除班级和排课中的区域管理者?  合作方管理员会无法观看生源地信息",
+                        "confirmText": "您确认要删除, 管理员类型会删除班级和排课中的助教?  合作方管理员会无法观看生源地信息",
                         "api": {
                             "method": "get",
                             "url": "/mapi/admins/delete?uid=$uid"

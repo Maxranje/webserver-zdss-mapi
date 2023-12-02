@@ -108,8 +108,12 @@
             "selectMode": "table"
         },
         {
+            "type" : "html",
+            "html" : "<p>勾选课程并提交即为绑定, 取消已勾选并提交则解绑, 已结算课程不展示</p>"
+        },
+        {
             "type": "button",
-            "label": "订单绑定课程",
+            "label": "提交",
             "level":"success",
             "actionType": "ajax",
             "api": "/mapi/schedule/bandcreate?group_id=$search_group_id&order_id=$search_order_id&schedule_ids=$schedule_ids",

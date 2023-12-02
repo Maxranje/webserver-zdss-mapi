@@ -56,6 +56,8 @@ class Service_Data_Schedule {
             "area_operator"     => intval($params['area_op']),
 	        'teacher_uid'       => intval($params['teacher_uid']),
             'subject_id'        => intval($params['subject_id']),
+            'area_id'           => intval($params['area_id']),
+            'room_id'           => intval($params['room_id']),
 	        "operator"          => OPERATOR,
             "update_time"       => time(),
         );
@@ -75,6 +77,8 @@ class Service_Data_Schedule {
             "end_time"          => intval($params['needTimes']['ets']),
 	        'teacher_uid'       => intval($params['teacher_uid']),
             'subject_id'        => intval($params['subject_id']),
+            'area_id'           => intval($params['area_id']),
+            'room_id'           => intval($params['room_id']),
             "update_time"       => time(),
         );
         $daoCurriculum = new Dao_Curriculum();

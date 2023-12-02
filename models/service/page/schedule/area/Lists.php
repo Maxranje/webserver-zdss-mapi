@@ -21,7 +21,7 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
 
         $groupId        = empty($this->request['group_ids']) ? "" : strval($this->request['group_ids']);
         $teacherUid     = empty($this->request['teacher_uid']) ? 0 : intval($this->request['teacher_uid']);
-        $areaId         = empty($this->request['area_id']) ? 0 : intval($this->request['area_id']);
+        $areaIds        = empty($this->request['area_id']) ? array() : explode(",", trim($this->request['area_id']));
         $daterange      = empty($this->request['daterange']) ? "" : $this->request['daterange'];
         $areaOperator   = empty($this->request['area_operator']) ? 0 : intval($this->request['area_operator']);
         $orderDir       = empty($this->request['orderDir']) ? "desc" : trim($this->request['orderDir']);
@@ -33,6 +33,8 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
 
         list($sts, $ets) = empty($daterange) ? array(0,0) : explode(",", $daterange);
 
+        $areaIds = Zy_Helper_Utils::arrayInt($areaIds);
+
         $conds = array(
             "state" => Service_Data_Schedule::SCHEDULE_ABLE,
         );
@@ -42,14 +44,17 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
         if ($teacherUid > 0) {
             $conds[] = sprintf('teacher_uid = %d', $teacherUid);
         }
-        if ($areaId > 0) {
-            $conds[] = sprintf('area_id = %d', $areaId);
+        if (!empty($areaIds)) {
+            $conds[] = sprintf('area_id in (%s)', implode(",", $areaIds));
         } 
         // 过滤无教室&线上校区的
-        if ($areaId == -1) {
+        if (in_array(-1, $areaIds)) {
             $serviceArea = new Service_Data_Area();
             $onlineAreas = $serviceArea->getAreaListByConds(array('is_online' => Service_Data_Area::ONLINE));
             $onlineAreas = Zy_Helper_Utils::arrayInt($onlineAreas, "id");
+            if (array_intersect($onlineAreas, $areaIds)) {
+                throw new Zy_Core_Exception(405, "搜索条件不能既有过滤线上校区, 又有查询线上校区");
+            }
             $conds[] = "room_id = 0";
             if (!empty($onlineAreas)) {
                 $conds[] = sprintf("area_id not in (%s)", implode(",", $onlineAreas));
@@ -71,6 +76,9 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
         }
         if ($orderBy == "range_time") {
             $orderby = "order by start_time " . ($orderDir == "desc" ? "desc" : "asc");
+        }
+        if ($orderBy == "group_name") {
+            $orderby = "order by group_id " . ($orderDir == "desc" ? "desc" : "asc");
         }
         $arrAppends[] = $orderby;
 
@@ -228,7 +236,7 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('ID', '教师名', '班级名', '课程名', "校区", "教室", "校区教室备注", '区域管理', '星期', '时长', '时间', '创建时间'),
+            'title' => array('ID', '教师名', '班级名', '课程名', "校区", "教室", "校区教室备注", '助教', '星期', '时长', '时间', '创建时间'),
             'lists' => array(),
         );
         

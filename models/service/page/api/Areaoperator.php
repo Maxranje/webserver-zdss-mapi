@@ -1,5 +1,5 @@
 <?php
-// 区域管理者列表
+// 助教者列表
 class Service_Page_Api_Areaoperator extends Zy_Core_Service{
 
     public function execute () {
