@@ -165,6 +165,13 @@ return array(
                     "url"=>"/records/account",
                     "icon"=>"fa fa-server",
                     "schemaApi"=>"get:/public/pages/crud-records-account-list.json"
+                ),
+                array(
+                    "id" => 54,
+                    "label"=>"教师课时",
+                    "url"=>"/records/teacher",
+                    "icon"=>"fa fa-list",
+                    "schemaApi"=>"get:/public/pages/crud-records-teacher-list.json"
                 )
             ]
         ),
