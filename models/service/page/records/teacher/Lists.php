@@ -10,6 +10,8 @@ class Service_Page_Records_Teacher_Lists extends Zy_Core_Service{
         $pn         = empty($this->request['page']) ? 0 : intval($this->request['page']);
         $rn         = empty($this->request['perPage']) ? 0 : intval($this->request['perPage']);
         $nickname   = empty($this->request['nickname']) ? "" : trim($this->request['nickname']);
+        $orderBy    = empty($this->request['orderBy']) ? "" : trim($this->request['orderBy']);
+        $orderDir   = empty($this->request['orderDir']) ? "" : trim($this->request['orderDir']);
         $isExport   = empty($this->request['is_export']) ? false : true;
 
         $pn = ($pn-1) * $rn;
@@ -37,7 +39,7 @@ class Service_Page_Records_Teacher_Lists extends Zy_Core_Service{
             return array();
         }
 
-        $lists = $this->formatBase($lists);
+        $lists = $this->formatBase($lists, $orderBy, $orderDir);
         if ($isExport) {
             $data = $this->formatExcel($lists);
             Zy_Helper_Utils::exportExcelSimple("teacherduration", $data['title'], $data['lists']);
@@ -50,7 +52,7 @@ class Service_Page_Records_Teacher_Lists extends Zy_Core_Service{
         );
     }
 
-    private function formatBase($lists) {
+    private function formatBase($lists, $orderBy, $orderDir) {
         foreach ($lists as &$item) {
             $item['lm_duration'] = 0;
             $item['nm_duration'] = 0;
@@ -111,6 +113,10 @@ class Service_Page_Records_Teacher_Lists extends Zy_Core_Service{
             }
         }
 
+        if (!empty($orderBy) && !empty($orderDir)) {
+            array_multisort(array_column($lists, $orderBy), $orderDir == "desc" ? SORT_DESC : SORT_ASC, $lists);
+        }
+        
         $now = date("Y年m月d日");
         foreach ($lists as &$item) {
             $item['create_time'] = $now;

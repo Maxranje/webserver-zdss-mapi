@@ -9,8 +9,9 @@
             "url":"/mapi/records/teacherlists",
             "dataType": "form"
         },
-        "perPage": 20,
         "syncLocation":false,
+        "perPageAvailable": [100, 500, 1000],
+        "perPage" : 100,
         "id" : "records_lists",
         "name" : "records_lists",
         "columnsTogglable": false,
@@ -88,18 +89,21 @@
                 "name": "lm_duration",
                 "label": "上个月课时数",
                 "type": "text",
+                "sortable": true,
                 "toggled": true
             },
             {
                 "name": "cm_duration",
                 "label": "本月课时数",
                 "type": "text",
+                "sortable": true,
                 "toggled": true
             },
             {
                 "name": "nm_duration",
                 "label": "下个月课时数",
                 "type": "text",
+                "sortable": true,
                 "toggled": true
             }
         ]
