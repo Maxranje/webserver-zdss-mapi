@@ -251,7 +251,7 @@
             },
             {
                 "name": "salary_duration_info",
-                "label": "月课时",
+                "label": "底薪课时",
                 "type": "text",
                 "toggled": true
             },
@@ -385,12 +385,12 @@
                     },
                     {
                         "type": "button",
-                        "label": "月课时",
+                        "label": "底薪课时",
                         "actionType": "dialog",
                         "disabledOn": "this.is_bs !== 1",
                         "dialog": {
                             "size": "xl",
-                            "title": "月课时",
+                            "title": "底薪课时",
                             "body": {
                                 "type": "form",
                                 "name": "sample-baseupdate-form",
@@ -431,7 +431,7 @@
                                     {
                                         "type": "input-text",
                                         "name": "salary_duration",
-                                        "label": "月课时",
+                                        "label": "底薪课时",
                                         "addOn": {
                                             "type": "text",
                                             "label": "小时"
