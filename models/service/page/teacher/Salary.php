@@ -11,7 +11,7 @@ class Service_Page_Teacher_Salary extends Zy_Core_Service{
         $duration   = empty($this->request['salary_duration']) ? 0 : floatval($this->request['salary_duration']);
         $duration   = floatval(sprintf("%.2f", $duration));
 
-        if ($uid <= 0 || $duration <= 0) {
+        if ($uid <= 0 || $duration < 0) {
             throw new Zy_Core_Exception(405, "操作失败, uid和时间必须大于0");
         }
 
@@ -22,11 +22,15 @@ class Service_Page_Teacher_Salary extends Zy_Core_Service{
         }
 
         $ext = empty($userInfo['ext']) ? array() : json_decode($userInfo['ext'], true);
-        $ext['salary'] = array(
-            "duration" => $duration,
-            "time" => time(),
-            "operator" => OPERATOR,
-        );
+        if ($duration == 0) {
+            unset($ext["salary"]);
+        } else {
+            $ext['salary'] = array(
+                "duration" => $duration,
+                "time" => time(),
+                "operator" => OPERATOR,
+            );
+        }
 
         $profile = [
             "ext" => json_encode($ext),
