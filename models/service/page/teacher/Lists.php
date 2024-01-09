@@ -49,6 +49,8 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
         $lists = $serviceData->getListByConds($conds, false, NULL, $arrAppends);
         if ($isSelect) {
             return $this->formatSelect($lists, $isSubject);
+        } else {
+            $lists = $this->formatBase($lists);
         }
 
         $total = $serviceData->getTotalByConds($conds);
@@ -56,6 +58,30 @@ class Service_Page_Teacher_Lists extends Zy_Core_Service{
             'rows' => $lists,
             'total' => $total,
         );
+    }
+
+    private function formatBase ($lists) {
+        if (empty($lists)) {
+            return array();
+        }
+        $isBS = $this->isModeAble(Service_Data_Roles::ROLE_MODE_TEACHER_SALARY);
+
+        $uids = Zy_Helper_Utils::arrayInt($lists, "uid");
+
+        // 查询所有的绑定
+        $serviceData = new Service_Data_Column();
+        $columnCnts = $serviceData->getColumnCountByTid($uids);
+        $columnCnts = array_column($columnCnts, null, "teacher_uid");
+
+        foreach ($lists as &$item) {
+            $ext  = empty($item['ext']) ? array() : json_decode($item['ext'], true);
+            $item["is_bs"] = $isBS ? 1 : 0;
+            $item['subject_nums'] = empty($columnCnts[$item['uid']]['count']) ? "0" : $columnCnts[$item['uid']]['count'] ;
+            $item["salary_duration"] = !empty($ext["salary"]["duration"]) ? $ext["salary"]["duration"] : "-";
+            $item["salary_duration_info"] = !empty($ext["salary"]["duration"]) ? $ext["salary"]["duration"] . "小时" : "-";
+        }
+
+        return $lists;
     }
 
     private function formatSelect($lists, $isSubject) {

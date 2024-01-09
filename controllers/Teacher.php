@@ -5,6 +5,7 @@ class Controller_Teacher extends Zy_Core_Controller{
         "lists"     => "actions/teacher/Lists.php",
         "create"    => "actions/teacher/Create.php",
         "update"    => "actions/teacher/Update.php",
+        "salary"    => "actions/teacher/Salary.php",
         "delete"    => "actions/teacher/Delete.php",
         "batchcreate"    => "actions/teacher/Batchcreate.php",
 

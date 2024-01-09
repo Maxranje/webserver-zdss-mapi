@@ -232,6 +232,15 @@
                 "toggled": true
             },
             {
+                "name": "sex",
+                "label": "性别",
+                "type": "mapping",
+                "map": {
+                    "M": "男",
+                    "F": "女"
+                }
+            },
+            {
                 "name": "state",
                 "label": "状态",
                 "type": "mapping",
@@ -241,13 +250,16 @@
                 }
             },
             {
-                "name": "sex",
-                "label": "性别",
-                "type": "mapping",
-                "map": {
-                    "M": "男",
-                    "F": "女"
-                }
+                "name": "salary_duration_info",
+                "label": "月课时",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "subject_nums",
+                "label": "绑定科目数",
+                "type": "text",
+                "toggled": true
             },
             {
                 "name": "create_time",
@@ -371,7 +383,65 @@
                             }
                         }
                     },
-
+                    {
+                        "type": "button",
+                        "label": "月课时",
+                        "actionType": "dialog",
+                        "disabledOn": "this.is_bs !== 1",
+                        "dialog": {
+                            "size": "xl",
+                            "title": "月课时",
+                            "body": {
+                                "type": "form",
+                                "name": "sample-baseupdate-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/teacher/salary",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                            "actionType": "reload",
+                                            "componentId": "teacher_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "uid",
+                                        "label": "Uid",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "nickname",
+                                        "label": "昵称",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "salary_duration",
+                                        "label": "月课时",
+                                        "addOn": {
+                                            "type": "text",
+                                            "label": "小时"
+                                        },
+                                        "desc" : "保留小数点后两位"
+                                    }
+                                ]
+                            }
+                        }
+                    },
                     {
                         "type": "button",
                         "actionType": "ajax",

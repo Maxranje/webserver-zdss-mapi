@@ -59,6 +59,19 @@ class Service_Data_Column {
         return $Column;
     }
 
+
+    public function getColumnCountByTid ($teacherUids){
+        $arrConds = array(
+            sprintf("teacher_uid in (%s)", implode(",", $teacherUids)),
+        );
+        $Column = $this->daoColumn->getListByConds($arrConds, array("teacher_uid", "count(id) as count"), null, array("group by teacher_uid"));
+        if (empty($Column)) {
+            return array();
+        }
+
+        return $Column;
+    }
+
     // 编辑
     public function editColumn ($id, $profile) {
         return $this->daoColumn->updateByConds(array('id' => $id), $profile);

@@ -43,6 +43,19 @@ class Service_Page_Schedule_Checkout_Single extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 获取课程信息失败");
         }
 
+        // 获取教师信息和教师基本薪资
+        $serviceProfile = new Service_Data_Profile();
+        $userInfo = $serviceProfile->getUserInfoByUid(intval($record['teacher_uid']));
+        if (empty($userInfo)) {
+            throw new Zy_Core_Exception(405, "操作失败, 获取教师信息失败");
+        }
+        $userExt = empty($userInfo['ext']) ? array() : json_decode($userInfo['ext'], true);
+        if (isset($userExt['salary']['duration']) && $userExt['salary']['duration'] > 0) {
+            // 计算处任务课时还有多少,  也就是不付钱的课, 老师还要上多少课时
+            $userInfo['salary'] = $userExt['salary']['duration'] - $serviceData->getLastDurationByTid(intval($record['teacher_uid']));    
+            $userInfo['salary'] = $userInfo['salary'] > 0 ? $userInfo['salary'] : 0;
+        }
+
         // 从订单中过滤未上课学生
         foreach ($curriculumInfos as $key => $item) {
             if (in_array($item['student_uid'], $filterUids)) {
@@ -69,6 +82,7 @@ class Service_Page_Schedule_Checkout_Single extends Zy_Core_Service{
             'studentUids'       => $studentUids,
             'curriculumInfos'   => $curriculumInfos,
             'orderInfos'        => $orderInfos,
+            "teacher"           => $userInfo,
         );
         
         $ret = $serviceData->checkout ($params);

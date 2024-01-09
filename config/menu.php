@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-const HOSTNAME = "http://127.0.0.1:8060/";
+const HOSTNAME = "http://123.56.183.122:8060/";
 //const HOSTNAME = "http://zdss.cn/";
 return array(
     "head" => array(
@@ -289,6 +289,10 @@ return array(
         array(
             "id" => 4004,
             "label"=>"学员退款",
+        ),
+        array(
+            "id" => 4005,
+            "label"=>"教师设置底薪",
         ),
     ),
 );

@@ -228,14 +228,19 @@ class Service_Data_Schedule {
         $subject          = $params['subjectInfo'];
         $orderInfos       = $params['orderInfos'];
         $studentUids      = $params['studentUids'];
+        $teacher          = $params['teacher'];
 
         // 按小时计算
         $timeLength     = ($schedule['end_time'] - $schedule['start_time']) / 3600;
-
-        // 获取教师的price
-        $teacherPrice = intval($column['price'] * $timeLength);
+        // 老师的计算时间, 单独赋值一个变量
+        $teacherTL = $timeLength;
+        // 如果老师的月课时任务没有完成, 需要看当前课时是不是还是月课时范畴,  如果超出了,  则超出部分计算费用
+        if (isset($teacher['salary']) && $teacher['salary'] > 0) {
+            $teacherTL = $teacher['salary'] - $teacherTL >= 0 ? 0 : $teacherTL - $teacher['salary'];
+        }
+        $teacherPrice = intval($column['price'] * $teacherTL);
         if (intval($column['muilt_num']) > 0 && intval($column['muilt_price']) > 0 && count($studentUids) >= $column['muilt_num']){
-            $teacherPrice = intval($column['muilt_price'] * $timeLength);
+            $teacherPrice = intval($column['muilt_price'] * $teacherTL);
         }
 
         $this->daoSchedule->startTransaction();
@@ -713,5 +718,32 @@ class Service_Data_Schedule {
         }
 
         return $result;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLastDurationByTid ($teacherUid) {
+
+        $conds = array(
+            "start_time>=" . strtotime(date("Y-m-1")),
+            "end_time<".strtotime(date('Y-m-d', strtotime('first day of next month'))), 
+            "teacher_uid" => $teacherUid,
+            "state" => Service_Data_Schedule::SCHEDULE_DONE,
+        );
+        $field = array(
+            "start_time",
+            "end_time",
+        );
+
+        $lists = $this->daoSchedule->getListByConds($conds, $field);
+        if (empty($lists)) {
+            return 0;
+        }
+        $duration = 0;
+        foreach ($lists as $item) {
+            $duration+= $item['end_time'] - $item['start_time'];
+        }
+        return $duration/ 3600;
     }
 }
