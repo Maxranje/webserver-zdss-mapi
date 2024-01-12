@@ -169,6 +169,7 @@
                 "buttons": [
                     {
                         "type": "button",
+                        "disabledOn": "this.is_bs !== 1",
                         "label": "删除",
                         "actionType": "ajax",
                         "level" : "danger",

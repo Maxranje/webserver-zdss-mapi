@@ -52,6 +52,8 @@ class Service_Page_Teacher_Lock_Lists extends Zy_Core_Service{
             return array();
         }
 
+        $isLD = $this->isModeAble(Service_Data_Roles::ROLE_MODE_TEACHER_LOCKDEL);
+
         $teacherUids = Zy_Helper_Utils::arrayInt($lists, "uid");
         $operators = Zy_Helper_Utils::arrayInt($lists, "operator");
 
@@ -70,6 +72,7 @@ class Service_Page_Teacher_Lock_Lists extends Zy_Core_Service{
                 continue;
             }
             $tmp = array();
+            $tmp["is_ld"] = $isLD ? 1 : 0;
             $tmp['lock_time'] = sprintf("%s %s - %s",date('Y年m月d日', $item['start_time']), date('H:i', $item['start_time']), date('H:i', $item['end_time'])); 
             $tmp['nickname'] = $userInfos[$item['uid']]['nickname'];
             $tmp['id'] = $item['id'];

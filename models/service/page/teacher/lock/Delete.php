@@ -3,7 +3,7 @@
 class Service_Page_Teacher_Lock_Delete extends Zy_Core_Service{
 
     public function execute () {
-        if (!$this->checkAdmin()) {
+        if (!$this->checkAdmin() || !$this->isModeAble(Service_Data_Roles::ROLE_MODE_TEACHER_LOCKDEL)) {
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 

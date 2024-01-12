@@ -10,6 +10,7 @@ class Service_Data_Roles {
     const ROLE_MODE_STUDENT_RECHARGE = "4003";
     const ROLE_MODE_STUDENT_REFUND = "4004";
     const ROLE_MODE_TEACHER_SALARY = "4005";
+    const ROLE_MODE_TEACHER_LOCKDEL = "4006";
 
     public function __construct() {
         $this->daoRole = new Dao_Roles () ;
