@@ -68,16 +68,13 @@ class Service_Page_Teacher_Lock_Lists extends Zy_Core_Service{
             if (empty($userInfos[$item['uid']]['nickname'])) {
                 continue;
             }
-            if (empty($userInfos[$item['operator']]['nickname'])) {
-                continue;
-            }
             $tmp = array();
             $tmp["is_ld"] = $isLD ? 1 : 0;
             $tmp['lock_time'] = sprintf("%s %s - %s",date('Y年m月d日', $item['start_time']), date('H:i', $item['start_time']), date('H:i', $item['end_time'])); 
             $tmp['nickname'] = $userInfos[$item['uid']]['nickname'];
             $tmp['id'] = $item['id'];
             $tmp['uid'] = $item['uid'];
-            $tmp['operator'] = $userInfos[$item['operator']]['nickname'];
+            $tmp['operator'] = empty($userInfos[$item['operator']]['nickname']) ? "" : $userInfos[$item['operator']]['nickname'];
             $tmp['create_time'] = date('Y年m月d日', $item['create_time']);
             $tmp['update_time'] = date('Y年m月d日', $item['update_time']);
 

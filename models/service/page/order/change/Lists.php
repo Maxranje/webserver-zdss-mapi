@@ -77,13 +77,10 @@ class Service_Page_Order_Change_Lists extends Zy_Core_Service{
             if (empty($userInfos[$v['student_uid']]['nickname'])) {
                 continue;
             }
-            if (empty($userInfos[$v['operator']]['nickname'])) {
-                continue;
-            }
             
             $ext = empty($v['ext']) ? array() : json_decode($v['ext'], true);
             $v['student_name']      = $userInfos[$v['student_uid']]['nickname'];
-            $v['operator']          = $userInfos[$v['operator']]['nickname'];
+            $v['operator']          = empty($userInfos[$v['operator']]['nickname']) ? "" :$userInfos[$v['operator']]['nickname'];
             $v['balance']           = sprintf("%.2f", intval($v['balance']) / 100);
             $v['duration']          = sprintf("%.2f", $v['duration']);
             $v['update_time']       = date("Y年m月d日",$v['update_time']);

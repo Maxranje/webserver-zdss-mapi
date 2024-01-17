@@ -35,6 +35,14 @@ class Service_Page_Order_Create extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 折扣优惠配置错误, 折扣必须在 x>0 并且 x<10 之间, 小数点后一位");
         }
 
+        if ($isfree == 0 && ($realBalance <= 0 || $realPrice <= 0)) {
+            throw new Zy_Core_Exception(405, "操作失败, 实际收费为0元, 请用使用限免课而非折扣或优惠");
+        }
+
+        if ($isfree == 1 && ($realBalance <= 0 || $realPrice <= 0)) {
+            throw new Zy_Core_Exception(405, "操作失败, 同时限免课无需配置折扣优惠, 如果必须配置,不能使得实际缴费为0元");
+        }
+
         $serviceProfile = new Service_Data_Profile();
         $studentInfo = $serviceProfile->getUserInfoByUid($studentUid);
         if (empty($studentInfo) || $studentInfo['state'] != Service_Data_Profile::STUDENT_ABLE) {
@@ -42,7 +50,7 @@ class Service_Page_Order_Create extends Zy_Core_Service{
         }
         
         // 判断账户金额是否充足
-        if ($isfree == 0 && $studentInfo['balance'] <= $realBalance) {
+        if ($isfree == 0 && $studentInfo['balance'] < $realBalance) {
             throw new Zy_Core_Exception(405, sprintf("操作失败, 学员账户金额不足, 当前余额: %.2f元", $studentInfo['balance'] / 100));
         }
 

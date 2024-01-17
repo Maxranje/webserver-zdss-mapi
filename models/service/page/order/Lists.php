@@ -131,7 +131,7 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             $item = array();
             $item['order_id']       = $v['order_id'] ;
             $item['student_name']   = $userInfos[$v['student_uid']]['nickname'];
-            $item['operator_name']  = $userInfos[$v['operator']]['nickname'];
+            $item['operator_name']  = empty($userInfos[$v['operator']]['nickname']) ? "" : $userInfos[$v['operator']]['nickname'];
             $item['subject_name']   = $subjectInfos[$v['subject_id']]['name'];
             $item['student_uid']    = intval($v['student_uid']);
             $item['update_time']    = date("Y年m月d日 H:i",$v['update_time']);

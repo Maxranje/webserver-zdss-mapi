@@ -228,7 +228,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
                 $item['area_operator'] = "";
             }
 
-            $item['operator_name']= $userInfos[$item['operator']]['nickname'];
+            $item['operator_name']= empty($userInfos[$item['operator']]['nickname']) ? "" :$userInfos[$item['operator']]['nickname'];
             $result[] = $item;
 	    }
 	    return array_values($result);

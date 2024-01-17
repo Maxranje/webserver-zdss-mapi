@@ -85,15 +85,12 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
             if (empty($userInfos[$item['uid']]['nickname'])) {
                 continue;
             }
-            if (empty($userInfos[$item['operator']]['nickname'])) {
-                continue;
-            }
 
             $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
 
             $item['type']           = $item['type'] == Service_Data_Profile::USER_TYPE_STUDENT ? "学员" : "教师";
             $item['nickname']       = $userInfos[$item['uid']]['nickname'];
-            $item['operator']       = $userInfos[$item['operator']]['nickname'];
+            $item['operator']       = empty($userInfos[$item['operator']]['nickname']) ? "" : $userInfos[$item['operator']]['nickname'];
             $item['create_time']    = date("Y年m月d日 H:i:s", $item['create_time']);
             $item['update_time']    = date("Y年m月d日 H:i:s", $item['update_time']);
             $item['group_name']     = empty($groupInfos[$item['group_id']]['name']) ? "-" : $groupInfos[$item['group_id']]['name'];
