@@ -9,5 +9,6 @@ class Controller_Student extends Zy_Core_Controller{
         "batchcreate"   => "actions/student/Batchcreate.php",
         "recharge"      => "actions/student/Recharge.php",
         "refund"        => "actions/student/Refund.php",
+        "remark"        => "actions/student/Remark.php",
     );
 }

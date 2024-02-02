@@ -628,6 +628,70 @@
                     },
                     {
                         "type": "button",
+                        "label": "备注",
+                        "actionType": "dialog",
+                        "dialog": {
+                            "size": "lg",
+                            "title": "备注",
+                            "body": {
+                                "type": "form",
+                                "name": "sample-remark-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/student/remark",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                            "actionType": "reload",
+                                            "componentId": "student_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "uid",
+                                        "label": "Uid",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "nickname",
+                                        "label": "昵称",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "textarea",
+                                        "name": "remark",
+                                        "disabled": true,
+                                        "label": "历史备注",
+                                        "maxRows" : 5
+                                    },
+                                    {
+                                        "type": "textarea",
+                                        "name": "remark_new",
+                                        "label": "新备注",
+                                        "desc" : "限定100字内",
+                                        "maxRows" : 5,
+                                        "maxLength" : 100,
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        }
+                    },                    
+                    {
+                        "type": "button",
                         "actionType": "ajax",
                         "label": "重置密码",
                         "confirmText": "重置密码后, 账户密码为当前账户填写的手机号!",

@@ -698,7 +698,7 @@
                         "level":"danger",
                         "actionType": "ajax",
                         "tooltip": "删除",
-                        "confirmText": "删除教师, 需要提前删除教师绑定的排课",
+                        "confirmText": "删除教师, 需要提前删除教师绑定的排课和绑定的科目",
                         "api": {
                             "method": "get",
                             "url": "/mapi/teacher/delete?uid=$uid"

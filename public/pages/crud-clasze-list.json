@@ -202,7 +202,7 @@
                         "label": "删除",
                         "level": "danger",
                         "actionType": "ajax",
-                        "confirmText": "您确认要删除, 删除会影响绑定的订单, 导致订单无法插入排课",
+                        "confirmText": "您确认要删除, 删除班型需要提前删除科目和班型的绑定关系, 同时要提前删除应用该班型的班级",
                         "api": {
                             "method": "get",
                             "url": "/mapi/clasze/delete?id=$id"

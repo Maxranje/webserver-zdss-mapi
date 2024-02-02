@@ -18,6 +18,12 @@ class Service_Page_Teacher_Delete extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 教师有排课, 无法删除");
         }
 
+        $serviceData = new Service_Data_Column();
+        $count = $serviceData->getTotalByConds(array('teacher_uid' => $uid));
+        if ($count > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 教师和科目有绑定关系, 无法删除");
+        }
+
         $serviceData = new Service_Data_Profile();
         $ret = $serviceData->deleteUserInfo($uid, Service_Data_Profile::USER_TYPE_TEACHER);
         if ($ret == false) {

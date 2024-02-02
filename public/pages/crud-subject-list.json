@@ -296,7 +296,7 @@
                         "label": "删除",
                         "level": "danger",
                         "actionType": "ajax",
-                        "confirmText": "确认删除么, 需要先删掉教师绑定, 以及订单绑定, 删除所有科目后, 对应分类才会删除",
+                        "confirmText": "确认删除么, 需要先删掉教师绑定, 班级绑定, 订单绑定, 班型绑定,  同时只有删除分类下所有科目后, 对应分类才会删除",
                         "api": {
                             "method": "get",
                             "url": "/mapi/subject/delete?subject_id=$subject_id"

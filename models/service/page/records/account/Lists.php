@@ -71,14 +71,10 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
         $userInfos = array_column($userInfos, null, "uid");
 
         foreach ($lists as &$item) {
-            if (empty($userInfos[$item['uid']]['nickname'])) {
-                continue;
-            }
-
             $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
 
             $item['type']           = $item['type'] == Service_Data_Profile::RECHARGE ? "充值" : "退费";
-            $item['nickname']       = $userInfos[$item['uid']]['nickname'];
+            $item['nickname']       = empty($userInfos[$item['uid']]['nickname']) ? "(已删除)" : $userInfos[$item['uid']]['nickname'];
             $item['operator']       = empty($userInfos[$item['operator']]['nickname']) ? "" :$userInfos[$item['operator']]['nickname'];
             $item['create_time']    = date("Y年m月d日 H:i:s", $item['create_time']);
             $item['update_time']    = date("Y年m月d日 H:i:s", $item['update_time']);

@@ -82,7 +82,7 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
                 }
                 $tmp['children'][] = array(
                     'subject_id'   => $v['id'],
-                    'subject_id_info' => "-",
+                    'subject_id_info' => $v['id'],
                     'subject_name' => $v['name'],
                     'subject_desc' => $v['descs'],
                     'identify'     => "-",

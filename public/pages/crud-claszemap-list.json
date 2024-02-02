@@ -297,7 +297,7 @@
                         "label": "删除",
                         "level": "danger",
                         "actionType": "ajax",
-                        "confirmText": "您确认要删除, 删除会影响绑定的订单, 导致订单无法插入排课",
+                        "confirmText": "您确认要删除, 删除绑定关系需要提前删除应用这套绑定关系的订单, 否则会出现订单无法结算问题!",
                         "api": {
                             "method": "get",
                             "url": "/mapi/clasze/mapdelete?id=$id"

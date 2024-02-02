@@ -91,6 +91,8 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
 
         $result = array();
         foreach ($lists as $item) {
+            $ext = empty($item["ext"])? array() : json_decode($item['ext'], true);
+            $item["remark"]      = empty($ext['remark']) ? "" : $ext['remark'];
             $item['order_count'] = empty($orderInfos[$item['uid']]['order_count']) ? "-" : $orderInfos[$item['uid']]['order_count'];
             $item['balance_info']= sprintf("%.2f", $item['balance'] / 100);
             //$item['uncheck_schedule_nums'] = empty($scheduleCount[$item['uid']]) ? "-" : sprintf("%.2f小时", $scheduleCount[$item['uid']]);

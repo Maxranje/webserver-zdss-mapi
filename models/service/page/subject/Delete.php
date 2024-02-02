@@ -18,22 +18,33 @@ class Service_Page_Subject_Delete extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 科目或科目单项不存在");
         }
 
-        if ($subjectInfo['parent_id'] > 0) {
-            $serviceData = new Service_Data_Column();
-            $column = $serviceData->getTotalByConds(array('subject_id' => $subjectId));
-            if ($column > 0) {
-                throw new Zy_Core_Exception(405, "操作失败, 有教师绑定课程, 无法删除, 请检查");
-            }
-        } else {
-            $subjectLists = $serviceSubject->getSubjectByParentID($subjectId);
-            if (!empty($subjectLists)) {
-                throw new Zy_Core_Exception(405, "操作失败, 需要删掉科目下所有单项, 才能删掉科目");
-            }
-            $serviceData = new Service_Data_Order();
-            $order = $serviceData->getTotalByConds(array('subject_id' => $subjectId));
-            if ($order > 0) {
-                throw new Zy_Core_Exception(405, "操作失败, 有订单绑定课程, 无法删除, 请检查");
-            }
+        $subjectLists = $serviceSubject->getSubjectByParentID($subjectId);
+        if (!empty($subjectLists)) {
+            throw new Zy_Core_Exception(405, "操作失败, 需要删掉科目下所有单项, 才能删掉科目");
+        }
+
+        $serviceData = new Service_Data_Order();
+        $order = $serviceData->getTotalByConds(array('subject_id' => $subjectId));
+        if ($order > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 有订单绑定课程, 无法删除, 请检查");
+        }
+
+        $serviceData = new Service_Data_Column();
+        $column = $serviceData->getTotalByConds(array('subject_id' => $subjectId));
+        if ($column > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 有教师绑定课程, 无法删除, 请检查");
+        }
+
+        $serviceData = new Service_Data_Group();
+        $group = $serviceData->getTotalByConds(array('subject_id' => $subjectId));
+        if ($group > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 有班级绑定课程, 无法删除, 请检查");
+        }
+
+        $serviceData = new Service_Data_Claszemap();
+        $claszeMap = $serviceData->getTotalByConds(array('subject_id' => $subjectId));
+        if ($claszeMap > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 有班型绑定课程, 无法删除, 请检查");
         }
 
         $ret = $serviceSubject->deleteSubject($subjectId);
