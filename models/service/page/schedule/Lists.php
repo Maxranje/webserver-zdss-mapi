@@ -54,7 +54,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
             $conds[] = sprintf("start_time >= %d", $sts);
         }
         if ($ets > 0) {
-            $conds[] = sprintf("end_time >= %d", ($ets + 1));
+            $conds[] = sprintf("end_time <= %d", ($ets + 1));
         }
         if ($state > 0) {
             $conds[] = sprintf("state = %d", $state);
