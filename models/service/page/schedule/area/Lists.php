@@ -236,7 +236,7 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('ID', '教师名', '班级名', '课程名', "校区", "教室", "校区教室备注", '助教', '星期', '时长', '时间', '创建时间'),
+            'title' => array('ID', '时间', '教师名', '班级名', '课程名', "校区", "教室", "校区教室备注", '助教', '星期', '时长', '创建时间'),
             'lists' => array(),
         );
         

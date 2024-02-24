@@ -21,16 +21,18 @@ class Service_Page_Schedule_Band_Lists extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 班级信息不存在");
         }
 
+        $studentUid = 0;
         if ($orderId > 0) {
             $serviceData = new Service_Data_Order();
             $order = $serviceData->getOrderById($orderId);
             if (empty($order)) {
-                throw new Zy_Core_Exception(405, "操作失败, 订单信息不存在");
+                throw new Zy_Core_Exception(405, "操作失败, 订单信息不存在, 订单下拉框中需要通过展开学生名后选定具体订单");
             }
 
             if ($order['subject_id'] != $group['subject_id'] || $order['cid'] != $group['cid']) {
                 return array("options" => array(), "value" => "");
             }
+            $studentUid = $order["student_uid"];
         }
 
         $conds = array(
@@ -40,10 +42,10 @@ class Service_Page_Schedule_Band_Lists extends Zy_Core_Service{
 
         $serviceData = new Service_Data_Schedule();
         $lists = $serviceData->getListByConds($conds, false, NULL, NULL);
-        return $this->formatDefault($lists, $orderId); 
+        return $this->formatDefault($lists, $orderId, $studentUid); 
     }
 
-    private function formatDefault ($lists, $orderId) {
+    private function formatDefault ($lists, $orderId, $studentUid) {
         if (empty($lists)) {
             return array("options" => array(), "value" => "");
         }
@@ -64,6 +66,13 @@ class Service_Page_Schedule_Band_Lists extends Zy_Core_Service{
         ), array("schedule_id"));
         $curriculum = Zy_Helper_Utils::arrayInt($curriculum, "schedule_id");
 
+        // 获取学生其他学科已经绑定情况
+        $diffScheduleIds = array_diff($scheduleIds, $curriculum);
+        $otherCurriculum = $serviceCurrent->getListByConds(array(
+            sprintf("schedule_id in (%s)", implode(",", $diffScheduleIds)),
+            sprintf("student_uid = %d", $studentUid) 
+        ), array("schedule_id"));
+        $otherCurriculum = Zy_Helper_Utils::arrayInt($otherCurriculum, "schedule_id");
         $serviceSubject = new Service_Data_Subject();
         $subjectInfo = $serviceSubject->getSubjectByIds($subjectIds);
         $subjectInfo = array_column($subjectInfo, null, 'id');
@@ -124,6 +133,11 @@ class Service_Page_Schedule_Band_Lists extends Zy_Core_Service{
                     $areaName .= "(线上)";
                 }
             }
+
+            $state = 0;
+            if (in_array($item['id'], $curriculum) || in_array($item['id'], $otherCurriculum)) {
+                $state = 1;
+            }
             
             $result[] = array(
                 "id"                    => intval($item['id']),
@@ -132,6 +146,7 @@ class Service_Page_Schedule_Band_Lists extends Zy_Core_Service{
                 "label"                 => date('y年m月d日 H:i', $item['start_time']) . "~".date('H:i', $item['end_time']),
                 "value"                 => intval($item['id']),
                 "teacher_subject_name"  => sprintf("%s(%s / %s)", $userInfos[$item['teacher_uid']]['nickname'], $subjectParentInfos[$subjectParentId]['name'], $subjectInfo[$item['subject_id']]['name']),
+                "band_state"            => $state,
             );
 	    }
         $values = implode(",", $curriculum);

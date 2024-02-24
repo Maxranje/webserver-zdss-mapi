@@ -89,8 +89,8 @@ class Service_Page_Order_Detail extends Zy_Core_Service{
             $item['able_balance'] = $order['balance'] - ($orderCounts[$order['order_id']]['u'] * $order['price']);
         }
         
-        $item['able_duration'] = sprintf("%.2f", $item['able_balance'] / $order['price']);
-        $item['able_balance']  = sprintf("%.2f", $item['able_balance'] / 100);
+        $item['able_duration'] = Zy_Helper_Utils::FloadtoStringNoRound($item['able_balance'] / $order['price']);
+        $item['able_balance']  = Zy_Helper_Utils::FloadtoStringNoRound($item['able_balance'] / 100);
         return  $item;
     }
 }

@@ -115,7 +115,7 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
                 throw new Zy_Core_Exception(405, "操作失败, 查询学生排课冲突情况失败, 请重新提交");
             }
             if (!empty($ret)) {
-                throw new Zy_Core_Exception(406, "操作失败, 学生时间有冲突, 请检查, 排课编号分别为" . implode(", ", array_column($ret, 'id')) . " 仅做参考");
+                throw new Zy_Core_Exception(406, "操作失败, 学生时间有冲突, 请检查, 排课编号分别为" . implode(", ", array_column($ret, 'schedule_id')) . " 仅做参考");
             }
         }
 

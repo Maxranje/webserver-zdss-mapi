@@ -33,6 +33,7 @@ class Service_Page_Api_Page extends Zy_Core_Service{
         $conds = array(
             sprintf("start_time >= %d", $sts),
             sprintf("end_time <= %d", $ets),
+            sprintf("state=2"),
             sprintf("student_uid = %d", intval($this->adption['userid']))
         );
         $lists = $serviceData->getListByConds($conds);
@@ -108,6 +109,7 @@ class Service_Page_Api_Page extends Zy_Core_Service{
         $conds = array(
             sprintf("start_time >= %d", $sts),
             sprintf("end_time <= %d", $ets),
+            sprintf("state=2"),
             sprintf("teacher_uid = %d", intval($this->adption['userid']))
         );
         $lists = $serviceData->getListByConds($conds);

@@ -64,8 +64,21 @@ class Service_Page_Teacher_Lock_Create extends Zy_Core_Service{
         );
 
         $ret = $servicData->checkTeacherPk($needTimes, $needDays, $teacherUid);
-        if (!empty($ret)) {
-            throw new Zy_Core_Exception(405, "操作失败, 老师时间有冲突, 请查询排课和锁定的列表信息后在配置");
+        if ($ret === false) {
+            throw new Zy_Core_Exception(405, "操作失败, 查询教师排课冲突情况失败, 请重新提交");
+        }
+        if (!empty($ret['schedule']) || !empty($ret['lock'])) {
+            $jobIds = implode(", ", array_column($ret['schedule'], 'id'));
+            $lockIds = implode(", ", array_column($ret['lock'], 'id'));
+            $msg = "操作失败, 教师时间有冲突, 请检查教师时间或教师锁定时间";
+            if (!empty($jobIds)) {
+                $msg.= ", 排课编号分别是: " . $jobIds;
+            }
+            if (!empty($lockIds)) {
+                $msg.= ", 锁定编号分别是: " . $lockIds;
+            }
+            $msg .= ", 仅供参考";
+            throw new Zy_Core_Exception(405, $msg);
         }
 
         $profile = [

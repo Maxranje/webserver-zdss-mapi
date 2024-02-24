@@ -124,4 +124,15 @@ class Zy_Helper_Utils {
         $day = date("Ymd");
         return sprintf("%s-%s-%s-%s", $k1, $k2, $day,$end);
     }
+
+    public static function FloadtoStringNoRound ($number) {
+        $numberStr = strval($number);
+        $index = strpos($numberStr, ".");
+        if ($index === false) {
+            return $numberStr.".00";
+        }   
+        $len = $index + 5 >= strlen($numberStr) ? strlen($numberStr) : $index+5;
+        return substr($numberStr, 0, $len);
+
+    }
 }

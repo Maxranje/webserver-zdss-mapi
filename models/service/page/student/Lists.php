@@ -121,6 +121,7 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
             );
             if ($isDefer) {
                 $tmp['defer'] = true;
+                $tmp['children'] = [];
             }
             $options[] = $tmp;
         }

@@ -168,12 +168,13 @@ class Service_Page_Schedule_Calendar_Data extends Zy_Core_Service{
                 }
             }
             $subjectName = sprintf("%s/%s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfo[$item['subject_id']]['name']);
+            $timespam = sprintf("%s-%s", date("H:i", $item['start_time']),date("H:i", $item['end_time']));
             if ($type == "teacher") {
-                $tmp['title'] = sprintf("%s %s %s", $groupInfos[$item['group_id']]['name'], $subjectName, $areaName);  
+                $tmp['title'] = sprintf("%s %s %s %s", $timespam, $subjectName, $groupInfos[$item['group_id']]['name'], $areaName);  
             } else if ($type == "student"){
-                $tmp['title'] = sprintf("%s %s %s", $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
+                $tmp['title'] = sprintf("%s %s %s %s", $timespam, $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
             } else if ($type == "group"){
-                $tmp['title'] = sprintf("%s %s %s", $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
+                $tmp['title'] = sprintf("%s %s %s %s", $timespam, $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
             }
 
             $result[] = $tmp;            
