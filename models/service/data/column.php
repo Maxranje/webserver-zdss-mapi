@@ -59,6 +59,18 @@ class Service_Data_Column {
         return $Column;
     }
 
+    public function getColumnBySIds ($subjectIds){
+        $arrConds = array(
+            sprintf('subject_id in (%s)', implode(",", $subjectIds)),
+        );
+        $Column = $this->daoColumn->getListByConds($arrConds, $this->daoColumn->arrFieldsMap);
+        if (empty($Column)) {
+            return array();
+        }
+
+        return $Column;
+    }
+
 
     public function getColumnCountByTid ($teacherUids){
         $arrConds = array(

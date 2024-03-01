@@ -52,7 +52,7 @@
                 "body": [
                     {
                         "type":"html",
-                        "html":"<p style='color:red'>订单扣除待结算费用后, 剩余的课时数和余额记录</p>"
+                        "html":"<p style='color:red'>订单扣除待结算费用后, 剩余的课时数和余额记录,由于计算方式采用可用余额除以单价, 故存在小数</p>"
                     },
                     {
                         "type": "property",

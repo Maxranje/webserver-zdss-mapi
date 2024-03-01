@@ -4551,6 +4551,12 @@ button.btn-primary.dim {
   border: 1px solid #ebebeb;
   font-size: 14px; }
 
+.fc-listWeek-button.btn.btn-primary {
+  background-color: transparent;
+  color: #222222 !important;
+  border: 1px solid #ebebeb;
+  font-size: 14px; }
+
 .btn-primary:not(:disabled):not(.disabled).active,
 .btn-primary:not(:disabled):not(.disabled):active,
 .show > .btn-primary.dropdown-toggle {
@@ -4598,11 +4604,13 @@ button.btn-primary.dim {
 
 .fc-month-button.btn.btn-primary,
 .fc-agendaWeek-button.btn.btn-primary,
-.fc-agendaDay-button.btn.btn-primary {
+.fc-agendaDay-button.btn.btn-primary,
+.fc-listWeek-button.btn.btn-primary {
   text-transform: capitalize; }
   .fc-month-button.btn.btn-primary.active,
   .fc-agendaWeek-button.btn.btn-primary.active,
-  .fc-agendaDay-button.btn.btn-primary.active {
+  .fc-agendaDay-button.btn.btn-primary.active, 
+  .fc-listWeek-button.btn.btn-primary.active {
     color: #2478fd !important; }
 
 .event-filter {
@@ -8634,6 +8642,7 @@ ul.wysihtml5-toolbar li {
   .vertical-dark .fc-month-button.btn.btn-primary,
   .vertical-dark .fc-agendaWeek-button.btn.btn-primary,
   .vertical-dark .fc-agendaDay-button.btn.btn-primary,
+  .vertical-dark .fc-listWeek-button.btn.btn-primary,
   .vertical-dark .fc-prev-button.btn.btn-primary,
   .vertical-dark .fc-next-button.btn.btn-primary,
   .vertical-dark .fc-today-button.btn.btn-primary.disabled {

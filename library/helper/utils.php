@@ -126,6 +126,9 @@ class Zy_Helper_Utils {
     }
 
     public static function FloadtoStringNoRound ($number) {
+        if ($number < 0.01) {
+            return 0;
+        }
         $numberStr = strval($number);
         $index = strpos($numberStr, ".");
         if ($index === false) {

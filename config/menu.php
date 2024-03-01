@@ -1,7 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-const HOSTNAME = "http://123.56.183.122:8060/";
-//const HOSTNAME = "http://zdss.cn/";
+const HOSTNAME = "http://zdss.cn/";
 return array(
     "head" => array(
         'pages' => array(
