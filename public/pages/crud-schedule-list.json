@@ -125,7 +125,7 @@
             },
             {
                 "type": "tpl",
-                "tpl": "有筛选, 先搜后导, 共有 ${total} 条数据。",
+                "tpl": "有筛选条件, 需要先搜索后导出, 同时不建议全部导出, 会影响服务性能且很慢, 建议搜索缩小范围, 列表共有 ${total} 条数据。",
                 "className": "v-middle"
             },
             {
@@ -196,6 +196,12 @@
             {
                 "name": "area_op_name",
                 "label": "助教",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "birthplace",
+                "label": "生源地",
                 "type": "text",
                 "toggled": true
             },

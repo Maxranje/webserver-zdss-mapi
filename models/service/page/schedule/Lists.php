@@ -109,10 +109,42 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
         
         $uids = array_unique(array_merge($operators, $areaOps, $teacherUids));
 
+        $serviceBirthplace = new Service_Data_Birthplace();
+        $birthplace = $serviceBirthplace->getListByConds(array("id > 0"));
+        $birthplace = array_column($birthplace, null, "id");
+
         // 获取科目信息
         $serviceCurrent = new Service_Data_Curriculum();
         $orderCountInfos = $serviceCurrent->getOrderCountBySchedule($scheduleIds);
-        $orderCountInfos = array_column($orderCountInfos, null, "schedule_id");
+        $orderMaps = array();
+        foreach ($orderCountInfos as $item) {
+            $orderMaps[$item['schedule_id']][] = $item["order_id"];
+        }
+
+        $orderIds = array();
+        foreach ($orderMaps as $k => $v) {
+            if (is_array($v) && count($v) == 1) {
+                $orderIds[] = $v[0];
+            }
+        }
+
+        $birthplaceMap = array();
+        $orderIds = Zy_Helper_Utils::arrayInt($orderIds);
+        if (!empty($orderIds)) {
+            $serviceOrder = new Service_Data_Order();
+            $orderInfos = $serviceOrder->getListByConds(array('order_id in ('.implode(',', $orderIds).')'), array("order_id","bpid"));
+            $orderInfos = array_column($orderInfos, null, "order_id");
+            
+            foreach ($orderMaps as $k => $v) {
+                if (is_array($v) 
+                    && count($v) == 1 
+                    && !empty($orderInfos[$v[0]]['bpid'])
+                    && !empty($birthplace[$orderInfos[$v[0]]['bpid']]['name']) ) {
+                    $birthplaceMap[$k] = $birthplace[$orderInfos[$v[0]]['bpid']]['name'];
+                }
+            }
+        }
+
 
         $serviceColumn = new Service_Data_Column();
         $columnInfos = $serviceColumn->getListByConds(array('id in ('.implode(',', $columnIds).')'));
@@ -189,8 +221,8 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
             $item['teacher_name']   = $userInfos[$item['teacher_uid']]['nickname'];
             $item['subject_name']   = sprintf("%s / %s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfo[$item['subject_id']]['name']);
             $item['group_name']     = $groupInfos[$item['group_id']]['name'];
-            $item['order_count']    = empty($orderCountInfos[$item['id']]['count']) ? 0 : intval($orderCountInfos[$item['id']]['count']);
-            
+            $item['order_count']    = empty($orderMaps[$item['id']]) ? 0 : count($orderMaps[$item['id']]);
+            $item['birthplace']     = empty($birthplaceMap[$item['id']]) ? "" : $birthplaceMap[$item['id']];
             // 校区信息
             $item['area_name'] = "";
             $item['room_name'] = "";
@@ -236,7 +268,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('ID', '教师名', '班级名', '课程名', '校区', '教室', '校区说明',  '排课人员', '助教', '状态', '星期', '时长', '时间', '创建时间'),
+            'title' => array('ID', '教师名', '班级名', '课程名', '校区', '教室', '校区说明',  '排课人员', '助教', '状态', '生源地', '星期', '时长', '时间', '创建时间'),
             'lists' => array(),
         );
         
@@ -252,6 +284,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
                 $item['operator_name'],
                 $item['area_op_name'],
                 $item['state'] == 1 ? "待开始" : "已结算",
+                $item['birthplace'],
                 $item['week_time'],
                 $item['duration'],
                 $item['range_time'],

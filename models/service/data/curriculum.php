@@ -14,13 +14,10 @@ class Service_Data_Curriculum {
             sprintf("schedule_id in (%s)", implode(",", $ids))
         );
         $field = array(
-            "count(id) as count",
+            "order_id",
             "schedule_id",
         );
-        $appends = array(
-            "group by schedule_id"
-        );
-        $lists = $this->daoCurriculum->getListByConds($conds, $field, null, $appends);
+        $lists = $this->daoCurriculum->getListByConds($conds, $field);
         if (empty($lists)) {
             return array();
         }
