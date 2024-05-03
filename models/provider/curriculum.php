@@ -21,6 +21,7 @@ class Dao_Curriculum extends Zy_Core_Dao {
             "state" => "state",
             "area_id" => "area_id",
             "room_id" => "room_id",
+            "sop_uid" => "sop_uid",
             "update_time" => "update_time",
             "create_time" => "create_time",
             "ext" => "ext",

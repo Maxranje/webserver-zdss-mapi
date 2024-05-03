@@ -27,6 +27,36 @@
                     "onlyLeaf":true,
                     "source": "/mapi/student/lists?is_select=1&nickname=$term&is_defer=1",
                     "deferApi": "/mapi/order/lists?is_select=1&student_uid=$value&is_hasbalance=1"
+                },
+                {
+                    "type": "button",
+                    "label":"查询班级所有绑定订单",
+                    "level":"primary",
+                    "actionType": "drawer",
+                    "drawer": {
+                        "position": "right",
+                        "size": "lg",
+                        "title": "查询",
+                        "body": [
+                            {
+                                "type": "service",
+                                "api": "/mapi/group/orderlists?group_id=$search_group_id",
+                                "name": "group_order_list",
+                                "body": {
+                                    "type": "cards",
+                                    "source": "$rows",
+                                    "card": {
+                                        "header": {
+                                            "className": "bg-white",
+                                            "title": "$student_name  ($birthplace / $subject_name / $clasze_name)",
+                                            "subTitle": "订单ID: $order_id",
+                                            "description" : "<table style='margin-left: -2.5px;'><tr><td>订单原价: $origin_balance元 </td>  <td class='p-l'>课单价原价: $origin_price元</td></tr><tr><td>实际缴费: $real_balance元</td>  <td class='p-l'>惠后单价: $real_price元</td></tr><tr><td>总课时数: $schedule_nums小时</td><td class='p-l'>优惠: $discount_info</td></tr></table>"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
                 }
             ]
         },
@@ -115,6 +145,16 @@
             "source": "/mapi/schedule/bandlists?group_id=$search_group_id&order_id=$search_order_id",
             "searchable": true,
             "selectMode": "table"
+        },
+        {
+            "type": "service",
+            "name": "schedule_duration_total",
+            "initFetch": false,
+            "api": "/mapi/schedule/bandtotal?schedule_ids=$schedule_ids",
+            "body":  {
+                "type": "tpl",
+                "tpl": "已选定 ${total} 小时课程"
+            }
         },
         {
             "type" : "html",

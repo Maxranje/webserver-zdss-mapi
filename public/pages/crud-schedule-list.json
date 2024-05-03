@@ -69,9 +69,18 @@
                     "name": "area_operator",
                     "searchable":true,
                     "onlyLeaf":true,
-                    "label": "学管",
+                    "label": "助教",
                     "size":"md",
                     "source": "/mapi/api/areaoperator"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "sop_uid",
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "label": "学管",
+                    "size":"md",
+                    "source": "/mapi/api/soplists"
                 },
                 {
                     "label": "结算状态",
@@ -196,6 +205,12 @@
             {
                 "name": "area_op_name",
                 "label": "助教",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "sop_name",
+                "label": "学管",
                 "type": "text",
                 "toggled": true
             },
@@ -405,18 +420,6 @@
                                         "value": "${a_r_id}",
                                         "initiallyOpen":false,
                                         "source": "/mapi/area/lists?aid=$a_r_id&is_withroom=1"
-                                    },
-                                    {
-                                        "type": "tree-select",
-                                        "name": "area_opreator",
-                                        "onlyLeaf":true,
-                                        "label": "助教",
-                                        "searchable":true,
-                                        "size":"md",
-                                        "initiallyOpen":false,
-                                        "value":"${area_operator}",
-                                        "source": "/mapi/api/areaoperator",
-                                        "description": "助教非必选"
                                     }
                                 ]
                             }

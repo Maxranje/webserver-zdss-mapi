@@ -34,6 +34,33 @@ class Service_Data_Group {
 
     // 修改
     public function update ($id, $profile) {
+        if (isset($profile['area_operator'])) {
+            $this->daoGroup->startTransaction();
+
+            // 更新班级
+            $ret = $this->daoGroup->updateByConds(array('id'=>$id), $profile);
+            if ($ret == false) {
+                $this->daoGroup->rollback();
+                return false;
+            }
+            // 根据助教更新所有的排课(有效)
+            $daoSchedule = new Dao_Schedule();
+            $p1 = array(
+                "area_operator" => $profile['area_operator'],
+            );
+            $c1 = array(
+                "state" => Service_Data_Schedule::SCHEDULE_ABLE,
+                "group_id" => $id,
+            );
+            $ret = $daoSchedule->updateByConds($c1, $p1);
+            if ($ret == false) {
+                $this->daoGroup->rollback();
+                return false;
+            }
+
+            $this->daoGroup->commit();
+            return true;
+        }
         return $this->daoGroup->updateByConds(array('id'=>$id), $profile);
     }
 

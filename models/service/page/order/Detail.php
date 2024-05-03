@@ -9,14 +9,36 @@ class Service_Page_Order_Detail extends Zy_Core_Service{
 
         $orderId = empty($this->request['order_id']) ? 0 : intval($this->request['order_id']);
 
+        // 方式service模块不刷新, 直接返回空
+        $emptyResult = array(
+            "order_id" => "",
+            "student_name" => "",
+            "subject_name" => "",
+            "clasze_name" => "",
+            "birthplace" => "",
+            "student_uid" => "",
+            "update_time" => "",
+            "create_time" => "",
+            "pic_name" => "",
+            "origin_balance" => "",
+            "real_balance" => "",
+            "origin_price" => "",
+            "real_price" => "",
+            "schedule_nums" => "",
+            "change_balance" => "",
+            "discount_info" => "",
+            "able_balance" => "",
+            "able_duration" => "",
+        );
+
         if ($orderId <= 0) {
-            return array();
+            return $emptyResult;
         }
 
         $serviceData = new Service_Data_Order();
         $orderInfo = $serviceData->getOrderById($orderId);
         if (empty($orderInfo)) {
-            return array();
+            return $emptyResult;
         }   
         
         return $this->formatDefault($orderInfo);

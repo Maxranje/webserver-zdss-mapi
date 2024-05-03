@@ -47,6 +47,16 @@
                     ]
                 },
                 {
+                    "type": "tree-select",
+                    "name": "bpid",
+                    "onlyLeaf":true,
+                    "label": "生源地",
+                    "searchable":true,
+                    "size":"md",
+                    "initiallyOpen":false,
+                    "source": "/mapi/birthplace/lists?is_select=1"
+                },
+                {
                     "type": "input-date-range",
                     "name": "daterangee",
                     "inline": true,
@@ -66,7 +76,7 @@
                 "type": "action",
                 "actionType": "download",
                 "label": "导出Excel",
-                "api": "/mapi/records/lists?state=${state}&daterangee=${daterangee}&uid=${uid}&is_export=1"
+                "api": "/mapi/records/lists?state=${state}&daterangee=${daterangee}&uid=${uid}&bpid=${bpid}&is_export=1"
             },
             {
                 "type": "tpl",
@@ -143,6 +153,12 @@
             {
                 "name": "money_info",
                 "label": "金额(元)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "duration",
+                "label": "课时(小时)",
                 "type": "text",
                 "toggled": true
             },

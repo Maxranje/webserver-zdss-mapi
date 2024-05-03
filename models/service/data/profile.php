@@ -125,6 +125,32 @@ class Service_Data_Profile {
 
     // 修改
     public function editUserInfo ($uid, $profile) {
+        if (isset($profile['type']) && $profile['type'] == Service_Data_Profile::USER_TYPE_STUDENT && 
+            !empty($profile['sop_uid'])) {
+            $this->daoUser->startTransaction();
+            $ret = $this->daoUser->updateByConds(array('uid' => $uid), $profile);
+            if ($ret == false) {
+                $this->daoUser->rollback();
+                return false;
+            }
+
+            // 更新所有排课信息
+            $daoCurrent = new Dao_Curriculum();
+            $c1 = array(
+                'student_uid' => $uid,
+                'state' => Service_Data_Schedule::SCHEDULE_ABLE,
+            );
+            $p1 = array(
+                'sop_uid' => $profile['sop_uid'],
+            );
+            $ret = $daoCurrent->updateByConds($c1, $p1);
+            if ($ret == false) {
+                $this->daoUser->rollback();
+                return false;
+            }
+            $this->daoUser->commit();
+            return true;
+        }
         return $this->daoUser->updateByConds(array('uid' => $uid), $profile);
     }
 
@@ -134,12 +160,21 @@ class Service_Data_Profile {
     }
 
     // 学生充值
-    public function rechargeUser ($uid, $balance, $remark) {
+    public function rechargeUser ($userInfo, $balance, $remark) {
         $this->daoUser->startTransaction();
+
+        $uid = $userInfo['uid'];
+
+        $extra = empty($userInfo['ext']) ? array(): json_decode($userInfo['ext'], true);
+        if (!isset($extra['total_balance'])){
+            $extra['total_balance'] = 0;    
+        }
+        $extra['total_balance'] += $balance;
 
         $rechargeProfile = array(
             sprintf("balance=balance+%d", $balance),
             'update_time' => time(),
+            'ext' => json_encode($extra),
         );
         $ret = $this->editUserInfo($uid, $rechargeProfile);
         if ($ret == false) {
@@ -168,12 +203,17 @@ class Service_Data_Profile {
     }
 
     // 学生退款
-    public function refundUser ($uid, $balance, $remark) {
+    public function refundUser ($userInfo, $balance, $remark) {
         $this->daoUser->startTransaction();
+        $uid = $userInfo['uid'];
+
+        $extra = empty($userInfo['ext']) ? array(): json_decode($userInfo['ext'], true);
+        $extra['total_balance'] -= $balance;
 
         $rechargeProfile = array(
             sprintf("balance=balance-%d", $balance),
             'update_time' => time(),
+            'ext' => json_encode($extra),
         );
         $ret = $this->editUserInfo($uid, $rechargeProfile);
         if ($ret == false) {

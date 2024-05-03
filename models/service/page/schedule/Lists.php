@@ -26,6 +26,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
         $orderId    = empty($this->request['order_id']) ? 0 : intval($this->request['order_id']);
         $daterange  = empty($this->request['daterange']) ? "" : $this->request['daterange'];
         $areaOp     = empty($this->request['area_operator']) ? 0 : intval($this->request['area_operator']);
+        $sopuid     = empty($this->request['sop_uid']) ? 0 : intval($this->request['sop_uid']);
         $state      = empty($this->request['state']) || !in_array($this->request['state'], [1,2]) ? 0 : $this->request['state'];
         $isExport   = empty($this->request['is_export']) ? false : true;
         $pn         = empty($this->request['page']) ? 1 : intval($this->request['page']);
@@ -62,6 +63,16 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
         if ($orderId > 0) {
             $serviceData = new Service_Data_Curriculum();
             $schdules = $serviceData->getListByConds(array('order_id' => $orderId));
+            if (empty($schdules)) {
+                return array();
+            }
+            $schdules = Zy_Helper_Utils::arrayInt($schdules, 'schedule_id');
+            $conds[] = sprintf("id in (%s)", implode(",", $schdules));
+        }
+        if ($sopuid > 0) {
+            // 查询所有排课
+            $serviceData = new Service_Data_Curriculum();
+            $schdules = $serviceData->getListByConds(array('sop_uid' => $sopuid), array("schedule_id"));
             if (empty($schdules)) {
                 return array();
             }
@@ -117,10 +128,16 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
         $serviceCurrent = new Service_Data_Curriculum();
         $orderCountInfos = $serviceCurrent->getOrderCountBySchedule($scheduleIds);
         $orderMaps = array();
+        $sopMaps = array();
         foreach ($orderCountInfos as $item) {
             $orderMaps[$item['schedule_id']][] = $item["order_id"];
+            $sopMaps[$item['schedule_id']][] = $item["sop_uid"];
         }
 
+        // 获取uid, 
+        $sopuids = Zy_Helper_Utils::arrayInt($orderCountInfos, "sop_uid");
+        $uids = array_unique(array_merge($uids, $sopuids));
+        
         $orderIds = array();
         foreach ($orderMaps as $k => $v) {
             if (is_array($v) && count($v) == 1) {
@@ -252,12 +269,25 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
                 }
             }
 
-            $item['area_op_name'] = "-";
+            $item['area_op_name'] = "";
             if (!empty($userInfos[$item['area_operator']]['nickname'])) {
                 $item['area_op_name'] = $userInfos[$item['area_operator']]['nickname'];
             }
             if (empty($item['area_operator'])) {
                 $item['area_operator'] = "";
+            }
+
+            // 处理学管
+            $item["sop_name"] = array();
+            if (!empty($sopMaps[$item['id']])) {
+                foreach ($sopMaps[$item['id']] as $op) {
+                    if (!empty($userInfos[$op]['nickname'])) {
+                        $item["sop_name"][] =$userInfos[$op]['nickname']; 
+                    }
+                }
+            }
+            if (!empty($item['sop_name'])) {
+                $item['sop_name'] = implode(",", $item['sop_name']);
             }
 
             $item['operator_name']= empty($userInfos[$item['operator']]['nickname']) ? "" :$userInfos[$item['operator']]['nickname'];

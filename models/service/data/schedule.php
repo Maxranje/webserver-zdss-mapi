@@ -53,7 +53,6 @@ class Service_Data_Schedule {
             "column_id"         => intval($params['column_id']),
             "start_time"        => intval($params['needTimes']['sts']), 
             "end_time"          => intval($params['needTimes']['ets']),
-            "area_operator"     => intval($params['area_op']),
 	        'teacher_uid'       => intval($params['teacher_uid']),
             'subject_id'        => intval($params['subject_id']),
             'area_id'           => intval($params['area_id']),

@@ -3,8 +3,8 @@
 class Service_Page_Student_Batchcreate extends Zy_Core_Service{
 
     public function execute () {
-        if (!$this->checkAdmin()) {
-            throw new Zy_Core_Exception(405, "无权限查看");
+        if (!$this->checkAdmin() || $this->checkPartner()) {
+            throw new Zy_Core_Exception(405, "无权限操作");
         }
 
         if (empty($this->request['excel'])) {

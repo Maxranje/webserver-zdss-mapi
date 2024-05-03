@@ -15,6 +15,7 @@ class Service_Page_Student_Update extends Zy_Core_Service{
         $graduate   = empty($this->request['graduate']) ? "" : trim($this->request['graduate']);
         $bpid       = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
         $sex        = empty($this->request['sex']) ? "M" : trim($this->request['sex']);
+        $sopuid     = empty($this->request['sop_uid']) ? 0 : intval($this->request['sop_uid']);
         $state      = empty($this->request["state"]) || !in_array($this->request['state'], Service_Data_Profile::STUDENT_STATE) ? Service_Data_Profile::STUDENT_ABLE : intval($this->request['state']);
 
         if ($uid <= 0) {
@@ -31,6 +32,10 @@ class Service_Page_Student_Update extends Zy_Core_Service{
 
         if ($bpid <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 生源地必须填写");
+        }
+
+        if ($sopuid <= 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 学管必须要填写");
         }
         
         $serviceData = new Service_Data_Profile();
@@ -57,6 +62,11 @@ class Service_Page_Student_Update extends Zy_Core_Service{
             "state"         => $state,
             "update_time"   => time(),
         ];
+
+        // 学生更新学管信息
+        if (empty($userInfo['sop_uid']) || $userInfo['sop_uid'] != $sopuid) {
+            $profile['sop_uid'] = $sopuid;
+        }
 
         $ret = $serviceData->editUserInfo($uid, $profile);
         if ($ret === false) {

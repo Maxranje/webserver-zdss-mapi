@@ -105,6 +105,19 @@
                             "type": "input-text",
                             "name": "graduate",
                             "label": "学级"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "tree-select",
+                            "name": "sopuid",
+                            "onlyLeaf":true,
+                            "label": "学管",
+                            "searchable":true,
+                            "initiallyOpen":false,
+                            "source": "/mapi/api/soplists",
+                            "required": true
                         }
                     ]
                 }
@@ -185,6 +198,16 @@
                     "size" : "md",
                     "label": "手机号",
                     "placeholder": "严格搜索"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "bpid",
+                    "onlyLeaf":true,
+                    "label": "生源地",
+                    "searchable":true,
+                    "size":"md",
+                    "initiallyOpen":false,
+                    "source": "/mapi/birthplace/lists?is_select=1"
                 },
                 {
                     "label": "状态",
@@ -301,6 +324,12 @@
                 "toggled": true
             },
             {
+                "name": "sop_name",
+                "label": "学管",
+                "type": "text",
+                "toggled": true
+            },
+            {
                 "name": "order_count",
                 "label": "订单数量",
                 "type": "text",
@@ -308,10 +337,16 @@
             },
             {
                 "name": "balance_info",
-                "label": "账户存额",
+                "label": "账户余额",
                 "type": "text",
                 "toggled": true,
-                "classNameExpr": "<%= data.balance > 500000 ? 'bg-success' : (data.balance > 0 ? 'bg-warning' : 'bg-default' ) %>"
+                "classNameExpr": "<%= data.balance > 500000 ? 'bg-success' : (data.balance > 0 ? 'bg-warning' : (data.balance == 0 ? 'bg-default' : 'bg-danger') ) %>"
+            },
+            {
+                "name": "total_balance",
+                "label": "总存额",
+                "type": "text",
+                "toggled": true
             },
             {
                 "name": "update_time",
@@ -329,13 +364,14 @@
                         "label":"订单",
                         "level":"primary",
                         "actionType": "link",
+                        "disabledOn": "this.is_partner === 1",
                         "link":"/order/list?student_uid=$uid"
                     },
                     {
                         "type": "button",
                         "label": "充值",
                         "actionType": "dialog",
-                        "disabledOn": "this.is_re !== 1",
+                        "disabledOn": "this.is_re !== 1 || this.is_partner === 1",
                         "dialog": {
                             "size": "lg",
                             "title": "充值",
@@ -414,7 +450,7 @@
                         "type": "button",
                         "label": "退款",
                         "actionType": "dialog",
-                        "disabledOn": "this.is_rd !== 1",
+                        "disabledOn": "this.is_rd !== 1 || this.is_partner === 1",
                         "dialog": {
                             "size": "lg",
                             "title": "退款",
@@ -493,6 +529,7 @@
                         "type": "button",
                         "label": "编辑",
                         "actionType": "drawer",
+                        "disabledOn" : "this.is_partner === 1",
                         "drawer": {
                             "position": "right",
                             "size": "lg",
@@ -601,7 +638,8 @@
                                         "searchable":true,
                                         "initiallyOpen":false,
                                         "required" : true,
-                                        "source": "/mapi/birthplace/lists?is_select=1"
+                                        "source": "/mapi/birthplace/lists?is_select=1",
+                                        "desc": "修改生源地不会影响该学员已有订单中生源地信息(创建订单时学员数据作为依据)"
                                     },
                                     {
                                         "type": "divider"
@@ -621,6 +659,17 @@
                                     },
                                     {
                                         "type": "divider"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "sop_uid",
+                                        "onlyLeaf":true,
+                                        "label": "学管",
+                                        "searchable":true,
+                                        "initiallyOpen":false,
+                                        "source": "/mapi/api/soplists",
+                                        "required": true,
+                                        "desc": "学管更新会同步更新到排课列表中"
                                     }
                                 ]
                             }
@@ -630,6 +679,7 @@
                         "type": "button",
                         "label": "备注",
                         "actionType": "dialog",
+                        "disabledOn":"this.is_partner === 1",
                         "dialog": {
                             "size": "lg",
                             "title": "备注",
@@ -694,6 +744,7 @@
                         "type": "button",
                         "actionType": "ajax",
                         "label": "重置密码",
+                        "disabledOn":"this.is_partner === 1",
                         "confirmText": "重置密码后, 账户密码为当前账户填写的手机号!",
                         "api": {
                             "method": "get",
@@ -705,6 +756,7 @@
                         "actionType": "ajax",
                         "label": "删除",
                         "level":"danger",
+                        "disabledOn":"this.is_partner === 1",
                         "confirmText": "您确认要删除学员么? 如果关联订单无法删除, 建议下线处理!",
                         "api": {
                             "method": "get",

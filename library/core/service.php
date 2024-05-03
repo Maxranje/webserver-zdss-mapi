@@ -69,4 +69,13 @@ class Zy_Core_Service {
         $modes = $this->getUserRoleModeIds();
         return in_array($modeId, $modes) ? true : false;
     }
+
+    public function getPartnerBpid($partnerUid) {
+        $serviceUser = new Service_Data_Profile();
+        $userInfo = $serviceUser->getUserInfoByUid(intval($partnerUid));
+        if (empty($userInfo['bpid']) || intval($userInfo['bpid']) <= 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 合作方信息不完整, 请联系管理员");
+        }
+        return intval($userInfo['bpid']);
+    }
 }

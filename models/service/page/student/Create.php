@@ -3,8 +3,8 @@
 class Service_Page_Student_Create extends Zy_Core_Service{
 
     public function execute () {
-        if (!$this->checkAdmin()) {
-            throw new Zy_Core_Exception(405, "无权限查看");
+        if (!$this->checkAdmin() || $this->checkPartner()) {
+            throw new Zy_Core_Exception(405, "无权限操作");
         }
 
         $name       = empty($this->request['name']) ? "" : trim($this->request['name']);
@@ -14,9 +14,10 @@ class Service_Page_Student_Create extends Zy_Core_Service{
         $graduate   = empty($this->request['graduate']) ? "" : trim($this->request['graduate']);
         $bpid       = empty($this->request['birthplace']) ? 0 : intval($this->request['birthplace']);
         $sex        = empty($this->request['sex']) ? "M" : trim($this->request['sex']);
+        $sopuid     = empty($this->request['sopuid']) ? 0 : intval($this->request['sopuid']);
 
         if (empty($name) || empty($phone) || empty($nickname)) {
-            throw new Zy_Core_Exception(405, "管理员名或手机号等提交数据有空值, 请检查");
+            throw new Zy_Core_Exception(405, "用户名或手机号等必要提交数据有空值, 请检查");
         }
 
         if (!is_numeric($phone) || strlen($phone) < 6 || strlen($phone) > 12) {
@@ -25,6 +26,10 @@ class Service_Page_Student_Create extends Zy_Core_Service{
 
         if ($bpid <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 生源地必须填写");
+        }
+
+        if ($sopuid <= 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 学管必须要填写");
         }
 
         $serviceData = new Service_Data_Profile();
@@ -45,6 +50,7 @@ class Service_Page_Student_Create extends Zy_Core_Service{
             "school"        => $school, 
             "graduate"      => $graduate,
             "sex"           => $sex, 
+            "sop_uid"       => $sopuid, 
             "create_time"   => time() , 
             "update_time"   => time() , 
         ];

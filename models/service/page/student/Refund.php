@@ -29,7 +29,13 @@ class Service_Page_Student_Refund extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 账户存额不足");
         }
 
-        $ret = $serviceData->refundUser($uid, $reBalance, $remark);
+        // 账户一定会有总存额.
+        $ext = empty($userInfo['ext']) ? array() : json_decode($userInfo['ext'], true);
+        if (empty($ext["total_balance"])) {
+            throw new Zy_Core_Exception(405, "操作失败, 账户总存额异常, 请联系管理员");
+        }
+
+        $ret = $serviceData->refundUser($userInfo, $reBalance, $remark);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "退款失败, 请重试");
         }

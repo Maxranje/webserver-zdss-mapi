@@ -20,6 +20,7 @@ class Controller_Schedule extends Zy_Core_Controller{
         // 绑定列表
         "bandlists"           => "actions/schedule/Bandlists.php",
         "bandcreate"          => "actions/schedule/Bandcreate.php",
+        "bandtotal"           => "actions/schedule/Bandtotal.php",
 
         // 结算
         "checkoutlists"     => "actions/schedule/Checkoutlists.php",

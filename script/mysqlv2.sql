@@ -61,6 +61,7 @@ CREATE TABLE `tblCurriculum` (
   `subject_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '科目ID',
   `group_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '班级',
   `teacher_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '老师UID',
+  `sop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学管',
   `start_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `end_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `state` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1:待开始, 2:结束',
@@ -103,6 +104,7 @@ CREATE TABLE `tblUser` (
   `school` varchar(100) NOT NULL DEFAULT '' COMMENT '学校',
   `graduate` varchar(100) NOT NULL DEFAULT '' COMMENT '班级',
   `bpid` int(11) NOT NULL DEFAULT '0' COMMENT '生源地id',
+  `sop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学管',
   `sex` char(1) NOT NULL DEFAULT 'M' COMMENT '性别: M男生, F:女生',
   `balance` int(11) NOT NULL DEFAULT '0' COMMENT '余额',
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
@@ -300,3 +302,8 @@ CREATE TABLE `tblCapital` (
   PRIMARY KEY (`id`),
   KEY `uid_type` (`uid`, `type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='学生金额变更表';
+
+
+
+-- alter table tblUser add column `sop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学管';
+-- alter table tblCurriculum add column `sop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学管';

@@ -49,7 +49,7 @@
                             "required": true,
                             "initiallyOpen":false,
                             "source": "/mapi/subject/claszelists?type=2",
-                            "desc" : "科目&班型选择后, 为防止非当前科目&班型的订单绑定到班级, 所以不允许修改, 请谨慎配置!"
+                            "desc" : "科目&班型选择后, 为防止非当前科目&班型的订单绑定到班级, 所以一旦绑定课程就不允许修改, 请谨慎配置!"
                         },
                         {
                             "type": "divider"
@@ -300,6 +300,20 @@
                                         "name": "name",
                                         "label": "班级名称",
                                         "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "clasze_id",
+                                        "onlyLeaf":true,
+                                        "label": "科目&班型",
+                                        "searchable":true,
+                                        "required": true,
+                                        "initiallyOpen":false,
+                                        "source": "/mapi/subject/claszelists?type=2",
+                                        "desc" : "注意: 绑定课程的班级无法修改班型, 修改班型会同步修改班号"
                                     },
                                     {
                                         "type": "divider"

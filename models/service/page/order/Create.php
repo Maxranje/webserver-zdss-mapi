@@ -50,9 +50,9 @@ class Service_Page_Order_Create extends Zy_Core_Service{
         }
         
         // 判断账户金额是否充足
-        if ($isfree == 0 && $studentInfo['balance'] < $realBalance) {
-            throw new Zy_Core_Exception(405, sprintf("操作失败, 学员账户金额不足, 当前余额: %.2f元", $studentInfo['balance'] / 100));
-        }
+        // if ($isfree == 0 && $studentInfo['balance'] < $realBalance) {
+        //     throw new Zy_Core_Exception(405, sprintf("操作失败, 学员账户金额不足, 当前余额: %.2f元", $studentInfo['balance'] / 100));
+        // }
 
         $serviceClasze = new Service_Data_Claszemap();
         $claszemap = $serviceClasze->getClaszemapById($claszemapId);

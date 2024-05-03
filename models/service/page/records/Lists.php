@@ -10,6 +10,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         $pn         = empty($this->request['page']) ? 0 : intval($this->request['page']);
         $rn         = empty($this->request['perPage']) ? 0 : intval($this->request['perPage']);
         $uid        = empty($this->request['uid']) ? 0 : intval($this->request['uid']);
+        $bpid       = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
         $scheduleId = empty($this->request['schedule_id']) ? 0 : intval($this->request['schedule_id']);
         $category   = empty($this->request['category']) ? 0 : intval($this->request['category']);
         $dataRange  = empty($this->request['daterangee']) ? array() : explode(",", $this->request['daterangee']);
@@ -17,39 +18,51 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
 
         $pn = ($pn-1) * $rn;
 
-        $conds = array();
-        if ($uid > 0) {
-            $conds['uid'] = $uid;
-        }
-        if ($category > 0) {
-            $conds['category'] = $category;
-        }
-        if ($scheduleId > 0) {
-            $conds['schedule_id'] = $scheduleId;
-        }
-        if (!empty($dataRange)) {
-            $conds[] = sprintf("create_time >= %d", $dataRange[0]);
-            $conds[] = sprintf("create_time <= %d", ($dataRange[1] + 1));
-        }
-
-        $arrAppends[] = 'order by id desc';
-        if (!$isExport) {
-            $arrAppends[] = "limit {$pn} , {$rn}";
+        if ($this->checkPartner() ) {
+            $bpid = $this->getPartnerBpid($this->adption['userid']);
         }
 
         $serviceRecords = new Service_Data_Records();
-        $lists = $serviceRecords->getListByConds($conds, false, NULL, $arrAppends);
-        $lists = $this->formatBase($lists);
 
+        $lists = array();
+        $total = 0;
+        if ($bpid > 0 ) {
+            $lists = $serviceRecords->getListByBpid($uid, $bpid, $scheduleId, $category, $dataRange, $pn, $rn);
+            if (!$isExport) {
+                $total = $serviceRecords->getTotalByBpid($uid, $bpid, $scheduleId, $category, $dataRange);
+            }
+        } else {
+            $conds = array();
+            if ($uid > 0) {
+                $conds['uid'] = $uid;
+            }
+            if ($category > 0) {
+                $conds['category'] = $category;
+            }
+            if ($scheduleId > 0) {
+                $conds['schedule_id'] = $scheduleId;
+            }
+            if (!empty($dataRange)) {
+                $conds[] = sprintf("create_time >= %d", $dataRange[0]);
+                $conds[] = sprintf("create_time <= %d", ($dataRange[1] + 1));
+            }
+    
+            $arrAppends[] = 'order by id desc';
+            if (!$isExport) {
+                $arrAppends[] = "limit {$pn} , {$rn}";
+            }
+    
+            $lists = $serviceRecords->getListByConds($conds, false, NULL, $arrAppends);
+            if (!$isExport) {
+                $total = $serviceRecords->getTotalByConds($conds);
+            }
+        }
+
+        $lists = $this->formatBase($lists);
         if ($isExport) {
             $data = $this->formatExcel($lists);
             Zy_Helper_Utils::exportExcelSimple("payrecords", $data['title'], $data['lists']);
         }
-        if (empty($lists)) {
-            return array();
-        }
-
-        $total = $serviceRecords->getTotalByConds($conds);
         return array(
             'rows' => $lists,
             'total' => $total,
@@ -65,6 +78,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         $operator = Zy_Helper_Utils::arrayInt($lists, 'operator');
         $groupIds = Zy_Helper_Utils::arrayInt($lists, 'group_id');
         $uids = Zy_Helper_Utils::arrayInt($lists, 'uid');
+        $scheduleIds = Zy_Helper_Utils::arrayInt($lists, "schedule_id");
 
         $uids = array_unique(array_merge($uids, $operator));
 
@@ -81,9 +95,17 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         $groupInfos = $serviceGroup->getListByConds(array(sprintf("id in (%s)", implode(",", $groupIds))));
         $groupInfos = array_column($groupInfos, null, "id");
 
+        $serviceSchedule = new Service_Data_Schedule();
+        $scheduleInfos = $serviceSchedule->getScheduleByIds($scheduleIds);
+        $scheduleInfos = array_column($scheduleInfos, null, "id");
+
         foreach ($lists as &$item) {
             if (empty($userInfos[$item['uid']]['nickname'])) {
                 continue;
+            }
+            $duration = "";
+            if (!empty($scheduleInfos[$item['schedule_id']])) {
+                $duration = sprintf("%.2f", ($scheduleInfos[$item['schedule_id']]['end_time'] - $scheduleInfos[$item['schedule_id']]['start_time']) / 3600);
             }
 
             $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
@@ -98,6 +120,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
             $item['money_info']     = sprintf("%.2f元", $item['money'] / 100);
             $item['order_id']       = empty($item['order_id']) ? "-" : $item['order_id'];
             $item['isfree']         = "-";
+            $item['duration']       = $duration ;
             if (isset($ext['order'])) {
                 $item['isfree'] = "否";
                 if (!empty($ext['order']['isfree'])) {
@@ -111,7 +134,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('日期', 'UID', '用户名', '用户类型', '状态', '场景', '排课ID', '金额(元)', "生源地", '班级', '订单ID',"是否免费订单", '操作员', "更新日期"),
+            'title' => array('日期', 'UID', '用户名', '用户类型', '状态', '场景', '排课ID', '金额(元)', '课时', "生源地", '班级', '订单ID',"是否免费订单", '操作员', "更新日期"),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -128,6 +151,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
                 $item['category'] == Service_Data_Schedule::CATEGORY_STUDENT_PAID ? "学员消费" : "教师收入",
                 $item['schedule_id'],
                 $item['money_info'],
+                $item['duration'],
                 $item['birthplace'],
                 $item['group_name'],
                 $item['order_id'],

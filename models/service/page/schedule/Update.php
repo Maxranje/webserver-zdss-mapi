@@ -12,7 +12,6 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
         $timeRange      = empty($this->request['time_range']) ? "" : $this->request['time_range'];
         $teacherUid     = empty($this->request['teacher_uid']) ? "" : $this->request['teacher_uid'];
         $arIds          = empty($this->request['a_r_id']) ? "" : explode("_", $this->request['a_r_id']);
-        $areaOperator   = empty($this->request['area_opreator']) ? 0 : intval($this->request['area_opreator']);
 
         if ($id <= 0){
             throw new Zy_Core_Exception(405, "请求参数错误");
@@ -147,7 +146,6 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
             "id"            => $id,
             "column_id"     => $columnInfos['id'],
 	        'needTimes'     => $needTimes,
-            "area_op"       => $areaOperator,
 	        'teacher_uid'   => $teacherUid,
             "area_id"       => $areaId,
             "room_id"       => $roomId,

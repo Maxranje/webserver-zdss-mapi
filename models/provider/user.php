@@ -15,6 +15,7 @@ class Dao_User extends Zy_Core_Dao {
             "phone"  => "phone" , 
             "avatar" => "avatar",
             "bpid" => "bpid",
+            "sop_uid" => "sop_uid",
             "school"  => "school" , 
             "graduate"  => "graduate" , 
             "balance"   => "balance",

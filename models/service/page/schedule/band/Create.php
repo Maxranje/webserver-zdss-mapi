@@ -27,6 +27,13 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 订单没有余额了");
         }
 
+        // check 学生信息
+        $serviceUser = new Service_Data_Profile();
+        $userInfo = $serviceUser->getUserInfoByUid($orderInfo['student_uid']);
+        if (empty($userInfo) || $userInfo['state'] != Service_Data_Profile::STUDENT_ABLE) {
+            throw new Zy_Core_Exception(405, "操作失败, 学员信息获取失败");
+        }
+
         //check  group 信息
         $serviceGroup = new Service_Data_Group();
         $groupInfo = $serviceGroup->getGroupById($groupId);
@@ -146,6 +153,7 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
         
         // 创建
         $profile = array(
+            'user_info'         => $userInfo,
             "order_info"        => $orderInfo,
             "newSchedules"      => $newSchedules,
             "delScheduleIds"    => $delScheduleIds,

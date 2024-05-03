@@ -16,6 +16,7 @@ class Service_Data_Curriculum {
         $field = array(
             "order_id",
             "schedule_id",
+            "sop_uid",
         );
         $lists = $this->daoCurriculum->getListByConds($conds, $field);
         if (empty($lists)) {
@@ -126,6 +127,7 @@ class Service_Data_Curriculum {
                 "state"             => intval($item["state"]),
                 "area_id"           => intval($item["area_id"]),
                 "room_id"           => intval($item["room_id"]),
+                "sop_uid"           => intval($profile['user_info']['sop_uid']),
                 "update_time"       => time(),
                 "create_time"       => time(), 
             );

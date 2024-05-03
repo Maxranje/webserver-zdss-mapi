@@ -25,7 +25,7 @@ class Service_Page_Student_Recharge extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 学员信息不存在");
         }
 
-        $ret = $serviceData->rechargeUser($uid, $reBalance, $remark);
+        $ret = $serviceData->rechargeUser($userInfo, $reBalance, $remark);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "充值失败, 请重试");
         }
