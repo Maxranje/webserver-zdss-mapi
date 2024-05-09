@@ -111,6 +111,7 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
             $item['is_partner']  = $isPartner ? 1 : 0;
             $item["remark"]      = empty($ext['remark']) ? "" : $ext['remark'];
             $item['order_count'] = empty($orderInfos[$item['uid']]['order_count']) ? "-" : $orderInfos[$item['uid']]['order_count'];
+            $item['order_balance_info'] = empty($orderInfos[$item['uid']]['balance']) ? "-" : sprintf("%.2f", $orderInfos[$item['uid']]['balance'] / 100);
             $item['balance_info']= sprintf("%.2f", $item['balance'] / 100);
             $item['total_balance']= empty($ext['total_balance']) ? "0.00" : sprintf("%.2f", $ext['total_balance'] / 100);
             //$item['uncheck_schedule_nums'] = empty($scheduleCount[$item['uid']]) ? "-" : sprintf("%.2f小时", $scheduleCount[$item['uid']]);

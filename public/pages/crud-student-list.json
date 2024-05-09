@@ -343,8 +343,15 @@
                 "classNameExpr": "<%= data.balance > 500000 ? 'bg-success' : (data.balance > 0 ? 'bg-warning' : (data.balance == 0 ? 'bg-default' : 'bg-danger') ) %>"
             },
             {
+                "name": "order_balance_info",
+                "label": "订单总余额",
+                "type": "text",
+                "remark" : "订单余额及订单中未结算课程的金额总和",
+                "toggled": true
+            },
+            {
                 "name": "total_balance",
-                "label": "总存额",
+                "label": "历史存额",
                 "type": "text",
                 "toggled": true
             },

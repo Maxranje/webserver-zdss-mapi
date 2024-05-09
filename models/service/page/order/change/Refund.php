@@ -33,7 +33,11 @@ class Service_Page_Order_Change_Refund extends Zy_Core_Service{
         $studentInfo = $serviceProfile->getUserInfoByUid(intval($order['student_uid']));
         if (empty($studentInfo)) {
             throw new Zy_Core_Exception(405, "操作失败, 学员信息不存在");
-        }        
+        }
+        
+        if ($studentInfo['balance'] < 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 资金安全提示, 账户欠费前提下无法结转回账户");
+        }
 
         if ($order['balance'] <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 订单已无余额");
