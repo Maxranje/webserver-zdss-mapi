@@ -1,6 +1,6 @@
 {
     "type": "page",
-    "title": "消费记录",
+    "title": "结算报表",
     "body": {
         "type": "crud",
         "draggable": true,
@@ -19,12 +19,27 @@
             "submitText": "",
             "body": [
                 {
-                    "type": "input-text",
-                    "name": "uid",
-                    "label": "用户UID",
-                    "size": "md",
-                    "placeholder": ""
+                    "type": "tree-select",
+                    "name": "student_uids",
+                    "label": "学员",
+                    "size": "md",   
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "multiple": true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term"
                 },
+                {
+                    "type": "tree-select",
+                    "name": "teacher_uids",
+                    "label": "教师",
+                    "size": "md",   
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "multiple": true,
+                    "source": "/mapi/teacher/lists?is_select=1&nickname=$term"
+                },                
                 {
                     "type": "select",
                     "name": "category",

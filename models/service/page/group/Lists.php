@@ -94,9 +94,6 @@ class Service_Page_Group_Lists extends Zy_Core_Service{
 
         $result = array();
         foreach ($lists as $v) {
-            if (empty($userInfos[$v['area_operator']]['nickname'])) {
-                continue;
-            }
             if (empty($subjects[$v['subject_id']]['name'])) {
                 continue;
             }
@@ -109,7 +106,7 @@ class Service_Page_Group_Lists extends Zy_Core_Service{
             $item['subject_name'] = $subjects[$v['subject_id']]['name'];
             $item['clasze_name'] = $claszes[$v['cid']]['name'];
             $item['clasze_id'] = sprintf("%s_%s", $v['subject_id'], $v['cid']);
-            $item['area_operator_name'] = $userInfos[$v['area_operator']]['nickname'];
+            $item['area_operator_name'] = empty($userInfos[$v['area_operator']]['nickname']) ? "" : $userInfos[$v['area_operator']]['nickname'];
             $item['schedule_count'] = empty($scheduleInfo[$v['id']]) ? 0 : $scheduleInfo[$v['id']]['count'];
             $item['create_time'] = date("Y年m月d日", $item['create_time']);
             $item['update_time'] = date("Y年m月d日", $item['update_time']);

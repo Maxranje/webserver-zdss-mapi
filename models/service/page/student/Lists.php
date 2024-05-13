@@ -7,15 +7,16 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $pn         = empty($this->request['page']) ? 1 : intval($this->request['page']);
-        $rn         = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
-        $bpid       = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
-        $name       = empty($this->request['name']) ? "" : strval($this->request['name']);
-        $phone      = empty($this->request['phone']) ? "" : strval($this->request['phone']);
-        $state      = empty($this->request['state']) ? 0 : intval($this->request['state']);
-        $nickname   = empty($this->request['nickname']) ? "" : strval($this->request['nickname']);
-        $isSelect   = empty($this->request['is_select']) ? false : true;
-        $isDefer    = empty($this->request['is_defer']) ? false : true;
+        $pn             = empty($this->request['page']) ? 1 : intval($this->request['page']);
+        $rn             = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
+        $bpid           = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
+        $name           = empty($this->request['name']) ? "" : strval($this->request['name']);
+        $phone          = empty($this->request['phone']) ? "" : strval($this->request['phone']);
+        $state          = empty($this->request['state']) ? 0 : intval($this->request['state']);
+        $balanceState   = empty($this->request['balance_state']) ? 0 : intval($this->request['balance_state']);
+        $nickname       = empty($this->request['nickname']) ? "" : strval($this->request['nickname']);
+        $isSelect       = empty($this->request['is_select']) ? false : true;
+        $isDefer        = empty($this->request['is_defer']) ? false : true;
 
         $pn = ($pn-1) * $rn;
 
@@ -45,6 +46,10 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
 
         if ($bpid > 0) {
             $conds[] = sprintf("bpid = %d", $bpid);
+        }
+
+        if ($balanceState > 0) {
+            $conds[] = $balanceState == 2 ? "balance < 0" : "balance >= 0";
         }
         
         $serviceData = new Service_Data_Profile();
@@ -111,7 +116,7 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
             $item['is_partner']  = $isPartner ? 1 : 0;
             $item["remark"]      = empty($ext['remark']) ? "" : $ext['remark'];
             $item['order_count'] = empty($orderInfos[$item['uid']]['order_count']) ? "-" : $orderInfos[$item['uid']]['order_count'];
-            $item['order_balance_info'] = empty($orderInfos[$item['uid']]['balance']) ? "-" : sprintf("%.2f", $orderInfos[$item['uid']]['balance'] / 100);
+            $item['order_balance_info'] = empty($orderInfos[$item['uid']]['balance']) ? "0.00" : sprintf("%.2f", $orderInfos[$item['uid']]['balance'] / 100);
             $item['balance_info']= sprintf("%.2f", $item['balance'] / 100);
             $item['total_balance']= empty($ext['total_balance']) ? "0.00" : sprintf("%.2f", $ext['total_balance'] / 100);
             //$item['uncheck_schedule_nums'] = empty($scheduleCount[$item['uid']]) ? "-" : sprintf("%.2f小时", $scheduleCount[$item['uid']]);

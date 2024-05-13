@@ -49,10 +49,10 @@ class Service_Data_Records {
     public function getListByBpid($uid, $bpid, $scheduleId, $category, $dataRange, $pn =0 , $rn = 20) {
 
         $sql = sprintf("select a.* from tblRecords a left join tblUser b on a.uid = b.uid where b.bpid= %d ", $bpid);
-        if ($uid > 0) {
-            $sql .= " and a.uid = " . $uid;
+        if (!empty($uid)) {
+            $sql .= sprintf(" and a.uid in (%s)", implode(",", $uid));
         }
-        if ($uid > 0) {
+        if ($scheduleId > 0) {
             $sql .= " and a.schedule_id = " . $scheduleId;
         }
         if ($category > 0) {
@@ -72,8 +72,8 @@ class Service_Data_Records {
     public function getTotalByBpid($uid, $bpid, $scheduleId, $category, $dataRange) {
 
         $sql = sprintf("select count(a.*) as count from tblRecords a left join tblUser b on a.uid = b.uid where b.bpid= %d ", $bpid);
-        if ($uid > 0) {
-            $sql .= " and a.uid = " . $uid;
+        if (!empty($uid)) {
+            $sql .= sprintf(" and a.uid in (%s)", implode(",", $uid));
         }
         if ($uid > 0) {
             $sql .= " and a.schedule_id = " . $scheduleId;

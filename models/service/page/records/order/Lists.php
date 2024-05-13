@@ -137,9 +137,9 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
             $tmp['schedule_nums']   = sprintf("%.2f", $extra['schedule_nums']);
             $tmp['origin_balance']  = sprintf("%.2f", $extra['origin_balance'] / 100);
             $tmp['origin_price']    = sprintf("%.2f", $extra['origin_price'] / 100);
-            $tmp['real_balance']    = sprintf("%.2f", $extra['real_balance'] / 100);
-            $tmp['real_price']      = sprintf("%.2f", $item['price'] / 100);
-            $tmp['balance']         = sprintf("%.2f", $item['balance'] / 100);
+            $tmp['real_balance']    = !empty($item['isfree']) ? "0.00" : sprintf("%.2f", $extra['real_balance'] / 100);
+            $tmp['real_price']      = !empty($item['isfree']) ? "0.00" : sprintf("%.2f", $item['price'] / 100);
+            $tmp['balance']         = !empty($item['isfree']) ? "0.00" : sprintf("%.2f", $item['balance'] / 100);
             $tmp['change_duration'] = sprintf("%.2f", $extra['change_balance'] / $item['price']);
             $tmp['change_balance']  = sprintf("%.2f", $extra['change_balance'] / 100);
             $tmp['remark']         = empty($extra['remark']) ? "" : $extra['remark'];
@@ -154,7 +154,7 @@ class Service_Page_Records_Order_Lists extends Zy_Core_Service{
             }
             if (!empty($orderCounts[$item['order_id']]['c'])) {
                 $tmp['check_schedule_nums'] = sprintf("%.2f", $orderCounts[$item['order_id']]['c']);
-                $tmp['check_schedule_balance'] = sprintf("%.2f", ($orderCounts[$item['order_id']]['c'] * $item['price']) / 100);
+                $tmp['check_schedule_balance'] = !empty($item['isfree']) ? "0.00" : sprintf("%.2f", ($orderCounts[$item['order_id']]['c'] * $item['price']) / 100);
             }
 
             $result[] = $tmp;

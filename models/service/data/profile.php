@@ -69,12 +69,14 @@ class Service_Data_Profile {
         return $userinfo;
     }
 
-    public function getUserInfoLikeName ($name){
+    public function getUserInfoLikeName ($name, $fields = array()){
         $arrConds = array(
             "nickname like '%".$name."%'",
         );
 
-        $userinfo = $this->daoUser->getListByConds($arrConds, $this->daoUser->arrFieldsMap);
+        $fields = empty($fields) ? $this->daoUser->arrFieldsMap : $fields;
+
+        $userinfo = $this->daoUser->getListByConds($arrConds, $fields);
         if (empty($userinfo)) {
             return array();
         }

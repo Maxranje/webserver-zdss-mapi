@@ -1,6 +1,6 @@
 {
     "type": "page",
-    "title": "消费记录",
+    "title": "订单报表",
     "body": {
         "type": "crud",
         "draggable": true,

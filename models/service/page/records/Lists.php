@@ -7,16 +7,19 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $pn         = empty($this->request['page']) ? 0 : intval($this->request['page']);
-        $rn         = empty($this->request['perPage']) ? 0 : intval($this->request['perPage']);
-        $uid        = empty($this->request['uid']) ? 0 : intval($this->request['uid']);
-        $bpid       = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
-        $scheduleId = empty($this->request['schedule_id']) ? 0 : intval($this->request['schedule_id']);
-        $category   = empty($this->request['category']) ? 0 : intval($this->request['category']);
-        $dataRange  = empty($this->request['daterangee']) ? array() : explode(",", $this->request['daterangee']);
-        $isExport   = empty($this->request['is_export']) ? false : true;
+        $pn             = empty($this->request['page']) ? 0 : intval($this->request['page']);
+        $rn             = empty($this->request['perPage']) ? 0 : intval($this->request['perPage']);
+        $studentUids    = empty($this->request['student_uids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", trim($this->request['student_uids'])));
+        $teacherUids    = empty($this->request['teacher_uids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", trim($this->request['teacher_uids'])));
+        $bpid           = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
+        $scheduleId     = empty($this->request['schedule_id']) ? 0 : intval($this->request['schedule_id']);
+        $category       = empty($this->request['category']) ? 0 : intval($this->request['category']);
+        $dataRange      = empty($this->request['daterangee']) ? array() : explode(",", $this->request['daterangee']);
+        $isExport       = empty($this->request['is_export']) ? false : true;
 
         $pn = ($pn-1) * $rn;
+        $uids = array_merge($studentUids, $teacherUids);
+        $uids = array_unique($uids);
 
         if ($this->checkPartner() ) {
             $bpid = $this->getPartnerBpid($this->adption['userid']);
@@ -27,14 +30,14 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         $lists = array();
         $total = 0;
         if ($bpid > 0 ) {
-            $lists = $serviceRecords->getListByBpid($uid, $bpid, $scheduleId, $category, $dataRange, $pn, $rn);
+            $lists = $serviceRecords->getListByBpid($uids, $bpid, $scheduleId, $category, $dataRange, $pn, $rn);
             if (!$isExport) {
-                $total = $serviceRecords->getTotalByBpid($uid, $bpid, $scheduleId, $category, $dataRange);
+                $total = $serviceRecords->getTotalByBpid($uids, $bpid, $scheduleId, $category, $dataRange);
             }
         } else {
             $conds = array();
-            if ($uid > 0) {
-                $conds['uid'] = $uid;
+            if (!empty($uids)) {
+                $conds[] = sprintf("uid in (%s)", implode(",", $uids));
             }
             if ($category > 0) {
                 $conds['category'] = $category;
