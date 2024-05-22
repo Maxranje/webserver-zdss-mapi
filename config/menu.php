@@ -196,7 +196,7 @@ return array(
                 ),
                 array(
                     "id" => 64,
-                    "label"=>"启航计划",
+                    "label"=>"留学与升学服务计划",
                     "url"=>"/subject/plan",
                     "icon"=>"fa fa-server",
                     "schemaApi"=>"get:/public/pages/crud-plan-list.json"
