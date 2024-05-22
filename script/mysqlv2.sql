@@ -296,6 +296,7 @@ CREATE TABLE `tblCapital` (
   `type` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '类型, 1用户充值, 2.退费',
   `operator` int(11) unsigned NOT NULL  COMMENT 'uid',
   `capital` int(11) NOT NULL COMMENT 'capital',
+  `plan_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'plan_id',
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` VARCHAR(2000) NOT NULL DEFAULT '' COMMENT "冗余",
@@ -303,7 +304,17 @@ CREATE TABLE `tblCapital` (
   KEY `uid_type` (`uid`, `type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='学生金额变更表';
 
+CREATE TABLE `tblPlan` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
+  `price` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '价格',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='计划';
 
 
+-- alter table tblCapital add column `plan_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'plan_id';
 -- alter table tblUser add column `sop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学管';
 -- alter table tblCurriculum add column `sop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学管';

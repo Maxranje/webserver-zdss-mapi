@@ -9,10 +9,25 @@ class Service_Page_Student_Recharge extends Zy_Core_Service{
 
         $uid       = empty($this->request['uid']) ? 0 : intval($this->request['uid']);
         $reBalance = empty($this->request['recharge_balance']) ? 0 : intval($this->request['recharge_balance'] * 100);
+        $plan      = empty($this->request['plan']) ? "" : trim($this->request['plan']);
         $remark    = empty($this->request['remark']) ? "" : trim($this->request['remark']);
 
-        if ($uid <= 0 || $reBalance == 0) {
-            throw new Zy_Core_Exception(405, "操作失败, 充值金额不能为0元");
+        if ($uid <= 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 用户参数错误");
+        }
+
+        $planInfo = array();
+        if (!empty($plan)) {
+            list($planId, $price) = explode("-", $plan);
+            $serviceData = new Service_Data_Plan();
+            $planInfo = $serviceData->getPlanById(intval($planId));
+            if (empty($planInfo)) {
+                throw new Zy_Core_Exception(405, "操作失败, 计划不存在");
+            }
+        }
+
+        if ($reBalance == 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 充值总金额不能为0元");
         }
 
         if (mb_strlen($remark) > 100) {
@@ -25,7 +40,7 @@ class Service_Page_Student_Recharge extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 学员信息不存在");
         }
 
-        $ret = $serviceData->rechargeUser($userInfo, $reBalance, $remark);
+        $ret = $serviceData->rechargeUser($userInfo, $reBalance, $planInfo, $remark);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "充值失败, 请重试");
         }

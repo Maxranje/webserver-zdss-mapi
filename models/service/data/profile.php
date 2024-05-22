@@ -162,7 +162,7 @@ class Service_Data_Profile {
     }
 
     // 学生充值
-    public function rechargeUser ($userInfo, $balance, $remark) {
+    public function rechargeUser ($userInfo, $balance, $plan, $remark) {
         $this->daoUser->startTransaction();
 
         $uid = $userInfo['uid'];
@@ -174,10 +174,13 @@ class Service_Data_Profile {
         $extra['total_balance'] += $balance;
 
         $rechargeProfile = array(
-            sprintf("balance=balance+%d", $balance),
             'update_time' => time(),
             'ext' => json_encode($extra),
         );
+        if (empty($plan)) {
+            $rechargeProfile[] = sprintf("balance=balance+%d", $balance);
+        }
+
         $ret = $this->editUserInfo($uid, $rechargeProfile);
         if ($ret == false) {
             $this->daoUser->rollback();
@@ -189,9 +192,13 @@ class Service_Data_Profile {
             "type"          => self::RECHARGE,
             "operator"      => OPERATOR,
             "capital"       => $balance,
+            "plan_id"       => empty($plan['id']) ? 0 : intval($plan['id']),
             "update_time"   => time(),
             "create_time"   => time(),
-            "ext"           => json_encode(array('remark'=>$remark)),
+            "ext"           => json_encode(array(
+                'remark'=>$remark, 
+                "plan" => empty($plan) ? array() : $plan,
+            )),
         );
         $daoCapital = new Dao_Capital();
         $ret = $daoCapital->insertRecords($profile);

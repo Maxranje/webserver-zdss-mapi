@@ -63,12 +63,17 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
 
         $operator = Zy_Helper_Utils::arrayInt($lists, 'operator');
         $uids = Zy_Helper_Utils::arrayInt($lists, 'uid');
+        $planIds = Zy_Helper_Utils::arrayInt($lists, 'plan_id');
 
         $uids = array_unique(array_merge($uids, $operator));
 
         $serviceUsers = new Service_Data_Profile();
         $userInfos = $serviceUsers->getUserInfoByUids($uids);
         $userInfos = array_column($userInfos, null, "uid");
+
+        $serviceData = new Service_Data_Plan();
+        $planInfos = $serviceData->getPlanByIds($planIds);
+        $planInfos = array_column($planInfos, null, "id");
 
         foreach ($lists as &$item) {
             $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
@@ -80,13 +85,15 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
             $item['update_time']    = date("Y年m月d日 H:i:s", $item['update_time']);
             $item['capital']        = sprintf("%.2f元", $item['capital'] / 100);
             $item['remark']         = empty($ext['remark']) ? "" : $ext['remark'];
+            $item["plan_name"]      = empty($planInfos[$item['plan_id']]['name']) ? "" : $planInfos[$item['plan_id']]['name'];
+            $item["plan_price"]     = empty($planInfos[$item['plan_id']]['price']) ? "0.00元" : sprintf("%.2f元", $planInfos[$item['plan_id']]['price'] / 100);
         }
         return $lists;
     }
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('日期', 'UID', '用户名', '用户类型', '金额(元)',  '备注', '操作员', "更新日期"),
+            'title' => array('日期', 'UID', '用户名', '用户类型', '实际充值金额(元)', '计划名称', '计划金额',  '备注', '操作员', "更新日期"),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -100,6 +107,8 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
                 $item['nickname'],
                 $item['type'],
                 $item['capital'],
+                $item['plan_name'],
+                $item['plan_price'],
                 $item['remark'],
                 $item['operator'],
                 $item['update_time'],

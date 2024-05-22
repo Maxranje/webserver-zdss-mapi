@@ -98,7 +98,19 @@
             },
             {
                 "name": "capital",
-                "label": "金额",
+                "label": "实际充值金额",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "plan_name",
+                "label": "计划名称",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "plan_price",
+                "label": "计划金额",
                 "type": "text",
                 "toggled": true
             },

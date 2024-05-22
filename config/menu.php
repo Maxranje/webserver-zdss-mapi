@@ -194,6 +194,13 @@ return array(
                     "icon"=>"fa fa-retweet",
                     "schemaApi"=>"get:/public/pages/crud-claszemap-list.json"
                 ),
+                array(
+                    "id" => 64,
+                    "label"=>"启航计划",
+                    "url"=>"/subject/plan",
+                    "icon"=>"fa fa-server",
+                    "schemaApi"=>"get:/public/pages/crud-plan-list.json"
+                ),
             ], 
         ),
         array(
