@@ -1,0 +1,167 @@
+{
+    "type": "page",
+    "title": "订单实时表",
+    "body": [
+        {
+            "type": "alert",
+            "body": "数据根据时间范围统计, 默认为本月初到当前时间汇总数据, 自定义时间跨度不能超过一年",
+            "level": "info",
+            "showCloseButton": true,
+            "showIcon": true,
+            "className": "mb-2"
+        },
+        {
+            "type": "crud",
+            "draggable": true,
+            "api": {
+                "method": "post",
+                "url":"/mapi/records/orderlistsv2",
+                "dataType": "form"
+            },
+            "perPage": 20,
+            "syncLocation":false,
+            "id" : "records_lists",
+            "name" : "records_lists",
+            "columnsTogglable": false,
+            "labelTpl": "${id}",
+            "filter": {
+                "title": "条件搜索",
+                "submitText": "",
+                "body": [
+                    {
+                        "type": "input-text",
+                        "name": "nickname",
+                        "label": "学员姓名",
+                        "size": "md",
+                        "placeholder": ""
+                    },
+                    {
+                        "type": "tree-select",
+                        "name": "bpid",
+                        "onlyLeaf":true,
+                        "label": "生源地",
+                        "searchable":true,
+                        "size":"md",
+                        "initiallyOpen":false,
+                        "source": "/mapi/birthplace/lists?is_select=1"
+                    },
+                    {
+                        "type": "input-date-range",
+                        "name": "daterangee",
+                        "inline": true,
+                        "label": "时间范围",
+                        "value":"${DATETOSTR(STARTOF(DATEMODIFY(NOW(), 0, 'month'), 'month'), 'X')},${DATETOSTR(ENDOF(DATEMODIFY(NOW(), 0, 'month'), 'month'), 'X')}"
+                    },
+                    {
+                        "type": "submit",
+                        "label": "搜索"
+                    }
+                ]
+            },
+            "filterTogglable": true,
+            "headerToolbar": [
+                "filter-toggler",
+                "bulkActions",
+                {
+                    "type": "action",
+                    "actionType": "download",
+                    "label": "导出Excel",
+                    "api": "/mapi/records/orderlistsv2?nickname=${nickname}&bpid=${bpid}&daterangee=${daterangee}&is_export=1"
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "共有 ${total} 条数据。",
+                    "className": "v-middle"
+                },
+                {
+                    "type": "columns-toggler",
+                    "align": "right"
+                },
+                {
+                    "type": "drag-toggler",
+                    "align": "right"
+                },
+                {
+                    "type": "pagination",
+                    "align": "right"
+                }
+            ],
+            "footerToolbar": [
+                "statistics",
+                "switch-per-page",
+                "pagination"
+            ],
+            "columns": [
+                {
+                    "name": "order_id",
+                    "label": "订单ID",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "order_name",
+                    "label": "订单标识",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "isfree",
+                    "label": "是否免费",
+                    "type": "mapping",
+                    "map": {
+                        "0": "<span class='label label-info'>否</span>",
+                        "1": "<span class='label label-success'>是</span>"
+                    }
+                },
+                {
+                    "name": "schedule_nums",
+                    "label": "订单总课时",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "real_balance",
+                    "label": "实际缴费",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "real_price",
+                    "label": "惠后单价",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "balance",
+                    "label": "订单余额",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "check_schedule_nums",
+                    "label": "结算课时数",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "check_schedule_balance",
+                    "label": "结算课时金额",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "change_duration",
+                    "label": "结转账户课时",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "change_balance",
+                    "label": "结转账户金额",
+                    "type": "text",
+                    "toggled": true
+                }
+            ]
+        }
+    ]
+}

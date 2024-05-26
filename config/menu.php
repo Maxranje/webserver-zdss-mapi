@@ -148,21 +148,21 @@ return array(
                     "id" => 51,
                     "label"=>"结算报表",
                     "url"=>"/records/lists",
-                    "icon"=>"fa fa-calendar",
+                    "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-records-schedule-list.json"
                 ),
                 array(
                     "id" => 52,
                     "label"=>"订单报表",
                     "url"=>"/records/order",
-                    "icon"=>"fa fa-bars",
+                    "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-records-order-list.json"
                 ),
                 array(
                     "id" => 53,
                     "label"=>"账户报表",
                     "url"=>"/records/account",
-                    "icon"=>"fa fa-server",
+                    "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-records-account-list.json"
                 ),
                 array(
@@ -171,6 +171,20 @@ return array(
                     "url"=>"/records/teacher",
                     "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-records-teacher-list.json"
+                ),
+                array(
+                    "id" => 55,
+                    "label"=>"学员汇总表",
+                    "url"=>"/records/student",
+                    "icon"=>"fa fa-list",
+                    "schemaApi"=>"get:/public/pages/crud-records-student-list.json"
+                ),
+                array(
+                    "id" => 56,
+                    "label"=>"订单汇总表",
+                    "url"=>"/records/orderv2",
+                    "icon"=>"fa fa-list",
+                    "schemaApi"=>"get:/public/pages/crud-records-orderv2-list.json"
                 )
             ]
         ),

@@ -160,7 +160,8 @@ CREATE TABLE `tblOrderChange` (
   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`),
-  KEY `student_uid` (`student_uid`)
+  KEY `student_uid` (`student_uid`),
+  KEY `u_t` (`update_time`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='充值记录';
 
 CREATE TABLE `tblRecords` (
@@ -182,7 +183,8 @@ CREATE TABLE `tblRecords` (
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   KEY `state` (`state`),
-  KEY `schedule_id` (`schedule_id`)
+  KEY `schedule_id` (`schedule_id`),
+  KEY `u_s_t` (`update_time`,`state`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='消费记录';
 
 CREATE TABLE `tblArea` (
@@ -318,3 +320,7 @@ CREATE TABLE `tblPlan` (
 -- alter table tblCapital add column `plan_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'plan_id';
 -- alter table tblUser add column `sop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学管';
 -- alter table tblCurriculum add column `sop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学管';
+
+-- v2.1.3
+-- alter table tblRecords add index `u_s_t` (`update_time`, `state`, `type`);
+-- alter table tblOrderChange add index `u_t` (`update_time`, `type`);

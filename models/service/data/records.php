@@ -93,4 +93,103 @@ class Service_Data_Records {
         }
         return $total;
     }
+
+
+    // 根据uid和时间获取账户记录
+    public function getCapitalListsByUids($uids, $sts, $ets){
+        $daoCapital = new Dao_Capital();
+
+        $sql = sprintf("select * from tblCapital where update_time >= %d and update_time <= %d and uid in (%s)", $sts, $ets, implode(",", $uids));
+
+        $lists = $daoCapital->query($sql);
+        if (empty($lists)) {
+            return array();
+        }
+        $result = array();
+        foreach ($lists as $item) {
+            if (!isset($result[$item['uid']])) {
+                $result[$item['uid']] = array(
+                    "recharge" => 0,
+                    "refund" => 0,
+                    "refund_back" => 0,
+                );
+            }
+            if ($item['type'] == Service_Data_Profile::RECHARGE) {
+                $result[$item['uid']]["recharge"] += $item['capital'];
+            } else if ($item['type'] == Service_Data_Profile::REFUND) {
+                $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
+                if (empty($ext['refund_balance']) && empty($ext['refund_back_balance'])) {
+                    $result[$item['uid']]["refund"] += $item['capital'];
+                } else {
+                    $result[$item['uid']]["refund"] += intval($ext['refund_balance']);
+                    $result[$item['uid']]["refund_back"] += empty($ext['refund_back_balance']) ? 0 : intval($ext['refund_back_balance']);
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function getRecordsListsByUids($uids, $sts, $ets){
+
+        $sql = sprintf("select * from tblRecords where state = 1 and type = 12 and category = 1 and update_time >= %d and update_time <= %d and uid in (%s)", $sts, $ets, implode(",", $uids));
+
+        $lists = $this->daoRecords->query($sql);
+        if (empty($lists)) {
+            return array();
+        }
+        $result = array();
+        foreach ($lists as $item) {
+            if (!isset($result[$item['uid']])) {
+                $result[$item['uid']] = array(
+                    "checkjob" => 0,
+                );
+            }
+            $result[$item['uid']]['checkjob'] += intval($item['money']);
+        }
+        return $result;
+    }
+
+    public function getRecordsListsByOrderIds($orderIds, $sts, $ets){
+
+        $sql = sprintf("select * from tblRecords where state = 1 and type = 12 and category = 1 and update_time >= %d and update_time <= %d and order_id in (%s)", $sts, $ets, implode(",", $orderIds));
+
+        $lists = $this->daoRecords->query($sql);
+        if (empty($lists)) {
+            return array();
+        }
+        $result = array();
+        foreach ($lists as $item) {
+            if (!isset($result[$item['order_id']])) {
+                $result[$item['order_id']] = array(
+                    "checkjob" => 0,
+                );
+            }
+            $result[$item['order_id']]['checkjob'] += intval($item['money']);
+        }
+        return $result;
+    }
+
+
+    public function getOrderChangeListsByOrderIds($orderIds, $sts, $ets){
+        $daoOrderChange = new Dao_Orderchange();
+
+        $sql = sprintf("select * from tblOrderChange where type = 2 and update_time >= %d and update_time <= %d and order_id in (%s)", $sts, $ets, implode(",", $orderIds));
+
+        $lists = $daoOrderChange->query($sql);
+        if (empty($lists)) {
+            return array();
+        }
+        $result = array();
+        foreach ($lists as $item) {
+            if (!isset($result[$item['order_id']])) {
+                $result[$item['order_id']] = array(
+                    "change_balance" => 0,
+                    "change_duration" => 0,
+                );
+            }
+            $result[$item['order_id']]['change_duration'] += intval($item['duration']);
+            $result[$item['order_id']]['change_balance'] += intval($item['balance']);
+        }
+        return $result;
+    }
 }

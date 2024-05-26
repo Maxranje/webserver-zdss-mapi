@@ -528,6 +528,14 @@
                                 },
                                 "body": [
                                     {
+                                        "type": "alert",
+                                        "body": "实际退款金额为退款金额+退款还款金额, 其中退款金额必须大于0",
+                                        "level": "info",
+                                        "showCloseButton": true,
+                                        "showIcon": true,
+                                        "className": "mb-2"
+                                    },
+                                    {
                                         "type": "input-text",
                                         "name": "uid",
                                         "label": "Uid",
@@ -559,13 +567,24 @@
                                         "type": "divider"
                                     },
                                     {
-                                        "type": "input-text",
-                                        "name": "recharge_balance",
+                                        "type": "input-number",
+                                        "name": "refund_balance",
                                         "label": "退款金额",
                                         "required": true,
                                         "kilobitSeparator" : true,
                                         "suffix": "元",
-                                        "desc" : "充值金额, 元为单位, 必须大于0"
+                                        "desc" : "退款金额, 元为单位, 必须大于0"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-number",
+                                        "name": "refund_back_balance",
+                                        "label": "退款还款金额",
+                                        "kilobitSeparator" : true,
+                                        "suffix": "元",
+                                        "desc" : "退款还款金额, 元为单位"
                                     },
                                     {
                                         "type": "divider"

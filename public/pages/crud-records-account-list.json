@@ -93,24 +93,39 @@
             {
                 "name": "type",
                 "label": "类型",
-                "type": "text",
-                "toggled": true
+                "type": "mapping",
+                "map": {
+                    "2": "<span class='label label-default'>退款</span>",
+                    "1": "<span class='label label-success'>充值</span>"
+                }
             },
             {
                 "name": "capital",
-                "label": "实际充值金额",
+                "label": "实际金额",
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "plan_name",
-                "label": "计划名称",
+                "label": "充值-计划名称",
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "plan_price",
-                "label": "计划金额",
+                "label": "充值-计划金额",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "refund_balance",
+                "label": "退款-退款金额",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "refund_back_balance",
+                "label": "退款-还款金额",
                 "type": "text",
                 "toggled": true
             },
@@ -134,7 +149,7 @@
                 "name": "create_time",
                 "label": "创建时间",
                 "type": "text",
-                "toggled": true
+                "toggled": false
             }
         ]
     }

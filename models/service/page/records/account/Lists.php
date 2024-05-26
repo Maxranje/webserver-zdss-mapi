@@ -78,7 +78,7 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
         foreach ($lists as &$item) {
             $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
 
-            $item['type']           = $item['type'] == Service_Data_Profile::RECHARGE ? "充值" : "退费";
+            $item['type']           = $item['type'] == Service_Data_Profile::RECHARGE ? "1" : "2";
             $item['nickname']       = empty($userInfos[$item['uid']]['nickname']) ? "(已删除)" : $userInfos[$item['uid']]['nickname'];
             $item['operator']       = empty($userInfos[$item['operator']]['nickname']) ? "" :$userInfos[$item['operator']]['nickname'];
             $item['create_time']    = date("Y年m月d日 H:i:s", $item['create_time']);
@@ -86,14 +86,16 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
             $item['capital']        = sprintf("%.2f元", $item['capital'] / 100);
             $item['remark']         = empty($ext['remark']) ? "" : $ext['remark'];
             $item["plan_name"]      = empty($planInfos[$item['plan_id']]['name']) ? "" : $planInfos[$item['plan_id']]['name'];
-            $item["plan_price"]     = empty($planInfos[$item['plan_id']]['price']) ? "0.00元" : sprintf("%.2f元", $planInfos[$item['plan_id']]['price'] / 100);
+            $item["plan_price"]     = empty($planInfos[$item['plan_id']]['price']) ? "" : sprintf("%.2f元", $planInfos[$item['plan_id']]['price'] / 100);
+            $item["refund_balance"] = empty($ext['refund_balance']) || empty($ext['refund_back_balance']) ? "" : sprintf("%.2f元", $ext['refund_balance']/ 100);
+            $item["refund_back_balance"] = empty($ext['refund_back_balance']) ? "" : sprintf("%.2f元", $ext['refund_back_balance'] /100);
         }
         return $lists;
     }
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('日期', 'UID', '用户名', '用户类型', '实际充值金额(元)', '计划名称', '计划金额',  '备注', '操作员', "更新日期"),
+            'title' => array('日期', 'UID', '用户名', '用户类型', '实际金额(元)', '充值-计划名称', '充值-计划金额', '退款-退款金额','退款-还款金额',  '备注', '操作员', "更新日期"),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -105,10 +107,12 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
                 $item['update_time'],
                 $item['uid'],
                 $item['nickname'],
-                $item['type'],
+                $item['type'] == "1" ? "充值" : "退款",
                 $item['capital'],
                 $item['plan_name'],
                 $item['plan_price'],
+                $item['refund_balance'],
+                $item['refund_back_balance'],
                 $item['remark'],
                 $item['operator'],
                 $item['update_time'],
