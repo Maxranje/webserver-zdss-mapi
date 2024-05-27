@@ -581,10 +581,10 @@
                                     {
                                         "type": "input-number",
                                         "name": "refund_back_balance",
-                                        "label": "退款还款金额",
+                                        "label": "退款扣款金额",
                                         "kilobitSeparator" : true,
                                         "suffix": "元",
-                                        "desc" : "退款还款金额, 元为单位"
+                                        "desc" : "退款扣款金额, 元为单位"
                                     },
                                     {
                                         "type": "divider"
