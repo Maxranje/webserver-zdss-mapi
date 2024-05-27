@@ -18,6 +18,8 @@
                 "url":"/mapi/records/studentlists",
                 "dataType": "form"
             },
+            "affixHeader":true,
+            "autoFillHeight" : true,            
             "perPage": 20,
             "perPageAvailable": [10, 20, 50],
             "syncLocation":false,
@@ -155,7 +157,7 @@
                 },
                 {
                     "name": "refund_back_balance",
-                    "label": "退款还款金额",
+                    "label": "退款扣款金额",
                     "type": "text",
                     "toggled": true
                 }

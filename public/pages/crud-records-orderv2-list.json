@@ -19,6 +19,8 @@
                 "dataType": "form"
             },
             "perPage": 20,
+            "affixHeader":true,
+            "autoFillHeight" : true,
             "syncLocation":false,
             "id" : "records_lists",
             "name" : "records_lists",

@@ -529,7 +529,7 @@
                                 "body": [
                                     {
                                         "type": "alert",
-                                        "body": "实际退款金额为退款金额+退款还款金额, 其中退款金额必须大于0",
+                                        "body": "实际退款金额为退款金额+退款扣款金额, 其中退款金额必须大于0",
                                         "level": "info",
                                         "showCloseButton": true,
                                         "showIcon": true,

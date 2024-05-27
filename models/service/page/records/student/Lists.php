@@ -133,7 +133,7 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('学员UID', '学员名', '学校', '年级', '生源地', '学管', '充值金额','结算金额',  '退款金额', '退款还款金额'),
+            'title' => array('学员UID', '学员名', '学校', '年级', '生源地', '学管', '充值金额','结算金额',  '退款金额', '退款扣款金额'),
             'lists' => array(),
         );
         if (empty($lists)) {
