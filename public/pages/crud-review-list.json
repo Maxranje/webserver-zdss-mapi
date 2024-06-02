@@ -28,6 +28,12 @@
                 "body": [
                     {
                         "type": "input-text",
+                        "name": "id",
+                        "size" : "md",
+                        "label": "工单ID"
+                    },
+                    {
+                        "type": "input-text",
                         "name": "uid",
                         "size" : "md",
                         "label": "学员UID"
@@ -36,7 +42,6 @@
                         "label": "审批状态",
                         "type": "select",
                         "name": "state",
-                        "size" : "md",
                         "value" : "0",
                         "options": [
                             {

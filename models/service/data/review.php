@@ -51,27 +51,30 @@ class Service_Data_Review {
     public function rechargeHandle ($id, $userInfo, $capital, $remark, $state) {
         $this->daoReview->startTransaction();
         $uid = intval($userInfo['uid']);
-        $userInfoExt = empty($userInfo['ext']) ? array(): json_decode($userInfo['ext'], true);
 
-        // 更新用户数据
-        if (!isset($userInfoExt['total_balance'])){
-            $userInfoExt['total_balance'] = 0;    
-        }
-        $userInfoExt['total_balance'] += $capital["capital"];
+        // 通过才会操作, 否则就是更新记录
+        if ($state == self::REVIEW_SUC) {
+            $userInfoExt = empty($userInfo['ext']) ? array(): json_decode($userInfo['ext'], true);
+            // 更新用户数据
+            if (!isset($userInfoExt['total_balance'])){
+                $userInfoExt['total_balance'] = 0;    
+            }
+            $userInfoExt['total_balance'] += $capital["capital"];
 
-        $profile = array(
-            'update_time' => time(),
-            'ext' => json_encode($userInfoExt),
-        );
-        if ($capital['plan_id'] <= 0) {
-            $profile[] = sprintf("balance=balance+%d", $capital['capital']);
-        }
+            $profile = array(
+                'update_time' => time(),
+                'ext' => json_encode($userInfoExt),
+            );
+            if ($capital['plan_id'] <= 0) {
+                $profile[] = sprintf("balance=balance+%d", $capital['capital']);
+            }
 
-        $daoUser = new Dao_User();
-        $ret = $daoUser->updateByConds(array("uid"=> $uid), $profile);
-        if ($ret == false) {
-            $this->daoReview->rollback();
-            return false;
+            $daoUser = new Dao_User();
+            $ret = $daoUser->updateByConds(array("uid"=> $uid), $profile);
+            if ($ret == false) {
+                $this->daoReview->rollback();
+                return false;
+            }
         }
 
         // 更新记录表数据
@@ -108,20 +111,24 @@ class Service_Data_Review {
     public function refundHandle($id, $userInfo, $capital, $remark, $state) {
         $this->daoReview->startTransaction();
         $uid = intval($userInfo['uid']);
-        $userInfoExt = empty($userInfo['ext']) ? array(): json_decode($userInfo['ext'], true);
-        $userInfoExt['total_balance'] -= intval($capital["capital"]);
 
-        // 更新用户信息
-        $daoUser = new Dao_User();
-        $profile = array(
-            sprintf("balance=balance-%d", intval($capital["capital"])),
-            'update_time' => time(),
-            'ext' => json_encode($userInfoExt),
-        );
-        $ret = $daoUser->updateByConds(array("uid"=> $uid), $profile);
-        if ($ret == false) {
-            $this->daoReview->rollback();
-            return false;
+        // 审批通过才是更新
+        if ($state == self::REVIEW_SUC) {
+            $userInfoExt = empty($userInfo['ext']) ? array(): json_decode($userInfo['ext'], true);
+            $userInfoExt['total_balance'] -= intval($capital["capital"]);
+
+            // 更新用户信息
+            $daoUser = new Dao_User();
+            $profile = array(
+                sprintf("balance=balance-%d", intval($capital["capital"])),
+                'update_time' => time(),
+                'ext' => json_encode($userInfoExt),
+            );
+            $ret = $daoUser->updateByConds(array("uid"=> $uid), $profile);
+            if ($ret == false) {
+                $this->daoReview->rollback();
+                return false;
+            }
         }
 
         // 更新记录表数据

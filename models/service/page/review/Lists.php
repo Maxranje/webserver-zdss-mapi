@@ -9,6 +9,7 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
 
         $pn         = empty($this->request['page']) ? 1 : intval($this->request['page']);
         $rn         = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
+        $id         = empty($this->request['id']) ? 0 : intval($this->request['id']);
         $uid        = empty($this->request['uid']) ? 0 : intval($this->request['uid']);
         $type       = empty($this->request['type']) ? 0 : intval($this->request['type']);
         $state      = empty($this->request['state']) ? 0 : intval($this->request['state']);
@@ -22,6 +23,9 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
         $pn = ($pn-1) * $rn;
 
         $conds = array();
+        if ($id > 0) {
+            $conds["id"] = $id;
+        }
         if ($type > 0) {
             $conds["type"] = $type;
         }
@@ -39,7 +43,7 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
             $conds[] = sprintf("create_time <= %d", intval($dataRange[1]) + 1);
         }
         $arrAppends = array(
-            'order by state desc,id desc',
+            'order by id desc',
             "limit {$pn} , {$rn}"
         );
 
