@@ -247,6 +247,13 @@ return array(
             "schemaApi"=>"get:/public/pages/crud-area-list.json"
         ),
         array(
+            "id" => 13,
+            "label"=>"工单审批",
+            "url"=>"/review",
+            "icon"=>"fa fa-check-circle-o",
+            "schemaApi"=>"get:/public/pages/crud-review-list.json"
+        ),
+        array(
             "id" => 9,
             "label"=>"系统配置",
             "url"=>"/system",
@@ -317,6 +324,10 @@ return array(
         array(
             "id" => 4006,
             "label"=>"教师锁定删除",
+        ),
+        array(
+            "id" => 4007,
+            "label"=>"审核操作",
         ),
     ),
 );

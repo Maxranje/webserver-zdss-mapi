@@ -164,29 +164,6 @@ CREATE TABLE `tblOrderChange` (
   KEY `u_t` (`update_time`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='充值记录';
 
-CREATE TABLE `tblRecords` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `uid` int(10) unsigned NOT NULL COMMENT 'uid',
-  `state` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1正常2回退3待定',
-  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '类型, 9超管, 11管理员, 12学生, 13老师',
-  `group_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '班级id',
-  `order_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '订单id',
-  `subject_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '科目id',
-  `teacher_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '教师id',
-  `schedule_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '排课id',
-  `category` tinyint(4) NOT NULL DEFAULT '0' COMMENT '类型, 1学员消耗, 2教师收入, 3教师多人收入',
-  `operator` int(10) unsigned NOT NULL COMMENT 'uid',
-  `money` int(11) NOT NULL DEFAULT '0' COMMENT 'money',
-  `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
-  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`),
-  KEY `uid` (`uid`),
-  KEY `state` (`state`),
-  KEY `schedule_id` (`schedule_id`),
-  KEY `u_s_t` (`update_time`,`state`,`type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='消费记录';
-
 CREATE TABLE `tblArea` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
   `name` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
@@ -299,6 +276,7 @@ CREATE TABLE `tblCapital` (
   `operator` int(11) unsigned NOT NULL  COMMENT 'uid',
   `capital` int(11) NOT NULL COMMENT 'capital',
   `plan_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'plan_id',
+  `rop_uid` int(11) NOT NULL DEFAULT '0' COMMENT '审核员uid',
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `ext` VARCHAR(2000) NOT NULL DEFAULT '' COMMENT "冗余",
@@ -316,6 +294,29 @@ CREATE TABLE `tblPlan` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='计划';
 
+CREATE TABLE `tblRecords` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `uid` int(10) unsigned NOT NULL COMMENT 'uid',
+  `state` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1正常2回退3待定',
+  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '类型, 9超管, 11管理员, 12学生, 13老师',
+  `group_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '班级id',
+  `order_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '订单id',
+  `subject_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '科目id',
+  `teacher_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '教师id',
+  `schedule_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '排课id',
+  `category` tinyint(4) NOT NULL DEFAULT '0' COMMENT '类型, 1学员消耗, 2教师收入, 3教师多人收入',
+  `operator` int(10) unsigned NOT NULL COMMENT 'uid',
+  `money` int(11) NOT NULL DEFAULT '0' COMMENT 'money',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `state` (`state`),
+  KEY `schedule_id` (`schedule_id`),
+  KEY `u_s_t` (`update_time`,`state`,`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='消费记录';
+
 
 -- alter table tblCapital add column `plan_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'plan_id';
 -- alter table tblUser add column `sop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学管';
@@ -324,3 +325,25 @@ CREATE TABLE `tblPlan` (
 -- v2.1.3
 -- alter table tblRecords add index `u_s_t` (`update_time`, `state`, `type`);
 -- alter table tblOrderChange add index `u_t` (`update_time`, `type`);
+
+-- v2.1.4
+CREATE TABLE `tblReview` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `type` TINYINT UNSIGNED NOT NULL DEFAULT '1' COMMENT '审核类型: 1: 充值, 2: 退款',
+  `state` TINYINT UNSIGNED NOT NULL DEFAULT '3' COMMENT '1正常2拒接3待定',
+  `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户uid',
+  `rop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '审核员uid',
+  `sop_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '送审人员uid',
+  `work_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '目标业务id',
+  `remark` varchar(2000) NOT NULL DEFAULT '' COMMENT '备注',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `type` (`type`),
+  KEY `work_id` (`work_id`),
+  KEY `state` (`state`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='审核';
+-- alter table tblCapital add column `rop_uid` int(11) NOT NULL DEFAULT '0' COMMENT '审核员uid';
+-- alter table tblCapital add column `state` TINYINT UNSIGNED NOT NULL DEFAULT '1' COMMENT '1正常2拒接3待定';

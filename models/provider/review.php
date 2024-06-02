@@ -1,21 +1,21 @@
 <?php
 
-class Dao_Capital extends Zy_Core_Dao {
+class Dao_Review extends Zy_Core_Dao {
 
-    public $arrFieldsMap;
+    public $arrFieldsMap = array();
 
     public function __construct() {
         $this->_dbName      = "zy_mapiv2";
-        $this->_table       = "tblCapital";
+        $this->_table       = "tblReview";
         $this->arrFieldsMap = array(
             "id" => "id",
-            "uid" => "uid",
-            "state" => "state",
             "type" => "type",
-            "plan_id" => "plan_id",
-            "operator" => "operator",
-            "capital" => "capital",
+            "state" => "state",
+            "uid" => "uid",
             "rop_uid" => "rop_uid",
+            "sop_uid" => "sop_uid",
+            "work_id" => "work_id",
+            "remark" => "remark",
             "update_time" => "update_time",
             "create_time" => "create_time",
             "ext" => "ext",

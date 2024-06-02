@@ -164,31 +164,11 @@ class Service_Data_Profile {
     // 学生充值
     public function rechargeUser ($userInfo, $balance, $plan, $remark) {
         $this->daoUser->startTransaction();
-
-        $uid = $userInfo['uid'];
-
-        $extra = empty($userInfo['ext']) ? array(): json_decode($userInfo['ext'], true);
-        if (!isset($extra['total_balance'])){
-            $extra['total_balance'] = 0;    
-        }
-        $extra['total_balance'] += $balance;
-
-        $rechargeProfile = array(
-            'update_time' => time(),
-            'ext' => json_encode($extra),
-        );
-        if (empty($plan)) {
-            $rechargeProfile[] = sprintf("balance=balance+%d", $balance);
-        }
-
-        $ret = $this->editUserInfo($uid, $rechargeProfile);
-        if ($ret == false) {
-            $this->daoUser->rollback();
-            return false;
-        }
+        $uid = intval($userInfo['uid']);
 
         $profile = array(
             "uid"           => $uid, 
+            "state"         => Service_Data_Review::REVIEW_ING,
             "type"          => self::RECHARGE,
             "operator"      => OPERATOR,
             "capital"       => $balance,
@@ -207,6 +187,28 @@ class Service_Data_Profile {
             return false;
         }
 
+        $lastId = $daoCapital->getInsertId();
+        if ($lastId <= 0) {
+            $this->daoUser->rollback();
+            return false;
+        }
+
+        $profile = array(
+            "type" => self::RECHARGE,
+            "state" => Service_Data_Review::REVIEW_ING,
+            "uid" => $uid, 
+            "sop_uid" => OPERATOR,
+            "work_id" => $lastId,
+            "update_time" => time(),
+            "create_time" => time(),
+        );
+        $daoReview = new Dao_Review();
+        $ret = $daoReview->insertRecords($profile);
+        if ($ret == false) {
+            $this->daoUser->rollback();
+            return false;
+        }
+
         $this->daoUser->commit();
         return true;
     }
@@ -214,24 +216,11 @@ class Service_Data_Profile {
     // 学生退款
     public function refundUser ($userInfo, $reBalance, $rbBalance, $remark) {
         $this->daoUser->startTransaction();
-        $uid = $userInfo['uid'];
-
-        $extra = empty($userInfo['ext']) ? array(): json_decode($userInfo['ext'], true);
-        $extra['total_balance'] -= $reBalance +$rbBalance;
-
-        $rechargeProfile = array(
-            sprintf("balance=balance-%d", ($reBalance + $rbBalance)),
-            'update_time' => time(),
-            'ext' => json_encode($extra),
-        );
-        $ret = $this->editUserInfo($uid, $rechargeProfile);
-        if ($ret == false) {
-            $this->daoUser->rollback();
-            return false;
-        }
+        $uid = intval($userInfo['uid']);
 
         $profile = array(
             "uid"           => $uid, 
+            "state"         => Service_Data_Review::REVIEW_ING,
             "type"          => self::REFUND,
             "operator"      => OPERATOR,
             "capital"       => ($reBalance + $rbBalance),
@@ -245,6 +234,28 @@ class Service_Data_Profile {
         );
         $daoCapital = new Dao_Capital();
         $ret = $daoCapital->insertRecords($profile);
+        if ($ret == false) {
+            $this->daoUser->rollback();
+            return false;
+        }
+
+        $lastId = $daoCapital->getInsertId();
+        if ($lastId <= 0) {
+            $this->daoUser->rollback();
+            return false;
+        }
+
+        $profile = array(
+            "type" => self::REFUND,
+            "state" => Service_Data_Review::REVIEW_ING,
+            "uid" => $uid, 
+            "sop_uid" => OPERATOR,
+            "work_id" => $lastId,
+            "update_time" => time(),
+            "create_time" => time(),
+        );
+        $daoReview = new Dao_Review();
+        $ret = $daoReview->insertRecords($profile);
         if ($ret == false) {
             $this->daoUser->rollback();
             return false;

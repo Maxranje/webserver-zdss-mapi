@@ -11,6 +11,7 @@ class Service_Data_Roles {
     const ROLE_MODE_STUDENT_REFUND = "4004";
     const ROLE_MODE_TEACHER_SALARY = "4005";
     const ROLE_MODE_TEACHER_LOCKDEL = "4006";
+    const ROLE_MODE_REVIEW_HANDLE = "4007";  // 审核操作
 
     public function __construct() {
         $this->daoRole = new Dao_Roles () ;

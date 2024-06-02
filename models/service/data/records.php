@@ -99,7 +99,7 @@ class Service_Data_Records {
     public function getCapitalListsByUids($uids, $sts, $ets){
         $daoCapital = new Dao_Capital();
 
-        $sql = sprintf("select * from tblCapital where update_time >= %d and update_time <= %d and uid in (%s)", $sts, $ets, implode(",", $uids));
+        $sql = sprintf("select * from tblCapital where update_time >= %d and update_time <= %d and state = 1 and uid in (%s)", $sts, $ets, implode(",", $uids));
 
         $lists = $daoCapital->query($sql);
         if (empty($lists)) {
