@@ -15,7 +15,9 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
 
         $pn = ($pn-1) * $rn;
 
-        $conds = array();
+        $conds = array(
+            "state" => 1,  
+        );
         if (!empty($nickname)) {
             $serviceData = new Service_Data_Profile();
             $uids = $serviceData->getUserInfoLikeName($nickname);

@@ -95,18 +95,8 @@
                 "label": "类型",
                 "type": "mapping",
                 "map": {
-                    "2": "退款",
-                    "1": "充值"
-                }
-            },
-            {
-                "name": "state",
-                "label": "状态",
-                "type": "mapping",
-                "map": {
-                    "2": "<span class='label label-default'>审批拒绝</span>",
-                    "1": "<span class='label label-success'>审批通过</span>",
-                    "3": "<span class='label label-info'>审批中</span>"
+                    "1": "<span class='label label-success'>充值</span>",
+                    "2": "<span class='label label-default'>退款</span>"
                 }
             },
             {
@@ -146,18 +136,29 @@
                 "toggled": true
             },
             {
+                "type": "container",
+                "label" : "操作备注",
+                "popOver": {
+                    "body": {
+                        "type": "tpl",
+                        "tpl": "${remark}"
+                    }
+                }
+            },
+            {
                 "name": "rop_name",
                 "label": "审核员",
                 "type": "text",
-                "toggled": true
+                "toggled": false
             },
             {
                 "type": "container",
                 "label" : "审核备注",
+                "toggled": false,
                 "popOver": {
                     "body": {
                         "type": "tpl",
-                        "tpl": "操作备注: ${remark} <br><br> 审核备注: ${review_remark}"
+                        "tpl": "${review_remark}"
                     }
                 }
             },

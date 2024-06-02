@@ -1,270 +1,292 @@
 {
     "type": "page",
     "title": "审批列表",
-    "body": {
-        "type": "crud",
-        "draggable": true,
-        "api": {
-            "method": "post",
-            "url": "/mapi/review/lists",
-            "dataType": "form"
+    "body": [
+        {
+            "type": "alert",
+            "body": "非审核专员仅能看到自己提交工单",
+            "level": "warning",
+            "showCloseButton": true,
+            "showIcon": true,
+            "className": "mb-2"
         },
-        "perPage": 20,
-        "id":"review_list",
-        "syncLocation":false,
-        "labelTpl": "${id}",
-        "filter": {
-            "title": "条件搜索",
-            "submitText": "",
-            "body": [
-                {
-                    "type": "input-text",
-                    "name": "uid",
-                    "size" : "md",
-                    "label": "学员UID"
-                },
-                {
-                    "label": "审批状态",
-                    "type": "select",
-                    "name": "state",
-                    "size" : "md",
-                    "value" : "0",
-                    "options": [
-                        {
-                            "label": "请选择",
-                            "value": "0"
-                        },
-                        {
-                            "label": "待审核",
-                            "value": "3"
-                        },
-                        {
-                            "label": "已通过",
-                            "value": "1"
-                        },
-                        {
-                            "label": "已拒绝",
-                            "value": "2"
-                        }
-                    ]
-                },
-                {
-                    "type": "input-date-range",
-                    "name": "daterange",
-                    "inline": true,
-                    "label": "时间范围"
-                },
-                {
-                    "type": "submit",
-                    "label": "搜索"
-                }
-            ]
-        },
-        "filterTogglable": true,
-        "headerToolbar": [
-            "filter-toggler",
-            "bulkActions",
-            {
-                "type": "tpl",
-                "tpl": "共有 ${total} 条数据。",
-                "className": "v-middle"
+        {
+            "type": "crud",
+            "draggable": true,
+            "api": {
+                "method": "post",
+                "url": "/mapi/review/lists",
+                "dataType": "form"
             },
-            {
-                "type": "columns-toggler",
-                "align": "right"
-            },
-            {
-                "type": "drag-toggler",
-                "align": "right"
-            },
-            {
-                "type": "pagination",
-                "align": "right"
-            }
-        ],
-        "footerToolbar": [
-            "statistics",
-            "switch-per-page",
-            "pagination"
-        ],
-        "columns": [
-            {
-                "name": "create_time",
-                "label": "送审日期",
-                "type": "text",
-                "toggled": true
-            },
-            {
-                "name": "uid",
-                "label": "UID",
-                "type": "text",
-                "toggled": true
-            },
-            {
-                "name": "nickname",
-                "label": "昵称",
-                "type": "text",
-                "toggled": true
-            },
-            {
-                "name": "type",
-                "label": "类型",
-                "type": "mapping",
-                "map": {
-                    "2": "退款",
-                    "1": "充值"
-                }
-            },
-            {
-                "name": "state",
-                "label": "状态",
-                "type": "mapping",
-                "map": {
-                    "2": "<span class='label label-default'>审批拒绝</span>",
-                    "1": "<span class='label label-success'>审批通过</span>",
-                    "3": "<span class='label label-info'>审批中</span>"
-                }
-            },
-            {
-                "name": "work_info",
-                "label": "工单详情",
-                "type": "json",
-                "toggled": true
-            },
-            {
-                "name": "sop_name",
-                "label": "送审人",
-                "type": "text",
-                "toggled": true
-            },
-            {
-                "name": "review_name",
-                "label": "审批人",
-                "type": "text",
-                "toggled": true
-            },
-            {
-                "type": "operation",
-                "label": "操作",
-                "width": 180,
-                "buttons": [
+            "perPage": 20,
+            "id":"review_list",
+            "syncLocation":false,
+            "labelTpl": "${id}",
+            "filter": {
+                "title": "条件搜索",
+                "submitText": "",
+                "body": [
                     {
-                        "type": "button",
-                        "label": "审核通过",
-                        "level":"success",
-                        "actionType": "dialog",
-                        "disabledOn": "this.is_rd !== 1 || this.state !== 3",
-                        "dialog": {
-                            "size": "lg",
-                            "title": "审批通过",
-                            "body": {
-                                "type": "form",
-                                "name": "sample-reviewpass-form",
-                                "api": {
-                                    "method": "post",
-                                    "url": "/mapi/review/handle",
-                                    "dataType": "form"
-                                },
-                                "onEvent": {
-                                    "click": {
-                                        "actions": [
-                                            {
-                                            "actionType": "reload",
-                                            "componentId": "review_list"
-                                            }
-                                        ]
-                                    }
-                                },
-                                "body": [
-                                    {
-                                        "type": "alert",
-                                        "body": "审核不可逆, 请慎重!",
-                                        "level": "danger",
-                                        "showCloseButton": true,
-                                        "showIcon": true,
-                                        "className": "mb-2"
-                                    },
-                                    {
-                                        "type": "input-text",
-                                        "name": "id",
-                                        "label": "工单ID",
-                                        "hidden": true
-                                    },
-                                    {
-                                        "type": "input-text",
-                                        "name": "review_state",
-                                        "value": "1",
-                                        "hidden": true
-                                    },
-                                    {
-                                        "type": "input-text",
-                                        "name": "remark",
-                                        "label": "备注"
-                                    }
-                                ]
-                            }
-                        }
+                        "type": "input-text",
+                        "name": "uid",
+                        "size" : "md",
+                        "label": "学员UID"
                     },
                     {
-                        "type": "button",
-                        "label": "审核拒绝",
-                        "level":"danger",
-                        "actionType": "dialog",
-                        "disabledOn": "this.is_rd !== 1 || this.state !== 3",
-                        "dialog": {
-                            "size": "lg",
-                            "title": "审批拒绝",
-                            "body": {
-                                "type": "form",
-                                "name": "sample-reviewpass-form",
-                                "api": {
-                                    "method": "post",
-                                    "url": "/mapi/review/handle",
-                                    "dataType": "form"
-                                },
-                                "onEvent": {
-                                    "click": {
-                                        "actions": [
-                                            {
-                                            "actionType": "reload",
-                                            "componentId": "review_list"
-                                            }
-                                        ]
-                                    }
-                                },
-                                "body": [
-                                    {
-                                        "type": "alert",
-                                        "body": "审核不可逆, 请慎重!",
-                                        "level": "danger",
-                                        "showCloseButton": true,
-                                        "showIcon": true,
-                                        "className": "mb-2"
-                                    },
-                                    {
-                                        "type": "input-text",
-                                        "name": "id",
-                                        "label": "工单ID",
-                                        "hidden": true
-                                    },
-                                    {
-                                        "type": "input-text",
-                                        "name": "review_state",
-                                        "value": "2",
-                                        "hidden": true
-                                    },
-                                    {
-                                        "type": "input-text",
-                                        "name": "remark",
-                                        "label": "备注"
-                                    }
-                                ]
+                        "label": "审批状态",
+                        "type": "select",
+                        "name": "state",
+                        "size" : "md",
+                        "value" : "0",
+                        "options": [
+                            {
+                                "label": "请选择",
+                                "value": "0"
+                            },
+                            {
+                                "label": "待审核",
+                                "value": "3"
+                            },
+                            {
+                                "label": "已通过",
+                                "value": "1"
+                            },
+                            {
+                                "label": "已拒绝",
+                                "value": "2"
                             }
+                        ]
+                    },
+                    {
+                        "type": "input-date-range",
+                        "name": "daterange",
+                        "inline": true,
+                        "label": "时间范围"
+                    },
+                    {
+                        "type": "submit",
+                        "label": "搜索"
+                    }
+                ]
+            },
+            "filterTogglable": true,
+            "headerToolbar": [
+                "filter-toggler",
+                "bulkActions",
+                {
+                    "type": "tpl",
+                    "tpl": "共有 ${total} 条数据。",
+                    "className": "v-middle"
+                },
+                {
+                    "type": "columns-toggler",
+                    "align": "right"
+                },
+                {
+                    "type": "drag-toggler",
+                    "align": "right"
+                },
+                {
+                    "type": "pagination",
+                    "align": "right"
+                }
+            ],
+            "footerToolbar": [
+                "statistics",
+                "switch-per-page",
+                "pagination"
+            ],
+            "columns": [
+                {
+                    "name": "create_time",
+                    "label": "送审日期",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "uid",
+                    "label": "学员UID",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "nickname",
+                    "label": "学员昵称",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "type",
+                    "label": "类型",
+                    "type": "mapping",
+                    "map": {
+                        "2": "退款",
+                        "1": "充值"
+                    }
+                },
+                {
+                    "name": "state",
+                    "label": "状态",
+                    "type": "mapping",
+                    "map": {
+                        "2": "<span class='label label-default'>审批拒绝</span>",
+                        "1": "<span class='label label-success'>审批通过</span>",
+                        "3": "<span class='label label-info'>审批中</span>"
+                    }
+                },
+                {
+                    "name": "work_info",
+                    "label": "工单详情",
+                    "type": "json",
+                    "toggled": true
+                },
+                {
+                    "name": "sop_name",
+                    "label": "送审人",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "review_name",
+                    "label": "审批人",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "type": "container",
+                    "label" : "审批备注",
+                    "popOver": {
+                        "body": {
+                            "type": "tpl",
+                            "tpl": "${remark}"
                         }
                     }
-                ],
-                "toggled": true
-            }
-        ]
-    }
+                },
+                {
+                    "type": "operation",
+                    "label": "操作",
+                    "width": 180,
+                    "buttons": [
+                        {
+                            "type": "button",
+                            "label": "审核通过",
+                            "level":"success",
+                            "actionType": "dialog",
+                            "hiddenOn": "this.is_rd !== 1",
+                            "disabledOn": "this.is_rd !== 1 || this.state !== 3",
+                            "dialog": {
+                                "size": "lg",
+                                "title": "审批通过",
+                                "body": {
+                                    "type": "form",
+                                    "name": "sample-reviewpass-form",
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/review/handle",
+                                        "dataType": "form"
+                                    },
+                                    "onEvent": {
+                                        "click": {
+                                            "actions": [
+                                                {
+                                                "actionType": "reload",
+                                                "componentId": "review_list"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "body": [
+                                        {
+                                            "type": "alert",
+                                            "body": "审核不可逆, 请慎重!",
+                                            "level": "danger",
+                                            "showCloseButton": true,
+                                            "showIcon": true,
+                                            "className": "mb-2"
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "id",
+                                            "label": "工单ID",
+                                            "hidden": true
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "review_state",
+                                            "value": "1",
+                                            "hidden": true
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "remark",
+                                            "label": "备注"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "label": "审核拒绝",
+                            "level":"danger",
+                            "actionType": "dialog",
+                            "hiddenOn": "this.is_rd !== 1",
+                            "disabledOn": "this.is_rd !== 1 || this.state !== 3",
+                            "dialog": {
+                                "size": "lg",
+                                "title": "审批拒绝",
+                                "body": {
+                                    "type": "form",
+                                    "name": "sample-reviewpass-form",
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/review/handle",
+                                        "dataType": "form"
+                                    },
+                                    "onEvent": {
+                                        "click": {
+                                            "actions": [
+                                                {
+                                                "actionType": "reload",
+                                                "componentId": "review_list"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "body": [
+                                        {
+                                            "type": "alert",
+                                            "body": "审核不可逆, 请慎重!",
+                                            "level": "danger",
+                                            "showCloseButton": true,
+                                            "showIcon": true,
+                                            "className": "mb-2"
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "id",
+                                            "label": "工单ID",
+                                            "hidden": true
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "review_state",
+                                            "value": "2",
+                                            "hidden": true
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "remark",
+                                            "label": "备注"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    "toggled": true
+                }
+            ]
+        }
+    ]
 }

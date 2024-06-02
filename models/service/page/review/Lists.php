@@ -14,6 +14,11 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
         $state      = empty($this->request['state']) ? 0 : intval($this->request['state']);
         $dataRange  = empty($this->request['daterangee']) ? array() : explode(",", $this->request['daterangee']);
 
+        $sopuid = OPERATOR;
+        if ($this->isModeAble(Service_Data_Roles::ROLE_MODE_REVIEW_HANDLE)) {
+            $sopuid = 0;
+        }
+
         $pn = ($pn-1) * $rn;
 
         $conds = array();
@@ -25,6 +30,9 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
         }
         if ($state > 0) {
             $conds["state"] = $state;
+        }
+        if ($sopuid > 0) {
+            $conds['sop_uid'] = $sopuid;
         }
         if (!empty($dataRange)) {
             $conds[] = sprintf("create_time >= %d", intval($dataRange[0]));
@@ -100,6 +108,7 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
             $tmp["nickname"]        = $userInfos[$item['uid']]['nickname'];
             $tmp["type"]            = $item["type"];
             $tmp["state"]           = intval($item["state"]);
+            $tmp["remark"]          = trim($item["remark"]);
             $tmp["work_info"]       = array(
                 "类型"               => $item["type"] == Service_Data_Review::REVIEW_TYPE_RECHARGE? "充值":"退款",
                 "总金额"             => sprintf("%.2f元", $capital['capital'] / 100),
