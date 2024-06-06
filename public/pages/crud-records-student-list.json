@@ -55,6 +55,16 @@
                         "source": "/mapi/api/soplists"
                     },
                     {
+                        "type": "tree-select",
+                        "name": "bpid",
+                        "onlyLeaf":true,
+                        "label": "生源地",
+                        "searchable":true,
+                        "size":"md",
+                        "initiallyOpen":false,
+                        "source": "/mapi/birthplace/lists?is_select=1"
+                    },
+                    {
                         "type": "input-date-range",
                         "name": "daterangee",
                         "inline": true,

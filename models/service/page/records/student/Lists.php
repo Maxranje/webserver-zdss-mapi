@@ -12,6 +12,7 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
         $nickname   = empty($this->request['nickname']) ? "" : trim($this->request['nickname']);
         $uid        = empty($this->request['uid']) ? 0 : intval($this->request['uid']);
         $sopuid     = empty($this->request['sopuid']) ? 0 : intval($this->request['sopuid']);
+        $bpid       = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
         $dataRange  = empty($this->request['daterangee']) ? array() : explode(",", $this->request['daterangee']);
         $isExport   = empty($this->request['is_export']) ? false : true;
 
@@ -28,6 +29,10 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "时间跨度必须一年内");
         }
 
+        if ($this->checkPartner() ) {
+            $bpid = $this->getPartnerBpid($this->adption['userid']);
+        }
+
         $conds = array(
             "type" => Service_Data_Profile::USER_TYPE_STUDENT,
         );
@@ -36,6 +41,9 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
         }
         if ($uid > 0) {
             $conds['uid'] = $uid;
+        }
+        if ($bpid > 0) {
+            $conds['bpid'] = $bpid;
         }
         if ($sopuid > 0) {
             $conds['sop_uid'] = $sopuid;

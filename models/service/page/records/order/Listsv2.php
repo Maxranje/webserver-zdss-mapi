@@ -31,17 +31,9 @@ class Service_Page_Records_Order_Listsv2 extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "时间跨度必须一年内");
         }
 
-        // if ($this->adption['type'] == Service_Data_Profile::USER_TYPE_PARTNER) {
-        //     $serviceData = new Service_Data_Profile();
-        //     $userInfo = $serviceData->getUserInfoByUid(intval($this->adption['userid']));
-        //     if (empty($userInfo['bpid']) || intval($userInfo['bpid']) <= 0) {
-        //         throw new Zy_Core_Exception(405, "操作失败, 合作方信息不完整, 请联系管理员");
-        //     }
-
-        //     if (intval($userInfo['bpid']) != $bpid) {
-        //         return array();
-        //     }
-        // }
+        if ($this->checkPartner() ) {
+            $bpid = $this->getPartnerBpid($this->adption['userid']);
+        }
 
         $uids = array();
         if (!empty($nickname)) {
