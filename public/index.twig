@@ -13,6 +13,7 @@
     <script src="/public/sdk/sdk.js"></script>
     <script src="/public/sdk/vue.js"></script>
     <script src="/public/sdk/history.js"></script>
+    <script src="/public/sdk/mapi.js"></script>
     <style>
         html,body,.app-wrapper{position:relative;width:100%;height:100%;margin:0;padding:0}
     </style>
@@ -22,6 +23,8 @@
     <div id="root" class="app-wrapper"></div>
     <script>
 var uuname = "{{ data.name }}";
+var isbell = "{{ data.isbell }}";
+var bellElement;
 (function() {
     let amis = amisRequire('amis/embed');
     const match = amisRequire('path-to-regexp').match;
@@ -34,11 +37,15 @@ var uuname = "{{ data.name }}";
             type: 'tpl',
             inline: false,
             className: 'w-full',
-            tpl: '<div class="flex justify-between"><div></div><div><a style="margin-right:20px;text-decoration:none; cursor:pointer;" title="邮箱" href="http://mail.zdss.cn"><i class="fa fa-envelope-o"></i></a><a style="margin-right:10px;text-decoration:none; cursor:pointer;" title="退出" href="/mapi/sign/out"><i class="fa fa-sign-out"></i></a></div></div>'
+            tpl: isbell == "1" ? bell : nobell
         },
         api: '/mapi/dashboard/menu'
     };
 
+    {% if data.isbell == "1" %}
+    setTimeout(noticeBell, 2000);
+    setInterval(noticeBell,30000); 
+    {% endif %}
     function normalizeLink(to, location = history.location) {
         to = to || '';
         if (to && to[0] === '#') {

@@ -47,6 +47,7 @@ class Zy_Core_Actions {
         if (!empty($this->_userInfo['userid'])) {
             $this->_userid = $this->_userInfo['userid'] ;
             $this->_isLogin = true;
+            $this->_userInfo["isbell"] = $this->isReviewer();
             define("OPERATOR", intval($this->_userid));
         } 
         try
@@ -67,6 +68,12 @@ class Zy_Core_Actions {
 
     public function isLogin () {
         return !empty ($this->_userInfo);
+    }
+
+    public function isReviewer () {
+        return !empty ($this->_userInfo["modes"]) && 
+            is_array($this->_userInfo["modes"]) && 
+            in_array(Service_Data_Roles::ROLE_MODE_REVIEW_HANDLE, $this->_userInfo["modes"]) ? 1 : 0;
     }
 
     public function displayJson () {
