@@ -94,7 +94,7 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
 
         $result = array();
         foreach ($lists as $item) {
-            if (empty($userInfos[$item['uid']]['name'])) {
+            if (empty($userInfos[$item['uid']]['nickname'])) {
                 continue;
             }
             $capital = empty($capitals[$item['work_id']]) ? array() : $capitals[$item['work_id']];
@@ -117,8 +117,8 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
                 "类型"               => $item["type"] == Service_Data_Review::REVIEW_TYPE_RECHARGE? "充值":"退款",
                 "总金额"             => sprintf("%.2f元", $capital['capital'] / 100),
             );
-            $tmp['sop_name']        = empty($userInfos[$item['sop_uid']]['name']) ? "" : $userInfos[$item['sop_uid']]['name'];
-            $tmp['review_name']     = empty($userInfos[$item['rop_uid']]['name']) ? "" : $userInfos[$item['rop_uid']]['name'];
+            $tmp['sop_name']        = empty($userInfos[$item['sop_uid']]['nickname']) ? "" : $userInfos[$item['sop_uid']]['nickname'];
+            $tmp['review_name']     = empty($userInfos[$item['rop_uid']]['nickname']) ? "" : $userInfos[$item['rop_uid']]['nickname'];
             if ($item['type'] == Service_Data_Review::REVIEW_TYPE_RECHARGE) {
                 if (!empty($capital['plan_id']) && !empty($planInfos[$capital['plan_id']]['name'])) {
                     $tmp["work_info"]["留学与升学服务计划"] = $planInfos[$capital['plan_id']]['name'];
