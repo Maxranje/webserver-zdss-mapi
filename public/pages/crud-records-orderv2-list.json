@@ -123,19 +123,19 @@
                 },
                 {
                     "name": "real_balance",
-                    "label": "实际缴费",
+                    "label": "实际缴费(元)",
                     "type": "text",
                     "toggled": true
                 },
                 {
                     "name": "real_price",
-                    "label": "惠后单价",
+                    "label": "惠后单价(元)",
                     "type": "text",
                     "toggled": true
                 },
                 {
                     "name": "balance",
-                    "label": "订单余额",
+                    "label": "订单余额(元)",
                     "type": "text",
                     "toggled": true
                 },
@@ -147,7 +147,7 @@
                 },
                 {
                     "name": "check_schedule_balance",
-                    "label": "结算课时金额",
+                    "label": "结算课时金额(元)",
                     "type": "text",
                     "toggled": true
                 },
@@ -159,7 +159,7 @@
                 },
                 {
                     "name": "change_balance",
-                    "label": "结转账户金额",
+                    "label": "结转账户金额(元)",
                     "type": "text",
                     "toggled": true
                 }

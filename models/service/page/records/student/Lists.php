@@ -130,10 +130,10 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
             $tmp["graduate"]            = $item['graduate'];
             $tmp["birthplace"]          = empty($birthplaces[$item['bpid']]['name']) ? "" : $birthplaces[$item['bpid']]['name'];
             $tmp["sopname"]             = empty($sopUserInfos[$item['sop_uid']]['nickname']) ? "" : $sopUserInfos[$item['sop_uid']]['nickname'];
-            $tmp['recharge_balance']    = empty($item['recharge']) ? "0.00元" : sprintf("%.2f元", $item['recharge'] / 100);
-            $tmp['checkjob_balance']    = empty($item['checkjob']) ? "0.00元" : sprintf("%.2f元", $item['checkjob'] / 100);
-            $tmp['refund_balance']      = empty($item['refund']) ? "0.00元" : sprintf("%.2f元", $item['refund'] / 100);
-            $tmp['refund_back_balance'] = empty($item['refund_back']) ? "0.00元" : sprintf("%.2f元", $item['refund_back'] / 100);
+            $tmp['recharge_balance']    = empty($item['recharge']) ? "0.00" : sprintf("%.2f", $item['recharge'] / 100);
+            $tmp['checkjob_balance']    = empty($item['checkjob']) ? "0.00" : sprintf("%.2f", $item['checkjob'] / 100);
+            $tmp['refund_balance']      = empty($item['refund']) ? "0.00" : sprintf("%.2f", $item['refund'] / 100);
+            $tmp['refund_back_balance'] = empty($item['refund_back']) ? "0.00" : sprintf("%.2f", $item['refund_back'] / 100);
             $result[] = $tmp;
         }
         return $result;
@@ -141,7 +141,7 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('学员UID', '学员名', '学校', '年级', '生源地', '学管', '充值金额','结算金额',  '退款金额', '退款扣款金额'),
+            'title' => array('学员UID', '学员名', '学校', '年级', '生源地', '学管', '充值金额(元)','结算金额(元)',  '退款金额(元)', '退款扣款金额(元)'),
             'lists' => array(),
         );
         if (empty($lists)) {

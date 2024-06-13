@@ -175,7 +175,7 @@ class Service_Page_Records_Order_Listsv2 extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('订单ID', '订单标识', '是否免费' , '订单总课时', '实际缴费', "惠后单价", '订单余额', '结算课时数', '结算课时金额', '结转账户课时', '结转账户金额'),
+            'title' => array('订单ID', '订单标识', '是否免费' , '订单总课时', '实际缴费(元)', "惠后单价(元)", '订单余额(元)', '结算课时数', '结算课时金额(元)', '结转账户课时', '结转账户金额(元)'),
             'lists' => array(),
         );
         if (empty($lists)) {
