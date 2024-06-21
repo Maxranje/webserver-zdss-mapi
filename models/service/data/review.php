@@ -62,12 +62,10 @@ class Service_Data_Review {
             $userInfoExt['total_balance'] += $capital["capital"];
 
             $profile = array(
+                sprintf("balance=balance+%d", $capital['capital']),
                 'update_time' => time(),
                 'ext' => json_encode($userInfoExt),
             );
-            if ($capital['plan_id'] <= 0) {
-                $profile[] = sprintf("balance=balance+%d", $capital['capital']);
-            }
 
             $daoUser = new Dao_User();
             $ret = $daoUser->updateByConds(array("uid"=> $uid), $profile);

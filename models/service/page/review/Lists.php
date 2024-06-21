@@ -76,9 +76,22 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
         
         // 获取订单资源详情
         $serviceData = new Service_Data_Capital();
-        $capitals = $serviceData->getCapitalByIds($workIds);
-        $planIds = Zy_Helper_Utils::arrayInt($capitals, "plan_id");
-        $capitals = array_column($capitals, null, "id");
+        $capitalInfos = $serviceData->getCapitalByIds($workIds);
+        $planIds = Zy_Helper_Utils::arrayInt($capitalInfos, "plan_id");
+        $capitalInfos = array_column($capitalInfos, null, "id");
+
+
+        // 协作方
+        $partnerUids = array();
+        foreach ($capitalInfos as $id => $item ) {
+            $item['ext'] = empty($item['ext']) ? array() : json_decode($item['ext'], true);
+            !empty($item['ext']["partner_uid"]) && $partnerUids[] = intval($item['ext']["partner_uid"]);
+
+            $capitalInfos[$id] = $item;
+        }
+        if (count($partnerUids) > 0) {
+            $uids = array_unique(array_merge($uids, $partnerUids));
+        }
 
         // 获取计划信息
         $serviceData = new Service_Data_Plan();
@@ -97,12 +110,12 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
             if (empty($userInfos[$item['uid']]['nickname'])) {
                 continue;
             }
-            $capital = empty($capitals[$item['work_id']]) ? array() : $capitals[$item['work_id']];
+            $workId = $item['work_id'];
+            $capital = empty($capitalInfos[$workId]) ? array() : $capitalInfos[$workId];
             if (empty($capital)) {
                 continue;
             }
-
-            $capitalExt = empty($capital['ext']) ? array() : json_decode($capital['ext'], true);
+            $capitalExt = $capital['ext'];
 
             $tmp = array();
             $tmp["is_rd"]           = $isRd ? 1 : 0;
@@ -123,13 +136,15 @@ class Service_Page_Review_Lists extends Zy_Core_Service{
                 if (!empty($capital['plan_id']) && !empty($planInfos[$capital['plan_id']]['name'])) {
                     $tmp["work_info"]["留学与升学服务计划"] = $planInfos[$capital['plan_id']]['name'];
                 }
-            } else {
-                $ext = empty($capital['ext']) ? array() : json_decode($capital['ext'], true);
-                if (!empty($ext["refund_balance"])) {
-                    $tmp["work_info"]["退款金额"] = sprintf("%.2f元", $ext['refund_balance'] / 100);
+                if (!empty($capitalExt['partner_uid']) && !empty($userInfos[$capitalExt['partner_uid']]['nickname'])) {
+                    $tmp["work_info"]["协作人员"] = $userInfos[$capitalExt['partner_uid']]['nickname'];
                 }
-                if (!empty($ext["refund_back_balance"])) {
-                    $tmp["work_info"]["退款扣款金额"] = sprintf("%.2f元", $ext['refund_back_balance'] / 100);
+            } else {
+                if (!empty($capitalExt["refund_balance"])) {
+                    $tmp["work_info"]["退款金额"] = sprintf("%.2f元", $capitalExt['refund_balance'] / 100);
+                }
+                if (!empty($capitalExt["refund_back_balance"])) {
+                    $tmp["work_info"]["退款扣款金额"] = sprintf("%.2f元", $capitalExt['refund_back_balance'] / 100);
                 }
             }
             $tmp['work_info']['备注'] = empty($capitalExt['remark']) ? "" : $capitalExt['remark'];

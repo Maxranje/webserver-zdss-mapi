@@ -492,6 +492,18 @@
                                         "type": "divider"
                                     },
                                     {
+                                        "type": "tree-select",
+                                        "name": "partner_uid",
+                                        "onlyLeaf":true,
+                                        "label": "协作人员",
+                                        "searchable":true,
+                                        "initiallyOpen":false,
+                                        "source": "/mapi/api/soplists"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
                                         "type": "input-text",
                                         "name": "remark",
                                         "label": "备注"

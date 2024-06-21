@@ -101,7 +101,7 @@
             },
             {
                 "name": "capital",
-                "label": "实际金额",
+                "label": "实际金额(元)",
                 "type": "text",
                 "toggled": true
             },
@@ -113,25 +113,31 @@
             },
             {
                 "name": "plan_price",
-                "label": "充值-计划金额",
+                "label": "充值-计划金额(元)",
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "refund_balance",
-                "label": "退款-退款金额",
+                "label": "退款-退款金额(元)",
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "refund_back_balance",
-                "label": "退款-还款金额",
+                "label": "退款-还款金额(元)",
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "operator",
                 "label": "操作员",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "partner",
+                "label": "协作人员",
                 "type": "text",
                 "toggled": true
             },

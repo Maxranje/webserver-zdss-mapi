@@ -11,6 +11,7 @@ class Service_Page_Student_Recharge extends Zy_Core_Service{
         $reBalance = empty($this->request['recharge_balance']) ? 0 : intval($this->request['recharge_balance'] * 100);
         $plan      = empty($this->request['plan']) ? "" : trim($this->request['plan']);
         $remark    = empty($this->request['remark']) ? "" : trim($this->request['remark']);
+        $partner   = empty($this->request['partner_uid']) ? 0 : intval($this->request['partner_uid']);
 
         if ($uid <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 用户参数错误");
@@ -40,7 +41,14 @@ class Service_Page_Student_Recharge extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 学员信息不存在");
         }
 
-        $ret = $serviceData->rechargeUser($userInfo, $reBalance, $planInfo, $remark);
+        if ($partner > 0) {
+            $partnerInfo = $serviceData->getUserInfoByUid($partner);
+            if (empty($partnerInfo)) {
+                throw new Zy_Core_Exception(405, "操作失败, 协作人员信息不存在");
+            }
+        }
+
+        $ret = $serviceData->rechargeUser($userInfo, $reBalance, $planInfo, $remark, $partner);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "充值失败, 请重试");
         }

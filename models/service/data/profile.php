@@ -162,9 +162,20 @@ class Service_Data_Profile {
     }
 
     // 学生充值
-    public function rechargeUser ($userInfo, $balance, $plan, $remark) {
+    public function rechargeUser ($userInfo, $balance, $plan, $remark, $partnerUid) {
         $this->daoUser->startTransaction();
         $uid = intval($userInfo['uid']);
+
+        $extra = array();
+        if (!empty($remark)) {
+            $extra['remark'] = $remark;
+        }
+        if (!empty($plan)) {
+            $extra['plan'] = $plan;
+        }
+        if ($partnerUid > 0) {
+            $extra['partner_uid'] = $partnerUid;
+        }
 
         $profile = array(
             "uid"           => $uid, 
@@ -175,10 +186,7 @@ class Service_Data_Profile {
             "plan_id"       => empty($plan['id']) ? 0 : intval($plan['id']),
             "update_time"   => time(),
             "create_time"   => time(),
-            "ext"           => json_encode(array(
-                'remark'=>$remark, 
-                "plan" => empty($plan) ? array() : $plan,
-            )),
+            "ext"           => empty($extra) ? "" : json_encode($extra),
         );
         $daoCapital = new Dao_Capital();
         $ret = $daoCapital->insertRecords($profile);
@@ -218,6 +226,15 @@ class Service_Data_Profile {
         $this->daoUser->startTransaction();
         $uid = intval($userInfo['uid']);
 
+        $extra = array();
+        if (!empty($remark)) {
+            $extra["remark"] = $remark;
+        }
+        if ($reBalance > 0 || $rbBalance > 0) {
+            $extra["refund_balance"] = $reBalance;
+            $extra["refund_back_balance"] = $rbBalance;
+        }
+
         $profile = array(
             "uid"           => $uid, 
             "state"         => Service_Data_Review::REVIEW_ING,
@@ -226,11 +243,7 @@ class Service_Data_Profile {
             "capital"       => ($reBalance + $rbBalance),
             "update_time"   => time(),
             "create_time"   => time(),
-            "ext"           => json_encode(array(
-                'remark'=>$remark,
-                'refund_balance'=>$reBalance,
-                'refund_back_balance'=>$rbBalance,
-            )),
+            "ext"           => empty($extra) ? "" : json_encode($extra),
         );
         $daoCapital = new Dao_Capital();
         $ret = $daoCapital->insertRecords($profile);
