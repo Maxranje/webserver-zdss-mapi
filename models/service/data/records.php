@@ -46,11 +46,14 @@ class Service_Data_Records {
     }
 
     // 根据bpid获取列表数据
-    public function getListByBpid($uid, $bpid, $scheduleId, $category, $dataRange, $pn =0 , $rn = 20) {
+    public function getListByBpid($uid, $bpid, $scheduleId, $groupIds, $category, $dataRange, $pn =0 , $rn = 20) {
 
         $sql = sprintf("select a.* from tblRecords a left join tblUser b on a.uid = b.uid where b.bpid= %d ", $bpid);
         if (!empty($uid)) {
             $sql .= sprintf(" and a.uid in (%s)", implode(",", $uid));
+        }
+        if (!empty($groupIds)) {
+            $sql .= sprintf(" and a.group_id in (%s)", implode(",", $groupIds));
         }
         if ($scheduleId > 0) {
             $sql .= " and a.schedule_id = " . $scheduleId;
@@ -69,13 +72,16 @@ class Service_Data_Records {
     }
 
     // 根据bpid获取列表数据
-    public function getTotalByBpid($uid, $bpid, $scheduleId, $category, $dataRange) {
+    public function getTotalByBpid($uid, $bpid, $scheduleId, $groupIds, $category, $dataRange) {
 
         $sql = sprintf("select count(a.*) as count from tblRecords a left join tblUser b on a.uid = b.uid where b.bpid= %d ", $bpid);
         if (!empty($uid)) {
             $sql .= sprintf(" and a.uid in (%s)", implode(",", $uid));
         }
-        if ($uid > 0) {
+        if (!empty($groupIds)) {
+            $sql .= sprintf(" and a.group_id in (%s)", implode(",", $groupIds));
+        }
+        if ($scheduleId > 0) {
             $sql .= " and a.schedule_id = " . $scheduleId;
         }
         if ($category > 0) {

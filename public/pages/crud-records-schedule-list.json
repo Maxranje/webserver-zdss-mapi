@@ -72,6 +72,16 @@
                     "source": "/mapi/birthplace/lists?is_select=1"
                 },
                 {
+                    "type": "tree-select",
+                    "name": "group_ids",
+                    "onlyLeaf":true,
+                    "multiple": true,
+                    "searchable":true,
+                    "size":"lg",
+                    "label": "班级",
+                    "source": "/mapi/group/lists?is_select=1"
+                },
+                {
                     "type": "input-date-range",
                     "name": "daterangee",
                     "inline": true,

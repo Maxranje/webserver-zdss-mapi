@@ -13,6 +13,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         $teacherUids    = empty($this->request['teacher_uids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", trim($this->request['teacher_uids'])));
         $bpid           = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
         $scheduleId     = empty($this->request['schedule_id']) ? 0 : intval($this->request['schedule_id']);
+        $groupIds       = empty($this->request['group_ids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", trim($this->request['group_ids'])));
         $category       = empty($this->request['category']) ? 0 : intval($this->request['category']);
         $dataRange      = empty($this->request['daterangee']) ? array() : explode(",", $this->request['daterangee']);
         $isExport       = empty($this->request['is_export']) ? false : true;
@@ -30,9 +31,9 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         $lists = array();
         $total = 0;
         if ($bpid > 0 ) {
-            $lists = $serviceRecords->getListByBpid($uids, $bpid, $scheduleId, $category, $dataRange, $pn, $rn);
+            $lists = $serviceRecords->getListByBpid($uids, $bpid, $scheduleId, $groupIds, $category, $dataRange, $pn, $rn);
             if (!$isExport) {
-                $total = $serviceRecords->getTotalByBpid($uids, $bpid, $scheduleId, $category, $dataRange);
+                $total = $serviceRecords->getTotalByBpid($uids, $bpid, $scheduleId, $groupIds, $category, $dataRange);
             }
         } else {
             $conds = array();
@@ -44,6 +45,9 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
             }
             if ($scheduleId > 0) {
                 $conds['schedule_id'] = $scheduleId;
+            }
+            if (!empty($groupIds)) {
+                $conds[] = sprintf("group_id in (%s)", implode(",", $groupIds));
             }
             if (!empty($dataRange)) {
                 $conds[] = sprintf("create_time >= %d", $dataRange[0]);
@@ -145,6 +149,9 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
         }
         
         foreach ($lists as $item) {
+            if (empty($item) || empty($item["nickname"])) {
+                continue;
+            }
             $tmp = array(
                 $item['create_time'],
                 $item['uid'],
