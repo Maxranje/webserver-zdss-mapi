@@ -12,7 +12,7 @@ class ComposerStaticInit5dd2bcd33707ad3654caeb1d6ecaae61
         'Dao'           => BASEPATH . 'models' . '/' . 'provider/',
         'Twig'          => SYSPATH . 'twig/',
         'Zy'            => SYSPATH ,
-        'PHPExcel'      => SYSPATH . 'phpexcel/'
+        'PHPExcel'      => SYSPATH . 'PHPExcel/'
     );
 
     public static function getInitializer(ClassLoader $loader)

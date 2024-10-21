@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-const HOSTNAME = "http://zdss.cn/";
+const HOSTNAME = "http://zdss.cn//";
 return array(
     "head" => array(
         'pages' => array(
