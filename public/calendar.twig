@@ -63,14 +63,17 @@
                             <select name="make" class="form-control" id="select2">
                             </select>
                         </div>
-                        <div class="col-lg-6 col-xl-2">
+                        <div class="col-lg-6 col-xl-3">
                             <a class="btn- btn-primary btn-1 btn-1f" id="updateBtn">
                                 搜索
                             </a>
+                            <a class="btn- btn-primary btn-1 btn-1f" id="exportBtn">
+                                导出Excel(可视月维度)
+                            </a>
                         </div>
-                        <div class="col-lg-6 col-xl-4">
-                            <div class="alert alert-outline-danger text-danger display-none" role="alert" id="tips">
-                                <i class=" ti-close  close text-black" onclick="$('#tips').hide();"></i>
+                        <div class="col-lg-6 col-xl-12">
+                            <div class="alert pink-darken-4 text-white display-none" role="alert" id="tips">
+                                <i class=" ti-close  close" onclick="$('#tips').hide();"></i>
                                 <strong>Error!</strong>
                                 <span id="tips-content"></span>
                             </div>
@@ -199,6 +202,50 @@
         $('#fullcalendar-default-view').fullCalendar( 'removeEventSource', lastEventSource)
         lastEventSource = "/mapi/schedule/calendardata?type="+select1Val+"&value="+select2Val
         $('#fullcalendar-default-view').fullCalendar( 'addEventSource', lastEventSource )
+        
+    });   
+
+    // 导出
+    $('#exportBtn').click(function() {  
+        $("#notifyinfo").attr("data-content", "")
+
+        var view = $('#fullcalendar-default-view').fullCalendar('getView')
+        var start = view.start.format();
+        var end = view.end.format();
+        var select1Val = $('#select1').val();  
+        var select2Val = $('#select2').val();  
+        if (!select1Val || select1Val == "none") {
+            $('#tips-content').html("需要选择类型和对应的成员");
+            $('#tips').css('display', 'block').show();
+            return ;
+        }
+
+        $.ajax({
+            url: '/mapi/schedule/calendarexport?start='+start+'&end='+end+'&type='+select1Val+'&value='+select2Val, // 后端接口地址
+            type: 'post',
+            xhrFields:{
+                responseType:"blob"
+            },
+            success: function(data) {
+                if (data.status == 405) {
+                    $('#tips-content').html(data.msg);
+                    $('#tips').css('display', 'block').show();
+                } else {
+                    const blob = new Blob([data], { type: 'application/download' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'export.xls';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }
+
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
         
     });      
 

@@ -139,6 +139,24 @@
 							}
 						}
 					]
+				},
+				{
+					"title": [{
+							"type": "text",
+							"value": "2024.10.21 V2.1.7 更新记录"
+						},
+						{
+							"type": "button",
+							"label": "查看",
+							"actionType": "dialog",
+							"level": "link",
+							"dialog": {
+								"title": "V2.1.7 版本更新",
+								"body": "<div><h3>版本更新公告</h3><p>Hi,Dears:</p><p>系统于2024年10月21日更新为v2.1.7版本</p><p>【更新内容】</p><p>1.排课管理-课表中, 可导出当前月的excel课表.</p></div>",
+								"actions": []
+							}
+						}
+					]
 				}
 			]
 		}
