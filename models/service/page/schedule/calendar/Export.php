@@ -188,9 +188,9 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
             $subjectName = sprintf("%s/%s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfo[$item['subject_id']]['name']);
             $timespam = sprintf("%s-%s", date("H:i", $item['start_time']),date("H:i", $item['end_time']));
             if ($item["state"] == Service_Data_Schedule::SCHEDULE_DONE) {
-                $timespam .= " (未消课)";
-            } else {
                 $timespam .= " (已消课)";
+            } else {
+                $timespam .= " (未消课)";
             }
             if ($type == "teacher") {
                 $tmp['title'] = sprintf("%s\n%s\n%s\n%s\n", $timespam, $subjectName, $groupInfos[$item['group_id']]['name'], $areaName);  
@@ -209,6 +209,7 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
                     "title"     => "教师锁定时间",
                     "start"     => $item['start_time'],
                     "end"       => $item['end_time'],
+                    "state"     => 3,
                     // "color"     => "#123456"
                 );
             }
@@ -221,7 +222,7 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
     private function makeExcel ($lists) {
         ini_set('memory_limit', '512M');
         ini_set('max_execution_time', 0);
-        require SYSPATH . "/phpexcel/PHPExcel.php";
+        require SYSPATH . "/PHPExcel/PHPExcel.php";
 
         header("Pragma: public");
         header("Expires: 0");
@@ -272,10 +273,14 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
                     $sheet->getStyle($item["merge"][0])
                         ->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
                         ->getStartColor()->setRGB("7FD26A");
-                } else {
+                } else if ($item['state'] == Service_Data_Schedule::SCHEDULE_ABLE) {
                     $sheet->getStyle($item["merge"][0])
                         ->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
                         ->getStartColor()->setRGB("77BFBF");
+                } else if ($item['state'] == 3) {
+                    $sheet->getStyle($item["merge"][0])
+                        ->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                        ->getStartColor()->setRGB("BBBBBB");
                 }
                 
             }
