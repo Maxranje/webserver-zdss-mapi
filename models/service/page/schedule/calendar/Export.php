@@ -84,6 +84,7 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
             return array();
         }
 
+        $scheduleIds    = Zy_Helper_Utils::arrayInt($lists, "id");
         $teacherUids    = Zy_Helper_Utils::arrayInt($lists, "teacher_uid");
         $studentUids    = Zy_Helper_Utils::arrayInt($lists, "student_uid");
         $uids           = Zy_Helper_Utils::arrayInt($lists, "uid");
@@ -109,6 +110,14 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
         $serviceGroup = new Service_Data_Group();
         $groupInfos = $serviceGroup->getListByConds(array('id in ('.implode(",", $groupIds).')'));
         $groupInfos = array_column($groupInfos, null, 'id');
+
+        // 如果是老师或班级, 需要判断当前排课是否存在课程
+        $orderMaps = array();
+        if ($this->request["type"] == "teacher" || $this->request["type"] == "group") {
+            $curriculum = new Service_Data_Curriculum();
+            $orderMaps = $curriculum->getOrderCountBySchedule($scheduleIds);
+            $orderMaps = array_column($orderMaps, null, "schedule_id");
+        }
 
         $areaInfos = $roomInfos = array();
         if (!empty($roomIds)) {
@@ -189,6 +198,8 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
             $timespam = sprintf("%s-%s", date("H:i", $item['start_time']),date("H:i", $item['end_time']));
             if ($item["state"] == Service_Data_Schedule::SCHEDULE_DONE) {
                 $timespam .= " (已消课)";
+            } else if (empty($orderMaps[$item["id"]])){
+                $timespam .= " (无订单)";
             } else {
                 $timespam .= " (未消课)";
             }
@@ -198,6 +209,9 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
                 $tmp['title'] = sprintf("%s\n%s\n%s\n%s\n", $timespam, $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
             } else if ($type == "group"){
                 $tmp['title'] = sprintf("%s\n%s\n%s\n%s\n", $timespam, $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
+            }
+            if ($item['state'] == Service_Data_Schedule::SCHEDULE_ABLE && empty($orderMaps[$item['id']])) {
+                $tmp["noOrderColor"] = 1;
             }
 
             $result[] = $tmp;            
@@ -274,9 +288,13 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
                         ->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
                         ->getStartColor()->setRGB("7FD26A");
                 } else if ($item['state'] == Service_Data_Schedule::SCHEDULE_ABLE) {
+                    $color = "77BFBF";
+                    if (!empty($item["noOrderColor"])) {
+                        $color = "CD9B1D";
+                    }
                     $sheet->getStyle($item["merge"][0])
                         ->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
-                        ->getStartColor()->setRGB("77BFBF");
+                        ->getStartColor()->setRGB($color);
                 } else if ($item['state'] == 3) {
                     $sheet->getStyle($item["merge"][0])
                         ->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)

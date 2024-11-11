@@ -201,6 +201,15 @@
                 },
                 {
                     "type": "tree-select",
+                    "name": "sop_uid",
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "label": "学管",
+                    "size":"md",
+                    "source": "/mapi/api/soplists"
+                },
+                {
+                    "type": "tree-select",
                     "name": "bpid",
                     "onlyLeaf":true,
                     "label": "生源地",

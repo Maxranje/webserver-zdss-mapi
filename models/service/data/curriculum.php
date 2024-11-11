@@ -9,7 +9,7 @@ class Service_Data_Curriculum {
     }
 
     // 根据scheudle获取order数量
-    public function getOrderCountBySchedule($ids) {
+    public function getOrderListBySchedule($ids) {
         $conds = array(
             sprintf("schedule_id in (%s)", implode(",", $ids))
         );
@@ -19,6 +19,25 @@ class Service_Data_Curriculum {
             "sop_uid",
         );
         $lists = $this->daoCurriculum->getListByConds($conds, $field);
+        if (empty($lists)) {
+            return array();
+        }
+        return $lists;
+    }
+
+    // 根据scheudle获取order数量
+    public function getOrderCountBySchedule($ids) {
+        $conds = array(
+            sprintf("schedule_id in (%s)", implode(",", $ids))
+        );
+        $field = array(
+            "count(order_id) as orders",
+            "schedule_id"
+        );
+        $appends = array(
+            "group by schedule_id"
+        );
+        $lists = $this->daoCurriculum->getListByConds($conds, $field, null, $appends);
         if (empty($lists)) {
             return array();
         }

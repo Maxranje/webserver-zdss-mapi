@@ -126,7 +126,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
 
         // 获取科目信息
         $serviceCurrent = new Service_Data_Curriculum();
-        $orderCountInfos = $serviceCurrent->getOrderCountBySchedule($scheduleIds);
+        $orderCountInfos = $serviceCurrent->getOrderListBySchedule($scheduleIds);
         $orderMaps = array();
         $sopMaps = array();
         foreach ($orderCountInfos as $item) {

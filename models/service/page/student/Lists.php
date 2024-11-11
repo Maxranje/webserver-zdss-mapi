@@ -13,6 +13,7 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
         $name           = empty($this->request['name']) ? "" : strval($this->request['name']);
         $phone          = empty($this->request['phone']) ? "" : strval($this->request['phone']);
         $state          = empty($this->request['state']) ? 0 : intval($this->request['state']);
+        $sopuid         = empty($this->request['sop_uid']) ? 0 : intval($this->request['sop_uid']);
         $balanceState   = empty($this->request['balance_state']) ? 0 : intval($this->request['balance_state']);
         $nickname       = empty($this->request['nickname']) ? "" : strval($this->request['nickname']);
         $isSelect       = empty($this->request['is_select']) ? false : true;
@@ -46,6 +47,10 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
 
         if ($bpid > 0) {
             $conds[] = sprintf("bpid = %d", $bpid);
+        }
+
+        if ($sopuid > 0) {
+            $conds[] = sprintf("sop_uid = %d", $sopuid);
         }
 
         if ($balanceState > 0) {

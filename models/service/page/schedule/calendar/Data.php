@@ -67,6 +67,7 @@ class Service_Page_Schedule_Calendar_Data extends Zy_Core_Service{
             return array();
         }
 
+        $scheduleIds    = Zy_Helper_Utils::arrayInt($lists, "id");
         $teacherUids    = Zy_Helper_Utils::arrayInt($lists, "teacher_uid");
         $studentUids    = Zy_Helper_Utils::arrayInt($lists, "student_uid");
         $uids           = Zy_Helper_Utils::arrayInt($lists, "uid");
@@ -92,6 +93,14 @@ class Service_Page_Schedule_Calendar_Data extends Zy_Core_Service{
         $serviceGroup = new Service_Data_Group();
         $groupInfos = $serviceGroup->getListByConds(array('id in ('.implode(",", $groupIds).')'));
         $groupInfos = array_column($groupInfos, null, 'id');
+
+        // 如果是老师或班级, 需要判断当前排课是否存在课程
+        $orderMaps = array();
+        if ($this->request["type"] == "teacher" || $this->request["type"] == "group") {
+            $curriculum = new Service_Data_Curriculum();
+            $orderMaps = $curriculum->getOrderCountBySchedule($scheduleIds);
+            $orderMaps = array_column($orderMaps, null, "schedule_id");
+        }
 
         $areaInfos = $roomInfos = array();
         if (!empty($roomIds)) {
@@ -175,6 +184,11 @@ class Service_Page_Schedule_Calendar_Data extends Zy_Core_Service{
                 $tmp['title'] = sprintf("%s %s %s %s", $timespam, $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
             } else if ($type == "group"){
                 $tmp['title'] = sprintf("%s %s %s %s", $timespam, $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
+            }
+
+            if ($item['state'] == Service_Data_Schedule::SCHEDULE_ABLE && empty($orderMaps[$item['id']])) {
+                $tmp["color"] = "#8B6914";
+                $tmp["title"] .= " (无订单)";
             }
 
             $result[] = $tmp;            
