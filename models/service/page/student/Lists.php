@@ -113,6 +113,7 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
 
         $isModeRecharge = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_RECHARGE);
         $isModeRefund = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_REFUND);
+        $isModeShowAmount = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_AMOUNT_HANDLE);
         $isPartner = $this->checkPartner();
 
         $result = array();
@@ -132,6 +133,14 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
             $item['create_time'] = date("Y年m月d日", $item['create_time']);
             $item['update_time'] = date("Y年m月d日", $item['update_time']);
             unset($item['passport']);
+
+            if (!$isModeShowAmount && $item["sop_uid"] != OPERATOR) {
+                $item["order_balance_info"] = "***";
+                $item["balance"] = "***";
+                $item["balance_info"] = "***";
+                $item["total_balance"] = "***";
+                unset($item["ext"]);
+            }
             $result[] = $item;
         }
         return $result;

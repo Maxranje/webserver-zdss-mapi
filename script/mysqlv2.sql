@@ -97,7 +97,7 @@ CREATE TABLE `tblUser` (
   `name` varchar(100) NOT NULL DEFAULT '' COMMENT '登录名',
   `nickname` varchar(100) NOT NULL DEFAULT '' COMMENT '昵称',
   `passport` varchar(50) NOT NULL DEFAULT '' COMMENT '密码',
-  `state` tinyint(4) NOT NULL DEFAULT '1' COMMENT '状态 1:正常,2:下线',
+  `state` tinyint(4) NOT NULL DEFAULT '1' COMMENT '状态 1:正常,2:下线, 3:休眠, 4:完结',
   `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '类型, 9超管, 10观察者, 11管理员, 12学生, 13老师',
   `phone` varchar(50) NOT NULL DEFAULT '' COMMENT '手机号',
   `avatar` varchar(100) NOT NULL DEFAULT '' COMMENT '头像',

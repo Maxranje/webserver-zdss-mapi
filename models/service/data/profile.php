@@ -12,6 +12,8 @@ class Service_Data_Profile {
 
     const STUDENT_ABLE      = 1;
     const STUDENT_DISABLE   = 2;
+    const STUDENT_DORMANCY  = 3; // 休眠
+    const STUDENT_OVER      = 4; // 完结
 
     const ADMIN_GRANT       = [self::USER_TYPE_ADMIN, self::USER_TYPE_SUPER, self::USER_TYPE_TEACHER, self::USER_TYPE_PARTNER];
     const STUDENT_STATE     = [self::STUDENT_ABLE, self::STUDENT_DISABLE];

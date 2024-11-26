@@ -185,6 +185,13 @@ return array(
                     "url"=>"/records/orderv2",
                     "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-records-orderv2-list.json"
+                ),
+                array(
+                    "id" => 57,
+                    "label"=>"学管统计表",
+                    "url"=>"/records/sop",
+                    "icon"=>"fa fa-list",
+                    "schemaApi"=>"get:/public/pages/crud-records-sop-list.json"
                 )
             ]
         ),
@@ -328,6 +335,10 @@ return array(
         array(
             "id" => 4007,
             "label"=>"审核操作",
+        ),
+        array(
+            "id" => 4008,
+            "label"=>"学员金额或课时数据查看权限",
         ),
     ),
 );

@@ -118,6 +118,8 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
         $serviceData = new Service_Data_Curriculum();
         $orderCounts = $serviceData->getScheduleTimeCountByOrder($orderIds);
 
+        $isModeShowAmount = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_AMOUNT_HANDLE);
+
         $result = array();
         foreach ($lists as $v) {
             if (empty($subjectInfos[$v['subject_id']]['name'])) {
@@ -126,6 +128,7 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             if (empty($userInfos[$v['student_uid']]['nickname'])) {
                 continue;
             }
+            $sopUid = $userInfos[$v['student_uid']]['sop_uid'];
             
             $extra = json_decode($v['ext'], true);
             $item = array();
@@ -168,10 +171,33 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             $item['band_duration']      = sprintf("%.2f", $orderCounts[$v['order_id']]['a']);
             $item['uncheck_duration']   = sprintf("%.2f", $orderCounts[$v['order_id']]['u']);
 
-            $item['last_balance']       = sprintf("%.2f", ($v['balance'] - ($orderCounts[$v['order_id']]['u'] * $v['price'])) / 100);
-            $item['unband_duration']    = sprintf("%.2f", ($v['balance'] - ($orderCounts[$v['order_id']]['u'] * $v['price'])) / $v['price']);
+            // 真实金额如果<1 , 则不展示
+            $rbalance = ($v['balance'] - ($orderCounts[$v['order_id']]['u'] * $v['price']));
+            if ($rbalance < 1) {
+                $rbalance = 0;
+            }
+            $item['last_balance']       = sprintf("%.2f",  $rbalance / 100);
+            $item['unband_duration']    = sprintf("%.2f", $rbalance / $v['price']);
             $item['change_balance']     = empty($extra['change_balance']) ? "0.00" : sprintf("%.2f", $extra['change_balance'] / 100);
             $item['remark']             = empty($extra['remark']) ? "" : $extra['remark'];
+
+            // 没权限看, 需要展示*
+            if (!$isModeShowAmount && $sopUid != OPERATOR) {
+                $item['last_balance'] = "***";
+                $item['change_balance'] = "***";
+                $item['unband_duration'] = "***";
+                $item['uncheck_duration'] = "***";
+                $item['band_duration'] = "***";
+                $item['check_duration'] = "***";
+                $item['discount_info'] = "***";
+                $item['schedule_nums'] = "***";
+                $item['real_price'] = "***";
+                $item['origin_price'] = "***";
+                $item['origin_balance'] = "***";
+                $item['real_balance'] = "***";
+                $item['price'] = "***";
+            }
+
             $result[] = $item;
         }
         return $result;

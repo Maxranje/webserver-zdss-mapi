@@ -3,20 +3,36 @@ define('BASEPATH',  dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR);
 define('SYSPATH',   BASEPATH . 'library/');
 require_once SYSPATH . 'autoload/autoload.php';
 
-if (count($argv) < 2) {
+$opt = getopt('t:c:m:p');
+if (empty($opt["c"]) || empty($opt['t'])) {
     echo "参数不足\n";
     exit;
 }
 
-require_once ($argv[1] . ".php");
+require_once ($opt['t']."/".$opt['c'] . ".php");
+if (!class_exists(ucfirst($opt["c"]))) {
+    echo "类不存在\n";
+    exit;
+}
 
-$class = ucfirst($argv[1]);
+$class = ucfirst($opt["c"]);
 $a = new $class();
 
-$params = array();
-if (!empty($argv[2])) {
-    $params = $argv[2];
+$method = "execute";
+if (!empty($opt["m"])) {
+    $method = $opt["m"];
 }
-$a->execute($params);
+
+if (!method_exists($a, $method)) {
+    echo "方法不存在\n";
+    exit;
+}
+
+$params = array();
+if (!empty($opt["p"])) {
+    $params = $opt["p"];
+}
+
+$a->$method($params);
 exit;
 

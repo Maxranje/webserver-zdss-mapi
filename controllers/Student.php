@@ -10,5 +10,8 @@ class Controller_Student extends Zy_Core_Controller{
         "recharge"      => "actions/student/Recharge.php",
         "refund"        => "actions/student/Refund.php",
         "remark"        => "actions/student/Remark.php",
+
+        // 学生图表数据
+        "soplists"      => "actions/student/sop/Lists.php",
     );
 }

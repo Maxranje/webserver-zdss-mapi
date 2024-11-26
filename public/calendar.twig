@@ -181,12 +181,18 @@
             if (status != "success" || !data.data.options || data.data.options.length <= 0) {
                 return;
             }
-            $('#select2').append('<option value="0">请选择</option>');  
+            if (selectedOption == "group") {  
+                $('#select2').select2({multiple: true,placeholder: '请选择(可多选)'});
+                $('#select2').append('<option value="0">请选择(可多选)</option>');  
+            } else {
+                $('#select2').select2({multiple: false});
+                $('#select2').append('<option value="0">请选择</option>');  
+            }
             var options = data.data.options; // 假设服务器返回的数据结构为 { "options": ["选项1", "选项2", "选项3"] }  
             for (var i = 0; i < options.length; i++) {  
                 $('#select2').append('<option value="' + options[i]["value"] + '">' + options[i]["label"] + '</option>');  
             }  
-            $('#select2').select2();
+            
         });  
     });  
 
@@ -199,6 +205,16 @@
             $('#tips').css('display', 'block').show();
             return ;
         }
+
+        // 班级最多允许选4个
+        if (select1Val == "group" && select2Val.length >= 4) {
+            $('#tips-content').html("班级最多选3个");
+            $('#tips').css('display', 'block').show();
+            return ;
+        }
+
+        $('#tips-content').html("");
+        $('#tips').css('display', 'none').hide();
         $('#fullcalendar-default-view').fullCalendar( 'removeEventSource', lastEventSource)
         lastEventSource = "/mapi/schedule/calendardata?type="+select1Val+"&value="+select2Val
         $('#fullcalendar-default-view').fullCalendar( 'addEventSource', lastEventSource )
@@ -219,6 +235,15 @@
             $('#tips').css('display', 'block').show();
             return ;
         }
+
+        // 班级最多允许选4个
+        if (select1Val == "group" && select2Val.length >= 4) {
+            $('#tips-content').html("班级最多选3个");
+            $('#tips').css('display', 'block').show();
+            return ;
+        }
+        $('#tips-content').html("");
+        $('#tips').css('display', 'none').hide();
 
         $.ajax({
             url: '/mapi/schedule/calendarexport?start='+start+'&end='+end+'&type='+select1Val+'&value='+select2Val, // 后端接口地址

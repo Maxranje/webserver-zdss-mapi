@@ -235,6 +235,14 @@
                         {
                             "label": "下线",
                             "value": "2"
+                        },
+                        {
+                            "label": "休眠",
+                            "value": "3"
+                        },
+                        {
+                            "label": "完结",
+                            "value": "4"
                         }
                     ]
                 },
@@ -320,7 +328,10 @@
                 "name": "state",
                 "label": "状态",
                 "type": "mapping",
+                "remark" : "休眠/完结状态根据3个月或12个月是否有结算来确定",
                 "map": {
+                    "4": "<span class='label label-default'>完结</span>",
+                    "3": "<span class='label label-danger'>休眠</span>",
                     "2": "<span class='label label-danger'>下线</span>",
                     "1": "<span class='label label-success'>正常</span>"
                 }
@@ -369,7 +380,7 @@
                 "label": "账户余额",
                 "type": "text",
                 "toggled": true,
-                "classNameExpr": "<%= data.balance > 500000 ? 'bg-success' : (data.balance > 0 ? 'bg-warning' : (data.balance == 0 ? 'bg-default' : 'bg-danger') ) %>"
+                "classNameExpr": "<%= data.balance > 500000 ? 'bg-success' : (data.balance > 0 ? 'bg-warning' : (data.balance == 0 || data.balance == '***' ? 'bg-default' : 'bg-danger') ) %>"
             },
             {
                 "name": "order_balance_info",

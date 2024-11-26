@@ -45,7 +45,7 @@ class Service_Page_Order_Create extends Zy_Core_Service{
 
         $serviceProfile = new Service_Data_Profile();
         $studentInfo = $serviceProfile->getUserInfoByUid($studentUid);
-        if (empty($studentInfo) || $studentInfo['state'] != Service_Data_Profile::STUDENT_ABLE) {
+        if (empty($studentInfo) || $studentInfo['state'] == Service_Data_Profile::STUDENT_DISABLE) {
             throw new Zy_Core_Exception(405, "操作失败, 学员不存在或已下线");
         }
         

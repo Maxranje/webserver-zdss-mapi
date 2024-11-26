@@ -408,7 +408,8 @@
                                         "label" : "模板时间",
                                         "onlyLeaf":true,
                                         "required": true,
-                                        "name": "time_range"
+                                        "name": "time_range",
+                                        "desc": "调整后的时间间隔不能大于调整前的时间间隔"
                                     },
                                     {
                                         "type": "tree-select",

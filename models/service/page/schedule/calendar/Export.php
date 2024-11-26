@@ -22,7 +22,7 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
         }
 
         $type   = empty($this->request['type']) ? "" : $this->request['type'];
-        $id     = empty($this->request['value']) ? 0 : intval($this->request['value']);
+        $id     = empty($this->request['value']) ? "" : trim($this->request['value']);
         $this->sts    = empty($this->request['start']) ? 0 : strtotime($this->request['start']);
         $this->ets    = empty($this->request['end']) ? 0: strtotime($this->request['end']);
 
@@ -37,6 +37,7 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
 
         $lists = $lock = array();
         if ($type == "student" || $type == "teacher") {
+            $id = intval($id);
             $serviceUser = new Service_Data_Profile();
             $userInfo = $serviceUser->getUserInfoByUid($id);
             if (empty($userInfo)) {
@@ -52,12 +53,29 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
                 $lists = $serviceSchedule->getListByConds($conds);
             }
         } else {
+            $id = explode(",", $id);
+            if (empty($id)) {
+                return array();
+            }
+            foreach ($id as $i => $item) {
+                $item = intval($item);
+                if ($item <= 0) {
+                    unset($id[$i]);
+                    continue;
+                }
+                $id[$i] = $item;
+            }
+            $id = array_values($id);
+            // 最多3个
+            if (count($id) > 3 || count($id) <= 0) {
+                return array();
+            }
             $serviceGroup = new Service_Data_Group();
-            $groupInfo = $serviceGroup->getGroupById($id);
+            $groupInfo = $serviceGroup->getGroupByIds($id);
             if (empty($groupInfo)) {
                 throw new Zy_Core_Exception(405, "班级信息不存在");
             }
-            $conds[] = sprintf("group_id = %d", intval($id));
+            $conds[] = sprintf("group_id in (%s)", implode(",", $id));
             $serviceSchedule = new Service_Data_Schedule();
             $lists = $serviceSchedule->getListByConds($conds);
         }
@@ -198,7 +216,7 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
             $timespam = sprintf("%s-%s", date("H:i", $item['start_time']),date("H:i", $item['end_time']));
             if ($item["state"] == Service_Data_Schedule::SCHEDULE_DONE) {
                 $timespam .= " (已消课)";
-            } else if (empty($orderMaps[$item["id"]])){
+            } else if (($this->request["type"] == "teacher" || $this->request["type"] == "group") && empty($orderMaps[$item["id"]])){
                 $timespam .= " (无订单)";
             } else {
                 $timespam .= " (未消课)";
@@ -210,7 +228,7 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
             } else if ($type == "group"){
                 $tmp['title'] = sprintf("%s\n%s\n%s\n%s\n", $timespam, $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
             }
-            if ($item['state'] == Service_Data_Schedule::SCHEDULE_ABLE && empty($orderMaps[$item['id']])) {
+            if (($this->request["type"] == "teacher" || $this->request["type"] == "group") && $item['state'] == Service_Data_Schedule::SCHEDULE_ABLE && empty($orderMaps[$item['id']])) {
                 $tmp["noOrderColor"] = 1;
             }
 
@@ -277,6 +295,10 @@ class Service_Page_Schedule_Calendar_Export  extends Zy_Core_Service{
             if (count($item["merge"]) <= 1) {
                 $sheet->getCell($item["merge"][0])->setValue($item["title"]);
             } else {
+                usort($item["merge"], function ($a, $b) {
+                    return strnatcasecmp($a, $b);
+                });
+                $item["merge"] = array_values($item["merge"]);
                 $tmp = $item["merge"][0] . ":" . $item["merge"][count($item["merge"]) - 1];
                 $values = array($item["title"]);
                 if (!empty($item["title_map"])) {

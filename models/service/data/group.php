@@ -27,6 +27,22 @@ class Service_Data_Group {
         return $Group;
     }
 
+    // 根据IDs获取班级信息
+    public function getGroupByIds ($ids){
+        $arrConds = array(
+            sprintf("id in (%s)", implode(",", $ids))
+        );
+
+        $arrFields = $this->daoGroup->arrFieldsMap;
+
+        $Group = $this->daoGroup->getListByConds($arrConds, $arrFields);
+        if (empty($Group)) {
+            return array();
+        }
+
+        return $Group;
+    }
+
     // 创建
     public function create ($profile) {
         return $this->daoGroup->insertRecords($profile);

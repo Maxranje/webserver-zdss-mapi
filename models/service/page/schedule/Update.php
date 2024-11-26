@@ -69,6 +69,11 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 模板时间必须在5分钟到4小时之间");
         }
 
+        // 和历史记录对比,  不允许 > 当前记录时间,  
+        if (($needTimes['ets'] - $needTimes['sts']) > ($info['end_time'] - $info['start_time'])) {
+            throw new Zy_Core_Exception(405, "操作失败, 变更的时间间隔不能大于已有的时间间隔");
+        }
+
         $needDays = array(
             'sts' => strtotime(date('Ymd', $needTimes['sts'])),
             'ets' => strtotime(date('Ymd', $needTimes['ets'] + 86400)),

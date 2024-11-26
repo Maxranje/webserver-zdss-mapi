@@ -8,15 +8,38 @@ class Service_Page_Schedule_Calendar_Data extends Zy_Core_Service{
         }
 
         $type   = empty($this->request['type']) ? "" : $this->request['type'];
-        $id     = empty($this->request['value']) ? 0 : intval($this->request['value']);
+        $id     = empty($this->request['value']) ? "" : trim($this->request['value']);
         $sts    = empty($this->request['start']) ? strtotime(date('Y-m-d',  strtotime("-45 day"))) : strtotime($this->request['start']);
         $ets    = empty($this->request['end']) ? strtotime(date('Y-m-d',  strtotime("+45 day"))) : strtotime($this->request['end']);
         
-        if (!in_array($type, ["group", "teacher", "student"]) || $id <= 0) {
+        if (!in_array($type, ["group", "teacher", "student"])) {
             return array();
         }
-
-        $conds = array();
+        if (in_array($type, ["teacher", "student"])) {
+            $id = intval($id);
+            if ($id <= 0) {
+                return array();
+            }
+        }
+        if ($type == "group") {
+            $id = explode(",", $id);
+            if (empty($id)) {
+                return array();
+            }
+            foreach ($id as $i => $item) {
+                $item = intval($item);
+                if ($item <= 0) {
+                    unset($id[$i]);
+                    continue;
+                }
+                $id[$i] = $item;
+            }
+            $id = array_values($id);
+            // 最多3个
+            if (count($id) > 3 || count($id) <= 0) {
+                return array();
+            }
+        }
 
         $conds = array(
             sprintf("start_time >= %d", $sts),
@@ -41,11 +64,12 @@ class Service_Page_Schedule_Calendar_Data extends Zy_Core_Service{
             }
         } else {
             $serviceGroup = new Service_Data_Group();
-            $groupInfo = $serviceGroup->getGroupById($id);
+            $groupInfo = $serviceGroup->getGroupByIds($id);
             if (empty($groupInfo)) {
                 return array();
             }
-            $conds[] = sprintf("group_id = %d", intval($id));
+            $groupIds = Zy_Helper_Utils::arrayInt($groupInfo, "id");
+            $conds[] = sprintf("group_id in (%s)", implode(",", $groupIds));
             $serviceSchedule = new Service_Data_Schedule();
             $lists = $serviceSchedule->getListByConds($conds);
         }
@@ -186,7 +210,7 @@ class Service_Page_Schedule_Calendar_Data extends Zy_Core_Service{
                 $tmp['title'] = sprintf("%s %s %s %s", $timespam, $subjectName, $userInfos[$item['teacher_uid']]['nickname'], $areaName);
             }
 
-            if ($item['state'] == Service_Data_Schedule::SCHEDULE_ABLE && empty($orderMaps[$item['id']])) {
+            if (($this->request["type"] == "teacher" || $this->request["type"] == "group") && ($item['state'] == Service_Data_Schedule::SCHEDULE_ABLE && empty($orderMaps[$item['id']]))) {
                 $tmp["color"] = "#8B6914";
                 $tmp["title"] .= " (无订单)";
             }

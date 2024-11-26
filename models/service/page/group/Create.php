@@ -24,7 +24,7 @@ class Service_Page_Group_Create extends Zy_Core_Service{
 
         $serviceProfile = new Service_Data_Profile();
         $userInfo = $serviceProfile->getUserInfoByUid($areaOperator);
-        if (empty($userInfo) || $userInfo['state'] != Service_Data_Profile::STUDENT_ABLE) {
+        if (empty($userInfo) || $userInfo['state'] == Service_Data_Profile::STUDENT_DISABLE) {
             throw new Zy_Core_Exception(405, "操作失败, 学管不存在或已下线");
         }
 

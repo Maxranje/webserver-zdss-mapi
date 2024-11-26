@@ -30,7 +30,7 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
         // check 学生信息
         $serviceUser = new Service_Data_Profile();
         $userInfo = $serviceUser->getUserInfoByUid($orderInfo['student_uid']);
-        if (empty($userInfo) || $userInfo['state'] != Service_Data_Profile::STUDENT_ABLE) {
+        if (empty($userInfo) || $userInfo['state'] == Service_Data_Profile::STUDENT_DISABLE) {
             throw new Zy_Core_Exception(405, "操作失败, 学员信息获取失败");
         }
 

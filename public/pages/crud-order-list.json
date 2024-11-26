@@ -492,7 +492,7 @@
                         {
                             "type": "button",
                             "label": "结转到账户",
-                            "disabledOn": "this.balance <= 0 || this.isfree == 1",
+                            "disabledOn": "this.last_balance <= 0 || this.isfree == 1",
                             "actionType": "dialog",
                             "dialog": {
                                 "size": "md",
