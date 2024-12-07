@@ -114,6 +114,7 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
         $isModeRecharge = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_RECHARGE);
         $isModeRefund = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_REFUND);
         $isModeShowAmount = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_AMOUNT_HANDLE);
+        $isModeEdit = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_EDIT);
         $isPartner = $this->checkPartner();
 
         $result = array();
@@ -129,6 +130,7 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
             $item['birthplace']  = empty($birthplaces[$item['bpid']]['name']) ? "" : $birthplaces[$item['bpid']]['name'];
             $item['is_re']       = $isModeRecharge ? 1 : 0;
             $item['is_rd']       = $isModeRefund ? 1 : 0;
+            $item["is_edit"]     = $isModeEdit || $item["sop_uid"] == OPERATOR ? 1:0;
             $item['sop_name']    = empty($sopInfos[$item['sop_uid']]['nickname']) ? "" : $sopInfos[$item['sop_uid']]['nickname'];
             $item['create_time'] = date("Y年m月d日", $item['create_time']);
             $item['update_time'] = date("Y年m月d日", $item['update_time']);

@@ -634,7 +634,7 @@
                         "type": "button",
                         "label": "编辑",
                         "actionType": "drawer",
-                        "disabledOn" : "this.is_partner === 1",
+                        "disabledOn" : "this.is_partner === 1 || this.is_edit !== 1",
                         "drawer": {
                             "position": "right",
                             "size": "lg",

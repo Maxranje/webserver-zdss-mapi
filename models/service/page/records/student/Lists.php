@@ -74,6 +74,9 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
         $capitalLists = $serviceRecords->getCapitalListsByUids($uids, $sts, $ets);
         $recordsLists = $serviceRecords->getRecordsListsByUids($uids, $sts, $ets);
 
+        $serviceCurriculum = new Service_Data_Curriculum();
+        $scheduleDuration = $serviceCurriculum->getScheduleTimeCountByStudentUid($uids);
+
         if (!empty($capitalLists)) {
             foreach ($userInfos as $uid => &$info) {
                 $info['refund'] = $info['recharge'] = $info['refund_back'] = 0;
@@ -90,6 +93,14 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
                 $info['checkjob']= 0;
                 if (isset($recordsLists[$uid])) {
                     $info['checkjob'] = $recordsLists[$uid]['checkjob'];
+                }
+            }
+        }       
+        
+        if (!empty($scheduleDuration)) {
+            foreach ($userInfos as $uid => &$info) {
+                if (isset($scheduleDuration[$uid])) {
+                    $info['last_duration'] = $scheduleDuration[$uid];
                 }
             }
         }        
@@ -128,12 +139,14 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
             $tmp["nickname"]            = $item['nickname'];
             $tmp["school"]              = $item['school'];
             $tmp["graduate"]            = $item['graduate'];
+            $tmp["account_balance"]     = sprintf("%.2f", $item["balance"] / 100);
             $tmp["birthplace"]          = empty($birthplaces[$item['bpid']]['name']) ? "" : $birthplaces[$item['bpid']]['name'];
             $tmp["sopname"]             = empty($sopUserInfos[$item['sop_uid']]['nickname']) ? "" : $sopUserInfos[$item['sop_uid']]['nickname'];
             $tmp['recharge_balance']    = empty($item['recharge']) ? "0.00" : sprintf("%.2f", $item['recharge'] / 100);
             $tmp['checkjob_balance']    = empty($item['checkjob']) ? "0.00" : sprintf("%.2f", $item['checkjob'] / 100);
             $tmp['refund_balance']      = empty($item['refund']) ? "0.00" : sprintf("%.2f", $item['refund'] / 100);
             $tmp['refund_back_balance'] = empty($item['refund_back']) ? "0.00" : sprintf("%.2f", $item['refund_back'] / 100);
+            $tmp["last_duration"]       = empty($item['last_duration']) ? 0 : $item["last_duration"];
             $result[] = $tmp;
         }
         return $result;
@@ -141,7 +154,7 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('学员UID', '学员名', '学校', '年级', '生源地', '学管', '充值金额(元)','结算金额(元)',  '退款金额(元)', '退款扣款金额(元)'),
+            'title' => array('学员UID', '学员名', '学校', '年级', '生源地', '学管', '充值金额(元)','结算金额(元)',  '退款金额(元)', '退款扣款金额(元)', '所有订单剩余课时（绑定未结算）', '账户余额(元)'),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -160,6 +173,8 @@ class Service_Page_Records_Student_Lists extends Zy_Core_Service{
                 $item['checkjob_balance'],   
                 $item['refund_balance'],   
                 $item['refund_back_balance'],
+                $item['last_duration'],
+                $item['account_balance'],
             );
             $result['lists'][] = $tmp;
         }

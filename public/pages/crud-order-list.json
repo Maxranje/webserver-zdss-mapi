@@ -491,8 +491,92 @@
                         },
                         {
                             "type": "button",
+                            "label": "订单变更明细",
+                            "disabledOn": "this.is_amount === 0 || this.isfree == 1",
+                            "actionType": "drawer",
+                            "drawer": {
+                                "position": "right",
+                                "size": "lg",
+                                "title": "订单变更明细",
+                                "body": {
+                                    "type": "crud",
+                                    "draggable": true,
+                                    "loadDataOnce":true,
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/order/describe?order_id=$order_id",
+                                        "dataType": "form"
+                                    },
+                                    "syncLocation":false,
+                                    "headerToolbar": [
+                                        "bulkActions",
+                                        {
+                                            "type": "tpl",
+                                            "tpl": "共有 ${total} 条数据。注意: 有结算或结转才有记录, 订单剩余金额包含未结算金额.",
+                                            "className": "v-middle"
+                                        }
+                                    ],
+                                    "columns": [
+                                        {
+                                            "name": "modify_time",
+                                            "label": "事件时间(结转or结算)",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "modify_type",
+                                            "label": "事件类型",
+                                            "type": "mapping",
+                                            "map": {
+                                                "1": "结转",
+                                                "2": "结算",
+                                                "3": "撤销结算"
+                                            }
+                                        },
+                                        {
+                                            "name": "schedule_time",
+                                            "label": "上课时间",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "duration",
+                                            "label": "排课（小时)",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "check_balance",
+                                            "label": "结算金额",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "transfer_balance",
+                                            "label": "结转金额",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "last_balance",
+                                            "label": "订单剩余金额",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "operatorinfo",
+                                            "label": "操作员",
+                                            "type": "text",
+                                            "toggled": true
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "button",
                             "label": "结转到账户",
-                            "disabledOn": "this.last_balance <= 0 || this.isfree == 1",
+                            "disabledOn": "this.is_amount === 0 || this.last_balance <= 0 || this.last_balance == '0.00' || this.isfree == 1",
                             "actionType": "dialog",
                             "dialog": {
                                 "size": "md",

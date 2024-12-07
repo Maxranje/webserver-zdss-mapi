@@ -13,6 +13,7 @@ class Service_Data_Roles {
     const ROLE_MODE_TEACHER_LOCKDEL = "4006";
     const ROLE_MODE_REVIEW_HANDLE = "4007";  // 审核操作
     const ROLE_MODE_STUDENT_AMOUNT_HANDLE = "4008";  // 学员金额和订单等信息查看权限
+    const ROLE_MODE_STUDENT_EDIT = "4009";  // 学员编辑权限
 
     public function __construct() {
         $this->daoRole = new Dao_Roles () ;

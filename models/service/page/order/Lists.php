@@ -180,6 +180,7 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
             $item['unband_duration']    = sprintf("%.2f", $rbalance / $v['price']);
             $item['change_balance']     = empty($extra['change_balance']) ? "0.00" : sprintf("%.2f", $extra['change_balance'] / 100);
             $item['remark']             = empty($extra['remark']) ? "" : $extra['remark'];
+            $item["is_amount"]          = !$isModeShowAmount && $sopUid != OPERATOR ? 0 :1;
 
             // 没权限看, 需要展示*
             if (!$isModeShowAmount && $sopUid != OPERATOR) {

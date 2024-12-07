@@ -44,6 +44,11 @@ class Service_Page_Student_Update extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 无法查到相关用户");
         }
 
+        // 非有权限人或当前学员学管, 是无法操作
+        if (!$this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_EDIT) && $userInfo["sop_uid"] != OPERATOR) {
+            throw new Zy_Core_Exception(405, "操作失败, 无权限操作, 必须是当前学员学管或特定权限管理员");
+        }
+
         $userInfo = $serviceData->getUserInfoByNameAndPhone($name, $phone);
         if (!empty($userInfo) && $userInfo['uid'] != $uid) {
             throw new Zy_Core_Exception(405, "操作失败, 用户名/手机号关联的账户已存在");

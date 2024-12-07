@@ -325,6 +325,10 @@ return array(
             "label"=>"学员退款",
         ),
         array(
+            "id" => 4009,
+            "label"=>"学员编辑",
+        ),
+        array(
             "id" => 4005,
             "label"=>"教师设置底薪",
         ),

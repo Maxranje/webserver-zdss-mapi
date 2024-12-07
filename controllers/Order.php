@@ -8,6 +8,7 @@ class Controller_Order extends Zy_Core_Controller{
         "detail"    => "actions/order/Detail.php",
         "band"      => "actions/order/Band.php",
         "review"    => "actions/order/Review.php",
+        "describe"  => "actions/order/Describe.php",
 
         // 变更
         "changerefund"    => "actions/order/Changerefund.php",
