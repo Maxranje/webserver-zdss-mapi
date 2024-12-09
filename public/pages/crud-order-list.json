@@ -558,6 +558,12 @@
                                             "toggled": true
                                         },
                                         {
+                                            "name": "transfer_duration",
+                                            "label": "结转时间",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
                                             "name": "last_balance",
                                             "label": "订单剩余金额",
                                             "type": "text",

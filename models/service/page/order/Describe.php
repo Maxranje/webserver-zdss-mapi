@@ -91,12 +91,14 @@ class Service_Page_Order_Describe extends Zy_Core_Service{
             $tmp["transfer_balance"] = "-";
             $tmp["last_balance"] = "-";
             $tmp["operatorinfo"] = "-";
+            $tmp["transfer_duration"] = "-";
 
             if ($isChange) {
                 $orderBalance -= $item["balance"];
                 $tmp["modify_time"] = date("Y-m-d H:i:s", $item["create_time"]);
                 $tmp["modify_type"] = 1;
                 $tmp["transfer_balance"] = sprintf("%.2f", $item["balance"] / 100);
+                $tmp["transfer_duration"] = sprintf("%.2f", $item["duration"]);
                 $tmp["last_balance"] = sprintf("%.2f", $orderBalance/100);
                 $tmp["operatorinfo"] = empty($operatorInfos[$item["operator"]]["nickname"]) ? "" : $operatorInfos[$item["operator"]]["nickname"];                
             } else {
