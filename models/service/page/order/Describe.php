@@ -78,6 +78,7 @@ class Service_Page_Order_Describe extends Zy_Core_Service{
         if (!empty($orderInfo['ext']["real_balance"])) {
             $orderBalance = $orderInfo['ext']["real_balance"];
         }
+        $price = $orderInfo["price"];
 
         $result = array();
         foreach ($resultList as $item) {
@@ -92,6 +93,7 @@ class Service_Page_Order_Describe extends Zy_Core_Service{
             $tmp["last_balance"] = "-";
             $tmp["operatorinfo"] = "-";
             $tmp["transfer_duration"] = "-";
+            $tmp["last_duration"] = "-";
 
             if ($isChange) {
                 $orderBalance -= $item["balance"];
@@ -100,6 +102,7 @@ class Service_Page_Order_Describe extends Zy_Core_Service{
                 $tmp["transfer_balance"] = sprintf("%.2f", $item["balance"] / 100);
                 $tmp["transfer_duration"] = sprintf("%.2f", $item["duration"]);
                 $tmp["last_balance"] = sprintf("%.2f", $orderBalance/100);
+                $tmp["last_duration"] = sprintf("%.2f", $orderBalance/$price);
                 $tmp["operatorinfo"] = empty($operatorInfos[$item["operator"]]["nickname"]) ? "" : $operatorInfos[$item["operator"]]["nickname"];                
             } else {
                 
@@ -119,6 +122,7 @@ class Service_Page_Order_Describe extends Zy_Core_Service{
                 }
                 $tmp["check_balance"] = sprintf("%.2f", $item["money"]/100);
                 $tmp["last_balance"] = sprintf("%.2f", $orderBalance/100);
+                $tmp["last_duration"] = sprintf("%.2f", $orderBalance/$price);
                 $tmp["operatorinfo"] = empty($operatorInfos[$item["operator"]]["nickname"]) ? "" : $operatorInfos[$item["operator"]]["nickname"];                
             }
             $result[] = $tmp;
