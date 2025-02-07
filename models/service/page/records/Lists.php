@@ -64,6 +64,9 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
                 $total = $serviceRecords->getTotalByConds($conds);
             }
         }
+        if ($isExport && count($lists) > 2000) {
+            throw new Zy_Core_Exception(405, "操作失败, 受服务限制, 导出数据限制2000条, 请选择条件缩小查询范围");
+        }
 
         $lists = $this->formatBase($lists);
         if ($isExport) {
@@ -127,6 +130,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
             $item['money_info']     = sprintf("%.2f元", $item['money'] / 100);
             $item['order_id']       = empty($item['order_id']) ? "-" : $item['order_id'];
             $item['isfree']         = "-";
+            $item['is_abroadplan']  = empty($ext["order"]["abroadplan_id"]) ? "-" : "是";
             $item['duration']       = $duration ;
             if (isset($ext['order'])) {
                 $item['isfree'] = "否";
@@ -141,7 +145,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('日期', 'UID', '用户名', '用户类型', '状态', '场景', '排课ID', '金额(元)', '课时', "生源地", '班级', '订单ID',"是否免费订单", '操作员', "更新日期"),
+            'title' => array('日期', 'UID', '用户名', '用户类型', '状态', '场景', '排课ID', '金额(元)', '课时', "生源地", '班级', '订单ID', "计划订单","免费订单", '操作员', "更新日期"),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -165,6 +169,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
                 $item['birthplace'],
                 $item['group_name'],
                 $item['order_id'],
+                $item['is_abroadplan'],
                 $item['isfree'],
                 $item['operator'],
                 $item['update_time'],

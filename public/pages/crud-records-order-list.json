@@ -1,6 +1,6 @@
 {
     "type": "page",
-    "title": "订单报表",
+    "title": "订单信息明细表",
     "body": {
         "type": "crud",
         "draggable": true,
@@ -13,7 +13,6 @@
         "syncLocation":false,
         "id" : "records_lists",
         "name" : "records_lists",
-        "columnsTogglable": false,
         "labelTpl": "${id}",
         "filter": {
             "title": "条件搜索",
@@ -89,6 +88,12 @@
                 "toggled": true
             },
             {
+                "name": "order_id",
+                "label": "订单ID",
+                "type": "text",
+                "toggled": true
+            },
+            {
                 "name": "nickname",
                 "label": "学员名",
                 "type": "text",
@@ -113,10 +118,19 @@
                 "toggled": true
             },
             {
-                "name": "isfree",
-                "label": "是否免费",
+                "name": "abroadplan_name",
+                "label": "留学计划",
                 "type": "text",
                 "toggled": true
+            },
+            {
+                "name": "is_free",
+                "label": "是否免费",
+                "type": "mapping",
+                "map": {
+                    "2": "<span class='label label-info'>否</span>",
+                    "1": "<span class='label label-success'>是</span>"
+                }
             },
             {
                 "name": "schedule_nums",
@@ -150,9 +164,12 @@
             },
             {
                 "name": "order_state",
-                "label": "订单状态",
-                "type": "text",
-                "toggled": true
+                "label": "有无排课",
+                "type": "mapping",
+                "map": {
+                    "2": "<span class='label label-default'>无</span>",
+                    "1": "<span class='label label-success'>有</span>"
+                }
             },
             {
                 "name": "uncheck_schedule_nums",

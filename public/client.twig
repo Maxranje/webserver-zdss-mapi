@@ -9,7 +9,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title -->
-    <title>课表</title>
+    <title>主页</title>
 
     <!-- These plugins only need for the run this page -->
     <link rel="stylesheet" href="/public/atom/css/fullcalendar.min.css">
@@ -42,144 +42,88 @@
                 <div class="right-side-navbar d-flex align-items-center justify-content-end" style="padding-right:10px">
                     <!-- Top Bar Nav -->
                     <ul class="d-flex align-items-center">
-
+                        {% if data.user.type == 12 %}
+                        <li class="nav-item dropdown nav-zy-mobile-show">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ti-menu" aria-hidden="true"></i></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <!-- Top Notifications Area -->
+                                <div class="top-notifications-area">
+                                    <div class="notifications-box" style="height:100%;">
+                                        <a href="/mapi/dashboard/home?page=calendar" class="dropdown-item"><i class="ti-calendar bg-success"></i><span>课表</span></a>
+                                        <a href="/mapi/dashboard/home?page=abroadplan" class="dropdown-item"><i class="ti-check"></i><span>留学中心</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>                        
+                        <li class="nav-item dropdown btn-fill btn-fill-zy nav-zy-mobile-hide"><a class="nav-zy show" href="/mapi/dashboard/home?page=calendar" style="font-size:0.78rem">课表</a></li>
+                        <li class="nav-item dropdown btn-fill btn-fill-zy nav-zy-mobile-hide"><a class="nav-zy" href="/mapi/dashboard/home?page=abroadplan" style="font-size:0.78rem">留学中心</a></li>
+                        {% endif %}
                         <li class="nav-item dropdown">
-                            {# <a class="btn dropdown-toggle" href="javascript:singout()">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img src="/public/atom/img/profile-img/avatar_default.jpeg" alt="">
-                            </a> #}
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="/public/atom/img/profile-img/avatar_default.jpeg" alt=""></button>
+                            </button>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <!-- User Profile Area -->
                                 <div class="user-profile-area">
                                     <div class="user-profile-heading">
+                                        <!-- Thumb -->
+                                        <div class="profile-thumbnail">
+                                            <img src="/public/atom/img/profile-img/avatar_default.jpeg" alt="">
+                                        </div>                                    
                                         <!-- Profile Text -->
                                         <div class="profile-text">
-                                            <h6>{{ data.user.name }}</h6>
-                                            {# <span>samanthasarah@example.com</span> #}
+                                            <h6>{{ data.user.nickname }}</h6>
+                                            <span>{{ data.user.school }} / {{ data.user.graduate }}</span>
                                         </div>
                                     </div>
-                                    <a href="javascript:singout()" class="dropdown-item"><i class="ti-unlink text-warning" aria-hidden="true"></i> 登出</a>
+                                    <a href="javascript:singout()" class="dropdown-item">
+                                        <i class="ti-unlink text-warning" aria-hidden="true"></i> Sign-out
+                                    </a>
                                 </div>
                             </div>
                         </li>
                     </ul>
                 </div>
             </header>
-
-                        <!-- Main Content Area -->
+            <!-- Main Content Area -->
             <div class="main-content">
-                <!-- Profile area Start -->
+                <!-- Calendar area Start -->
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-xl-9" style="padding:0px;">
-                            <div class="card bg-boxshadow mb-30">
-                                <div class="card-body" style="padding:0.75rem;">
-                                    <div id='fullcalendar-default-view'></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 mb-30">
-
-                            <div class="card bg-boxshadow">
-                                <div class="card-body">
-                                    {% if data.user.type == 13 %}
-                                    <!-- Link area -->
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-check"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">上月总完成课时 </a>
-                                            <p class="mb-0">{{ data.lists.lm_duration }} </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Link area -->
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-money"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">本月总课时</a>
-                                            <p class="mb-0">{{ data.lists.all_duration }} </p>
+                        <div class="col-12">
+                            <div class="content calender-content">
+                                <div class="row">
+                                    <div class="col-lg-4 col-xl-3">
+                                        <div class="mb-30 clearfix wow fadeInUp" data-wow-delay="200ms">
+                                            <div class="external-event dot-outline mb-15">
+                                                <div class="link--area d-flex align-items-cente">
+                                                    <div class="link--text"><a href="#">上月总完成课时 </a><p class="mb-0">{{ data.lists.lm_duration }} </p></div>
+                                                </div>
+                                            </div>
+                                            <div class="external-event dot-outline mb-15">
+                                                <div class="link--area d-flex align-items-cente">
+                                                    <div class="link--text"><a href="#">本月总课时 </a><p class="mb-0">{{ data.lists.all_duration }} </p></div>
+                                                </div>                                            
+                                            </div>
+                                            <div class="external-event dot-outline mb-15">
+                                                <div class="link--area d-flex align-items-cente">
+                                                    <div class="link--text"><a href="#">本月待完成课时 </a><p class="mb-0">{{ data.lists.able_duration }} </p></div>
+                                                </div>                                             
+                                            </div>
+                                            <div class="external-event dot-outline mb-15">
+                                                <div class="link--area d-flex align-items-cente">
+                                                    <div class="link--text"><a href="#">下月总课时 </a><p class="mb-0">{{ data.lists.nm_duration }} </p></div>
+                                                </div>                                             
+                                            </div>                                       
                                         </div>
                                     </div>
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-upload"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">本月待完成课时 </a>
-                                            <p class="mb-0">{{ data.lists.able_duration }} </p>
+                                    <div class="col-lg-8 col-xl-9">
+                                        <div class="card bg-boxshadow mb-30 wow fadeInUp" data-wow-delay="200ms">
+                                            <div class="card-body">
+                                                <div id='fullcalendar-default-view'></div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-download"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">下月总课时 </a>
-                                            <p class="mb-0">{{ data.lists.nm_duration }} </p>
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                    {% if data.user.type == 12 %}
-                                    <!-- Link area -->
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-check"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">上月总完成课时 </a>
-                                            <p class="mb-0">{{ data.lists.lm_duration }} </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Link area -->
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-money"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">本月总课时</a>
-                                            <p class="mb-0">{{ data.lists.all_duration }} </p>
-                                        </div>
-                                    </div>
-                                    <div class="link--area d-flex align-items-center mb-15 ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-upload"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">本月待完成课时 </a>
-                                            <p class="mb-0">{{ data.lists.able_duration }} </p>
-                                        </div>
-                                    </div>
-                                    <div class="link--area d-flex align-items-center ml-15">
-                                        <!-- Logo area -->
-                                        <div class="logo-link">
-                                            <button class="btn btn-primary dim" type="button"><i class="fa fa-download"></i></button>
-                                        </div>
-                                        <!-- Text -->
-                                        <div class="link--text">
-                                            <a href="#">下月总课时 </a>
-                                            <p class="mb-0">{{ data.lists.nm_duration }} </p>
-                                        </div>
-                                    </div>
-                                    {% endif %}
                                 </div>
                             </div>
                         </div>

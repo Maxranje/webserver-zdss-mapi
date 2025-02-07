@@ -171,7 +171,12 @@
             "url": "/mapi/student/lists",
             "dataType": "form"
         },
-        "perPage": 20,
+        "perPage": 10,
+        "perPageAvailable": [
+            5,
+            10,
+            20
+        ],
         "syncLocation":false,
         "labelTpl": "${uid}",
         "filter": {
@@ -180,17 +185,17 @@
             "body": [
                 {
                     "type": "input-text",
-                    "name": "nickname",
-                    "size" : "md",
-                    "label": "昵称",
-                    "placeholder": "支持模糊搜索"
-                },
-                {
-                    "type": "input-text",
                     "name": "name",
                     "size" : "md",
                     "label": "登录名",
                     "placeholder": "严格搜索"
+                },
+                {
+                    "type": "input-text",
+                    "name": "nickname",
+                    "size" : "md",
+                    "label": "学员昵称",
+                    "placeholder": "支持模糊搜索"
                 },
                 {
                     "type": "input-text",
@@ -371,24 +376,24 @@
             },
             {
                 "name": "order_count",
-                "label": "订单数量",
+                "label": "课程订单",
                 "type": "text",
                 "toggled": true
             },
             {
-                "name": "balance_info",
+                "name": "balance_f",
                 "label": "账户余额",
                 "type": "text",
                 "toggled": true,
-                "classNameExpr": "<%= data.balance > 500000 ? 'bg-success' : (data.balance > 0 ? 'bg-warning' : (data.balance == 0 || data.balance == '***' ? 'bg-default' : 'bg-danger') ) %>"
-            },
-            {
-                "name": "order_balance_info",
-                "label": "订单总余额",
-                "type": "text",
-                "remark" : "订单余额及订单中未结算课程的金额总和",
-                "toggled": true
-            },
+                "classNameExpr": "<%= data.balance > 500000 ? 'bg-success' : (data.balance > 0 ? 'bg-warning' : (data.balance == 0 || data.balance == '***' ? 'bg-default' : 'bg-danger') ) %>",
+                "popOver": {
+                    "position" : "right-bottom",
+                    "body": {
+                        "type" : "html",
+                        "html": "账户余额: $balance_f元<br/>课程订单总余额: $order_balance元"
+                    }
+                }  
+            },      
             {
                 "name": "total_balance",
                 "label": "历史存额",
@@ -408,11 +413,19 @@
                 "buttons": [
                     {
                         "type": "button",
-                        "label":"订单",
+                        "label":"课程订单",
                         "level":"primary",
                         "actionType": "link",
                         "disabledOn": "this.is_partner === 1",
                         "link":"/order/list?student_uid=$uid"
+                    },
+                    {
+                        "type": "button",
+                        "label":"留学服务",
+                        "level":"primary",
+                        "actionType": "link",
+                        "disabledOn": "this.is_partner === 1",
+                        "link":"/aporder/package/list?student_uid=$uid"
                     },
                     {
                         "type": "button",
@@ -461,7 +474,7 @@
                                     },
                                     {
                                         "type": "input-text",
-                                        "name": "balance_info",
+                                        "name": "balance_f",
                                         "label": "账户存额",
                                         "disabled": true,
                                         "addOn": {
@@ -475,11 +488,11 @@
                                     {
                                         "type": "tree-select",
                                         "onlyLeaf":true,
-                                        "label": "留学与升学服务计划",
-                                        "name":"plan",
+                                        "label": "留学&升学服务计划",
+                                        "name":"abroadplan_id",
                                         "searchable":true,
                                         "initiallyOpen":false,
-                                        "source": "/mapi/plan/lists?is_select=1",
+                                        "source": "/mapi/abroadplan/lists?is_select=1&is_price=1",
                                         "onEvent": {
                                             "change": {
                                                 "actions": [
@@ -587,7 +600,7 @@
                                     },
                                     {
                                         "type": "input-text",
-                                        "name": "balance_info",
+                                        "name": "balance_f",
                                         "label": "账户存额",
                                         "disabled": true,
                                         "addOn": {

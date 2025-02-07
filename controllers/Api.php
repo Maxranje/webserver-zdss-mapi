@@ -7,5 +7,6 @@ class Controller_Api extends Zy_Core_Controller{
         "soplists"      => "actions/admins/Soplists.php",
         "reset"         => "actions/student/Reset.php",
         "notice"        => "actions/api/Notice.php",
+        "apconfirm"     => "actions/api/Apconfirm.php",
     );
 }

@@ -7,59 +7,30 @@ class Service_Data_Orderchange {
     const CHANGE_CREATE = 1;
     const CHANGE_REFUND = 2;
     const CHANGE_DELETE = 3;
+    const CHANGE_APORDER_PACKAGE_CREATE         = 4;    // 服务下单
+    const CHANGE_APORDER_PACKAGE_DELETE         = 5;    // 服务删除
+    const CHANGE_APORDER_PACKAGE_OVER           = 6;    // 服务完结
+    const CHANGE_APORDER_ORDER_CHANGE           = 7;    // 订单变更
+    const CHANGE_APORDER_DURATION_ADD           = 8;   //  添加服务课时
+    const CHANGE_APORDER_PACKAGE_TRANS          = 9;   //  服务结转
+
+    public static $changeNormalMap = [
+        self::CHANGE_CREATE,
+        self::CHANGE_REFUND,
+        self::CHANGE_DELETE,
+    ];
+
+    public static $changeAporderMap = [
+        self::CHANGE_APORDER_PACKAGE_CREATE,
+        self::CHANGE_APORDER_PACKAGE_DELETE,
+        self::CHANGE_APORDER_DURATION_ADD,
+        self::CHANGE_APORDER_PACKAGE_OVER,
+        self::CHANGE_APORDER_ORDER_CHANGE,
+        self::CHANGE_APORDER_PACKAGE_TRANS,
+    ];
 
     public function __construct() {
         $this->daoOrderchange = new Dao_Orderchange () ;
-    }
-
-    // 创建
-    public function create ($profile, $orderInfo) {
-        $this->daoOrderchange->startTransaction();
-
-        $ret = $this->daoOrderchange->insertRecords($profile);
-        if ($ret == false) {
-            $this->daoOrderchange->rollback();
-            return false;
-        }
-
-        // 退款金额更新
-        $extra = json_decode($orderInfo['ext'], true);
-        if (!isset($extra['change_balance'])) {
-            $this->daoOrderchange->rollback();
-            return false;
-        }
-        $extra['change_balance'] = intval($extra['change_balance']) + intval($profile['balance']);
-
-        $orderData = array(
-            sprintf("balance=balance-%d", $profile['balance']),
-            'ext' => json_encode($extra),
-            'update_time' => time(),
-        );
-        $conds = array(
-            "order_id" => intval($profile['order_id']),
-        );
-        $daoOrder = new Dao_Order();
-        $ret = $daoOrder->updateByConds($conds, $orderData);
-        if ($ret == false) {
-            $this->daoOrderchange->rollback();
-            return false;
-        }
-
-        // 用户账户填充
-        $p2 = array(
-            sprintf("balance=balance+%d", $profile['balance']),
-        );
-        $conds = array(
-            "uid" => $profile['student_uid'],
-        );
-        $daoUser = new Dao_User();
-        $ret = $daoUser->updateByConds($conds, $p2);
-        if ($ret == false) {
-            $this->daoOrderchange->rollback();
-            return false;
-        }
-        $this->daoOrderchange->commit();
-        return true;
     }
 
     // 获取列表

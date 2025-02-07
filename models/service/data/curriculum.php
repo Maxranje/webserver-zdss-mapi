@@ -235,4 +235,12 @@ class Service_Data_Curriculum {
         return $diff;
     }
 
+    // 解绑
+    public function unbindByOrderIds ($orderIds) {
+        return $this->daoCurriculum->deleteByConds(array(
+            sprintf("order_id in (%s)", implode(",", $orderIds)),
+            "state" => Service_Data_Schedule::SCHEDULE_ABLE,
+        ));
+    }    
+
 }

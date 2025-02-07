@@ -1,0 +1,68 @@
+{
+    "type": "page",
+    "body": [
+        {
+            "type": "panel",
+            "title" : "",
+            "body": [
+                {
+                    "type": "tree-select",
+                    "name": "apackage_id",
+                    "label": "服务",
+                    "size": "lg",
+                    "mode": "inline",
+                    "initiallyOpen":false,
+                    "onlyLeaf":true,
+                    "searchable":true,
+                    "source": "/mapi/abroadorder/packagelists?is_select=1"
+                },
+                {
+                    "type": "button",
+                    "label":"重置为计划默认配置项",
+                    "level":"primary",
+                    "actionType": "ajax",
+                    "confirmText": "您确定重置为默认配置项么, 此项操作依赖计划存在配置项同时是采用覆盖方式操作, 如果学员或管理员已经勾选会被覆盖掉!",
+                    "api": "/mapi/abroadorder/confirmupdate?apackage_id=$apackage_id&is_reset=1",
+                    "reload": "confirm_form.confrim_detail_info"
+                }        
+            ]
+        }, 
+        {    
+            "type": "form",
+            "title" : "",
+            "name":"confirm_form",
+            "api": "/mapi/abroadorder/confirmupdate?apackage_id=$apackage_id&is_cover=1",
+            "autoFocus": true,
+            "body": [            
+                {
+                    "type": "alert",
+                    "title" : "配置说明",
+                    "body": {
+                        "type": "html",
+                        "html": "<p>1. 对于计划没有配置检查项的, 配置员手动对服务添加检查项</p><p>1. 对于计划已经配置检查项的, 配置员可采用一键复制计划检查项的方式, 覆盖式配置</p><p>重要!重要!重要! 修改服务配置要额外注意, 单项的增删会影响到学员已做check, 或正在做的check. 谨慎操作!<p>"
+                    },
+                    "level": "warning",
+                    "showCloseButton": true,
+                    "showIcon": true
+                },              
+                {
+                    "type": "service",
+                    "initFetch" : false,
+                    "name":"confrim_detail_info",
+                    "id":"confrim_detail_info",
+                    "schemaApi": "/mapi/abroadorder/confirmdetail?apackage_id=$apackage_id&is_edit=1"
+                }
+            ],
+            "actions": [{
+                    "type": "submit",
+                    "primary": true,
+                    "label": "提交变更"
+                },
+                {
+                    "type": "reset",
+                    "label": "重置"
+                }
+            ]
+        }
+    ]
+}

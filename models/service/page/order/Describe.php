@@ -16,7 +16,7 @@ class Service_Page_Order_Describe extends Zy_Core_Service{
 
         // 获取订单信息
         $serviceData = new Service_Data_Order();
-        $orderInfo = $serviceData->getOrderById($orderId);
+        $orderInfo = $serviceData->getNmorderById($orderId);
         if (empty($orderInfo) || !empty($orderInfo["isfree"])) {
             throw new Zy_Core_Exception(405, "操作失败, 订单信息获取失败, 或订单为免费订单");
         }

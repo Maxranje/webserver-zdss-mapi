@@ -17,7 +17,7 @@ class Service_Page_Teacher_Salary extends Zy_Core_Service{
 
         $serviceData = new Service_Data_Profile();
         $userInfo = $serviceData->getUserInfoByUid($uid);
-        if (empty($userInfo) || $userInfo["state"] != Service_Data_Profile::STUDENT_ABLE) {
+        if (empty($userInfo) || $userInfo["state"] == Service_Data_Profile::STUDENT_DISABLE) {
             throw new Zy_Core_Exception(405, "操作失败, 无法查到相关教师或已下线");
         }
 

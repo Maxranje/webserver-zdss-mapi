@@ -1,34 +1,42 @@
 {
     "type": "page",
-    "title": "账户报表",
+    "title": "留学&升学服务计划订单变更记录",
     "body": {
         "type": "crud",
         "draggable": true,
+        "id" : "change_list",
         "api": {
             "method": "post",
-            "url":"/mapi/records/accountlists",
+            "url": "/mapi/abroadorder/changelists",
             "dataType": "form"
         },
         "perPage": 20,
         "syncLocation":false,
-        "id" : "records_lists",
-        "name" : "records_lists",
-        "columnsTogglable": false,
-        "labelTpl": "${id}",
+        "labelTpl": "${order_id}",
         "filter": {
             "title": "条件搜索",
             "submitText": "",
             "body": [
                 {
                     "type": "input-text",
-                    "name": "nickname",
-                    "label": "学员姓名",
-                    "size": "md",
-                    "placeholder": ""
+                    "name": "order_id",
+                    "size" : "md",
+                    "label": "订单ID",
+                    "placeholder": "严格搜索"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "student_uid",
+                    "label": "学员",
+                    "size": "md",   
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term"
                 },
                 {
                     "type": "input-date-range",
-                    "name": "daterangee",
+                    "name": "date_range",
                     "inline": true,
                     "label": "时间范围"
                 },
@@ -42,12 +50,6 @@
         "headerToolbar": [
             "filter-toggler",
             "bulkActions",
-            {
-                "type": "action",
-                "actionType": "download",
-                "label": "导出Excel",
-                "api": "/mapi/records/accountlists?nickname=${nickname}&daterangee=${daterangee}&is_export=1"
-            },
             {
                 "type": "tpl",
                 "tpl": "共有 ${total} 条数据。",
@@ -73,20 +75,20 @@
         ],
         "columns": [
             {
-                "name": "update_time",
-                "label": "日期",
+                "name": "student_uid",
+                "label": "UID",
                 "type": "text",
                 "toggled": true
             },
             {
-                "name": "uid",
-                "label": "学员UID",
-                "type": "text",
-                "toggled": true
-            },
-            {
-                "name": "nickname",
+                "name": "student_name",
                 "label": "学员名",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "abroadplan_name",
+                "label": "留学&升学计划",
                 "type": "text",
                 "toggled": true
             },
@@ -95,37 +97,35 @@
                 "label": "类型",
                 "type": "mapping",
                 "map": {
-                    "1": "<span class='label label-success'>充值</span>",
-                    "2": "<span class='label label-default'>退款</span>"
+                    "4": "<span class='label label-info'>服务创建</span>",
+                    "5": "<span class='label label-danger'>服务删除</span>",
+                    "6": "<span class='label label-default'>服务完结</span>",
+                    "7": "<span class='label label-success'>服务订单变更</span>",
+                    "8": "<span class='label label-success'>服务增加课时</span>",
+                    "9": "<span class='label label-default'>服务结转</span>"
                 }
             },
             {
-                "name": "capital",
-                "label": "实际金额(元)",
+                "name": "review_state",
+                "label": "审核状态",
                 "type": "text",
                 "toggled": true
             },
             {
-                "name": "plan_name",
-                "label": "充值-计划名称",
+                "name": "change_state",
+                "label": "订单状态",
                 "type": "text",
                 "toggled": true
             },
             {
-                "name": "plan_price",
-                "label": "充值-计划金额(元)",
+                "name": "order_id",
+                "label": "订单id",
                 "type": "text",
                 "toggled": true
             },
             {
-                "name": "refund_balance",
-                "label": "退款-退款金额(元)",
-                "type": "text",
-                "toggled": true
-            },
-            {
-                "name": "refund_back_balance",
-                "label": "退款-还款金额(元)",
+                "name": "duration",
+                "label": "变更课时(小时)",
                 "type": "text",
                 "toggled": true
             },
@@ -136,14 +136,8 @@
                 "toggled": true
             },
             {
-                "name": "partner",
-                "label": "协作人员",
-                "type": "text",
-                "toggled": true
-            },
-            {
                 "type": "container",
-                "label" : "操作备注",
+                "label" : "备注",
                 "popOver": {
                     "body": {
                         "type": "tpl",
@@ -152,27 +146,10 @@
                 }
             },
             {
-                "name": "rop_name",
-                "label": "审核员",
+                "name": "update_time",
+                "label": "修改时间",
                 "type": "text",
-                "toggled": false
-            },
-            {
-                "type": "container",
-                "label" : "审核备注",
-                "toggled": false,
-                "popOver": {
-                    "body": {
-                        "type": "tpl",
-                        "tpl": "${review_remark}"
-                    }
-                }
-            },
-            {
-                "name": "create_time",
-                "label": "创建时间",
-                "type": "text",
-                "toggled": false
+                "toggled": true
             }
         ]
     }

@@ -29,7 +29,7 @@ class Service_Page_Order_Change_Review extends Zy_Core_Service{
 
 
         $serviceData = new Service_Data_Order();
-        $orderInfo = $serviceData->getOrderById($orderId);
+        $orderInfo = $serviceData->getNmorderById($orderId);
         if (empty($orderInfo)) {
             throw new Zy_Core_Exception(405, "操作失败, 没有查到订单信息");
         }

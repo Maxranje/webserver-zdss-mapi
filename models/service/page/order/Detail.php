@@ -36,7 +36,7 @@ class Service_Page_Order_Detail extends Zy_Core_Service{
         }
 
         $serviceData = new Service_Data_Order();
-        $orderInfo = $serviceData->getOrderById($orderId);
+        $orderInfo = $serviceData->getNmorderById($orderId);
         if (empty($orderInfo)) {
             return $emptyResult;
         }   

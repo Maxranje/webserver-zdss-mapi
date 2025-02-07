@@ -164,16 +164,13 @@ class Service_Data_Profile {
     }
 
     // 学生充值
-    public function rechargeUser ($userInfo, $balance, $plan, $remark, $partnerUid) {
+    public function rechargeUser ($userInfo, $balance, $abroadplanInfo, $remark, $partnerUid) {
         $this->daoUser->startTransaction();
         $uid = intval($userInfo['uid']);
 
         $extra = array();
         if (!empty($remark)) {
             $extra['remark'] = $remark;
-        }
-        if (!empty($plan)) {
-            $extra['plan'] = $plan;
         }
         if ($partnerUid > 0) {
             $extra['partner_uid'] = $partnerUid;
@@ -185,7 +182,7 @@ class Service_Data_Profile {
             "type"          => self::RECHARGE,
             "operator"      => OPERATOR,
             "capital"       => $balance,
-            "plan_id"       => empty($plan['id']) ? 0 : intval($plan['id']),
+            "abroadplan_id" => empty($abroadplanInfo['id']) ? 0 : intval($abroadplanInfo['id']),
             "update_time"   => time(),
             "create_time"   => time(),
             "ext"           => empty($extra) ? "" : json_encode($extra),
@@ -204,7 +201,7 @@ class Service_Data_Profile {
         }
 
         $profile = array(
-            "type" => self::RECHARGE,
+            "type" => Service_Data_Review::REVIEW_TYPE_RECHARGE,
             "state" => Service_Data_Review::REVIEW_ING,
             "uid" => $uid, 
             "sop_uid" => OPERATOR,
@@ -261,7 +258,7 @@ class Service_Data_Profile {
         }
 
         $profile = array(
-            "type" => self::REFUND,
+            "type" => Service_Data_Review::REVIEW_TYPE_REFUND,
             "state" => Service_Data_Review::REVIEW_ING,
             "uid" => $uid, 
             "sop_uid" => OPERATOR,

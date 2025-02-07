@@ -9,6 +9,9 @@ class Dao_Order extends Zy_Core_Dao {
         $this->_table       = "tblOrder";
         $this->arrFieldsMap = array(
             "order_id" => "order_id",
+            "type" => "type",
+            "abroadplan_id" => "abroadplan_id",
+            "apackage_id" => "apackage_id",
             "subject_id" => "subject_id",
             "student_uid" => "student_uid",
             "bpid"  => "bpid",

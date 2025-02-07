@@ -12,7 +12,7 @@ class Dao_Capital extends Zy_Core_Dao {
             "uid" => "uid",
             "state" => "state",
             "type" => "type",
-            "plan_id" => "plan_id",
+            "abroadplan_id" => "abroadplan_id",
             "operator" => "operator",
             "capital" => "capital",
             "rop_uid" => "rop_uid",

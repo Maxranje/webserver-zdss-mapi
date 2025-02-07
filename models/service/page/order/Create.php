@@ -85,6 +85,7 @@ class Service_Page_Order_Create extends Zy_Core_Service{
         $orderInfo = sprintf("%s/%s/%s", $birthplace['name'], $subjectInfo['name'], $clasze['name']);
 
         $profile = [
+            "type"              => Service_Data_Order::ORDER_TYPE_NORMAL,
             "bpid"              => intval($claszemap['bpid']), 
             "cid"               => intval($claszemap['cid']), 
             "subject_id"        => intval($claszemap['subject_id']), 
@@ -110,7 +111,7 @@ class Service_Page_Order_Create extends Zy_Core_Service{
         ];
 
         $serviceOrder = new Service_Data_Order();
-        $ret = $serviceOrder->create($profile);
+        $ret = $serviceOrder->createNmorder($profile);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "创建失败, 请重试");
         }

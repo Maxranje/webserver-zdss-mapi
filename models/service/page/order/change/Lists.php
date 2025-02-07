@@ -16,7 +16,9 @@ class Service_Page_Order_Change_Lists extends Zy_Core_Service{
         $pn             = ($pn-1) * $rn;
         list($sts, $ets) = empty($dataRange) ? array(0,0) : explode(",", $dataRange);
 
-        $conds = array();
+        $conds = array(
+            sprintf("type in (%s)", implode(",", Service_Data_Orderchange::$changeNormalMap)),
+        );
 
         if ($orderId > 0) {
             $conds['order_id'] = $orderId;

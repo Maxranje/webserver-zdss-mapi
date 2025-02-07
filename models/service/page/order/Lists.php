@@ -23,6 +23,9 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
 
         $conds = array();
 
+        // 常规订单
+        $conds["type"] = Service_Data_Order::ORDER_TYPE_NORMAL;
+
         if ($orderId > 0) {
             $conds['order_id'] = $orderId;
         }

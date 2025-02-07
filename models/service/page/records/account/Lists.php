@@ -74,7 +74,7 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
         $operator = Zy_Helper_Utils::arrayInt($lists, 'operator');
         $ropuids = Zy_Helper_Utils::arrayInt($lists, 'rop_uid');
         $uids = Zy_Helper_Utils::arrayInt($lists, 'uid');
-        $planIds = Zy_Helper_Utils::arrayInt($lists, 'plan_id');
+        $abroadplanIds = Zy_Helper_Utils::arrayInt($lists, 'abroadplan_id');
         $ids = Zy_Helper_Utils::arrayInt($lists, "id");
 
         $uids = array_unique(array_merge($uids, $operator, $ropuids, $partnerUids));
@@ -83,13 +83,12 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
         $userInfos = $serviceUsers->getUserInfoByUids($uids);
         $userInfos = array_column($userInfos, null, "uid");
 
-        $serviceData = new Service_Data_Plan();
-        $planInfos = $serviceData->getPlanByIds($planIds);
-        $planInfos = array_column($planInfos, null, "id");
+        $serviceData = new Service_Data_Abroadplan();
+        $abroadplanInfos = $serviceData->getAbroadplanByIds($abroadplanIds);
+        $abroadplanInfos = array_column($abroadplanInfos, null, "id");
 
         $serviceData = new Service_Data_Review();
-        $reviews = $serviceData->getReviewByWorkIds($ids);
-        $reviews = array_column($reviews, null, "work_id");
+        $reviews = $serviceData->getLastReviewByWorkIds($ids);
 
         foreach ($lists as &$item) {
             $ext = $item['ext'];
@@ -105,8 +104,8 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
             $item['capital']        = sprintf("%.2f", $item['capital'] / 100);
             $item['remark']         = empty($ext['remark']) ? "" : $ext['remark'];
             $item['review_remark']  = empty($reviews[$item['id']]['remark']) ? "" : $reviews[$item['id']]['remark'];
-            $item["plan_name"]      = empty($planInfos[$item['plan_id']]['name']) ? "" : $planInfos[$item['plan_id']]['name'];
-            $item["plan_price"]     = empty($planInfos[$item['plan_id']]['price']) ? "" : sprintf("%.2f", $planInfos[$item['plan_id']]['price'] / 100);
+            $item["abroadplan_name"]      = empty($abroadplanInfos[$item['abroadplan_id']]['name']) ? "" : $abroadplanInfos[$item['abroadplan_id']]['name'];
+            $item["abroadplan_price"]     = empty($abroadplanInfos[$item['abroadplan_id']]['price']) ? "" : sprintf("%.2f", $abroadplanInfos[$item['abroadplan_id']]['price'] / 100);
             $item["refund_balance"] = empty($ext['refund_balance']) || empty($ext['refund_back_balance']) ? "" : sprintf("%.2f", $ext['refund_balance']/ 100);
             $item["refund_back_balance"] = empty($ext['refund_back_balance']) ? "" : sprintf("%.2f", $ext['refund_back_balance'] /100);
 
@@ -134,8 +133,8 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
                 $item['type'] == "1" ? "充值" : "退款",
                 $item['state'] == "1" ? "审批通过" : ($item['state'] == "2" ? "审批拒绝" : "待审批"),
                 $item['capital'],
-                $item['plan_name'],
-                $item['plan_price'],
+                $item['abroadplan_name'],
+                $item['abroadplan_price'],
                 $item['refund_balance'],
                 $item['refund_back_balance'],
                 $item['operator'],

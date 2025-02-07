@@ -7,23 +7,23 @@ class Service_Page_Student_Recharge extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $uid       = empty($this->request['uid']) ? 0 : intval($this->request['uid']);
-        $reBalance = empty($this->request['recharge_balance']) ? 0 : intval($this->request['recharge_balance'] * 100);
-        $plan      = empty($this->request['plan']) ? "" : trim($this->request['plan']);
-        $remark    = empty($this->request['remark']) ? "" : trim($this->request['remark']);
-        $partner   = empty($this->request['partner_uid']) ? 0 : intval($this->request['partner_uid']);
+        $uid            = empty($this->request['uid']) ? 0 : intval($this->request['uid']);
+        $reBalance      = empty($this->request['recharge_balance']) ? 0 : intval($this->request['recharge_balance'] * 100);
+        $remark         = empty($this->request['remark']) ? "" : trim($this->request['remark']);
+        $partner        = empty($this->request['partner_uid']) ? 0 : intval($this->request['partner_uid']);
+        $abroadplanId   = empty($this->request['abroadplan_id']) ? "" : trim($this->request['abroadplan_id']);
 
         if ($uid <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 用户参数错误");
         }
 
-        $planInfo = array();
-        if (!empty($plan)) {
-            list($planId, $price) = explode("-", $plan);
-            $serviceData = new Service_Data_Plan();
-            $planInfo = $serviceData->getPlanById(intval($planId));
-            if (empty($planInfo)) {
-                throw new Zy_Core_Exception(405, "操作失败, 计划不存在");
+        $abroadplanInfo = array();
+        if (!empty($abroadplanId)) {
+            list($abroadplanId, $price) = explode("-", $abroadplanId);
+            $serviceData = new Service_Data_Abroadplan();
+            $abroadplanInfo = $serviceData->getAbroadplanById(intval($abroadplanId));
+            if (empty($abroadplanInfo)) {
+                throw new Zy_Core_Exception(405, "操作失败, 留学&升学服务计划不存在");
             }
         }
 
@@ -48,7 +48,7 @@ class Service_Page_Student_Recharge extends Zy_Core_Service{
             }
         }
 
-        $ret = $serviceData->rechargeUser($userInfo, $reBalance, $planInfo, $remark, $partner);
+        $ret = $serviceData->rechargeUser($userInfo, $reBalance, $abroadplanInfo, $remark, $partner);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "充值失败, 请重试");
         }

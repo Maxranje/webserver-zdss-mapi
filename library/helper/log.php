@@ -66,7 +66,7 @@ class Zy_Helper_Log {
     {
         $log_path = Zy_Helper_Config::getConfig('config')['log_path'];
 
-        $this->_log_path = ($log_path !== '') ? $log_path : '/var/log/php-fpm/php-fpm.log' ;
+        $this->_log_path = ($log_path !== '') ? BASEPATH . $log_path : BASEPATH . 'logs/service.log';
         file_exists($this->_log_path) OR mkdir($this->_log_path, 0755, TRUE);
 
         if ( ! is_file($this->_log_path) OR ! is_writable($this->_log_path))

@@ -53,7 +53,7 @@ class Service_Page_Column_Teacher_Lists extends Zy_Core_Service{
             if (empty($userInfos[$item['teacher_uid']]['name'])) {
                 continue;
             }
-            if ($userInfos[$item['teacher_uid']]['state'] != Service_Data_Profile::STUDENT_ABLE) {
+            if ($userInfos[$item['teacher_uid']]['state'] == Service_Data_Profile::STUDENT_DISABLE) {
                 continue;
             }
             if (empty($subjectBortherInfo[$item['subject_id']]['name'])) {

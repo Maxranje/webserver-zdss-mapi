@@ -24,6 +24,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
         $teacherUid = empty($this->request['teacher_uid']) ? 0 : intval($this->request['teacher_uid']);
         $areaId     = empty($this->request['area_id']) ? 0 : intval($this->request['area_id']);
         $orderId    = empty($this->request['order_id']) ? 0 : intval($this->request['order_id']);
+        $aporderId  = empty($this->request['aporder_id']) ? 0 : intval($this->request['aporder_id']);
         $daterange  = empty($this->request['daterange']) ? "" : $this->request['daterange'];
         $areaOp     = empty($this->request['area_operator']) ? 0 : intval($this->request['area_operator']);
         $sopuid     = empty($this->request['sop_uid']) ? 0 : intval($this->request['sop_uid']);
@@ -60,9 +61,11 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
         if ($state > 0) {
             $conds[] = sprintf("state = %d", $state);
         }
-        if ($orderId > 0) {
+        if ($orderId > 0 || $aporderId > 0) {
             $serviceData = new Service_Data_Curriculum();
-            $schdules = $serviceData->getListByConds(array('order_id' => $orderId));
+            $schdules = $serviceData->getListByConds(array(
+                sprintf("order_id in (%s)", implode(",", [$orderId, $aporderId]))
+            ));
             if (empty($schdules)) {
                 return array();
             }

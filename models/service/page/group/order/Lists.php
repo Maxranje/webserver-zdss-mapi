@@ -23,7 +23,7 @@ class Service_Page_Group_Order_Lists extends Zy_Core_Service{
         }
 
         $serviceData = new Service_Data_Order();
-        $lists = $serviceData->getOrderByIds($orderIds);
+        $lists = $serviceData->getNmorderByIds($orderIds);
         if (empty($lists)) {
             return array();
         }

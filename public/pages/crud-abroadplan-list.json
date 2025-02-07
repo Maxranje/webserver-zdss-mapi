@@ -1,0 +1,357 @@
+{
+    "type": "page",
+    "title": "配置计划",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "drawer",
+            "label": "新增",
+            "className": "m-r-sm",
+            "primary": true,
+            "drawer": {
+                "position": "right",
+                "size": "lg",
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "abroadplan-create-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/abroadplan/create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "abroadplan_list"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "input-text",
+                            "name": "name",
+                            "label": "留学&升学计划名称",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "price",
+                            "label": "留学&升学计划价格",
+                            "required": true,
+                            "kilobitSeparator" : true,
+                            "suffix": "元",
+                            "desc" : "元为单位, 大于等于0"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "duration",
+                            "label": "留学&升学计划课程时长",
+                            "required": true,
+                            "kilobitSeparator" : true,
+                            "suffix": "小时",
+                            "desc" : "大于等于0"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "api": {
+            "method": "post",
+            "url": "/mapi/abroadplan/lists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "id":"abroadplan_list",
+        "syncLocation":false,
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "name",
+                    "label": "留学&升学计划名称",
+                    "size":"md",
+                    "placeholder": "模糊匹配"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },        
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "id",
+                "label": "ID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "name",
+                "label": "留学&升学计划名称",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "price",
+                "label": "留学&升学计划价格(元)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "duration",
+                "label": "留学&升学计划课程时长(时)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "operator",
+                "label": "最后操作员",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "create_time",
+                "label": "创建时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "update_time",
+                "label": "修改时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "buttons": [
+                    {
+                        "type": "button",
+                        "label": "编辑",
+                        "level": "info",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "abroadplan-edit-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/abroadplan/update",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                                "actionType": "reload",
+                                                "componentId": "abroadplan_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "ID",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "name",
+                                        "label": "留学&升学计划名称",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "price",
+                                        "label": "留学&升学计划价格",
+                                        "required": true,
+                                        "kilobitSeparator" : true,
+                                        "suffix": "元",
+                                        "desc" : "元为单位, 大于等于0"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "duration",
+                                        "label": "留学&升学计划课程时长",
+                                        "required": true,
+                                        "kilobitSeparator" : true,
+                                        "suffix": "小时",
+                                        "desc" : "大于等于0"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "配置检查项",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "配置",
+                            "body": {
+                                "type": "form",
+                                "name": "abroadplan-edit-formv2",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/abroadplan/confirm",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                                "actionType": "reload",
+                                                "componentId": "abroadplan_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "alert",
+                                        "title" : "配置说明",
+                                        "body": "配置后,所有该计划下的服务以此作为模板,服务中可以重新编写,简化后续配置操作",
+                                        "level": "info",
+                                        "showCloseButton": true,
+                                        "showIcon": true
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "hidden": true
+                                    },
+                                    {
+                                        "type":"combo",
+                                        "name":"confirm",
+                                        "label":"新增分类",
+                                        "multiple":true,
+                                        "multiLine":true,
+                                        "minLength" :1,
+                                        "items":[
+                                            {
+                                                "name":"title",
+                                                "label":"检查项分类Label",
+                                                "type":"input-text",
+                                                "placeholder":"请输入检查项分类Label",
+                                                "mode":"horizontal",
+                                                "required":true,
+                                                "desc" :"为学生端展示考虑, 字数不能超过100切只支持 中文/英文/数字"
+                                            },
+                                            {
+                                                "type":"combo",
+                                                "name":"items",
+                                                "label":"检查项分类 - 正文check项",
+                                                "multiple":true,
+                                                "multiLine":true,
+                                                "mode":"horizontal",
+                                                "required":true,
+                                                "minLength" :1,
+                                                "items":[
+                                                    {
+                                                        "name":"title",
+                                                        "label":"单项Label",
+                                                        "type":"input-text",
+                                                        "placeholder":"",
+                                                        "mode":"horizontal",
+                                                        "required":true,
+                                                        "size":"full"
+                                                    },
+                                                    {
+                                                        "name":"sub_title",
+                                                        "label":"单项描述",
+                                                        "type":"input-text",
+                                                        "placeholder":"",
+                                                        "mode":"horizontal",
+                                                        "size":"full",
+                                                        "desc":"每个check项底部会的有提示语, 非必需"
+                                                    },
+                                                    {
+                                                        "name":"key",
+                                                        "type":"input-text",
+                                                        "hidden":true
+                                                    }
+                                                ]
+                                            }
+                                        ]    
+                                    }                            
+                                ]
+                            }
+                        }
+                    },                    
+                    {
+                        "type": "button",
+                        "label": "删除",
+                        "level": "danger",
+                        "actionType": "ajax",
+                        "confirmText": "您确认要删除, 删除计划前提是去掉所有关联订单",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/abroadplan/delete?id=$id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

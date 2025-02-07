@@ -1056,6 +1056,24 @@ button:focus {
   position: relative;
   z-index: 1; }
 
+.right-side-navbar .nav-item .nav-zy {
+  padding: 0;
+  font-size: 1.25rem;
+  background-color: transparent;
+  margin: 0 15px;
+  color: #9b9b9b;
+  border: none;
+  line-height: 1;
+  position: relative;
+  z-index: 1; }
+
+  .right-side-navbar .nav-item .nav-zy.show{
+    color: #007bff;
+  }   
+
+.right-side-navbar .nav-item.dropdown.show {
+  color: #2478fd;}  
+
 .right-side-navbar .nav-item.dropdown .btn .ti-search {
   font-size: 16px; }
 
@@ -1696,7 +1714,7 @@ input::-ms-input-placeholder {
   background-color: #007bff;
   text-align: center;
   font-weight: 700;
-  padding: 1.70rem 2rem;
+  padding: 1rem;
   display: block;
   text-decoration: none;
   color: #ffffff;
@@ -1729,14 +1747,14 @@ input::-ms-input-placeholder {
 
 .accordionItem {
   height: auto;
-  overflow: hidden;
-  max-height: 50em;
+  overflow: scroll;
+  max-height: 80em;
   -webkit-transition: max-height 1s;
   -o-transition: max-height 1s;
   transition: max-height 1s; }
   @media screen and (min-width: 48em) {
     .accordionItem {
-      max-height: 15em;
+      max-height: 80em;
       -webkit-transition: max-height 0.5s;
       -o-transition: max-height 0.5s;
       transition: max-height 0.5s; } }
@@ -8772,7 +8790,36 @@ ul.wysihtml5-toolbar li {
   background-size: cover;
 }
 
+.btn-fill-zy {
+  border:0px;
+}
+.btn-fill-zy:hover .nav-zy,
+.btn-fill-zy:hover .nav-zy.show
+{
+  color: #fff;
+}
+
+.nav-zy-mobile-show{
+  display: none;
+}
+
+.fullscreen-overlay{
+  position: fixed; /* 使用fixed定位，使其相对于视口定位 */
+  top: 0; /* 距离视口顶部0px */
+  left: 0; /* 距离视口左侧0px */
+  width: 100%; /* 宽度为视口的100% */
+  height: 100%; /* 高度为视口的100% */
+  background-color: rgba(0, 0, 0, 0.8); /* 设置背景颜色为半透明黑色 */
+  z-index: 1000; /* 设置z-index，确保它覆盖在其他内容之上 */
+}
+
 @media only screen and (max-width: 480px) {
+  .nav-zy-mobile-show{
+    display: block;
+  }
+  .nav-zy-mobile-hide{
+    display: none;
+  }
   .tobarimg1 {
     background: url(/public/atom/img/mobile-img/mb-1.jpeg) no-repeat;
     width: 100%;
@@ -8793,6 +8840,5 @@ ul.wysihtml5-toolbar li {
     width: 100%;
     height: 100%;
     background-size: cover;
-
   }
 }

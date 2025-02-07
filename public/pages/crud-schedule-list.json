@@ -36,25 +36,13 @@
                 },
                 {
                     "type": "tree-select",
-                    "name": "order_id",
-                    "label": "订单",
-                    "mode": "inline",
-                    "size":"lg",
-                    "initiallyOpen":false,
-                    "searchable":true,
-                    "onlyLeaf":true,
-                    "source": "/mapi/student/lists?is_select=1&nickname=$term&is_defer=1",
-                    "deferApi": "/mapi/order/lists?is_select=1&student_uid=$value"
-                },
-                {
-                    "type": "tree-select",
                     "name": "teacher_uid",
                     "searchable":true,
                     "onlyLeaf":true,
                     "label": "教师",
                     "size":"md",
                     "source": "/mapi/teacher/lists?is_select=1&is_subject=0"
-                },
+                },                
                 {
                     "type": "tree-select",
                     "name": "area_id",
@@ -63,6 +51,30 @@
                     "label": "校区",
                     "size":"md",
                     "source": "/mapi/area/lists?is_onlyarea=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "order_id",
+                    "label": "课程订单",
+                    "mode": "inline",
+                    "size":"md",
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term&is_defer=1",
+                    "deferApi": "/mapi/order/lists?is_select=1&student_uid=$value"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "aporder_id",
+                    "label": "服务订单",
+                    "mode": "inline",
+                    "size":"md",
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term&is_defer=1",
+                    "deferApi": "/mapi/abroadorder/lists?is_select=1&student_uid=$value"
                 },
                 {
                     "type": "tree-select",
@@ -115,6 +127,11 @@
             ]
         },
         "filterTogglable": true,
+        "perPage": 10,
+        "perPageAvailable": [
+            10,
+            20
+        ],
         "bulkActions": [
             {
                 "label": "批量删除",
@@ -375,6 +392,14 @@
                                     }
                                 },
                                 "body": [
+                                    {
+                                        "type": "alert",
+                                        "title" : "说明",
+                                        "body": "对多订单的排课, 检测各项冲突的时间比较长, 请耐心等待!",
+                                        "level": "warning",
+                                        "showCloseButton": true,
+                                        "showIcon": true
+                                    },   
                                     {
                                         "type": "input-text",
                                         "name": "id",

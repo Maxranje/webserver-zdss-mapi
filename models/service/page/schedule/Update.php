@@ -81,7 +81,7 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
 
         $serviceUser = new Service_Data_Profile();
         $userInfo = $serviceUser->getUserInfoByUid($teacherUid);
-        if (empty($userInfo) || $userInfo['state'] != Service_Data_Profile::STUDENT_ABLE) {
+        if (empty($userInfo) || $userInfo['state'] == Service_Data_Profile::STUDENT_DISABLE) {
             throw new Zy_Core_Exception(405, "操作失败, 无法查到老师信息或教师已下线");
         }
 
@@ -145,6 +145,35 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
                     throw new Zy_Core_Exception(406, "操作失败, 教室占用时间有冲突, 请检查教室占用情况, 排课编号分别为" . $jobIds. " 仅做参考");
                 }
             }
+        }
+
+        // check student
+        $serviceCurriculum = new Service_Data_Curriculum();
+        $curriculumList = $serviceCurriculum->getListByConds(array(
+            "schedule_id" => $id,
+            "state" => Service_Data_Schedule::SCHEDULE_ABLE,
+        ), array("order_id", "student_uid", "start_time", "end_time"));
+        if (!empty($curriculumList)) {
+            foreach ($curriculumList as $v) {
+                $needTimes2 = array(
+                    'id'        => $id,
+                    'order_id'  => $v["order_id"],
+                    'sts'       => $needTimes['sts'],
+                    'ets'       => $needTimes['ets'],
+                );
+                // 判断当前这些排课中是否有order排进去, 和时间是否有冲突
+                $ret = $serviceCurriculum->checkStudentTimes(array($needTimes2), $needDays, intval($v['student_uid']));
+                if ($ret === false) {
+                    throw new Zy_Core_Exception(405, "操作失败, 查询学生排课冲突情况失败, 请重新提交");
+                }
+                if (!empty($ret)) {
+                    throw new Zy_Core_Exception(406, sprintf("操作失败, 学生时间有冲突, 请检查, 学员:%s, 订单:%s, 排课编号:%s, 仅做参考", 
+                        $v['student_uid'], 
+                        $v["order_id"],
+                        implode(", ", array_column($ret, 'schedule_id'))));
+                }
+            }
+
         }
 
         $profile = [

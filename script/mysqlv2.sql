@@ -284,15 +284,16 @@ CREATE TABLE `tblCapital` (
   KEY `uid_type` (`uid`, `type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='学生金额变更表';
 
-CREATE TABLE `tblPlan` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `name` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
-  `price` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '价格',
-  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
-  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='计划';
+-- 该能力下线
+-- CREATE TABLE `tblPlan` (
+--   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+--   `name` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
+--   `price` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '价格',
+--   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+--   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+--   `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
+--   PRIMARY KEY (`id`)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='计划';
 
 CREATE TABLE `tblRecords` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -347,3 +348,69 @@ CREATE TABLE `tblReview` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='审核';
 -- alter table tblCapital add column `rop_uid` int(11) NOT NULL DEFAULT '0' COMMENT '审核员uid';
 -- alter table tblCapital add column `state` TINYINT UNSIGNED NOT NULL DEFAULT '1' COMMENT '1正常2拒接3待定';
+
+
+-- v2.1.9 留学计划相关业务更新
+-- 留学计划
+CREATE TABLE `tblAbroadPlan` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
+  `price` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '计划价格',
+  `duration` VARCHAR(11) NOT NULL DEFAULT '0' COMMENT '计划时长',
+  `operator` int(10) unsigned NOT NULL COMMENT '创建人员',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1000 COMMENT='留学计划';
+
+CREATE TABLE `tblApackageConfirm` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `abroadplan_id` int(10) unsigned NOT NULL COMMENT '计划id',
+  `apackage_id` int(10) unsigned NOT NULL COMMENT '服务id',
+  `content` TEXT COMMENT '配置',
+  `operator` int(10) unsigned NOT NULL COMMENT '创建人员',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='留学服务双向检查项';
+
+CREATE TABLE `tblAbroadplanConfirm` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `abroadplan_id` int(10) unsigned NOT NULL COMMENT '计划id',
+  `content` TEXT COMMENT '配置',
+  `operator` int(10) unsigned NOT NULL COMMENT '创建人员',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='留学计划双向检查项';
+
+-- 留学计划订单和班型绑定
+CREATE TABLE `tblAporderpackage` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '学员uid',
+  `abroadplan_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '计划id',
+  `schedule_nums` VARCHAR(11) NOT NULL DEFAULT '0' COMMENT '计划时长',
+  `price` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '价格',
+  `state` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态',
+  `operator` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '操作员UID',
+  `remark` VARCHAR(2000) NOT NULL DEFAULT '0' COMMENT '备注',
+  `confirm` TEXT COMMENT '服务check记录',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=301000  DEFAULT CHARSET=utf8 COMMENT='计划与订单映射表';
+
+alter table tblOrder add column `abroadplan_id` int(11) NOT NULL DEFAULT '0' COMMENT '计划ID';
+alter table tblOrder add column `apackage_id` int(11) NOT NULL DEFAULT '0' COMMENT '包ID';
+alter table tblOrder add column `type` tinyint(2) NOT NULL DEFAULT '1' COMMENT '类型. 1常规, 2计划';
+alter table tblOrder add index `t_a_a` (`type`, `apackage_id`);
+
+alter table tblOrderChange drop index `u_t`;
+alter table tblOrderChange add index `t_u` (`type`, `update_time`);
+
+alter table tblCapital change column `plan_id` `abroadplan_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'abroadplan_id';
+
+-- 这个不写入表里
+insert into tblAbroadPlan (`name`, `price`, `duration`, `operator`, `update_time`, `create_time`) select name, price, 20, 101001, update_time, create_time from tblPlan;

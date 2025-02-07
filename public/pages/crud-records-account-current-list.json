@@ -1,10 +1,11 @@
 {
     "type": "page",
-    "title": "学员实时表",
+    "title": "账户变动实时表",
     "body": [
         {
             "type": "alert",
-            "body": "数据根据时间范围统计, 默认为本月初到当前时间汇总数据, 自定义时间跨度不能超过一年, 剩余课时和账户余额为实时数据, 不随时间变化",
+            "title" : "实时表说明",
+            "body": "<p style='color:red; font-weight:bold;'>1. 列表呈现的是某个时间段内-学员账户数据变更和值</p> <p>2.必须要选定时间周期, 最长跨度不能超过1年, </p><p>3.列:剩余课时和账户余额为实时数据, 不随时间变化</p>",
             "level": "info",
             "showCloseButton": true,
             "showIcon": true,
@@ -17,9 +18,7 @@
                 "method": "post",
                 "url":"/mapi/records/studentlists",
                 "dataType": "form"
-            },
-            "affixHeader":true,
-            "autoFillHeight" : true,            
+            },      
             "perPage": 20,
             "perPageAvailable": [10, 20, 50],
             "syncLocation":false,
@@ -50,6 +49,7 @@
                         "name": "sopuid",
                         "onlyLeaf":true,
                         "label": "学管",
+                        "size":"md",
                         "searchable":true,
                         "initiallyOpen":false,
                         "source": "/mapi/api/soplists"

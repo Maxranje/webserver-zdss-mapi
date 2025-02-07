@@ -23,7 +23,7 @@ class Service_Page_Order_Change_Refund extends Zy_Core_Service{
         }
 
         $serviceData = new Service_Data_Order();
-        $order = $serviceData->getOrderById($orderId);
+        $order = $serviceData->getNmorderById($orderId);
         if (empty($order)) {
             throw new Zy_Core_Exception(405, "操作失败, 没有查到订单信息");
         }
@@ -79,8 +79,8 @@ class Service_Page_Order_Change_Refund extends Zy_Core_Service{
             "ext"               => json_encode(array('remark' => $remark, "isfree" => $order['isfree'])),
         ];
 
-        $serviceData = new Service_Data_Orderchange();
-        $ret = $serviceData->create($profile, $order);
+        $serviceData = new Service_Data_Order();
+        $ret = $serviceData->refundNmorder($profile, $order);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "结转到账户失败, 请重试");
         }

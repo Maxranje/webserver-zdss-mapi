@@ -19,7 +19,7 @@ class Service_Page_Schedule_Band_Create extends Zy_Core_Service{
 
         // check order信息
         $serviceOrder = new Service_Data_Order();
-        $orderInfo = $serviceOrder->getOrderById($orderId);
+        $orderInfo = $serviceOrder->getNmorderById($orderId);
         if (empty($orderInfo)) {
             throw new Zy_Core_Exception(405, "操作失败, 无法获取订单信息");
         }

@@ -15,7 +15,7 @@ class Service_Page_Order_Delete extends Zy_Core_Service{
         }
 
         $serviceOrder = new Service_Data_Order();
-        $order = $serviceOrder->getOrderById($orderId);
+        $order = $serviceOrder->getNmorderById($orderId);
         if (empty($order) || ($order['balance'] > 0 && $order['isfree'] == 0)) {
             throw new Zy_Core_Exception(405, "操作失败, 要删除的订单不存在或还有余额, 请先结转");
         }
@@ -27,7 +27,7 @@ class Service_Page_Order_Delete extends Zy_Core_Service{
         }
 
         // 删除
-        $ret = $serviceOrder->delete($orderId, $order, $orderInfo);
+        $ret = $serviceOrder->deleteNmorder($orderId, $order, $orderInfo);
         if (!$ret) {
             throw new Zy_Core_Exception(405, "删除失败");
         }

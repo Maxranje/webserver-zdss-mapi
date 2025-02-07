@@ -1,6 +1,5 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-const HOSTNAME = "http://zdss.cn//";
 return array(
     "head" => array(
         'pages' => array(
@@ -32,7 +31,7 @@ return array(
         ),
         array(
             "id" => 12,
-            "label"=>"订单中心",
+            "label"=>"课程中心",
             "url"=>"/order",
             "icon"=>"fa fa-newspaper-o",
             "children"=>[
@@ -79,6 +78,56 @@ return array(
                     "schemaApi"=>"get:/public/pages/form-order-band.json"
                 )
             ]
+        ),
+        array(
+            "id" => 14,
+            "label"=>"留学中心",
+            "url"=>"/abroadplan",
+            "icon"=>"fa fa-address-card",
+            "children"=>[
+                array(
+                    "id" => 142,
+                    "label"=>"服务列表",
+                    "url"=>"/aporder/package/list",
+                    "icon"=>"fa fa-reorder",
+                    "schemaApi"=>"get:/public/pages/crud-aporder-package-list.json"
+                ),
+                array(
+                    "id" => 143,
+                    "label"=>"订单列表",
+                    "url"=>"/aporder/order/list",
+                    "icon"=>"fa fa-calendar",
+                    "schemaApi"=>"get:/public/pages/crud-aporder-order-list.json"
+                ),
+                array(
+                    "id" => 144,
+                    "label"=>"变更记录",
+                    "url"=>"/aporder/change/list",
+                    "icon"=>"fa fa-retweet",
+                    "schemaApi"=>"get:/public/pages/crud-aporder-change-list.json"
+                ),                    
+                array(
+                    "id" => 145,
+                    "label"=>"绑定课程",
+                    "url"=>"/aporder/band",
+                    "icon"=>"fa fa-window-restore",
+                    "schemaApi"=>"get:/public/pages/form-abroadplan-order-band.json"
+                ),
+                array(
+                    "id" => 141,
+                    "label"=>"配置计划",
+                    "url"=>"/abroadplan/lists",
+                    "icon"=>"fa fa-list",
+                    "schemaApi"=>"get:/public/pages/crud-abroadplan-list.json"
+                ),
+                array(
+                    "id" => 146,
+                    "label"=>"配置检查项",
+                    "url"=>"/abroadplan/confirm",
+                    "icon"=>"fa fa-check-square-o",
+                    "schemaApi"=>"get:/public/pages/form-abroadplan-confirm.json"
+                )                            
+            ], 
         ),
         array(
             "id" => 3,
@@ -145,6 +194,20 @@ return array(
             "icon"=>"fa fa-bar-chart-o",
             "children"=>[
                 array(
+                    "id" => 53,
+                    "label"=>"账户变动明细表",
+                    "url"=>"/records/account",
+                    "icon"=>"fa fa-list",
+                    "schemaApi"=>"get:/public/pages/crud-records-account-history-list.json"
+                ),
+                array(
+                    "id" => 55,
+                    "label"=>"账户变动实时表",
+                    "url"=>"/records/student",
+                    "icon"=>"fa fa-list",
+                    "schemaApi"=>"get:/public/pages/crud-records-account-current-list.json"
+                ),                
+                array(
                     "id" => 51,
                     "label"=>"结算报表",
                     "url"=>"/records/lists",
@@ -153,35 +216,14 @@ return array(
                 ),
                 array(
                     "id" => 52,
-                    "label"=>"订单报表",
+                    "label"=>"订单信息明细表",
                     "url"=>"/records/order",
                     "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-records-order-list.json"
                 ),
                 array(
-                    "id" => 53,
-                    "label"=>"账户报表",
-                    "url"=>"/records/account",
-                    "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-records-account-list.json"
-                ),
-                array(
-                    "id" => 54,
-                    "label"=>"教师课时",
-                    "url"=>"/records/teacher",
-                    "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-records-teacher-list.json"
-                ),
-                array(
-                    "id" => 55,
-                    "label"=>"学员汇总表",
-                    "url"=>"/records/student",
-                    "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-records-student-list.json"
-                ),
-                array(
                     "id" => 56,
-                    "label"=>"订单汇总表",
+                    "label"=>"订单消耗实时表",
                     "url"=>"/records/orderv2",
                     "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-records-orderv2-list.json"
@@ -192,6 +234,13 @@ return array(
                     "url"=>"/records/sop",
                     "icon"=>"fa fa-list",
                     "schemaApi"=>"get:/public/pages/crud-records-sop-list.json"
+                ),
+                array(
+                    "id" => 54,
+                    "label"=>"教师课时",
+                    "url"=>"/records/teacher",
+                    "icon"=>"fa fa-list",
+                    "schemaApi"=>"get:/public/pages/crud-records-teacher-list.json"
                 )
             ]
         ),
@@ -214,13 +263,6 @@ return array(
                     "url"=>"/subject/claszemap",
                     "icon"=>"fa fa-retweet",
                     "schemaApi"=>"get:/public/pages/crud-claszemap-list.json"
-                ),
-                array(
-                    "id" => 64,
-                    "label"=>"留学与升学服务计划",
-                    "url"=>"/subject/plan",
-                    "icon"=>"fa fa-server",
-                    "schemaApi"=>"get:/public/pages/crud-plan-list.json"
                 ),
             ], 
         ),
@@ -342,7 +384,7 @@ return array(
         ),
         array(
             "id" => 4008,
-            "label"=>"学员金额或课时数据查看权限",
+            "label"=>"学员金额/课时等核心数据读写权限",
         ),
     ),
 );

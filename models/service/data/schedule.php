@@ -272,7 +272,25 @@ class Service_Data_Schedule {
 
         // 学生消费记录 和 删除订单中钱
         foreach ($orderInfos as $order) {
-            $price = intval($order['price']) * $timeLength;
+            $price = 0;
+            // 计划订单不扣, 普通订单需要扣费
+            if ($order['type'] == Service_Data_Order::ORDER_TYPE_NORMAL) {
+                $price = intval($order['price']) * $timeLength;
+
+                // 扣款
+                $conds = array(
+                    "order_id" => intval($order['order_id']),
+                );
+                $orderProfile = array(
+                    sprintf("balance=balance-%d", $price),
+                    'update_time' => time(),
+                );
+                $ret = $daoOrder->updateByConds($conds, $orderProfile);
+                if ($ret == false) {
+                    $this->daoSchedule->rollback();
+                    return false;
+                }                
+            }
 
             $recordsProfile = array(
                 "uid"               => intval($order['student_uid']),
@@ -294,20 +312,6 @@ class Service_Data_Schedule {
                 ))
             );
             $ret = $daoRecords->insertRecords($recordsProfile);
-            if ($ret == false) {
-                $this->daoSchedule->rollback();
-                return false;
-            }
-
-            // 学生订单余额删掉
-            $conds = array(
-                "order_id" => intval($order['order_id']),
-            );
-            $orderProfile = array(
-                sprintf("balance=balance-%d", $price),
-                'update_time' => time(),
-            );
-            $ret = $daoOrder->updateByConds($conds, $orderProfile);
             if ($ret == false) {
                 $this->daoSchedule->rollback();
                 return false;

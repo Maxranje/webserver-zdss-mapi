@@ -78,4 +78,12 @@ class Zy_Core_Service {
         }
         return intval($userInfo['bpid']);
     }
+
+    // 是否有权限并且是学管
+    public function isOperator ($modeId, $sopuid) {
+        if ($this->checkSuper()) {
+            return true;
+        }
+        return (OPERATOR != $sopuid || $this->isModeAble($modeId));
+    }    
 }

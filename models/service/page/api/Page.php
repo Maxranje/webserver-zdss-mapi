@@ -5,7 +5,7 @@ class Service_Page_Api_Page extends Zy_Core_Service{
     // 查询通过登录uid上课俩表, 
     public function execute () {
         if (!$this->checkTeacher() && !$this->checkStudent()) {
-            return ;  
+            return array();
         }
 
         if ($this->checkTeacher()) {

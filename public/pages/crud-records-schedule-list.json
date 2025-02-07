@@ -206,8 +206,14 @@
                 "toggled": true
             },
             {
+                "name": "is_abroadplan",
+                "label": "计划订单",     
+                "type": "text",
+                "toggled": true
+            },
+            {
                 "name": "isfree",
-                "label": "是否免费订单",     
+                "label": "免费订单",     
                 "type": "text",
                 "toggled": true
             },

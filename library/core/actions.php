@@ -110,6 +110,12 @@ class Zy_Core_Actions {
         exit;
     }
 
+    public function redirect404 () {
+        header('HTTP/1.1 301 Moved Permanently');
+        header(sprintf("Location: http://%s/mapi/sign/err", $_SERVER['HTTP_HOST']));
+        exit;
+    }    
+
     public function redirect ($path) {
         header('HTTP/1.1 301 Moved Permanently');
         header(sprintf("Location: http://%s/%s", $_SERVER['HTTP_HOST'], $path));

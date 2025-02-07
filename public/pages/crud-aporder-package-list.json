@@ -1,0 +1,950 @@
+{
+    "type": "page",
+    "title": "服务列表",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "drawer",
+            "label": "新增",
+            "className": "m-r-sm",
+            "primary": true,
+            "drawer": {
+                "position": "right",
+                "size": "lg",
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "abroadorder-package-new-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/abroadorder/packagecreate",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "abroadorder_package_list"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "tree-select",
+                            "name": "student_uid",
+                            "label": "学员",
+                            "initiallyOpen":false,
+                            "searchable":true,
+                            "required": true,
+                            "onlyLeaf":true,
+                            "source": "/mapi/student/lists?is_select=1&nickname=$term"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "tree-select",
+                            "name": "abroadplan_id",
+                            "onlyLeaf":true,
+                            "label": "留学&升学服务计划",
+                            "searchable":true,
+                            "required": true,
+                            "initiallyOpen":false,
+                            "source": "/mapi/abroadplan/lists?is_select=1"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "discount_z",
+                            "label": "折扣",
+                            "addOn": {
+                                "type": "text",
+                                "label": "折"
+                            },
+                            "desc": "选填, 总金额折扣: 10>数字>0, 保留小数点后一位(例如:9.5/8)"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "discount_j",
+                            "label": "减免",
+                            "addOn": {
+                                "type": "text",
+                                "label": "元"
+                            },
+                            "desc": "选填, 总金额减免: 元为单位, 保留小数点后2位"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "remark",
+                            "label": "备注",
+                            "desc": "选填, 限定100字內"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "service",
+                            "name": "abroadorder_package_review_detail",
+                            "initFetch": false,
+                            "className": "mb-5",
+                            "api": "/mapi/abroadorder/packagereview?abroadplan_id=$abroadplan_id&student_uid=$student_uid&discount_j=$discount_j&discount_z=$discount_z",
+                            "body": {
+                                "type": "property",
+                                "labelStyle": {
+                                    "fontWeight": "bold",
+                                    "textTransform": "capitalize"
+                                },
+                                "items": [
+                                    {
+                                        "label": "计划原价",
+                                        "content": "$origin_balance 元"
+                                    },
+                                    {
+                                        "label": "实际服务费",
+                                        "content": "$real_balance 元"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "alert",
+                            "title" : "服务流程",
+                            "body": "学员与计划绑定成服务 > 服务中配置订单 > 订单与排课绑定 ",
+                            "level": "info",
+                            "showCloseButton": true,
+                            "showIcon": true,
+                            "className": "mb-2"
+                        },
+                        {
+                            "type": "alert",
+                            "title" : "课时相关",
+                            "body": "创建服务后, 如总课时不足, 通过增加服务课时(需要审批), 再进行分配到订单",
+                            "level": "info",
+                            "showCloseButton": true,
+                            "showIcon": true,
+                            "className": "mb-2"
+                        },
+                        {
+                            "type": "alert",
+                            "title" : "优惠方式:先折扣后减免. 审批通过从账户扣实际缴费",
+                            "level": "danger",
+                            "showCloseButton": true,
+                            "showIcon": true,
+                            "className": "mb-2"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "id": "abroadorder_package_list",
+        "api": {
+            "method": "post",
+            "url": "/mapi/abroadorder/packagelists",
+            "dataType": "form"
+        },
+        "perPage": 5,
+        "perPageAvailable": [
+            5,
+            10
+        ],
+        "syncLocation": false,
+        "labelTpl": "${order_id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "order_id",
+                    "size": "md",
+                    "label": "订单",
+                    "placeholder": "精确匹配,某订单ID"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "abroadplan_id",
+                    "onlyLeaf":true,
+                    "label": "计划",
+                    "searchable":true,
+                    "initiallyOpen":false,
+                    "size": "md",
+                    "source": "/mapi/abroadplan/lists?is_select=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "student_uid",
+                    "label": "学员",
+                    "size": "md",   
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term"
+                },
+                {
+                    "label": "状态",
+                    "type": "select",
+                    "name": "state",
+                    "value" : "0",
+                    "size" : "md",
+                    "options": [
+                        {
+                            "label": "请选择",
+                            "value": "0"
+                        },
+                        {
+                            "label": "创建审核中",
+                            "value": "12"
+                        },
+                        {
+                            "label": "创建审核拒绝",
+                            "value": "13"
+                        },
+                        {
+                            "label": "有效服务",
+                            "value": "1"
+                        },
+                        {
+                            "label": "服务完结",
+                            "value": "2"
+                        },
+                        {
+                            "label": "服务完结审核中",
+                            "value": "22"
+                        },
+                        {
+                            "label": "结转审核中",
+                            "value": "32"
+                        },
+                        {
+                            "label": "结转审核失败",
+                            "value": "33"
+                        },
+                        {
+                            "label": "结转完成",
+                            "value": "3"
+                        }
+                    ]
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "mode": "cards",
+        "columnsCount": 1,
+        "card": {
+            "header": {
+                "className": "bg-white",
+                "title": "$student_name 【$abroadplan_name】",
+                "subTitle": "ID: $apackage_id - $schedule_nums小时",
+                "description" : "<p>缴费: $real_balance元 / <span style='text-decoration: line-through;'>$origin_balance元 </span> 优惠: $discount_info</p>",
+                "avatarText": "$pic_name",
+                "avatarTextBackground": [
+                    "#1a0603",
+                    "#ed7011",
+                    "#ed7011",
+                    "#1a0603"
+                ],
+                "avatarTextClassName": "text-base"
+            },
+            "body": [
+                {
+                    "type": "container",
+                    "body":{
+                        "type": "grid",
+                        "columns": [
+                            {
+                                "type": "alert",
+                                "title": "双向检查进度",
+                                "level": "info",
+                                "className": "mb-3",
+                                "body" : [
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "each",
+                                        "name": "confirm_data",
+                                        "items": {
+                                            "type": "fieldSet",
+                                            "title": "${item}",
+                                            "collapsable": true,
+                                            "collapsed": true,
+                                            "body": {"type" : "tpl","tpl" : "仅做双勾选状态呈现, 详情查看更多."}
+                                        }
+                                    },
+                                    {
+                                        "label": "查看详情",
+                                        "type": "button",
+                                        "level": "link",
+                                        "actionType": "drawer",
+                                        "visibleOn" : "this.confirm_data && this.apackage_state == 1",
+                                        "drawer": {
+                                            "position": "right",
+                                            "size": "lg",
+                                            "title": "检查项",
+                                            "body": {
+                                                "type": "form",
+                                                "name": "abroadorder-package-confirm-form",
+                                                "api": {
+                                                    "method": "post",
+                                                    "url": "/mapi/abroadorder/confirmupdate?apackage_id=$apackage_id&is_check=1",
+                                                    "dataType": "form"
+                                                },
+                                                "onEvent": {
+                                                    "click": {
+                                                        "actions": [
+                                                            {
+                                                            "actionType": "reload",
+                                                            "componentId": "abroadorder_package_list"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "body": {
+                                                    "type": "service",
+                                                    "schemaApi": "/mapi/abroadorder/confirmdetail?apackage_id=$apackage_id"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "xs" : 8,
+                                "type": "container",
+                                "body":{
+                                    "type": "crud",
+                                    "mode": "cards",
+                                    "source": "$order_lists",
+                                    "placeholder": "暂无订单信息",
+                                    "columnsCount": 3,
+                                    "card": {
+                                        "header": {
+                                            "className": "bg-white",
+                                            "title": "$subject_name / $clasze_name",
+                                            "subTitle": "已绑定: $band_duration小时",
+                                            "description" : "已结算: $check_duration小时"
+                                        },
+                                        "body" : {
+                                            "type": "flex",
+                                            "items": [{
+                                                "type": "progress",
+                                                "name" : "progress",
+                                                "mode": "dashboard",
+                                                "label" : "绑定",   
+                                                "strokeWidth": 12,
+                                                "gapPosition": "bottom",
+                                                "map": [
+                                                    "bg-success",
+                                                    "bg-warning",
+                                                    "bg-danger"
+                                                ]  
+                                            }]
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "tpl",
+                    "className": "m-t text-right",
+                    "tpl" :"<p><span>操作员: $operator_name</span>  <span class='m-l'> 创建时间 $create_time</span></p>"
+                }
+            ],
+            "toolbar": [
+                {
+                    "type": "tpl",
+                    "tpl": "课时超$schedule_nums_more小时",
+                    "visibleOn" : "this.schedule_nums_more > 0",
+                    "className": "label label-info mx-1 text-sm"
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "创建审核中",
+                    "visibleOn" : "this.apackage_state == 12",
+                    "className": "label label-danger mx-1 text-sm"
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "创建审核拒绝",
+                    "visibleOn" : "this.apackage_state == 13",
+                    "className": "label label-default mx-1 text-sm"
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "课时调整审核中",
+                    "visibleOn" : "this.apackage_state == 4",
+                    "className": "label label-danger mx-1 text-sm"
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "已完结",
+                    "visibleOn" : "this.apackage_state == 2",
+                    "className": "label label-default mx-1 text-sm"
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "完结审核中",
+                    "visibleOn" : "this.apackage_state == 22",
+                    "className": "label label-danger mx-1 text-sm"
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "已结转,目标服务:$transfer_apackage_id",
+                    "visibleOn" : "this.apackage_state == 3",
+                    "className": "label label-default mx-1 text-sm"
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "结转审核中",
+                    "visibleOn" : "this.apackage_state == 32",
+                    "className": "label label-danger mx-1 text-sm"
+                },                    
+                {
+                    "type": "tpl",
+                    "tpl": "审核拒绝的结转新订单",
+                    "visibleOn" : "this.apackage_state == 33",
+                    "className": "label label-danger mx-1 text-sm"
+                },                            
+                {
+                    "type": "dropdown-button",
+                    "level": "link",
+                    "align": "right",
+                    "icon": "fa fa-ellipsis-h",
+                    "className": "pr-1 flex m-l",
+                    "hideCaret": true,
+                    "buttons": [
+                        {
+                            "type": "button",
+                            "label": "配置订单",
+                            "disabledOn": "this.is_amount != 1 || this.apackage_state != 1",
+                            "actionType": "drawer",
+                            "drawer": {
+                                "position": "right",
+                                "size": "lg",
+                                "title": "配置订单",
+                                "body": {
+                                    "type": "form" ,
+                                    "name": "abroadorder-package-order",
+                                    "onEvent": {
+                                        "click": {
+                                            "actions": [
+                                                {
+                                                    "actionType": "reload",
+                                                    "componentId": "abroadorder_package_list"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "body": [
+                                        {
+                                            "type": "alert",
+                                            "title" : "配置说明",
+                                            "body": "课时不足时(超过默认计划课时), 可以通过提工单方式, 申请增加课时!",
+                                            "level": "info",
+                                            "showCloseButton": true,
+                                            "showIcon": true,
+                                            "className": "mb-2"
+                                        },   
+                                        {
+                                            "type": "fieldSet",
+                                            "title": "基本信息",
+                                            "collapsable": true,
+                                            "body": {
+                                                "type": "property",
+                                                "column": 2,
+                                                "className":"mb-4",
+                                                "items": [
+                                                    {
+                                                        "label" :  "留学&升学服务计划",
+                                                        "content" :  "$abroadplan_name",
+                                                        "span" : 2
+                                                    },
+                                                    {
+                                                        "label" :  "计划默认课时",
+                                                        "content" :  "$abroadplan_duration小时"
+                                                    },
+                                                    {   
+                                                        "label" :  "服务配置课时",
+                                                        "content" :  "$schedule_nums小时"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "type": "fieldSet",
+                                            "title": "订单信息",
+                                            "collapsable": true,
+                                            "body": [
+                                                {
+                                                    "type": "service",
+                                                    "api": "/mapi/abroadorder/lists?apackage_id=$apackage_id",
+                                                    "name": "abroadorder_package_order_lists",
+                                                    "body": {
+                                                        "type": "cards",
+                                                        "source": "$rows",
+                                                        "card": {
+                                                            "header": {
+                                                                "className": "bg-white",
+                                                                "title": "【ID: $order_id】$abroadplan_name",
+                                                                "subTitle": "$birthplace / $subject_name / $clasze_name",
+                                                                "description" : "<p>已配课时:$schedule_nums小时<br/>已绑课时:$band_duration小时<br/>结算课时:$check_duration小时</p>"
+                                                            },
+                                                            "actions": [
+                                                                {
+                                                                    "type": "button",
+                                                                    "level": "link",
+                                                                    "icon": "fa fa-edit",
+                                                                    "actionType": "dialog",
+                                                                    "dialog": {
+                                                                        "size": "lg",
+                                                                        "title": "编辑订单",
+                                                                        "body": {
+                                                                            "type": "form",
+                                                                            "name": "abroadorder-package-order-edit-form",
+                                                                            "api": {
+                                                                                "method": "post",
+                                                                                "url": "/mapi/abroadorder/update?order_id=$order_id&apackage_id=$apackage_id",
+                                                                                "dataType": "form"
+                                                                            },
+                                                                            "reload":"abroadorder_package_order_lists",
+                                                                            "body": [
+                                                                                {
+                                                                                    "type": "input-text",
+                                                                                    "name": "order_id",
+                                                                                    "label": "订单ID",
+                                                                                    "disabled": true
+                                                                                },
+                                                                                {
+                                                                                    "type": "divider"
+                                                                                },
+                                                                                {
+                                                                                    "type": "input-number",
+                                                                                    "name": "update_schedule_nums",
+                                                                                    "label": "增减课时",
+                                                                                    "required": true,
+                                                                                    "precision": 2,
+                                                                                    "step": 0.50,
+                                                                                    "desc" :  "正数增加, 负数减少, 减少数不能超过当前服务课时-已绑定课时, 尽可能以1小时或0.5小时为单位跨度, 便于后续排课设定时间."
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "type": "button",
+                                                                    "icon": "fa fa-remove",
+                                                                    "actionType": "ajax",
+                                                                    "level":"danger",
+                                                                    "confirmText": "您确认要删除订单么, 绑定的课程需要提前删除, 否则无法删除订单!",
+                                                                    "api": {
+                                                                        "method": "post",
+                                                                        "url": "/mapi/abroadorder/delete?order_id=$order_id&apackage_id=$apackage_id",
+                                                                        "dataType": "form"
+                                                                    },
+                                                                    "reload":"abroadorder_package_order_lists"
+                                                                    
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "type": "divider"
+                                                },
+                                                {
+                                                    "type": "card",
+                                                    "body": {
+                                                        "type": "wrapper",
+                                                        "className": "h-32 flex items-center justify-center",
+                                                        "body": [
+                                                            {
+                                                                "type": "wrapper",
+                                                                "size": "none",
+                                                                "className": "text-center",
+                                                                "body": {
+                                                                    "type": "icon",
+                                                                    "icon": "plus",
+                                                                    "className": "text-xl"
+                                                                }
+                                                            },
+                                                            {
+                                                                "type": "wrapper",
+                                                                "size": "none",
+                                                                "body": "添加"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "itemAction":  {
+                                                        "type": "button",
+                                                        "icon": "fa fa-pencil",
+                                                        "tooltip": "添加",
+                                                        "actionType": "dialog",
+                                                        "dialog": {
+                                                            "size": "lg",
+                                                            "title": "添加",
+                                                            "body": {
+                                                                "type": "form",
+                                                                "name": "abroadorder-package-order-add-form",
+                                                                "api": {
+                                                                    "method": "post",
+                                                                    "url": "/mapi/abroadorder/create?apackage_id=$apackage_id",
+                                                                    "dataType": "form"
+                                                                },
+                                                                "reload":"abroadorder_package_order_lists",
+                                                                "body": [
+                                                                    {
+                                                                        "type": "tree-select",
+                                                                        "name": "claszemap_id",
+                                                                        "onlyLeaf" :  true,
+                                                                        "label": "科目&班型",
+                                                                        "searchable" :  true,
+                                                                        "required": true,
+                                                                        "initiallyOpen" :  false,
+                                                                        "source": "/mapi/subject/claszelists?type=1&student_uid=$student_uid"
+                                                                    },
+                                                                    {
+                                                                        "type": "divider"
+                                                                    },
+                                                                    {
+                                                                        "type": "input-number",
+                                                                        "name": "order_duration",
+                                                                        "label": "配置课时",
+                                                                        "required": true,
+                                                                        "precision": 2,
+                                                                        "min" : 0,
+                                                                        "step": 0.50,
+                                                                        "desc" :  "尽可能以1小时或0.5小时为单位跨度, 便于后续排课设定时间."
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                }     
+                                            ]
+                                        }                         
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "label": "加课时",
+                            "actionType": "dialog",
+                            "disabledOn": "this.is_amount !== 1 || this.apackage_state != 1",
+                            "dialog": {
+                                "size": "lg",
+                                "title": "加课时",
+                                "body": {
+                                    "type": "form",
+                                    "name": "sample-abroadorder-adduration-form",
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/abroadorder/packageduration",
+                                        "dataType": "form"
+                                    },
+                                    "onEvent": {
+                                        "click": {
+                                            "actions": [
+                                                {
+                                                "actionType": "reload",
+                                                "componentId": "abroadorder_package_list"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "body": [
+                                        {
+                                            "type": "alert",
+                                            "title" : "操作流程",
+                                            "body": "提交配置 > 工单审核 > 审核通过后加课时",
+                                            "level": "info",
+                                            "showCloseButton": true,
+                                            "showIcon": true
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "apackage_id",
+                                            "hidden": true
+                                        },
+                                        {
+                                            "type":"input-number",
+                                            "name":"duration",
+                                            "label":"增加课时数",
+                                            "required":true,
+                                            "precision":2,
+                                            "step":0.50,
+                                            "desc" : "必须大于0, 尽可能以1小时或0.5小时为单位跨度, 便于后续排课设定时间."
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "add_duration_remark",
+                                            "label": "备注"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "label": "结转",
+                            "disabledOn": "this.is_amount != 1 || this.apackage_state != 1",
+                            "actionType": "drawer",
+                            "drawer": {
+                                "size": "lg",
+                                "name":"transfer_dialog",
+                                "title": "结转",
+                                "body":{
+                                    "type": "form",
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/abroadorder/packagetransfer",
+                                        "dataType": "form"
+                                    },
+                                    "title": "",
+                                    "name": "transfer_abroadorder_package_detail_form",
+                                    "id" : "transfer_abroadorder_package_detail_form",
+                                    "autoFocus": true,
+                                    "body": [
+                                        {
+                                            "type": "alert",
+                                            "title" : "结转说明",
+                                            "body": {
+                                                "type":"html",
+                                                "html" : "<p>1. 结转操作需走审批流程, 审批期间和审批通过后, 原服务属结转态, 服务和归属的订单不能进行常规操作. 未通过则正常使用</p><p>2. 结转操作可结转到新服务或已有服务, 结转后会把原服务的课时(未分配给订单和归属订单中未绑定的)转移给结转目标服务 </p><p style='color:red;font-weight:bold;'>3. 结转有较强操作前提, 需要原服务没有已绑定未结算的课程, 以保证给审核前后的结转课时一致</p><p>4. 系统针对第四项, 提供<一键解绑>能力, 解绑服务所有已绑定未结算课程 (可通过[排课管理-排课列表]看到相关课程)</p><p>5. 结转到新服务后, 双向检查需要重新配置</p>"
+                                            },
+                                            "level": "warning",
+                                            "showCloseButton": true,
+                                            "showIcon": true,
+                                            "className": "mb-5"
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "apackage_id",
+                                            "label": "原服务ID",
+                                            "hidden": true
+                                        },
+                                        {
+                                            "type": "fieldSet",
+                                            "title": "服务状态",
+                                            "collapsable": true,
+                                            "body": [
+                                                {
+                                                    "type": "property",
+                                                    "labelStyle": {
+                                                        "fontWeight": "bold",
+                                                        "textTransform": "capitalize"
+                                                    },
+                                                    "column": 3,
+                                                    "items": [
+                                                        {
+                                                            "label": "服务未分配课时",
+                                                            "content": "$apackage_order_ungive小时"
+                                                        },
+                                                        {
+                                                            "label": "订单未绑定总课时",
+                                                            "content": "$apackage_order_unband小时"
+                                                        },
+                                                        {
+                                                            "label": "订单未结算总课时",
+                                                            "content": "$apackage_order_uncheck小时"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "button",
+                                                    "label": "一键解绑",
+                                                    "className":"mt-4",
+                                                    "icon": "fa fa-unlink",
+                                                    "hiddenOn" : "this.apackage_order_uncheck <= 0",
+                                                    "actionType": "ajax",
+                                                    "api": {
+                                                        "method": "get",
+                                                        "url": "/mapi/abroadorder/unbind?apackage_id=$apackage_id"
+                                                    },
+                                                    "desc" : "一键解绑后请重新进入结转页面",
+                                                    "level":"danger",
+                                                    "reload":"abroadorder_package_list",
+                                                    "close":true,
+                                                    "confirmText": "确认后, 会对服务的所有订单中未结算的排课进行自动解绑, 如需结转, 这步操作是必须的, 否则请不要确认, 只有学管和特定权限才可以操作!"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "fieldSet",
+                                            "title": "结转操作",
+                                            "collapsable": true,
+                                            "body": [                                                                                                                                           
+                                                {
+                                                    "type": "switch",
+                                                    "name": "is_new",
+                                                    "onText": "结转新服务",
+                                                    "value": "1",
+                                                    "offText": "结转到已有服务",
+                                                    "trueValue" : 1,
+                                                    "falseValue" : 0
+                                                },
+                                                {
+                                                    "type": "tree-select",
+                                                    "name": "transfer_abroadplan_id",
+                                                    "onlyLeaf":true,
+                                                    "label": "留学&升学服务计划",
+                                                    "searchable":true,
+                                                    "initiallyOpen":false,
+                                                    "visibleOn": "${is_new == 1}",
+                                                    "source": "/mapi/abroadplan/lists?is_select=1"
+                                                },
+                                                {
+                                                    "type": "tree-select",
+                                                    "name": "transfer_apackage_id",
+                                                    "label": "学员有效服务",
+                                                    "size": "md",   
+                                                    "initiallyOpen":false,
+                                                    "searchable":true,
+                                                    "onlyLeaf":true,
+                                                    "visibleOn": "${is_new == 0}", 
+                                                    "source": "/mapi/abroadorder/packagelists?student_uid=$student_uid&is_select=1&filter_id=$apackage_id"
+                                                },
+                                                {
+                                                    "type": "divider",
+                                                    "visibleOn": "${is_new == 1}"
+                                                },
+                                                {
+                                                    "type": "input-text",
+                                                    "name": "transfer_discount_z",
+                                                    "visibleOn": "${is_new == 1}",
+                                                    "label": "折扣",
+                                                    "addOn": {
+                                                        "type": "text",
+                                                        "label": "折"
+                                                    },
+                                                    "desc": "选填, 总金额折扣: 10>数字>0, 保留小数点后一位(例如:9.5/8)"
+                                                },
+                                                {
+                                                    "type": "divider",
+                                                    "visibleOn": "${is_new == 1}"
+                                                },
+                                                {
+                                                    "type": "input-text",
+                                                    "name": "transfer_discount_j",
+                                                    "visibleOn": "${is_new == 1}",
+                                                    "label": "减免",
+                                                    "addOn": {
+                                                        "type": "text",
+                                                        "label": "元"
+                                                    },
+                                                    "desc": "选填, 总金额减免: 元为单位, 保留小数点后2位"
+                                                },
+                                                {
+                                                    "type": "divider",
+                                                    "visibleOn": "${is_new == 1}"
+                                                },
+                                                {
+                                                    "type": "input-text",
+                                                    "name": "transfer_remark",
+                                                    "visibleOn": "${is_new == 1}",
+                                                    "label": "备注",
+                                                    "desc": "选填, 限定100字內"
+                                                },
+                                                {
+                                                    "type": "divider",
+                                                    "visibleOn": "${is_new == 1}"
+                                                },
+                                                {
+                                                    "type": "service",
+                                                    "name": "transfer_abroadorder_package_review_detail",
+                                                    "initFetch": false,
+                                                    "className": "mb-5",
+                                                    "visibleOn": "${is_new == 1}",
+                                                    "api": "/mapi/abroadorder/packagereview?abroadplan_id=$transfer_abroadplan_id&student_uid=$student_uid&discount_j=$transfer_discount_j&discount_z=$transfer_discount_z",
+                                                    "body": {
+                                                        "type": "property",
+                                                        "labelStyle": {
+                                                            "fontWeight": "bold",
+                                                            "textTransform": "capitalize"
+                                                        },
+                                                        "items": [
+                                                            {
+                                                                "label": "计划原价",
+                                                                "content": "$origin_balance 元"
+                                                            },
+                                                            {
+                                                                "label": "实际服务费",
+                                                                "content": "$real_balance 元"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }                                    
+                                    ]
+                                }
+                            }
+                        },      
+                        {
+                            "type": "button",
+                            "label": "完结",
+                            "actionType": "ajax",
+                            "disabledOn": "this.is_amount != 1 || this.apackage_state != 1 || this.uncheck_duration > 0",
+                            "level":"danger",
+                            "confirmText": "您确认让服务完结么, 服务完结前提是需要检查项都已完成且无可排课订单, 提交完结需要过单审核, 服务设置完结后不可逆转/不可配置/不可排课/不可结转, 谨慎操作!",
+                            "api": {
+                                "method": "get",
+                                "url": "/mapi/abroadorder/packagedone?apackage_id=$apackage_id&action_type=over"
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "label": "删除",
+                            "actionType": "ajax",
+                            "disabledOn": "this.is_amount != 1 || (this.apackage_state != 13 && this.apackage_state != 1)" ,
+                            "level":"danger",
+                            "confirmText": "您确认要删除服务么, 完结/结转/审核中/存在订单的服务均无法删除, 删除服务不会退还金额到学员账户!",
+                            "api": {
+                                "method": "get",
+                                "url": "/mapi/abroadorder/packagedelete?apackage_id=$apackage_id"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

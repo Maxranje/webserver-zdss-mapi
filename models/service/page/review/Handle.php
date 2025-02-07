@@ -31,23 +31,23 @@ class Service_Page_Review_Handle extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 工单不存在或已处理, 请刷新工单列表重试");
         }
 
+        // 查询用户信息
+        $serviceProfile = new Service_Data_Profile();
+        $userInfo = $serviceProfile->getUserInfoByUid(intval($review['uid']));
+        if (empty($userInfo)) {
+            throw new Zy_Core_Exception(405, "操作失败, 工单关联用户异常或已被删除, 请检查");
+        }
+
         // 查询工单关联信息
         $workID = intval($review['work_id']);
-        if ($review['type'] == Service_Data_Profile::RECHARGE || 
-            $review['type'] == Service_Data_Profile::REFUND) {  // 充值或退款
+        if ($review['type'] == Service_Data_Review::REVIEW_TYPE_RECHARGE || 
+            $review['type'] == Service_Data_Review::REVIEW_TYPE_REFUND) {   // 学员充值和退款
 
             // 查询账户数据
             $serviceData = new Service_Data_Capital();
             $capital = $serviceData->getCapitalById($workID);
             if (empty($capital)) {
                 throw new Zy_Core_Exception(405, "操作失败, 工单关联业务不存在");
-            }
-
-            // 查询用户信息
-            $serviceProfile = new Service_Data_Profile();
-            $userInfo = $serviceProfile->getUserInfoByUid(intval($review['uid']));
-            if (empty($userInfo)) {
-                throw new Zy_Core_Exception(405, "操作失败, 工单关联用户异常或已被删除, 请检查");
             }
 
             // 更新db
@@ -60,6 +60,46 @@ class Service_Page_Review_Handle extends Zy_Core_Service{
                 throw new Zy_Core_Exception(405, "审核失败, 请重试");
             }
 
+        } else if ($review["type"] == Service_Data_Review::REVIEW_TYPE_APACKAGE_CREATE || 
+            $review["type"] == Service_Data_Review::REVIEW_TYPE_APACKAGE_DURATION || 
+            $review["type"] == Service_Data_Review::REVIEW_TYPE_APACKAGE_DONE || 
+            $review["type"] == Service_Data_Review::REVIEW_TYPE_APACKAGE_TRANSFER) { // 服务审核
+            
+            // 查数据
+            $serviceData = new Service_Data_Aporderpackage();
+            $apackageInfo = $serviceData->getAbroadpackageById($workID);
+            if (empty($apackageInfo)) {
+                throw new Zy_Core_Exception(405, "操作失败, 工单关联留学服务不存在");
+            }
+
+            // 留学计划
+            $serviceData = new Service_Data_Abroadplan();
+            $abroadplanInfo = $serviceData->getAbroadplanById(intval($apackageInfo["abroadplan_id"]));
+            if (empty($abroadplanInfo)) {
+                throw new Zy_Core_Exception(405, "操作失败, 服务关联留学计划不存在, err:" .$apackageInfo["abroadplan_id"]);
+            }
+
+            if ($review["type"] == Service_Data_Review::REVIEW_TYPE_APACKAGE_CREATE) { // 创建
+                if ($apackageInfo['state'] != Service_Data_Aporderpackage::APORDER_STATUS_ABLE_PEND) {
+                    throw new Zy_Core_Exception(405, "操作失败, 工单关联业务状态不是审核中");
+                }
+                $ret = $serviceReview->apackageCreateHandle($id, $userInfo, $apackageInfo, $abroadplanInfo, $remark, $state);
+            } else if ($review['type'] == Service_Data_Review::REVIEW_TYPE_APACKAGE_DURATION){ // 加课时
+                $review['ext'] = json_decode($review["ext"],true);
+                if (empty($review['ext']["schedule_nums"]) || $review['ext']["schedule_nums"] <= 0) {
+                    throw new Zy_Core_Exception(405, "操作失败, 留学服务调课时工单异常, 调整课时小于0, 无法审批, 请联系超管查看");
+                }
+                $ret = $serviceReview->apackageDurationAddHandle($id, $userInfo, $apackageInfo, $abroadplanInfo, $review, $remark, $state);
+            } else if ($review['type'] == Service_Data_Review::REVIEW_TYPE_APACKAGE_DONE){
+                $ret = $serviceReview->apackageDoneHandle($id, $userInfo, $apackageInfo, $abroadplanInfo, $remark, $state);
+            } else if ($review['type'] == Service_Data_Review::REVIEW_TYPE_APACKAGE_TRANSFER){
+                $review['ext'] = json_decode($review["ext"],true);
+                $ret = $serviceReview->apackageTransferHandle($id, $userInfo, $apackageInfo, $abroadplanInfo, $remark, $review,$state);
+            }
+            
+            if (!$ret) {
+                throw new Zy_Core_Exception(405, "审核失败, 请重试");
+            }
         } else {
             throw new Zy_Core_Exception(405, "操作失败, 工单类型错误, 联系系统管理员");
         }

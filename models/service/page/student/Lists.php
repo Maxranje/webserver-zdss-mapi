@@ -104,43 +104,37 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
 
         // 获取订单量
         $serviceData = new Service_Data_Order();
-        $orderInfos = $serviceData->getOrderCountByStudentUids($studentUids);
-        $orderInfos = array_column($orderInfos, null, 'student_uid');
+        $orderCount = $serviceData->getNmorderTotalBySuids($studentUids);
 
-        // 获取待结算
-        // $serviceData = new Service_Data_Curriculum();
-        // $scheduleCount = $serviceData->getScheduleTimeCountByStudentUid($studentUids);
-
-        $isModeRecharge = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_RECHARGE);
-        $isModeRefund = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_REFUND);
-        $isModeShowAmount = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_AMOUNT_HANDLE);
-        $isModeEdit = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_EDIT);
-        $isPartner = $this->checkPartner();
+        // get role
+        $isModeRecharge     = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_RECHARGE);
+        $isModeRefund       = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_REFUND);
+        $isPartner          = $this->checkPartner();
 
         $result = array();
         foreach ($lists as $item) {
             $ext = empty($item["ext"])? array() : json_decode($item['ext'], true);
-            $item['is_partner']  = $isPartner ? 1 : 0;
-            $item["remark"]      = empty($ext['remark']) ? "" : $ext['remark'];
-            $item['order_count'] = empty($orderInfos[$item['uid']]['order_count']) ? "-" : $orderInfos[$item['uid']]['order_count'];
-            $item['order_balance_info'] = empty($orderInfos[$item['uid']]['balance']) ? "0.00" : sprintf("%.2f", $orderInfos[$item['uid']]['balance'] / 100);
-            $item['balance_info']= sprintf("%.2f", $item['balance'] / 100);
-            $item['total_balance']= empty($ext['total_balance']) ? "0.00" : sprintf("%.2f", $ext['total_balance'] / 100);
-            //$item['uncheck_schedule_nums'] = empty($scheduleCount[$item['uid']]) ? "-" : sprintf("%.2f小时", $scheduleCount[$item['uid']]);
-            $item['birthplace']  = empty($birthplaces[$item['bpid']]['name']) ? "" : $birthplaces[$item['bpid']]['name'];
-            $item['is_re']       = $isModeRecharge ? 1 : 0;
-            $item['is_rd']       = $isModeRefund ? 1 : 0;
-            $item["is_edit"]     = $isModeEdit || $item["sop_uid"] == OPERATOR ? 1:0;
-            $item['sop_name']    = empty($sopInfos[$item['sop_uid']]['nickname']) ? "" : $sopInfos[$item['sop_uid']]['nickname'];
-            $item['create_time'] = date("Y年m月d日", $item['create_time']);
-            $item['update_time'] = date("Y年m月d日", $item['update_time']);
+            $item['is_partner']         = $isPartner ? 1 : 0;
+            $item["remark"]             = empty($ext['remark']) ? "" : $ext['remark'];
+            $item['order_count']        = $orderCount[$item['uid']]['count'];
+            $item['order_balance']      = sprintf("%.2f", $orderCount[$item['uid']]['balance'] / 100);
+            $item['balance_f']          = sprintf("%.2f", $item['balance'] / 100);
+            $item['total_balance']      = empty($ext['total_balance']) ? "0.00" : sprintf("%.2f", $ext['total_balance'] / 100);
+            $item['birthplace']         = empty($birthplaces[$item['bpid']]['name']) ? "" : $birthplaces[$item['bpid']]['name'];
+            $item['sop_name']           = empty($sopInfos[$item['sop_uid']]['nickname']) ? "" : $sopInfos[$item['sop_uid']]['nickname'];
+            $item['create_time']        = date("Y年m月d日", $item['create_time']);
+            $item['update_time']        = date("Y年m月d日", $item['update_time']);
+            $item['is_re']              = $isModeRecharge ? 1 : 0;
+            $item['is_rd']              = $isModeRefund ? 1 : 0;
+            $item["is_edit"]            = $this->isOperator(Service_Data_Roles::ROLE_MODE_STUDENT_EDIT, $item["sop_uid"]) ? 1 : 0;
             unset($item['passport']);
-
-            if (!$isModeShowAmount && $item["sop_uid"] != OPERATOR) {
-                $item["order_balance_info"] = "***";
-                $item["balance"] = "***";
-                $item["balance_info"] = "***";
-                $item["total_balance"] = "***";
+            
+            if (!$this->isOperator(Service_Data_Roles::ROLE_MODE_STUDENT_AMOUNT_HANDLE, $item["sop_uid"])){
+                $item["order_balance"]      = "***";
+                $item["balance"]            = "***";
+                $item["balance_f"]          = "***";
+                $item["total_balance"]      = "***";
+                $item["apackage_balance"]   = "***";
                 unset($item["ext"]);
             }
             $result[] = $item;

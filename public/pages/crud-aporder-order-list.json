@@ -1,0 +1,285 @@
+{
+    "type": "page",
+    "title": "服务订单列表",
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "id": "aporder_order_list",
+        "api": {
+            "method": "post",
+            "url": "/mapi/abroadorder/lists",
+            "dataType": "form"
+        },
+        "perPage": 10,
+        "perPageAvailable": [
+            5,
+            10
+        ],
+        "syncLocation": false,
+        "labelTpl": "${order_id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "order_id",
+                    "size": "md",
+                    "label": "订单",
+                    "placeholder": "精确匹配,某订单ID"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "abroadplan_id",
+                    "onlyLeaf":true,
+                    "label": "计划",
+                    "size": "md",  
+                    "searchable":true,
+                    "initiallyOpen":false,
+                    "source": "/mapi/abroadplan/lists?is_select=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "search_apackage_id",
+                    "label": "服务",
+                    "size": "md",   
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "source": "/mapi/abroadorder/packagelists?is_select=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "student_uid",
+                    "label": "学员",
+                    "size": "md",   
+                    "initiallyOpen":false,
+                    "searchable":true,
+                    "onlyLeaf":true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term"
+                },            
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "mode": "cards",
+        "columnsCount": 1,
+        "card": {
+            "header": {
+                "className": "bg-white",
+                "title": "$student_name  ($birthplace / $subject_name / $clasze_name)",
+                "subTitle": "订单ID: $order_id",
+                "description" : "<p>留学&升学服务计划: $abroadplan_name </p>"
+            },
+            "body": [
+
+                {
+                    "type": "property",
+                    "labelStyle": {
+                        "fontWeight": "bold",
+                        "textTransform": "capitalize"
+                    },
+                    "column": 2,
+                    "items": [
+                        {
+                            "label": "订单配置课时",
+                            "content": "$schedule_nums 小时"
+                        },
+                        {
+                            "label": "可绑定课时",
+                            "content": "$unband_duration 小时"
+                        },
+                        {
+                            "label": "绑定总课时",
+                            "content": "$band_duration 小时",
+                            "span":2
+                        },
+                        {
+                            "label": "已结算课时",
+                            "content": "$check_duration 小时"
+                        },
+                        {
+                            "label": "待结算课时",
+                            "content": "$uncheck_duration 小时"
+                        }
+                    ]
+                },
+                {
+                    "type": "tpl",
+                    "className": "m-t text-right",
+                    "tpl" :"<p><span>操作员: $operator_name</span>  <span class='m-l'> 创建时间 $create_time</span></p>"
+                }
+            ],
+            "toolbar": [
+                {
+                    "type": "tpl",
+                    "tpl": "订单所在服务非有效状态, 禁止操作",
+                    "visibleOn" : "this.apackage_state > 0 && this.apackage_state != 1 && this.apackage_state != 4",
+                    "className": "label label-danger mx-1 text-sm"
+                },
+                {
+                    "type": "dropdown-button",
+                    "level": "link",
+                    "align": "right",
+                    "icon": "fa fa-ellipsis-h",
+                    "className": "pr-1 flex m-l",
+                    "hideCaret": true,
+                    "buttons": [
+                        {
+                            "type": "button",
+                            "label": "订单变更明细",
+                            "disabledOn": "this.is_amount === 0",
+                            "actionType": "drawer",
+                            "drawer": {
+                                "position": "right",
+                                "size": "lg",
+                                "title": "订单变更明细",
+                                "body": {
+                                    "type": "crud",
+                                    "draggable": true,
+                                    "loadDataOnce":true,
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/abroadorder/describe?order_id=$order_id",
+                                        "dataType": "form"
+                                    },
+                                    "syncLocation":false,
+                                    "headerToolbar": [
+                                        "bulkActions",
+                                        {
+                                            "type": "tpl",
+                                            "tpl": "共有 ${total} 条数据。注意: 有结算或订单课时变更才有记录",
+                                            "className": "v-middle"
+                                        }
+                                    ],
+                                    "columns": [
+                                        {
+                                            "name": "modify_time",
+                                            "label": "事件时间(变更or结算)",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "modify_type",
+                                            "label": "事件类型",
+                                            "type": "mapping",
+                                            "map": {
+                                                "1": "订单课时变更",
+                                                "2": "结算",
+                                                "3": "撤销结算"
+                                            }
+                                        },
+                                        {
+                                            "name": "schedule_time",
+                                            "label": "上课时间",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "duration",
+                                            "label": "排课（小时)",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "change_duration",
+                                            "label": "课时变更",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "last_duration",
+                                            "label": "剩余课时",
+                                            "type": "text",
+                                            "toggled": true
+                                        },
+                                        {
+                                            "name": "operatorinfo",
+                                            "label": "操作员",
+                                            "type": "text",
+                                            "toggled": true
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "label": "课时变更",
+                            "disabledOn": "this.is_amount === 0 || (this.apackage_state > 0 && this.apackage_state != 1 && this.apackage_state != 4)",
+                            "actionType": "dialog",
+                            "dialog": {
+                                "size": "lg",
+                                "title": "课时变更",
+                                "body": {
+                                    "type": "form",
+                                    "name": "abroadorder-package-order-edit-form",
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/abroadorder/update?order_id=$order_id&apackage_id=$apackage_id",
+                                        "dataType": "form"
+                                    },
+                                    "reload":"aporder_order_list",
+                                    "body": [
+                                        {
+                                            "type": "input-text",
+                                            "name": "order_id",
+                                            "label": "订单ID",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "type": "divider"
+                                        },
+                                        {
+                                            "type": "input-number",
+                                            "name": "update_schedule_nums",
+                                            "label": "增减课时",
+                                            "required": true,
+                                            "precision": 2,
+                                            "step": 0.50,
+                                            "desc" :  "正数增加, 负数减少, 减少数不能超过当前服务课时-已绑定课时, 尽可能以1小时或0.5小时为单位跨度, 便于后续排课设定时间."
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "actionType": "ajax",
+                            "label":"删除",
+                            "disabledOn": "this.is_amount === 0 || (this.apackage_state > 0 && this.apackage_state != 1 && this.apackage_state != 4)",
+                            "confirmText": "您确认要删除订单么, 绑定的课程需要提前删除, 否则无法删除订单!",
+                            "api": {
+                                "method": "post",
+                                "url": "/mapi/abroadorder/delete?order_id=$order_id&apackage_id=$apackage_id",
+                                "dataType": "form"
+                            },
+                            "reload":"aporder_order_list"
+                        }                        
+                    ]
+                }
+            ]
+        }
+    }
+}

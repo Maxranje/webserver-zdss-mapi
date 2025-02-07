@@ -88872,6 +88872,9 @@ title: Word Break
     display: flex;
     flex-wrap: wrap;
   }
+  .amis-scope .a-Grid .a-Cards-toolbar{
+    display: none;
+  }
 }
 
 @media (min-width: 768px) {
