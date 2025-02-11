@@ -55,6 +55,8 @@ class Service_Page_Api_Apconfirm extends Zy_Core_Service{
             foreach ($v["items"] as &$vv) {
                 if (!empty($vv["key"]) && "sc_" . $vv["key"] == $checkId)  {
                     $vv["is_sc"] = 1;
+                    $vv['s_id'] = $uid;
+                    $vv['s_time'] = time();
                     $flag = true;
                 }
             }

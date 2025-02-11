@@ -101,6 +101,7 @@
                 "switch-per-page",
                 "pagination"
             ],
+            "rowClassNameExpr": "${type == 6 || type ==5 || type ==4 || type ==3 ? 'bg-blue-100' : ''}",
             "columns": [
                 {
                     "name": "create_time",

@@ -96,9 +96,37 @@ class Service_Page_Abroadorder_Confirm_Detail extends Zy_Core_Service{
             return $result;
         }
 
+        $uids = array();
+        foreach ($confirmData['content'] as $i => $v) {   
+            foreach ($v["items"] as $ii => $vv) {
+                if (!empty($vv['is_oc']) && !empty($vv['o_id'])) {
+                    $uids[] = intval($vv['o_id']);
+                }
+                if (!empty($vv['is_sc']) && !empty($vv['s_id'])) {
+                    $uids[] = intval($vv['s_id']);
+                }
+            }
+        }
+        $uids  = array_unique($uids);
+
+        $serviceData = new Service_Data_Profile();
+        $userInfos = $serviceData->getUserInfoByUids($uids);
+        $userInfos = array_column($userInfos, null, "uid");
+
         foreach ($confirmData['content'] as $i => $v) {   
             $body = array();
             foreach ($v["items"] as $ii => $vv) {
+                $operator = !empty($vv["o_id"]) && !empty($userInfos[$vv['o_id']]["nickname"]) ? $userInfos[$vv['o_id']]["nickname"] : "";
+                $student = !empty($vv["s_id"]) && !empty($userInfos[$vv['s_id']]["nickname"]) ? $userInfos[$vv['s_id']]["nickname"] : "";
+
+                $oLable = $sLable = "";
+                if (!empty($vv["is_oc"]) && !empty($operator) && !empty($vv["o_time"])) {
+                    $oLable = sprintf("%s/%s", $operator, date("Y-m-d H:i", $vv["o_time"]));
+                }
+                if (!empty($vv["is_sc"]) && !empty($student) && !empty($vv["s_time"])) {
+                    $sLable = sprintf("%s/%s", $student, date("Y-m-d H:i", $vv["s_time"]));
+                }
+
                 $body[] = array(
                     array(
                         "type"=> "group",
@@ -115,12 +143,15 @@ class Service_Page_Abroadorder_Confirm_Detail extends Zy_Core_Service{
                                 "type"=> "checkbox",
                                 "columnRatio" => 2,
                                 "value" => !empty($vv["is_oc"]),
+                                "disabled" => !empty($vv["is_oc"]) && !empty($vv["is_sc"]),
                                 "label"=> "operator",
+                                "desc" => $oLable,
                             ),
                             array(
                                 "name"=> "sc_".$vv["key"],
                                 "type"=> "checkbox",
                                 "label"=> "student",
+                                "desc" => $sLable,
                                 "value" => !empty($vv["is_sc"]),
                                 "columnRatio" => 2,
                                 "disabled"=>true,

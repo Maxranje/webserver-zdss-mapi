@@ -33,7 +33,44 @@
                     "searchable":true,
                     "onlyLeaf":true,
                     "source": "/mapi/student/lists?is_select=1&nickname=$term"
-                },
+                },        
+                {
+                    "label": "类型",
+                    "type": "select",
+                    "name": "type",
+                    "value" : "0",
+                    "size" : "md",
+                    "options": [
+                        {
+                            "label": "请选择",
+                            "value": "0"
+                        },
+                        {
+                            "label": "服务创建",
+                            "value": "4"
+                        },
+                        {
+                            "label": "服务删除",
+                            "value": "5"
+                        },
+                        {
+                            "label": "服务结转",
+                            "value": "9"
+                        },
+                        {
+                            "label": "服务完结",
+                            "value": "6"
+                        },
+                        {
+                            "label": "服务加课时",
+                            "value": "8"
+                        },
+                        {
+                            "label": "服务中订单变更",
+                            "value": "7"
+                        }
+                    ]
+                },                
                 {
                     "type": "input-date-range",
                     "name": "date_range",

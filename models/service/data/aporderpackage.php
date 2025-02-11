@@ -74,6 +74,41 @@ class Service_Data_Aporderpackage {
         return $lists;
     } 
 
+    // 根据IDS获取服务数
+    public function getApackageCountByUids ($uids){
+        $result = array();
+        foreach ($uids as $uid) {
+            if (!isset($result[$uid])) {
+                $result[$uid] = 0;
+            }
+        }
+        $arrConds = array(
+            sprintf("uid in (%s)", implode(",", $uids)),
+            sprintf("state in (%s)" , implode(",",[
+                self::APORDER_STATUS_ABLE,
+                self::APORDER_STATUS_DONE,
+                self::APORDER_STATUS_TRANS,
+            ]))
+        );
+
+        $arrFields = array("uid, count(id) as count");
+
+        $appends = array(
+            "group by uid",
+        );
+
+        $data = $this->daoAporderpackage->getListByConds($arrConds, $arrFields, null, $appends);
+        if (empty($data)) {
+            return $result;
+        }
+
+        foreach ($data as $v) {
+            $result[$v["uid"]] = intval($v["count"]);
+        }
+
+        return $result;
+    }     
+
     // 预创建服务包, 需要过工单
     public function create ($profile) {
 
@@ -109,6 +144,18 @@ class Service_Data_Aporderpackage {
                 $this->daoAporderpackage->rollback();
                 return false;
             }
+        }
+
+        // 更新用户信息, 提前从账户扣钱
+        $daoUser = new Dao_User();
+        $uprofile = array(
+            sprintf("balance=balance-%d", intval($profile["price"])),
+            'update_time' => time(),
+        );
+        $ret = $daoUser->updateByConds(array("uid"=> $profile['uid']), $uprofile);
+        if ($ret == false) {
+            $this->daoAporderpackage->rollback();
+            return false;
         }
 
         // 增加审批
@@ -297,6 +344,20 @@ class Service_Data_Aporderpackage {
         if ($ret == false) {
             $this->daoAporderpackage->rollback();
             return false;
+        }
+
+        // 更新用户信息, 提前从账户扣钱
+        if (isset($profile['price']) && $profile['price'] > 0) {
+            $daoUser = new Dao_User();
+            $uprofile = array(
+                sprintf("balance=balance-%d", intval($profile["price"])),
+                'update_time' => time(),
+            );
+            $ret = $daoUser->updateByConds(array("uid"=> $profile['uid']), $uprofile);
+            if ($ret == false) {
+                $this->daoAporderpackage->rollback();
+                return false;
+            }
         }
 
         // 增加审批

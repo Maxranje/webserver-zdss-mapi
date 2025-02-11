@@ -21,6 +21,7 @@
                     "label":"重置为计划默认配置项",
                     "level":"primary",
                     "actionType": "ajax",
+                    "hidden" : true,
                     "confirmText": "您确定重置为默认配置项么, 此项操作依赖计划存在配置项同时是采用覆盖方式操作, 如果学员或管理员已经勾选会被覆盖掉!",
                     "api": "/mapi/abroadorder/confirmupdate?apackage_id=$apackage_id&is_reset=1",
                     "reload": "confirm_form.confrim_detail_info"
@@ -39,12 +40,12 @@
                     "title" : "配置说明",
                     "body": {
                         "type": "html",
-                        "html": "<p>1. 对于计划没有配置检查项的, 配置员手动对服务添加检查项</p><p>1. 对于计划已经配置检查项的, 配置员可采用一键复制计划检查项的方式, 覆盖式配置</p><p>重要!重要!重要! 修改服务配置要额外注意, 单项的增删会影响到学员已做check, 或正在做的check. 谨慎操作!<p>"
+                        "html": "<p>1.操作员可手动配置服务检查项(仅对有效服务)</p><p style='color:red;font-weight:bold;'>2.仅可对学员未check选项修改/删除, 已选定不可更改. 提交变更时验证, 请仔细检查<p>"
                     },
                     "level": "warning",
                     "showCloseButton": true,
                     "showIcon": true
-                },              
+                },
                 {
                     "type": "service",
                     "initFetch" : false,

@@ -6,10 +6,12 @@ class Service_Page_Abroadorder_Confirm_Update extends Zy_Core_Service{
         if (!$this->checkAdmin()) {
             throw new Zy_Core_Exception(405, "无权限查看");
         }
-        $apackageId = empty($this->request['apackage_id']) ? 0 : intval($this->request['apackage_id']);
+        $apackageId   = empty($this->request['apackage_id']) ? 0 : intval($this->request['apackage_id']);
         $isCover      = empty($this->request['is_cover']) ? false : true; // 更新检查内容
         $isReset      = empty($this->request['is_reset']) ? false : true; // 重置检查内容
         $isCheck      = empty($this->request['is_check']) ? false : true; // 更新选项
+
+        // throw new Zy_Core_Exception(405, "无权限查看");
 
         $serviceData = new Service_Data_Aporderpackage();
         $apackageInfo = $serviceData->getAbroadpackageById($apackageId);
@@ -24,7 +26,8 @@ class Service_Page_Abroadorder_Confirm_Update extends Zy_Core_Service{
             return $this->check($apackageId, $apackageInfo);
         }
         if ($isReset) {
-            return $this->reset($apackageId, $apackageInfo);
+            throw new Zy_Core_Exception(405, "操作失败, 该能力已经下线");
+            //return $this->reset($apackageId, $apackageInfo);
         }
         if ($isCover) {
             return $this->cover($apackageId, $apackageInfo);
@@ -40,6 +43,21 @@ class Service_Page_Abroadorder_Confirm_Update extends Zy_Core_Service{
         }
         if (empty($confirm) || $apackageId <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 参数为空");
+        }
+
+        $serviceData = new Service_Data_Apackageconfirm();
+        $confirmData = $serviceData->getConfirmById($apackageId);
+        $originContent = empty($confirmData["content"]) ? array() : $confirmData["content"];
+
+        $studentCheckItems = array();
+        if (!empty($originContent)) {
+            foreach ($originContent as $v) {
+                foreach ($v["items"] as $vv) {
+                    if (isset($vv["is_sc"])) {
+                        $studentCheckItems[$vv["key"]] = $vv;
+                    }
+                }
+            }
         }
 
         foreach ($confirm as $index => &$conf) {
@@ -60,6 +78,18 @@ class Service_Page_Abroadorder_Confirm_Update extends Zy_Core_Service{
                 }
                 if (empty($confItem["key"])) {
                     $confItem["key"] = sprintf("key_%d_%d_%d_%d", $apackageId, time(), mt_rand(10000, 99999), $index * 100 + $i);
+                } else {
+                    if (isset($studentCheckItems[$confItem['key']])) {
+                        if (($confItem["title"] != $studentCheckItems[$confItem['key']]["title"])) {
+                            throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s个分类中%s个配置学员已经选中, 不能修改lable", $index + 1, $i + 1));
+                        }
+                        $subTitle1 = empty($studentCheckItems[$confItem['key']]["sub_title"]) ? "" : $studentCheckItems[$confItem['key']]["sub_title"];
+                        $subTitle2 = empty($confItem["sub_title"]) ? "" : $confItem["sub_title"];
+                        if ( $subTitle1 != $subTitle2) {
+                            throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s个分类中%s个配置学员已经选中, 不能修改单项描述", $index + 1, $i + 1));
+                        }                        
+                        unset($studentCheckItems[$confItem['key']]); // 判断是否为空即可
+                    }
                 }
                 if (empty($confItem["title"])) {
                     throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s个分类中%s个配置的单项label为空", $index + 1, $i + 1));
@@ -73,8 +103,11 @@ class Service_Page_Abroadorder_Confirm_Update extends Zy_Core_Service{
             }
         }
 
-        $serviceData = new Service_Data_Apackageconfirm();
-        $confirmData = $serviceData->getConfirmById($apackageId);
+        if (!empty($studentCheckItems)) {
+            $listTitle = array_column($studentCheckItems, "title");
+            throw new Zy_Core_Exception(405, sprintf("操作失败, 学员check选项被删除(该项不可修改和删除), 请重新检查, 对应标题为: %s", implode(",", $listTitle)));
+        }
+
         if (empty($confirmData)) {
             $profile = [
                 "content"       => json_encode($confirm), 
@@ -150,14 +183,27 @@ class Service_Page_Abroadorder_Confirm_Update extends Zy_Core_Service{
         }
 
         $content = $confirmData["content"];
-        foreach($content as &$v) {
-            foreach ($v["items"] as &$vv) {
+        foreach($content as $ci => &$v) {
+            foreach ($v["items"] as $cii => &$vv) {
                 if (empty($vv["key"])) {
                     continue;
                 }
+
                 $key = "oc_".$vv["key"];
                 if (isset($this->request[$key])) {
-                    $vv["is_oc"] = $this->request[$key] == "true" ? 1 : 0;
+                    $checkValue = $this->request[$key] == "true" ? 1 : 0;
+                    $hasValue = empty($vv["is_oc"]) ? 0 : 1;
+                    if ($checkValue == $hasValue) {
+                        continue;
+                    } else {
+                        if (!empty($vv["is_sc"]) && !empty($vv["is_oc"])) {
+                            throw new Zy_Core_Exception(405, "操作失败, 双方选定, 不可修改");
+                        } else {
+                            $vv["is_oc"] = $this->request[$key] == "true" ? 1 : 0;
+                            $vv['o_id'] = OPERATOR;
+                            $vv["o_time"] = time();
+                        }
+                    }
                 }
             }
         }
@@ -166,7 +212,6 @@ class Service_Page_Abroadorder_Confirm_Update extends Zy_Core_Service{
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "提交失败, 请重试");
         }
-
         return array();
     }    
 }

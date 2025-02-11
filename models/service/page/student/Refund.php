@@ -20,6 +20,17 @@ class Service_Page_Student_Refund extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 备注信息太多, 限定100字内");
         }
 
+        // check review
+        $serviceData = new Service_Data_Review();
+        $total = $serviceData->getTotalByConds(array(
+            "uid" => $uid, 
+            "state" => Service_Data_Review::REVIEW_ING,
+            sprintf("type in (%s)", implode(",", [Service_Data_Review::REVIEW_TYPE_RECHARGE, Service_Data_Review::REVIEW_TYPE_REFUND]))
+        ));
+        if ($total > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 当前学员有审批中的充值或退款记录, 需要审批完毕后才能重新提单");
+        }        
+
         $serviceData = new Service_Data_Profile();
         $userInfo = $serviceData->getUserInfoByUid($uid);
         if (empty($userInfo)) {

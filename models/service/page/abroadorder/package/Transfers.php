@@ -6,22 +6,22 @@ class Service_Page_Abroadorder_Package_Transfers extends Zy_Core_Service{
         if (!$this->checkAdmin()) {
             throw new Zy_Core_Exception(405, "无权限查看");
         }
-
         $apackageId     = empty($this->request['apackage_id']) ? 0 : intval($this->request['apackage_id']);
         $isNew          = empty($this->request['is_new']) ? false : true;
+        $isNoPrice      = empty($this->request['is_noprice']) ? false : true;
 
         if ($apackageId <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 学员信息或原服务信息获取失败");
         }
 
         if ($isNew) {
-            return $this->transferNewApackage() ;
+            return $this->transferNewApackage($isNoPrice) ;
         } else {
             return $this->transferHasApackage() ;
         }
     }
 
-    private function transferNewApackage() {
+    private function transferNewApackage($isNoPrice = false) {
         $apackageId     = empty($this->request['apackage_id']) ? 0 : intval($this->request['apackage_id']);
         $abroadplanId   = empty($this->request['transfer_abroadplan_id']) ? 0 : intval($this->request['transfer_abroadplan_id']);
         $scheduleNums   = empty($this->request['schedule_nums']) ? 0 : floatval($this->request['schedule_nums']);
@@ -31,23 +31,26 @@ class Service_Page_Abroadorder_Package_Transfers extends Zy_Core_Service{
         $discountJ      = empty($this->request['transfer_discount_j']) ? 0 : intval($this->request['transfer_discount_j'] * 100);
         $remark         = empty($this->request['transfer_remark']) ? "" : trim($this->request['transfer_remark']);
 
-        if ($abroadplanId <= 0 || $scheduleNums <= 0) {
-            throw new Zy_Core_Exception(405, "操作失败, 学员, 计划, 总课时数为必填项, 不能为空");
+        if ($abroadplanId <= 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 新计划为必填项, 不能为空");
         }
+
         if (mb_strlen($remark) > 100) {
             throw new Zy_Core_Exception(405, "操作失败, 备注限定100字內");
         }
 
-        if ($discountJ < 0) {
-            throw new Zy_Core_Exception(405, "操作失败, 减免优惠配置错误, 需要配置大于0的具体价格");
-        }
-
-        if ($discountZ < 0 || $discountZ >= 100) {
-            throw new Zy_Core_Exception(405, "操作失败, 折扣优惠配置错误, 折扣必须在 x>0 并且 x<10 之间, 小数点后一位");
-        }
-
-        if ($realBalance < 0) {
-            throw new Zy_Core_Exception(405, "操作失败, 实际缴费价格不能小于0");
+        if (!$isNoPrice) {
+            if ($discountJ < 0) {
+                throw new Zy_Core_Exception(405, "操作失败, 减免优惠配置错误, 需要配置大于0的具体价格");
+            }
+    
+            if ($discountZ < 0 || $discountZ >= 100) {
+                throw new Zy_Core_Exception(405, "操作失败, 折扣优惠配置错误, 折扣必须在 x>0 并且 x<10 之间, 小数点后一位");
+            }
+    
+            if ($realBalance < 0) {
+                throw new Zy_Core_Exception(405, "操作失败, 实际缴费价格不能小于0");
+            }    
         }
 
         // check origin apackage
@@ -74,12 +77,21 @@ class Service_Page_Abroadorder_Package_Transfers extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 留学&升学服务计划信息不存在");
         }
 
-        if ($originBalance != $abroadplanInfo['price']) {
-            throw new Zy_Core_Exception(405, "操作失败, 创建参数的计划原价与实际计划原价不同, 可能计划有变动, 请重新创建");
-        }
+        if (!$isNoPrice) {
+            if ($originBalance != $abroadplanInfo['price']) {
+                throw new Zy_Core_Exception(405, "操作失败, 创建参数的计划原价与实际计划原价不同, 可能计划有变动, 请重新创建");
+            }
 
-        if ($scheduleNums != $abroadplanInfo['duration']) {
-            throw new Zy_Core_Exception(405, "操作失败, 创建参数的计划课时与实际计划课时不同, 可能计划有变动, 请重新创建");
+            if ($scheduleNums != $abroadplanInfo['duration']) {
+                throw new Zy_Core_Exception(405, "操作失败, 创建参数的计划课时与实际计划课时不同, 可能计划有变动, 请重新创建");
+            }
+            if ($studentInfo["balance"] < $realBalance) {
+                throw new Zy_Core_Exception(405, "操作失败, 需扣费场景下, 账户余额不足, 无法结转到新计划服务, 请提前充值");
+            }
+        } else {
+            $realBalance = 0;
+            $originBalance = $abroadplanInfo['price'];
+            $discountZ = $discountJ = 0;
         }
 
         // check confirm conf
@@ -110,7 +122,7 @@ class Service_Page_Abroadorder_Package_Transfers extends Zy_Core_Service{
         $profile = [
             "uid"               => $studentUid, 
             "abroadplan_id"     => $abroadplanId, 
-            "schedule_nums"     => sprintf("%.2f", $scheduleNums),
+            "schedule_nums"     => 0,
             "state"             => Service_Data_Aporderpackage::APORDER_STATUS_TRANS_PEND,
             "price"             => $realBalance,
             "remark"            => $remark,

@@ -97,15 +97,17 @@ class Service_Page_Abroadorder_Package_Lists extends Zy_Core_Service{
             $orderIds  = Zy_Helper_Utils::arrayInt($orderDatas, "order_id");
     
             // 排课数
-            $serviceData = new Service_Data_Curriculum();
-            $orderCounts = $serviceData->getScheduleTimeCountByOrder($orderIds);
+            $orderCounts = array();
+            if (!empty($orderIds)) {
+                $serviceData = new Service_Data_Curriculum();
+                $orderCounts = $serviceData->getScheduleTimeCountByOrder($orderIds);
+            }
+            // 订单格式化信息
+            $apackageOrder = $this->formatPackageOrder($orderDatas, $orderCounts, $birthplaces);            
 
             $serviceData = new Service_Data_Apackageconfirm();
             $confirmData = $serviceData->getConfirmByIds($apackageIds);
             $confirmData = array_column($confirmData, null, "apackage_id");      
-            
-            // 订单格式化信息
-            $apackageOrder = $this->formatPackageOrder($orderDatas, $orderCounts, $birthplaces);
         }
 
         // 输出
@@ -154,10 +156,14 @@ class Service_Page_Abroadorder_Package_Lists extends Zy_Core_Service{
 
             // 结算用的功能
             $item["apackage_order_ungive"] = $item["apackage_order_uncheck"] = $item["apackage_order_unband"] = 0;
+            $item["apackage_order_allband"] = 0;
+            $item["apackage_order_check"] = 0;
             if (!empty($apackageOrder['count'][$v["id"]])) {
                 $item["apackage_order_ungive"] = $v['schedule_nums'] - $apackageOrder['count'][$v["id"]]['a'];
                 $item["apackage_order_uncheck"] = $apackageOrder['count'][$v["id"]]['u'];
                 $item["apackage_order_unband"] = $apackageOrder['count'][$v["id"]]['ub'];
+                $item['apackage_order_check'] = $apackageOrder['count'][$v["id"]]['c'];
+                $item['apackage_order_allband'] = $apackageOrder['count'][$v["id"]]['a'];
             }
 
             // 优惠信息

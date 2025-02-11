@@ -11,6 +11,7 @@ class Service_Page_Abroadorder_Change_Lists extends Zy_Core_Service{
         $rn             = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
         $orderId        = empty($this->request['order_id']) ? 0 : intval($this->request['order_id']);
         $studentUid     = empty($this->request['student_uid']) ? 0 : intval($this->request['student_uid']);
+        $type           = empty($this->request['type']) ? 0 : intval($this->request['type']);
         $dataRange      = empty($this->request['date_range']) ? "" : $this->request['date_range'];
         $pn             = ($pn-1) * $rn;
         list($sts, $ets) = empty($dataRange) ? array(0,0) : explode(",", $dataRange);
@@ -25,6 +26,10 @@ class Service_Page_Abroadorder_Change_Lists extends Zy_Core_Service{
 
         if ($studentUid > 0) {
             $conds['student_uid'] = $studentUid;
+        }
+
+        if ($type > 0) {
+            $conds['type'] = $type;
         }
 
         if ($sts > 0) {

@@ -85626,6 +85626,10 @@ title: Word Break
   color: #99a6ad !important;
 }
 
+.amis-scope .a-Table-table > tbody > tr.bg-blue-100 {
+  background-color: #dbeafe;
+}
+
 .amis-scope .a-Table-table > tbody > tr.bg-warning {
   background-color: #fad733;
   color: #fffefa;

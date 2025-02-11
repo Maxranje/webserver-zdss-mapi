@@ -106,6 +106,14 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
         $serviceData = new Service_Data_Order();
         $orderCount = $serviceData->getNmorderTotalBySuids($studentUids);
 
+        // 获取留学服务数
+        $serviceData = new Service_Data_Aporderpackage();
+        $apackageCounts = $serviceData->getApackageCountByUids($studentUids);
+        
+        //获取充值状态
+        $serviceData = new Service_Data_Review();
+        $reviewInfos = $serviceData->getR2ReviewingByUid($studentUids);
+
         // get role
         $isModeRecharge     = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_RECHARGE);
         $isModeRefund       = $this->isModeAble(Service_Data_Roles::ROLE_MODE_STUDENT_REFUND);
@@ -127,6 +135,8 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
             $item['is_re']              = $isModeRecharge ? 1 : 0;
             $item['is_rd']              = $isModeRefund ? 1 : 0;
             $item["is_edit"]            = $this->isOperator(Service_Data_Roles::ROLE_MODE_STUDENT_EDIT, $item["sop_uid"]) ? 1 : 0;
+            $item['apackage_count']     = $apackageCounts[$item['uid']] ;
+            $item["review_state"]       = empty($reviewInfos[$item["uid"]]['type']) ? 0 : $reviewInfos[$item["uid"]]['type'];
             unset($item['passport']);
             
             if (!$this->isOperator(Service_Data_Roles::ROLE_MODE_STUDENT_AMOUNT_HANDLE, $item["sop_uid"])){
@@ -134,7 +144,6 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
                 $item["balance"]            = "***";
                 $item["balance_f"]          = "***";
                 $item["total_balance"]      = "***";
-                $item["apackage_balance"]   = "***";
                 unset($item["ext"]);
             }
             $result[] = $item;

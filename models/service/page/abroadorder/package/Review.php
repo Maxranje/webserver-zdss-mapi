@@ -9,8 +9,8 @@ class Service_Page_Abroadorder_Package_Review extends Zy_Core_Service{
 
         $studentUid     = empty($this->request['student_uid']) ? 0 : intval($this->request['student_uid']);
         $abroadplanId   = empty($this->request['abroadplan_id']) ? 0 : intval($this->request['abroadplan_id']);
-        $discountZ      = empty($this->request['discount_z']) ? 0 : intval($this->request['discount_z'] * 10);
-        $discountJ      = empty($this->request['discount_j']) ? 0 : intval($this->request['discount_j'] * 100);
+        $discountZ      = empty($this->request['discount_z']) ? 0 : intval(floatval($this->request['discount_z']) * 10);
+        $discountJ      = empty($this->request['discount_j']) ? 0 : intval(floatval($this->request['discount_j']) * 100);
 
         if ($studentUid <= 0 || $abroadplanId <= 0) {
             return array(); 

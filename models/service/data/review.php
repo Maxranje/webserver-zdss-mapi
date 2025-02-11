@@ -63,6 +63,33 @@ class Service_Data_Review {
         return $lists;
     }
 
+
+    // 根据uid获取该类型的最近一个充值和退款审核中的资源
+    public function getR2ReviewingByUid ($uids){
+        $arrConds = array(
+            sprintf("uid in (%s)", implode(",", $uids)),
+            "state" => self::REVIEW_ING,
+            sprintf("type in (%s)", implode(",", [self::REVIEW_TYPE_RECHARGE, self::REVIEW_TYPE_REFUND]))
+        );
+        $arrFields = $this->daoReview->arrFieldsMap;
+        $reviewList = $this->daoReview->getListByConds($arrConds, $arrFields);
+        if (empty($reviewList)) {
+            return array();
+        }
+        $lists = array();
+        foreach ($reviewList as $item) {
+            if (empty($lists[$item["uid"]])) {
+                $lists[$item["uid"]] = $item;
+                continue;
+            }
+            if ($lists[$item["uid"]]['id'] > $item['id'] ) {
+                continue;
+            }
+            $lists[$item["uid"]] = $item;
+        }
+        return $lists;
+    }    
+
     // 充值工单处理
     public function rechargeHandle ($id, $userInfo, $capital, $remark, $state) {
         $this->daoReview->startTransaction();
@@ -198,16 +225,6 @@ class Service_Data_Review {
                 $this->daoReview->rollback();
                 return false;
             }
-            // 更新用户信息
-            $profile = array(
-                sprintf("balance=balance-%d", intval($apackageInfo["price"])),
-                'update_time' => time(),
-            );
-            $ret = $daoUser->updateByConds(array("uid"=> $uid), $profile);
-            if ($ret == false) {
-                $this->daoReview->rollback();
-                return false;
-            }
         } else if ($state == self::REVIEW_REF) { // 拒绝
             // 订单更新状态
             $profile = array(
@@ -218,6 +235,17 @@ class Service_Data_Review {
                 "id" => intval($apackageInfo["id"]),
             );
             $ret = $daoApackage->updateByConds($conds, $profile);
+            if ($ret == false) {
+                $this->daoReview->rollback();
+                return false;
+            }
+
+            // 更新用户信息
+            $profile = array(
+                sprintf("balance=balance+%d", intval($apackageInfo["price"])),
+                'update_time' => time(),
+            );
+            $ret = $daoUser->updateByConds(array("uid"=> $uid), $profile);
             if ($ret == false) {
                 $this->daoReview->rollback();
                 return false;
@@ -443,19 +471,6 @@ class Service_Data_Review {
                     $this->daoReview->rollback();
                     return false;
                 }
-
-                // 更新用户信息
-                if (isset($apackageInfo["price"]) && $apackageInfo["price"] > 0) {
-                    $profile = array(
-                        sprintf("balance=balance-%d", intval($apackageInfo["price"])),
-                        'update_time' => time(),
-                    );
-                    $ret = $daoUser->updateByConds(array("uid"=> $uid), $profile);
-                    if ($ret == false) {
-                        $this->daoReview->rollback();
-                        return false;
-                    }  
-                }
             } else {
                 $oldScheduleNums = floatval($apackageInfo["schedule_nums"]);
                 $chgScheduleNums = floatval($review['ext']['transfer_schedule_nums']);
@@ -504,6 +519,19 @@ class Service_Data_Review {
                 if ($ret == false) {
                     $this->daoReview->rollback();
                     return false;
+                }   
+
+                // 更新用户信息
+                if (isset($apackageInfo["price"]) && $apackageInfo["price"] > 0) {
+                    $profile = array(
+                        sprintf("balance=balance+%d", intval($apackageInfo["price"])),
+                        'update_time' => time(),
+                    );
+                    $ret = $daoUser->updateByConds(array("uid"=> $uid), $profile);
+                    if ($ret == false) {
+                        $this->daoReview->rollback();
+                        return false;
+                    }  
                 }             
             }
         }

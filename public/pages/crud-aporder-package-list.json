@@ -136,7 +136,7 @@
                         },
                         {
                             "type": "alert",
-                            "title" : "优惠方式:先折扣后减免. 审批通过从账户扣实际缴费",
+                            "title" : "优惠方式:先折扣后减免. 创建后从账户扣实际缴费, 如审批拒绝归还",
                             "level": "danger",
                             "showCloseButton": true,
                             "showIcon": true,
@@ -315,7 +315,7 @@
                                         "visibleOn" : "this.confirm_data && this.apackage_state == 1",
                                         "drawer": {
                                             "position": "right",
-                                            "size": "lg",
+                                            "size": "xl",
                                             "title": "检查项",
                                             "body": {
                                                 "type": "form",
@@ -385,6 +385,12 @@
                 {
                     "type": "tpl",
                     "className": "m-t text-right",
+                    "visibleOn" : "this.apackage_order_allband > 0",
+                    "tpl" :"<p>已结算总课时  $apackage_order_check小时/$apackage_order_allband小时</p>"
+                },
+                {
+                    "type": "tpl",
+                    "className": "m-t text-right",
                     "tpl" :"<p><span>操作员: $operator_name</span>  <span class='m-l'> 创建时间 $create_time</span></p>"
                 }
             ],
@@ -430,6 +436,12 @@
                     "tpl": "已结转,目标服务:$transfer_apackage_id",
                     "visibleOn" : "this.apackage_state == 3",
                     "className": "label label-default mx-1 text-sm"
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "被结转服务,源服务:$from_transfer_apackage_id",
+                    "visibleOn" : "this.from_transfer_apackage_id > 0",
+                    "className": "label label-info mx-1 text-sm"
                 },
                 {
                     "type": "tpl",
@@ -748,7 +760,7 @@
                                             "title" : "结转说明",
                                             "body": {
                                                 "type":"html",
-                                                "html" : "<p>1. 结转操作需走审批流程, 审批期间和审批通过后, 原服务属结转态, 服务和归属的订单不能进行常规操作. 未通过则正常使用</p><p>2. 结转操作可结转到新服务或已有服务, 结转后会把原服务的课时(未分配给订单和归属订单中未绑定的)转移给结转目标服务 </p><p style='color:red;font-weight:bold;'>3. 结转有较强操作前提, 需要原服务没有已绑定未结算的课程, 以保证给审核前后的结转课时一致</p><p>4. 系统针对第四项, 提供<一键解绑>能力, 解绑服务所有已绑定未结算课程 (可通过[排课管理-排课列表]看到相关课程)</p><p>5. 结转到新服务后, 双向检查需要重新配置</p>"
+                                                "html" : "<p>1. 结转操作需走审批流程, 审批期间和审批通过后, 原服务属结转态, 服务和归属的订单不能进行常规操作. 未通过则正常使用</p><p>2. 结转操作只可结转到新服务, 结转后会把原服务的课时(未分配给订单和归属订单中未绑定的)转移给结转目标服务, 新服务自身不会有课时, 但可以扣款</p><p style='color:red;font-weight:bold;'>3. 结转有较强操作前提, 需要原服务没有已绑定未结算的课程, 以保证给审核前后的结转课时一致</p><p>4. 系统针对第四项, 提供<一键解绑>能力, 解绑服务所有已绑定未结算课程 (可通过[排课管理-排课列表]看到相关课程)</p><p>5. 结转到新服务后, 双向检查需要重新配置</p>"
                                             },
                                             "level": "warning",
                                             "showCloseButton": true,
@@ -819,7 +831,8 @@
                                                     "value": "1",
                                                     "offText": "结转到已有服务",
                                                     "trueValue" : 1,
-                                                    "falseValue" : 0
+                                                    "falseValue" : 0,
+                                                    "hidden" : true
                                                 },
                                                 {
                                                     "type": "tree-select",
@@ -832,24 +845,22 @@
                                                     "source": "/mapi/abroadplan/lists?is_select=1"
                                                 },
                                                 {
-                                                    "type": "tree-select",
-                                                    "name": "transfer_apackage_id",
-                                                    "label": "学员有效服务",
-                                                    "size": "md",   
-                                                    "initiallyOpen":false,
-                                                    "searchable":true,
-                                                    "onlyLeaf":true,
-                                                    "visibleOn": "${is_new == 0}", 
-                                                    "source": "/mapi/abroadorder/packagelists?student_uid=$student_uid&is_select=1&filter_id=$apackage_id"
-                                                },
-                                                {
                                                     "type": "divider",
                                                     "visibleOn": "${is_new == 1}"
                                                 },
                                                 {
+                                                    "type": "switch",
+                                                    "name": "is_noprice",
+                                                    "onText": "无需费用",
+                                                    "value": "1",
+                                                    "offText": "需费用",
+                                                    "trueValue" : 1,
+                                                    "falseValue" : 0
+                                                },
+                                                {
                                                     "type": "input-text",
                                                     "name": "transfer_discount_z",
-                                                    "visibleOn": "${is_new == 1}",
+                                                    "visibleOn": "${is_new == 1 && is_noprice != 1}",
                                                     "label": "折扣",
                                                     "addOn": {
                                                         "type": "text",
@@ -858,13 +869,9 @@
                                                     "desc": "选填, 总金额折扣: 10>数字>0, 保留小数点后一位(例如:9.5/8)"
                                                 },
                                                 {
-                                                    "type": "divider",
-                                                    "visibleOn": "${is_new == 1}"
-                                                },
-                                                {
                                                     "type": "input-text",
                                                     "name": "transfer_discount_j",
-                                                    "visibleOn": "${is_new == 1}",
+                                                    "visibleOn": "${is_new == 1 && is_noprice != 1}",
                                                     "label": "减免",
                                                     "addOn": {
                                                         "type": "text",
@@ -892,7 +899,7 @@
                                                     "name": "transfer_abroadorder_package_review_detail",
                                                     "initFetch": false,
                                                     "className": "mb-5",
-                                                    "visibleOn": "${is_new == 1}",
+                                                    "visibleOn": "${is_new == 1 && is_noprice != 1}",
                                                     "api": "/mapi/abroadorder/packagereview?abroadplan_id=$transfer_abroadplan_id&student_uid=$student_uid&discount_j=$transfer_discount_j&discount_z=$transfer_discount_z",
                                                     "body": {
                                                         "type": "property",
@@ -924,7 +931,7 @@
                             "actionType": "ajax",
                             "disabledOn": "this.is_amount != 1 || this.apackage_state != 1 || this.uncheck_duration > 0",
                             "level":"danger",
-                            "confirmText": "您确认让服务完结么, 服务完结前提是需要检查项都已完成且无可排课订单, 提交完结需要过单审核, 服务设置完结后不可逆转/不可配置/不可排课/不可结转, 谨慎操作!",
+                            "confirmText": "<p>确认服务完结</p> <p>1. 服务完结前提是需要检查项都已完成且无可排课订单</br>2.提交完结需要过工单审核, 在审批期间或审批通过后服务操作受限 <ul><li>服务不可配置</li><li>服务订单不可排课</li><li>不可结转</li><li>不可删除</li><p>",
                             "api": {
                                 "method": "get",
                                 "url": "/mapi/abroadorder/packagedone?apackage_id=$apackage_id&action_type=over"
@@ -936,7 +943,7 @@
                             "actionType": "ajax",
                             "disabledOn": "this.is_amount != 1 || (this.apackage_state != 13 && this.apackage_state != 1)" ,
                             "level":"danger",
-                            "confirmText": "您确认要删除服务么, 完结/结转/审核中/存在订单的服务均无法删除, 删除服务不会退还金额到学员账户!",
+                            "confirmText": "<p>确认删除服务</p> <p>1. 服务删除后不会退还剩余金额到学员账户<br/>2. 删除服务需要保证服务下无订单</br>3. 审核中服务, 结转服务, 完结服务均无法删除!",
                             "api": {
                                 "method": "get",
                                 "url": "/mapi/abroadorder/packagedelete?apackage_id=$apackage_id"

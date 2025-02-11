@@ -327,7 +327,7 @@
                 "name": "phone",
                 "label": "手机号",
                 "type": "text",
-                "toggled": true
+                "toggled": false
             },
             {
                 "name": "state",
@@ -360,13 +360,13 @@
                 "name": "school",
                 "label": "学校",
                 "type": "text",
-                "toggled": true
+                "toggled": false
             },
             {
                 "name": "graduate",
                 "label": "学级",
                 "type": "text",
-                "toggled": true
+                "toggled": false
             },
             {
                 "name": "sop_name",
@@ -381,6 +381,19 @@
                 "toggled": true
             },
             {
+                "name": "order_balance",
+                "label": "课程订单余额",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "apackage_count",
+                "label": "留学服务",
+                "type": "text",
+                "remark" : "不包括审核中或审核拒绝的服务",
+                "toggled": true
+            },
+            {
                 "name": "balance_f",
                 "label": "账户余额",
                 "type": "text",
@@ -390,25 +403,20 @@
                     "position" : "right-bottom",
                     "body": {
                         "type" : "html",
-                        "html": "账户余额: $balance_f元<br/>课程订单总余额: $order_balance元"
+                        "html": "账户余额: $balance_f元<br/>历史存额: $total_balance元"
                     }
-                }  
-            },      
-            {
-                "name": "total_balance",
-                "label": "历史存额",
-                "type": "text",
-                "toggled": true
+                }
             },
             {
                 "name": "update_time",
                 "label": "更新时间",
                 "type": "text",
-                "toggled": true
+                "toggled": false
             },
             {
                 "type": "operation",
                 "label": "操作",
+                "fixed": "right",
                 "width": 220,
                 "buttons": [
                     {
@@ -432,6 +440,11 @@
                         "label": "充值",
                         "actionType": "dialog",
                         "disabledOn": "this.is_re !== 1 || this.is_partner === 1",
+                        "badge": {
+                            "mode": "ribbon",
+                            "text": "审核",
+                            "visibleOn" : "this.review_state == 1"
+                        },
                         "dialog": {
                             "size": "lg",
                             "title": "充值",
@@ -550,6 +563,11 @@
                         "label": "退款",
                         "actionType": "dialog",
                         "disabledOn": "this.is_rd !== 1 || this.is_partner === 1",
+                        "badge": {
+                            "mode": "ribbon",
+                            "text": "审核",
+                            "visibleOn" : "this.review_state == 2"
+                        },                        
                         "dialog": {
                             "size": "lg",
                             "title": "退款",

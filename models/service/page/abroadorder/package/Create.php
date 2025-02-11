@@ -44,6 +44,10 @@ class Service_Page_Abroadorder_Package_Create extends Zy_Core_Service{
         if (!$this->isOperator(Service_Data_Roles::ROLE_MODE_STUDENT_AMOUNT_HANDLE, $studentInfo['sop_uid'])) {
             throw new Zy_Core_Exception(405, "操作失败, 非学管或特定权限人员, 无权限操作");
         }
+        // @2025.2.9按要求, 计划扣款必须要求账户余额充足
+        if ($studentInfo["balance"] < $realBalance) {
+            throw new Zy_Core_Exception(405, "操作失败, 账户余额不足, 无法创建计划服务, 请提前充值");
+        }
 
         $serviceAbroadplan = new Service_Data_Abroadplan();
         $abroadplanInfo = $serviceAbroadplan->getAbroadplanById($abroadplanId);
