@@ -743,6 +743,7 @@
                                 "size": "lg",
                                 "name":"transfer_dialog",
                                 "title": "结转",
+                                "id" : "transfer_drawer",
                                 "body":{
                                     "type": "form",
                                     "api": {
@@ -811,10 +812,18 @@
                                                         "method": "get",
                                                         "url": "/mapi/abroadorder/unbind?apackage_id=$apackage_id"
                                                     },
-                                                    "desc" : "一键解绑后请重新进入结转页面",
                                                     "level":"danger",
                                                     "reload":"abroadorder_package_list",
-                                                    "close":true,
+                                                    "onEvent": {
+                                                        "click": {
+                                                          "actions": [
+                                                            {
+                                                              "actionType": "cancel",
+                                                              "componentId": "transfer_drawer"
+                                                            }
+                                                          ]
+                                                        }
+                                                    },
                                                     "confirmText": "确认后, 会对服务的所有订单中未结算的排课进行自动解绑, 如需结转, 这步操作是必须的, 否则请不要确认, 只有学管和特定权限才可以操作!"
                                                 }
                                             ]

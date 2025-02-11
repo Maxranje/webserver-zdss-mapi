@@ -439,7 +439,7 @@
                         "type": "button",
                         "label": "充值",
                         "actionType": "dialog",
-                        "disabledOn": "this.is_re !== 1 || this.is_partner === 1",
+                        "disabledOn": "this.is_re !== 1 || this.is_partner === 1 || this.review_state == 1",
                         "badge": {
                             "mode": "ribbon",
                             "text": "审核",
@@ -562,7 +562,7 @@
                         "type": "button",
                         "label": "退款",
                         "actionType": "dialog",
-                        "disabledOn": "this.is_rd !== 1 || this.is_partner === 1",
+                        "disabledOn": "this.is_rd !== 1 || this.is_partner === 1 || this.review_state == 2",
                         "badge": {
                             "mode": "ribbon",
                             "text": "审核",
