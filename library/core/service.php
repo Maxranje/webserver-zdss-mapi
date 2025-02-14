@@ -84,6 +84,6 @@ class Zy_Core_Service {
         if ($this->checkSuper()) {
             return true;
         }
-        return (OPERATOR != $sopuid || $this->isModeAble($modeId));
+        return (OPERATOR == $sopuid || $this->isModeAble($modeId));
     }    
 }

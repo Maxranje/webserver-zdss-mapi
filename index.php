@@ -22,8 +22,8 @@ switch (ENV) {
 define('BASEPATH',  dirname(__FILE__).DIRECTORY_SEPARATOR);
 define('SYSPATH',   BASEPATH . 'library/');
 define('VIEWPATH',   BASEPATH . 'public/');
-//define('HOSTNAME',   "http://www.zdss.cn//");
-define('HOSTNAME',   "http://127.0.0.1:8060//");
+define('HOSTNAME',   "http://www.zdss.cn//");
+//define('HOSTNAME',   "http://127.0.0.1:8060//");
 
 
 require_once SYSPATH . 'autoload/autoload.php';
