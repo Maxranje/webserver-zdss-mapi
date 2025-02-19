@@ -127,10 +127,12 @@
             ]
         },
         "filterTogglable": true,
-        "perPage": 10,
+        "perPage": 20,
         "perPageAvailable": [
             10,
-            20
+            20,
+            50,
+            100
         ],
         "bulkActions": [
             {
