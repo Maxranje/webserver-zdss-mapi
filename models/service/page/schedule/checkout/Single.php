@@ -56,10 +56,12 @@ class Service_Page_Schedule_Checkout_Single extends Zy_Core_Service{
             $userInfo['salary'] = $userInfo['salary'] > 0 ? $userInfo['salary'] : 0;
         }
 
-        // 从订单中过滤未上课学生
+        // 从订单中过滤未上课学生 (对为未上课的解绑)
+        $filterCulumIds = array();
         foreach ($curriculumInfos as $key => $item) {
             if (in_array($item['student_uid'], $filterUids)) {
                 unset($curriculumInfos[$key]);
+                $filterCulumIds[] = intval($item["id"]);
             }
         }
         $curriculumInfos = array_values($curriculumInfos);
@@ -83,6 +85,7 @@ class Service_Page_Schedule_Checkout_Single extends Zy_Core_Service{
             'curriculumInfos'   => $curriculumInfos,
             'orderInfos'        => $orderInfos,
             "teacher"           => $userInfo,
+            "filterCulumIds"    => $filterCulumIds,
         );
         
         $ret = $serviceData->checkout ($params);

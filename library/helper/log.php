@@ -47,8 +47,8 @@ class Zy_Helper_Log {
     /**
      *  const warning and notice formate
      */
-    const LOG_WARNING_FORMAT = "WARNING: %s [%s]  uri [%s]  refer [%s]  client_ip [%s]  module [%s]  uid [0] %s \r\n";
-    const LOG_NOTICE_FORMAT  = "NOTICE: %s  reuqest_uri [%s] refer [%s]  client_ip [%s]  module [%s]  uid [0] %s \r\n";
+    const LOG_WARNING_FORMAT = "WARNING: %s [%s]  uri [%s]  refer [%s]  client_ip [%s]  module [%s]  uid [%s] %s \r\n";
+    const LOG_NOTICE_FORMAT  = "NOTICE: %s  reuqest_uri [%s] refer [%s]  client_ip [%s]  module [%s]  uid [%s] %s \r\n";
 
     /**
      * Log instance
@@ -155,6 +155,7 @@ class Zy_Helper_Log {
         $refer       = empty($_SERVER['HTTP_REFERER']) ? "" : $_SERVER['HTTP_REFERER'];
         $client_ip   = empty($_SERVER['REMOTE_ADDR']) ? "" : $_SERVER['REMOTE_ADDR'];
         $date        = date($this->_date_fmt);
+        $userid      = defined("OPERATOR") ?  OPERATOR : 0;
 
         if ($this->_levels[$level] == 1 || $this->_levels[$level] == 2)
         {
@@ -162,11 +163,11 @@ class Zy_Helper_Log {
             $trace = count($trace) > 0 && is_array($trace) ? $trace[0] : array();
             $currentFile = isset($trace['file']) ? $trace['file'] . ":" . $trace['line'] : "";
 
-            $message = sprintf(self::LOG_WARNING_FORMAT, $date, $currentFile, $uri, $refer, $client_ip, APP_NAME, $message);
+            $message = sprintf(self::LOG_WARNING_FORMAT, $date, $currentFile, $uri, $refer, $client_ip, APP_NAME, $userid, $message);
         }
         else
         {
-            $message = sprintf(self::LOG_NOTICE_FORMAT, $date, $uri, $refer, $client_ip, APP_NAME, $message);
+            $message = sprintf(self::LOG_NOTICE_FORMAT, $date, $uri, $refer, $client_ip, APP_NAME, $userid, $message);
         }
 
         return $message;

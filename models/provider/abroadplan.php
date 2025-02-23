@@ -6,7 +6,7 @@ class Dao_Abroadplan extends Zy_Core_Dao {
 
     public function __construct() {
         $this->_dbName      = "zy_mapiv2";
-        $this->_table       = "tblAbroadplan";
+        $this->_table       = "tblAbroadPlan";
         $this->arrFieldsMap = array(
             "id"  => "id" , 
             "name"  => "name", 

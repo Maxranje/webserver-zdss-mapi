@@ -228,6 +228,7 @@ class Service_Data_Schedule {
         $orderInfos       = $params['orderInfos'];
         $studentUids      = $params['studentUids'];
         $teacher          = $params['teacher'];
+        $filterCulumIds   = $params["filterCulumIds"];
 
         // 按小时计算
         $timeLength     = ($schedule['end_time'] - $schedule['start_time']) / 3600;
@@ -268,6 +269,15 @@ class Service_Data_Schedule {
         if ($ret == false) {
             $this->daoSchedule->rollback();
             return false;
+        }
+
+        // 对未上课的的绑定删除掉
+        if (!empty($filterCulumIds)) {
+            $ret = $daoCurriculum->deleteByConds(array(sprintf("id in (%s)", implode(",", $filterCulumIds))));
+            if ($ret == false) {
+                $this->daoSchedule->rollback();
+                return false;
+            }            
         }
 
         // 学生消费记录 和 删除订单中钱

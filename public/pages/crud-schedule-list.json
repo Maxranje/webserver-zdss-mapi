@@ -293,7 +293,7 @@
                         "actionType": "dialog",
                         "dialog": {
                             "position": "right",
-                            "title": "选择未参加课程同学, 进行剔除  (默认为全部结算)",
+                            "title": "操作",
                             "body": {
                                 "type": "form",
                                 "name": "dianming-form",
@@ -320,12 +320,21 @@
                                         "hidden": true
                                     },
                                     {
+                                        "type": "alert",
+                                        "title" : "操作说明",
+                                        "body": "<p style='color:red;'><strong>1. 勾选的是 「未上课」 的学员, 如都已上课, 无需勾选</strong></p><p><strong>2. 结算后, 未上课学员会解绑当前这节排课, 撤销操作无法回溯! </strong></p>",
+                                        "level": "warning",
+                                        "showCloseButton": true,
+                                        "showIcon": true,
+                                        "className": "mb-2"
+                                    },
+                                    {
                                         "type": "tree-select",
                                         "name": "filter_uids",
                                         "onlyLeaf":true,
                                         "multiple": true,
                                         "searchable":true,
-                                        "label": "请选择",
+                                        "label": "未上课学员",
                                         "source": "/mapi/schedule/checkoutlists?id=$id"
                                     }
                                 ]
