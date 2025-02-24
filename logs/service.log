@@ -1,4 +1,0 @@
-NOTICE: 2025-02-23 13:46:08  reuqest_uri [/mapi/sign/in] refer [http://127.0.0.1:8060/mapi/sign/page]  client_ip [127.0.0.1]  module [mapi]  uid [0] time: [{"ts_all":2,"db_query":1}] request complete 
-NOTICE: 2025-02-23 13:46:08  reuqest_uri [/mapi/dashboard/menu] refer [http://127.0.0.1:8060//mapi/dashboard/page]  client_ip [127.0.0.1]  module [mapi]  uid [101001] time: [{"ts_all":0}] request complete 
-NOTICE: 2025-02-23 13:46:15  reuqest_uri [/mapi/sign/in] refer [http://127.0.0.1:8060/mapi/sign/page]  client_ip [127.0.0.1]  module [mapi]  uid [0] time: [{"ts_all":2,"db_query":0}] request complete 
-NOTICE: 2025-02-23 13:46:15  reuqest_uri [/mapi/dashboard/menu] refer [http://127.0.0.1:8060//mapi/dashboard/page]  client_ip [127.0.0.1]  module [mapi]  uid [101001] time: [{"ts_all":0}] request complete 

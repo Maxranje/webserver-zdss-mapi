@@ -64,7 +64,7 @@ class Zy_Helper_Common
         $msg = sprintf("[%s] PHP Fatal error: %s in %s:%s \r\n", date('Y-m-d H:i:s', time()), $errStr, $filepath, $line);
         echo "system - error";
         $config = Zy_Helper_Config::getConfig('config');
-        error_log($msg, 3, BASEPATH . "/" . $config["log_path"]);
+        error_log($msg, 3, sprintf("%s/%s", $config["log_path"] , $config["log_file"]));
         exit;
     }
 

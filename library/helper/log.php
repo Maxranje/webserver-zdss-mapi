@@ -5,11 +5,11 @@
 class Zy_Helper_Log {
 
     /**
-     * Path to save log files
+     * file to save log
      *
      * @var string
      */
-    protected $_log_path;
+    protected $_log_file;
 
     /**
      * File permissions
@@ -65,11 +65,12 @@ class Zy_Helper_Log {
     private function __construct()
     {
         $log_path = Zy_Helper_Config::getConfig('config')['log_path'];
+        $log_file = Zy_Helper_Config::getConfig('config')['log_file'];
 
-        $this->_log_path = ($log_path !== '') ? BASEPATH . $log_path : BASEPATH . 'logs/service.log';
-        file_exists($this->_log_path) OR mkdir($this->_log_path, 0755, TRUE);
+        $log_path = ($log_path !== '') ? $log_path : BASEPATH . '../log';
+        $this->_log_file = $log_path . DIRECTORY_SEPARATOR . ($log_file !== '' ? $log_file : "service.log");
 
-        if ( ! is_file($this->_log_path) OR ! is_writable($this->_log_path))
+        if ( ! is_dir($log_path) OR ! is_writable($log_path))
         {
             $this->_enabled = FALSE;
         }
@@ -112,12 +113,12 @@ class Zy_Helper_Log {
             return FALSE;
         }
 
-        if ( ! file_exists($this->_log_path))
+        if ( ! file_exists($this->_log_file))
         {
             $newfile = TRUE;
         }
 
-        if ( ! $fp = @fopen($this->_log_path, 'ab'))
+        if ( ! $fp = @fopen($this->_log_file, 'ab'))
         {
             return FALSE;
         }
@@ -129,7 +130,7 @@ class Zy_Helper_Log {
 
         if (isset($newfile) && $newfile === TRUE)
         {
-            chmod($this->_log_path, $this->_file_permissions);
+            chmod($this->_log_file, $this->_file_permissions);
         }
 
         return true;
