@@ -43,6 +43,10 @@ class Service_Page_Order_Change_Lists extends Zy_Core_Service{
         }
         
         $serviceData = new Service_Data_Orderchange();
+        $total = $serviceData->getTotalByConds($conds);
+        if ($isExport && $total > 2000) {
+            throw new Zy_Core_Exception(405, "操作失败, 受系统限制, 导出的数据不能超过2000条");
+        }
         $lists = $serviceData->getListByConds($conds, array(), NULL, $arrAppends);
         if (empty($lists)) {
             return array();
@@ -54,8 +58,6 @@ class Service_Page_Order_Change_Lists extends Zy_Core_Service{
             $data = $this->formatExcel($lists);
             Zy_Helper_Utils::exportExcelSimple("order_change", $data['title'], $data['lists']);
         }
-
-        $total = $serviceData->getTotalByConds($conds);
         return array(
             'rows' => $lists,
             'total' => $total,
@@ -90,7 +92,9 @@ class Service_Page_Order_Change_Lists extends Zy_Core_Service{
             $v['isfree']            = empty($ext['isfree']) ? 0 : 1;
             $v['remark']            = empty($ext['remark']) ? "" : $ext['remark'];
 
-            unset($v['ext']);
+            if (empty($this->request['is_export'])) {
+                unset($v['ext']);
+            }
 
             $result[] = $v;
         }

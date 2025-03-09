@@ -87,6 +87,11 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
         }
 
         $serviceData = new Service_Data_Schedule();
+        $total = $serviceData->getTotalByConds($conds);
+        if ($isExport && $total > 2000) {
+            throw new Zy_Core_Exception(405, "操作失败, 受系统限制, 导出的数据不能超过2000条");
+        }
+
         $lists = $serviceData->getListByConds($conds, false, NULL, $arrAppends);
 
         $lists = $this->formatBase($lists, $duration);
@@ -99,8 +104,6 @@ class Service_Page_Schedule_Area_Lists extends Zy_Core_Service{
         if (empty($lists)) {
             return array();
         }
-
-        $total = $serviceData->getTotalByConds($conds);
         
         $result = array(
             'rows' => $lists,

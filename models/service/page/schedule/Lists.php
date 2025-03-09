@@ -89,6 +89,11 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
         }
 
         $serviceData = new Service_Data_Schedule();
+        $total = $serviceData->getTotalByConds($conds);
+        if ($isExport && $total > 2000) {
+            throw new Zy_Core_Exception(405, "操作失败, 受系统限制, 导出的数据不能超过2000条");
+        }
+
         $lists = $serviceData->getListByConds($conds, false, NULL, $arrAppends);
         $lists = $this->formatDefault($lists, $duration);
         
@@ -96,12 +101,10 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
             $data = $this->formatExcel($lists);
             Zy_Helper_Utils::exportExcelSimple("Schedule", $data['title'], $data['lists']);
         }
-
-        $total = $serviceData->getTotalByConds($conds);
         return array(
             'rows' => $lists,
             'total' => $total,
-            'duration' => $duration > 0 ? $duration / 3600 . "小时" : "-",
+            'duration' => $duration > 0 ? sprintf("%.2f小时", $duration / 3600) : "-",
         );
     }
 
@@ -291,6 +294,8 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
             }
             if (!empty($item['sop_name'])) {
                 $item['sop_name'] = implode(",", $item['sop_name']);
+            }else{
+                $item["sop_name"] = "";
             }
 
             $item['operator_name']= empty($userInfos[$item['operator']]['nickname']) ? "" :$userInfos[$item['operator']]['nickname'];
@@ -301,7 +306,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('ID', '教师名', '班级名', '课程名', '校区', '教室', '校区说明',  '排课人员', '助教', '状态', '生源地', '星期', '时长', '时间', '创建时间'),
+            'title' => array('ID', '教师名', '班级名', '课程名', '校区', '教室', '校区说明',  '排课人员', '助教', "学管", '状态', '生源地', '星期', '时长', '时间', '创建时间'),
             'lists' => array(),
         );
         
@@ -316,6 +321,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
                 $item['area_mark'],
                 $item['operator_name'],
                 $item['area_op_name'],
+                $item["sop_name"],
                 $item['state'] == 1 ? "待开始" : "已结算",
                 $item['birthplace'],
                 $item['week_time'],
