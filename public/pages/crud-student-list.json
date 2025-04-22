@@ -501,6 +501,7 @@
                                     {
                                         "type": "tree-select",
                                         "onlyLeaf":true,
+                                        "hidden": true,
                                         "label": "留学&升学服务计划",
                                         "name":"abroadplan_id",
                                         "searchable":true,
@@ -521,7 +522,8 @@
                                         }
                                     },
                                     {
-                                        "type": "divider"
+                                        "type": "divider",
+                                        "hidden": true
                                     },
                                     {
                                         "type": "input-number",

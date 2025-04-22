@@ -34,6 +34,10 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
         if (empty($info) || $info['state'] != Service_Data_Schedule::SCHEDULE_ABLE) {
             throw new Zy_Core_Exception(405, "操作失败, 订单已不存在或已结束");
         }
+        // 设置打点信息
+        Zy_Helper_Reg::set("point_log", Service_Data_Operationlog::SCHEDULE_EDIT);
+        Zy_Helper_Reg::set("point_from", json_encode($info));
+        Zy_Helper_Reg::set("point_workid", $id);        
 
         if ($date <= 0){
             throw new Zy_Core_Exception(405, "操作失败, 调整日期格式不正确");
@@ -78,6 +82,15 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
             'sts' => strtotime(date('Ymd', $needTimes['sts'])),
             'ets' => strtotime(date('Ymd', $needTimes['ets'] + 86400)),
         );
+
+        // 完全相同则不认为是修改
+        if ($info["teacher_uid"] == $teacherUid && 
+            $info["area_id"] == $areaId && 
+            $info["room_id"] == $roomId && 
+            $info['start_time'] == $needTimes['sts'] &&
+            $info['end_time'] == $needTimes['ets']) {
+            return array();
+        }
 
         $serviceUser = new Service_Data_Profile();
         $userInfo = $serviceUser->getUserInfoByUid($teacherUid);
@@ -190,6 +203,8 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
         if ($ret === false) {
             throw new Zy_Core_Exception(405, "更新失败, 请重试");
         }
+
+        $this->addOperationLog();
         return array();
     }
 }

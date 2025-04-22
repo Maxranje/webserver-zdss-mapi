@@ -510,6 +510,7 @@
                                     "syncLocation":false,
                                     "headerToolbar": [
                                         "bulkActions",
+                                        "export-excel",
                                         {
                                             "type": "tpl",
                                             "tpl": "共有 ${total} 条数据。注意: 有结算或结转才有记录, 订单剩余金额包含未结算金额.",
@@ -519,7 +520,7 @@
                                     "columns": [
                                         {
                                             "name": "modify_time",
-                                            "label": "事件时间(结转or结算)",
+                                            "label": "事件时间",
                                             "type": "text",
                                             "toggled": true
                                         },

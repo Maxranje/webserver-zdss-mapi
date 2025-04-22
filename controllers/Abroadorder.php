@@ -28,5 +28,7 @@ class Controller_Abroadorder extends Zy_Core_Controller{
         // 检查项
         "confirmupdate" => "actions/abroadorder/Confirmupdate.php",         
         "confirmdetail" => "actions/abroadorder/Confirmdetail.php",   
+        "confirmupload" => "actions/abroadorder/Confirmupload.php",   
+        "confirmdown"   => "actions/abroadorder/Confirmdown.php",
     );
 }

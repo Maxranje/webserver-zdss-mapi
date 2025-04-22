@@ -149,11 +149,33 @@
                                 "type": "divider"
                             },
                             {
-                                "type": "input-time-range",
-                                "format":"HH:mm",
-                                "label" : "模板时间",
-                                "name": "time_range",
-                                "desc" : "<p style='color:red;'>以模板时间为基础值, 按照周期进行计算出详细时间, 模板时间必须填写开始课程开始[时:分]和结束[时:分], 课时长度最小5分钟, 最大4小时</p>"
+                                "type": "group",
+                                "label": "模板时间",
+                                "desc" : "<p style='color:red;'>以模板时间为基础值, 按照周期进行计算出详细时间, 模板时间必须填写开始课程开始[时:分]和结束[时:分], 课时长度最小5分钟, 最大4小时</p>",
+                                "body": [
+                                    {
+                                        "type": "input-time",
+                                        "format":"HH:mm",
+                                        "placeholder" : "开课时间",
+                                        "name": "start_time",
+                                        "timeConstraints": {
+                                            "minutes": {
+                                                "step": 5
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "type": "input-time",
+                                        "format":"HH:mm",
+                                        "placeholder" : "结束时间",
+                                        "name": "end_time",
+                                        "timeConstraints": {
+                                            "minutes": {
+                                                "step": 5
+                                            }
+                                        }
+                                    }
+                                ]
                             },
                             {
                                 "type": "divider"
@@ -264,10 +286,26 @@
                                         "onlyLeaf":true
                                     },
                                     {
-                                        "type": "input-time-range",
+                                        "type": "input-time",
                                         "format":"HH:mm",
-                                        "label" : "时间范围",
-                                        "name": "time_range"
+                                        "placeholder" : "开课时间",
+                                        "name": "start_time",
+                                        "timeConstraints": {
+                                            "minutes": {
+                                                "step": 5
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "type": "input-time",
+                                        "format":"HH:mm",
+                                        "placeholder" : "结束时间",
+                                        "name": "end_time",
+                                        "timeConstraints": {
+                                            "minutes": {
+                                                "step": 5
+                                            }
+                                        }
                                     }
                                 ]
                             }

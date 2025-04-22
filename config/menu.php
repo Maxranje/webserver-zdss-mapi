@@ -162,7 +162,14 @@ return array(
                     "url"=>"/schedule/calendar",
                     "icon"=>"fa fa-calendar",
                     "link"=>HOSTNAME . "mapi/schedule/calendarplatform"
-                )
+                ),
+                array(
+                    "id" => 44,
+                    "label"=>"操作日志",
+                    "url"=>"/schedule/operationlog",
+                    "icon"=>"fa fa-align-left",
+                    "schemaApi"=>"get:/public/pages/crud-log-schedule-list.json"
+                ),
             ]
         ),
         array(
@@ -352,11 +359,12 @@ return array(
     "mode" => array(
         array(
             "id" => 4001,
-            "label"=>"课程编辑",
+            "label"=>"排课编辑",
+            "tag" => "排课列表单项编辑能力, 包括上课时间,教师和教室等"
         ),
         array(
             "id" => 4002,
-            "label"=>"课程删除",
+            "label"=>"排课删除",
         ),
         array(
             "id" => 4003,
@@ -377,6 +385,7 @@ return array(
         array(
             "id" => 4006,
             "label"=>"教师锁定删除",
+            "tag" => "删除教师已设置的无法上课的锁定时间"
         ),
         array(
             "id" => 4007,
@@ -384,7 +393,8 @@ return array(
         ),
         array(
             "id" => 4008,
-            "label"=>"学员金额/课时等核心数据读写权限",
+            "label"=>"学员核心数据",
+            "tag" => "除归属学管外, 赋予他人对学员金额/课时数据读写权限",
         ),
     ),
 );

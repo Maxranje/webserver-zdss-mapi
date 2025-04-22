@@ -11,4 +11,5 @@ return array(
     'dbdriver'      => 'mysqli',
     'platform'      => '/platform/public/index.html',
     'charset'       => 'utf-8',
+    'upload_path'   =>  BASEPATH . '../upload',
 );

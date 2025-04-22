@@ -86,4 +86,21 @@ class Zy_Core_Service {
         }
         return (OPERATOR == $sopuid || $this->isModeAble($modeId));
     }    
+
+    // 写日志
+    public function addOperationLog () {
+        $point = Zy_Helper_Reg::get("point_log", 0);
+        $workId = Zy_Helper_Reg::get("point_workid", 0);
+        $from = Zy_Helper_Reg::get("point_from", "");
+        $to = Zy_Helper_Reg::get("point_to", "");
+
+        if ($point > 0 && $workId > 0 && !empty($from) && !empty($to)) {
+            // 日志能否写进去都可以
+            try {
+                (new Service_Data_Operationlog())->writeLog($point, $workId, $from, $to);
+            } catch (Exception $e) {
+                Zy_Helper_Log::warning("add 42 ponit log failed, err:" . $e->getMessage());
+            }
+        }
+    }
 }

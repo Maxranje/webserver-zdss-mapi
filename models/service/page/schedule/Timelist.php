@@ -12,7 +12,8 @@ class Service_Page_Schedule_Timelist extends Zy_Core_Service{
         $week       = empty($week) ? array() : explode(",", $week);
         $length     = empty($this->request['length']) ? 0 : intval($this->request['length']);
         $startDay   = empty($this->request['start_day']) ? 0 : intval($this->request['start_day']);
-        $timeRange  = empty($this->request['time_range']) ? "" : strval($this->request['time_range']);
+        $startTime  = empty($this->request['start_time']) ? "" : strval($this->request['start_time']);
+        $endTime    = empty($this->request['end_time']) ? "" : strval($this->request['end_time']);
         $isSimple   = empty($this->request['is_simple']) ? false : true;
 
         if (!in_array($type, array(1,2))){
@@ -35,34 +36,31 @@ class Service_Page_Schedule_Timelist extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 配置中一周所上的课时不能大于总课时数, 请检查");
         }
 
-        $timeRange = empty($timeRange) ? array() : explode(",", $timeRange);
-        if (empty($timeRange) || count($timeRange) != 2) {
-            throw new Zy_Core_Exception(405, "操作失败, 必须设置模板时间");
+        if (empty($startTime) || empty($endTime)) {
+            throw new Zy_Core_Exception(405, "操作失败, 必须设置模板时间中起止时间");
         }
-
+        $timeRange = array(
+            "sts" => $startTime,
+            "ets" => $endTime,
+        );
         $needTimes = array();
-        foreach ($timeRange as $item) {
+        foreach ($timeRange as $key => $item) {
             $range = explode(":", $item);
             if (empty($range) || count($range) != 2) {
                 throw new Zy_Core_Exception(405, "操作失败, 模板时间必须都要配置并且时间格式不能有错");
             }
-            $needTimes[] = ($range[0] * 3600) + ($range[1] * 60);
+            $needTimes[$key] = ($range[0] * 3600) + ($range[1] * 60);
         }
 
         if (empty($needTimes)) {
             throw new Zy_Core_Exception(405, "操作失败, 模板时间不正确, 请检查");
         }
 
-        $needTimes = array(
-            'sts' => min($needTimes),
-            'ets' => max($needTimes),
-        );
-
         // 5分钟到4小时
         if ($needTimes['sts'] >= $needTimes['ets'] 
             || $needTimes['ets'] - $needTimes['sts'] > (4 * 3600)
             || $needTimes['ets'] - $needTimes['sts'] < 300) {
-            throw new Zy_Core_Exception(405, "操作失败, 模板时间必须在5分钟到4小时之间");
+            throw new Zy_Core_Exception(405, "操作失败, 模板的开始时间必须大于结束时间,  并且时间范围在5分钟到4小时之间");
         }
 
         // 计算具体时间
@@ -120,11 +118,27 @@ class Service_Page_Schedule_Timelist extends Zy_Core_Service{
                     "onlyLeaf"=>true
                 ),
                 array(
-                    "type"=> "input-time-range",
+                    "type"=> "input-time",
                     "format"=>"HH:mm",
-                    "label" => "模板时间",
-                    "name"=> "time_range",
-                )
+                    "placeholder" => "开课时间",
+                    "name"=> "start_time",
+                    "timeConstraints"=> array(
+                        "minutes"=> array(
+                            "step"=> 5
+                        )
+                    )
+                ),
+                array(
+                    "type"=> "input-time",
+                    "format"=>"HH:mm",
+                    "placeholder" => "结束时间",
+                    "name"=> "end_time",
+                    "timeConstraints"=> array(
+                        "minutes"=> array(
+                            "step"=> 5
+                        )
+                    )
+                ),
             ],
             "value" => array(),
         );
@@ -132,7 +146,8 @@ class Service_Page_Schedule_Timelist extends Zy_Core_Service{
         foreach ($needTimes as $time) {
             $v = array(
                 'date' => strtotime(date('Ymd', $time['sts'])),
-                'time_range' => $this->request['time_range'],
+                'start_time' => $this->request['start_time'],
+                'end_time' => $this->request['end_time'],
             );
             $result['value'][] = $v;
         }
@@ -144,7 +159,8 @@ class Service_Page_Schedule_Timelist extends Zy_Core_Service{
         foreach ($needTimes as $time) {
             $v = array(
                 'date' => strtotime(date('Ymd', $time['sts'])),
-                'time_range' => $this->request['time_range'],
+                'start_time' => $this->request['start_time'],
+                'end_time' => $this->request['end_time'],
             );
             $result[] = $v;
         }

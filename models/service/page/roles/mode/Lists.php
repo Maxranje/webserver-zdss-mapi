@@ -18,6 +18,7 @@ class Service_Page_Roles_Mode_Lists extends Zy_Core_Service{
             $tmp = array(
                 "label" => $item['label'],
                 "value" => $item['id'],
+                "tag" => empty($item["tag"]) ? "" : $item["tag"],
             );
             $result[] = $tmp;
         }

@@ -414,3 +414,20 @@ alter table tblCapital change column `plan_id` `abroadplan_id` int(10) unsigned 
 
 -- 这个不写入表里
 insert into tblAbroadPlan (`name`, `price`, `duration`, `operator`, `update_time`, `create_time`) select name, price, 20, 101001, update_time, create_time from tblPlan;
+
+-- 操作日志表
+CREATE TABLE `tblOperationLog` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '操作员uid',
+  `point` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '场景, 42:编辑排课',
+  `work_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '外键id',
+  `original_data` TEXT COMMENT '原内容',
+  `current_data` TEXT COMMENT '新内容',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `ext` varchar(2000) NOT NULL DEFAULT '' COMMENT '冗余',
+  PRIMARY KEY (`id`),
+  KEY `w_i` (`work_id`),
+  KEY `u_c` (`uid`,`create_time`),
+  KEY `t_c` (`point`,`create_time`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='操作日志';

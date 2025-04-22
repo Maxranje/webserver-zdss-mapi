@@ -48,7 +48,7 @@ class Service_Data_Area {
         }
 
         $Areas = array_column($Areas, null, "id");
-        $roomLists = $this->getRoomListByAid($areaIds);
+        $roomLists = $this->getRoomListByAids($areaIds);
         // 把所有房间绑定到
         foreach ($roomLists as $room) {
             if (isset($Areas[$room['area_id']])) {

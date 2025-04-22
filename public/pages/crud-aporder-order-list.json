@@ -167,6 +167,7 @@
                                     "syncLocation":false,
                                     "headerToolbar": [
                                         "bulkActions",
+                                        "export-excel",                                       
                                         {
                                             "type": "tpl",
                                             "tpl": "共有 ${total} 条数据。注意: 有结算或订单课时变更才有记录",
@@ -176,7 +177,7 @@
                                     "columns": [
                                         {
                                             "name": "modify_time",
-                                            "label": "事件时间(变更or结算)",
+                                            "label": "事件时间",
                                             "type": "text",
                                             "toggled": true
                                         },

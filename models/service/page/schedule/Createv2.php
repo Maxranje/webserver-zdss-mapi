@@ -29,18 +29,22 @@ class Service_Page_Schedule_Createv2 extends Zy_Core_Service{
         $needTimes = array();
         $needDays  = array();
         foreach ($times as $time) {
-            if (empty($time['date']) || empty($time['time_range'])) {
+            if (empty($time['date']) || empty($time['start_time']) || empty($time["end_time"])) {
                 throw new Zy_Core_Exception(405, "操作失败, 时间格式错误, 存在空情况");
             }
-            $range = explode(",", $time['time_range']);
-            if (!is_array($range) || count($range) != 2) {
-                throw new Zy_Core_Exception(405, "操作失败, 时间格式错误, 存在空情况");
+            $sts = explode(":", $time['start_time']);
+            $ets = explode(":", $time["end_time"]);
+            if (count($sts) != 2 || count($ets) != 2) {
+                throw new Zy_Core_Exception(405, "操作失败, 时间格式错误, 存在异常配置");
             }
-            $sts = explode(":", $range[0]);
-            $ets = explode(":", $range[1]);
 
             $start = $time['date'] + ($sts[0] * 3600) + ($sts[1] * 60);
             $end = $time['date'] + ($ets[0] * 3600) + ($ets[1] * 60);
+
+            // 5分钟到4小时
+            if ($start >= $end || $end - $start > (4*3600) || $end - $start < 300) {
+                throw new Zy_Core_Exception(405, "操作失败, 排课时间列表中存在配置时间异常, 开始时间>=结束时间, 时间周期<5分钟或大于4小时");
+            }
 
             $needTimes[] = array(
                 'sts' => $start,

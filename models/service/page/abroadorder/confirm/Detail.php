@@ -126,6 +126,12 @@ class Service_Page_Abroadorder_Confirm_Detail extends Zy_Core_Service{
                 if (!empty($vv["is_sc"]) && !empty($student) && !empty($vv["s_time"])) {
                     $sLable = sprintf("%s/%s", $student, date("Y-m-d H:i", $vv["s_time"]));
                 }
+                $suLable = "";
+                $suStatuts = true;
+                if (!empty($vv["up_ext"])) {
+                    $suLable = "下载附件";
+                    $suStatuts = false;
+                }
 
                 $body[] = array(
                     array(
@@ -135,7 +141,7 @@ class Service_Page_Abroadorder_Confirm_Detail extends Zy_Core_Service{
                                 "type"=> "static",
                                 "labelClassName"=> "text-muted",
                                 "value"=> $vv['title'],
-                                "columnRatio" => 8,
+                                "columnRatio" => 6,
                                 "desc" => empty($vv['sub_title']) ? "" : $vv['sub_title'],
                             ),
                             array(
@@ -144,17 +150,37 @@ class Service_Page_Abroadorder_Confirm_Detail extends Zy_Core_Service{
                                 "columnRatio" => 2,
                                 "value" => !empty($vv["is_oc"]),
                                 "disabled" => !empty($vv["is_oc"]) && !empty($vv["is_sc"]),
-                                "label"=> "operator",
+                                "option"=> "operator",
                                 "desc" => $oLable,
                             ),
                             array(
                                 "name"=> "sc_".$vv["key"],
                                 "type"=> "checkbox",
-                                "label"=> "student",
                                 "desc" => $sLable,
                                 "value" => !empty($vv["is_sc"]),
                                 "columnRatio" => 2,
+                                "option"=> "student",
+                                "maxSize" => 1048576 * 5,
                                 "disabled"=>true,
+                            ),
+                            array(
+                                "type"=> "input-file",
+                                "name"=> "upload",
+                                "columnRatio" => 1,
+                                "accept"=> ".pdf,.txt,.doc,.docx,.jpg,.jpeg,.png",
+                                "useChunk" => false,
+                                "receiver"=> sprintf("/mapi/abroadorder/confirmupload?apackage_id=%s&key=%s", $apackageId, $vv["key"]),
+                            ),
+                            array(
+                                "name"=> $vv["key"],
+                                "label" => $suLable,
+                                "level" => "link",
+                                "type"=> "action",
+                                "disabled" => $suStatuts,
+                                "actionType"=> "download",
+                                "useChunk" => false,
+                                "api"=> sprintf("/mapi/abroadorder/confirmdown?apackage_id=%s&check_id=%s", $apackageId,  $vv['key']),
+                                "columnRatio" => 1,
                             ),
                         )
                     ),

@@ -65,6 +65,7 @@ class Service_Data_Schedule {
             $this->daoSchedule->rollback();
             return false;
         }
+        Zy_Helper_Reg::set("point_to", json_encode($profile));
 
         // 更新订单
         $conds = array(
