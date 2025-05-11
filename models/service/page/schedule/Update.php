@@ -83,15 +83,6 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
             'ets' => strtotime(date('Ymd', $needTimes['ets'] + 86400)),
         );
 
-        // 完全相同则不认为是修改
-        if ($info["teacher_uid"] == $teacherUid && 
-            $info["area_id"] == $areaId && 
-            $info["room_id"] == $roomId && 
-            $info['start_time'] == $needTimes['sts'] &&
-            $info['end_time'] == $needTimes['ets']) {
-            return array();
-        }
-
         $serviceUser = new Service_Data_Profile();
         $userInfo = $serviceUser->getUserInfoByUid($teacherUid);
         if (empty($userInfo) || $userInfo['state'] == Service_Data_Profile::STUDENT_DISABLE) {
@@ -102,6 +93,16 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
         $columnInfos = $serviceColumn->getColumnByTSId($teacherUid, $subjectId);
         if (empty($columnInfos)) {
             throw new Zy_Core_Exception(405, "操作失败, 无法查到教师绑定信息");
+        }
+
+        // 完全相同则不认为是修改
+        if ($info["teacher_uid"] == $teacherUid && 
+            $info["subject_id"] == $subjectId && 
+            $info["area_id"] == $areaId && 
+            $info["room_id"] == $roomId && 
+            $info['start_time'] == $needTimes['sts'] &&
+            $info['end_time'] == $needTimes['ets']) {
+            return array();
         }
 
         $ret = $serviceSchedule->checkTeacherPk(array($needTimes), $needDays, $teacherUid, $info);

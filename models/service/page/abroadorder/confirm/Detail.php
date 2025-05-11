@@ -109,9 +109,12 @@ class Service_Page_Abroadorder_Confirm_Detail extends Zy_Core_Service{
         }
         $uids  = array_unique($uids);
 
-        $serviceData = new Service_Data_Profile();
-        $userInfos = $serviceData->getUserInfoByUids($uids);
-        $userInfos = array_column($userInfos, null, "uid");
+        $userInfos = array();
+        if (!empty($uids)) {
+            $serviceData = new Service_Data_Profile();
+            $userInfos = $serviceData->getUserInfoByUids($uids);
+            $userInfos = array_column($userInfos, null, "uid");
+        }
 
         foreach ($confirmData['content'] as $i => $v) {   
             $body = array();

@@ -61,7 +61,7 @@ class Service_Page_Log_Lists extends Zy_Core_Service{
         }
         
         $uids = Zy_Helper_Utils::arrayInt($lists, 'uid');
-        $teacherUids = $areaIds = $roomIds = array();
+        $teacherUids = $areaIds = $roomIds = $subjectIds = array();
 
         foreach ($lists as $k => &$v) {
             $current = json_decode($v["current_data"], true);
@@ -70,10 +70,12 @@ class Service_Page_Log_Lists extends Zy_Core_Service{
             $teacherUids[] = intval($current['teacher_uid']);
             $areaIds[] = intval($current['area_id']);
             $roomIds[] = intval($current['room_id']);
+            $subjectIds[] = intval($current['subject_id']);
 
             $teacherUids[] = intval($original['teacher_uid']);
             $areaIds[] = intval($original['area_id']);
             $roomIds[] = intval($original['room_id']);
+            $subjectIds[] = intval($original['subject_id']);
 
             $v['current_data'] = $current;
             $v['original_data'] = $original;
@@ -82,6 +84,7 @@ class Service_Page_Log_Lists extends Zy_Core_Service{
         $uids = array_unique(array_merge($uids, $teacherUids));
         $areaIds = array_unique($areaIds);
         $roomIds = array_unique($roomIds);
+        $subjectIds = array_unique($subjectIds);
 
         $serviceData = new Service_Data_Profile();
         $userInfos = $serviceData->getUserInfoByUids($uids);
@@ -97,6 +100,13 @@ class Service_Page_Log_Lists extends Zy_Core_Service{
             $areaInfos = array_column($areaInfos, null, "id");
         }
 
+        $subjectInfos = array();
+        if (!empty($subjectIds)) {
+            $serviceData = new Service_Data_Subject();
+            $subjectInfos = $serviceData->getSubjectByIds($subjectIds, true);
+            $subjectInfos = array_column($subjectInfos, null, "id");
+        }
+
         $result = array();
         foreach ($lists as $v) {
             $tmp = array(
@@ -107,6 +117,8 @@ class Service_Page_Log_Lists extends Zy_Core_Service{
             );
             $otUid = $v["original_data"]['teacher_uid'];
             $ctUid = $v["current_data"]['teacher_uid'];
+            $otSid = $v["original_data"]['subject_id'];
+            $ctSid = $v["current_data"]['subject_id'];
             $otAid = empty($v["original_data"]['area_id']) ? 0 : $v["original_data"]['area_id'];
             $ctAid = empty($v["current_data"]['area_id']) ? 0 : $v["current_data"]['area_id'];
             $otRid = empty($v["original_data"]['room_id']) ? 0 : $v["original_data"]['room_id'];
@@ -114,6 +126,8 @@ class Service_Page_Log_Lists extends Zy_Core_Service{
 
             $otName = empty($userInfos[$otUid]['nickname']) ? "-" : $userInfos[$otUid]['nickname'];
             $ctName = empty($userInfos[$ctUid]['nickname']) ? "-" : $userInfos[$ctUid]['nickname'];
+            $osName = empty($subjectInfos[$otSid]['name']) ? "-" : $subjectInfos[$otSid]['name'];
+            $csName = empty($subjectInfos[$ctSid]['name']) ? "-" : $subjectInfos[$ctSid]['name'];
             $otAname = empty($areaInfos[$otAid]['name']) ? "-" : $areaInfos[$otAid]['name'];
             $ctAname = empty($areaInfos[$ctAid]['name']) ? "-" : $areaInfos[$ctAid]['name'];
 
@@ -123,12 +137,14 @@ class Service_Page_Log_Lists extends Zy_Core_Service{
             $tmp["original"] = array(
                 "教师" => sprintf("%s(id: %s)", $otName, $otUid),
                 "校区" => sprintf("%s(id: %s)", $otAname, $otUid),
+                "课程" => sprintf("%s(id: %s)", $osName, $otSid),
                 "教室" => sprintf("%s(id: %s)", $otRname, $otRid),
                 '排课时间' =>sprintf("%s ~ %s", date("Y-m-d H:i", $v["original_data"]['start_time']),  date("H:i", $v["original_data"]['end_time'])),
             );
             $tmp["current"] = array(
                 "教师" => sprintf("%s(id: %s)", $ctName, $ctUid),
                 "校区" => sprintf("%s(id: %s)", $ctAname, $ctUid),
+                "课程" => sprintf("%s(id: %s)", $csName, $ctSid),
                 "教室" => sprintf("%s(id: %s)", $ctRname, $ctRid),
                 '排课时间' =>sprintf("%s ~ %s", date("Y-m-d H:i", $v["current_data"]['start_time']),  date("H:i", $v["current_data"]['end_time'])),
             );

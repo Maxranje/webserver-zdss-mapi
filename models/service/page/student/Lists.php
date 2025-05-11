@@ -139,7 +139,7 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
             $item["review_state"]       = empty($reviewInfos[$item["uid"]]['type']) ? 0 : $reviewInfos[$item["uid"]]['type'];
             unset($item['passport']);
             
-            if (!$this->isOperator(Service_Data_Roles::ROLE_MODE_STUDENT_AMOUNT_HANDLE, $item["sop_uid"])){
+            if (!$this->isOperator(Service_Data_Roles::ROLE_MODE_STUDENT_AMOUNT_HANDLE, $item["sop_uid"]) && !$this->checkPartner()){
                 $item["order_balance"]      = "***";
                 $item["balance"]            = "***";
                 $item["balance_f"]          = "***";
