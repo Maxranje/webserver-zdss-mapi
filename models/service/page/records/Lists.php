@@ -114,8 +114,10 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
                 continue;
             }
             $duration = "";
+            $scheduleTime = "";
             if (!empty($scheduleInfos[$item['schedule_id']])) {
                 $duration = sprintf("%.2f", ($scheduleInfos[$item['schedule_id']]['end_time'] - $scheduleInfos[$item['schedule_id']]['start_time']) / 3600);
+                $scheduleTime = sprintf("%s~%s", date("Y-m-d H:i",$scheduleInfos[$item['schedule_id']]['start_time']), date("H:i",$scheduleInfos[$item['schedule_id']]['end_time']));
             }
 
             $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
@@ -132,6 +134,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
             $item['isfree']         = "-";
             $item['is_abroadplan']  = empty($ext["order"]["abroadplan_id"]) ? "-" : "是";
             $item['duration']       = $duration ;
+            $item["schedule_time"]  = empty($scheduleTime) ? "-" : $scheduleTime;
             if (isset($ext['order'])) {
                 $item['isfree'] = "否";
                 if (!empty($ext['order']['isfree'])) {
@@ -145,7 +148,7 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('日期', 'UID', '用户名', '用户类型', '状态', '场景', '排课ID', '金额(元)', '课时', "生源地", '班级', '订单ID', "计划订单","免费订单", '操作员', "更新日期"),
+            'title' => array('操作日期', '排课日期', 'UID', '用户名', '用户类型', '状态', '场景', '排课ID', '金额(元)', '课时', "生源地", '班级', '订单ID', "计划订单","免费订单", '操作员'),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -157,7 +160,8 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
                 continue;
             }
             $tmp = array(
-                $item['create_time'],
+                $item['update_time'],
+                $item['schedule_time'],
                 $item['uid'],
                 $item['nickname'],
                 $item['type'],
@@ -172,7 +176,6 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
                 $item['is_abroadplan'],
                 $item['isfree'],
                 $item['operator'],
-                $item['update_time'],
             );
             $result['lists'][] = $tmp;
         }

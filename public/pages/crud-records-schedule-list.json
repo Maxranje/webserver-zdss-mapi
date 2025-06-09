@@ -128,8 +128,14 @@
         ],
         "columns": [
             {
-                "name": "create_time",
-                "label": "日期",
+                "name": "update_time",
+                "label": "操作日期",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "schedule_time",
+                "label": "课程时间",     
                 "type": "text",
                 "toggled": true
             },
@@ -222,12 +228,6 @@
                 "label": "操作员",     
                 "type": "text",
                 "toggled": true
-            },
-            {
-                "name": "update_time",
-                "label": "更新日期",     
-                "type": "text",
-                "toggled": false
             }
         ]
     }

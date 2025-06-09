@@ -18,8 +18,9 @@ class Service_Data_Profile {
     const ADMIN_GRANT       = [self::USER_TYPE_ADMIN, self::USER_TYPE_SUPER, self::USER_TYPE_TEACHER, self::USER_TYPE_PARTNER];
     const STUDENT_STATE     = [self::STUDENT_ABLE, self::STUDENT_DISABLE];
 
-    const RECHARGE          = 1; 
-    const REFUND            = 2;
+    const RECHARGE          = 1;  // 这是后续续费充值
+    const REFUND            = 2;  // 这是退款
+    const RENEW             = 3;  // 名字有问题, 这个是第一次充值
 
     public function __construct() {
         $this->daoUser = new Dao_User () ;

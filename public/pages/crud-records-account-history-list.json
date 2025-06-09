@@ -27,6 +27,41 @@
                     "placeholder": ""
                 },
                 {
+                    "type": "tree-select",
+                    "name": "bpid",
+                    "size": "md",
+                    "onlyLeaf":true,
+                    "label": "生源地",
+                    "searchable":true,
+                    "initiallyOpen":false,
+                    "source": "/mapi/birthplace/lists?is_select=1"
+                },      
+                {
+                    "label": "类型",
+                    "type": "select",
+                    "name": "types",
+                    "size": "xs",
+                    "value" : "0",
+                    "options": [
+                        {
+                            "label": "请选择",
+                            "value": "0"
+                        },
+                        {
+                            "label": "充值(续费)",
+                            "value": "1"
+                        },
+                        {
+                            "label": "退款",
+                            "value": "2"
+                        },
+                        {
+                            "label": "充值(首次)",
+                            "value": "3"
+                        }
+                    ]
+                },                          
+                {
                     "type": "input-date-range",
                     "name": "daterangee",
                     "inline": true,
@@ -91,13 +126,21 @@
                 "toggled": true
             },
             {
+                "name": "birthplace",
+                "label": "生源地",
+                "type": "text",
+                "toggled": true
+            },
+            {
                 "name": "type",
                 "label": "类型",
                 "type": "mapping",
                 "map": {
-                    "1": "<span class='label label-success'>充值</span>",
-                    "2": "<span class='label label-default'>退款</span>"
-                }
+                    "3": "<span class='label label-info'>充值(首次)</span>",
+                    "2": "<span class='label label-default'>退款</span>",
+                    "1": "<span class='label label-success'>充值(续费)</span>"
+                },
+                "remark" : "V2.1.11后新增续费标记, 历史已充值不区分"
             },
             {
                 "name": "capital",

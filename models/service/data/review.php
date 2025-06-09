@@ -94,6 +94,7 @@ class Service_Data_Review {
     public function rechargeHandle ($id, $userInfo, $capital, $remark, $state) {
         $this->daoReview->startTransaction();
         $uid = intval($userInfo['uid']);
+        $type = Service_Data_Profile::RECHARGE;
 
         // 通过才会操作, 否则就是更新记录
         if ($state == self::REVIEW_SUC) {
@@ -110,6 +111,17 @@ class Service_Data_Review {
                 'ext' => json_encode($userInfoExt),
             );
 
+            // 判断是否是第一次充值
+            $serviceCapatail = new Service_Data_Capital();
+            $total = $serviceCapatail->getTotalByConds(array(
+                sprintf("uid=%d", $uid),
+                sprintf("state=%d", self::REVIEW_SUC),
+                sprintf("type in (%s)", implode(",", [Service_Data_Profile::RECHARGE, Service_Data_Profile::RENEW])),
+            ));
+            if ($total <= 0) {
+                $type = Service_Data_Profile::RENEW;
+            }
+
             $daoUser = new Dao_User();
             $ret = $daoUser->updateByConds(array("uid"=> $uid), $profile);
             if ($ret == false) {
@@ -121,6 +133,7 @@ class Service_Data_Review {
         // 更新记录表数据
         $daoCapital = new Dao_Capital();
         $profile = array(
+            "type" => $type,
             "state" => $state,
             "rop_uid" => OPERATOR,
             "update_time" => time(),

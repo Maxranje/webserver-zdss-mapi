@@ -10,6 +10,8 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
         $pn         = empty($this->request['page']) ? 0 : intval($this->request['page']);
         $rn         = empty($this->request['perPage']) ? 0 : intval($this->request['perPage']);
         $nickname   = empty($this->request['nickname']) ? "" : trim($this->request['nickname']);
+        $bpid       = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
+        $types      = empty($this->request['types']) ? 0 : intval($this->request['types']);
         $dataRange  = empty($this->request['daterangee']) ? array() : explode(",", $this->request['daterangee']);
         $isExport   = empty($this->request['is_export']) ? false : true;
 
@@ -18,14 +20,24 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
         $conds = array(
             "state" => 1,  
         );
-        if (!empty($nickname)) {
-            $serviceData = new Service_Data_Profile();
-            $uids = $serviceData->getUserInfoLikeName($nickname);
+        if (!empty($nickname) || $bpid > 0) {
+            $serviceProfile = new Service_Data_Profile();
+            $uConds = array();
+            if (!empty($nickname)) {
+                $uConds[] = "nickname like '%".$nickname."%'";
+            }
+            if ($bpid > 0) {
+                $uConds[] = "bpid = ". $bpid;  
+            }
+            $uids = $serviceProfile->getListByConds($uConds, array("uid"));
             if (empty($uids)) {
                 return array();
             }
             $uids = Zy_Helper_Utils::arrayInt($uids, "uid");
             $conds[] = sprintf("uid in (%s)", implode(",", $uids));
+        }
+        if ($types > 0) {
+            $conds["type"] = $types;
         }
 
         if (!empty($dataRange)) {
@@ -85,10 +97,15 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
         $serviceUsers = new Service_Data_Profile();
         $userInfos = $serviceUsers->getUserInfoByUids($uids);
         $userInfos = array_column($userInfos, null, "uid");
+        $bpids = array_column($userInfos, "bpid");
 
         $serviceData = new Service_Data_Abroadplan();
         $abroadplanInfos = $serviceData->getAbroadplanByIds($abroadplanIds);
         $abroadplanInfos = array_column($abroadplanInfos, null, "id");
+
+        $serviceData = new Service_Data_Birthplace();
+        $birthplaceInfo = $serviceData->getBirthplaceByIds($bpids);
+        $birthplaceInfo = array_column($birthplaceInfo, null, "id");
 
         $serviceData = new Service_Data_Review();
         $reviews = $serviceData->getLastReviewByWorkIds($ids);
@@ -96,8 +113,9 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
         foreach ($lists as &$item) {
             $ext = $item['ext'];
             $partnerUid = empty($ext['partner_uid']) ? 0 : intval($ext['partner_uid']);
+            $bpid = empty($userInfos[$item['uid']]['bpid']) ? 0 : intval($userInfos[$item['uid']]['bpid']);
 
-            $item['type']           = $item['type'] == Service_Data_Profile::RECHARGE ? "1" : "2";
+            $item['type']           = strval($item["type"]);
             $item['nickname']       = empty($userInfos[$item['uid']]['nickname']) ? "(已删除)" : $userInfos[$item['uid']]['nickname'];
             $item['operator']       = empty($userInfos[$item['operator']]['nickname']) ? "" :$userInfos[$item['operator']]['nickname'];
             $item['rop_name']       = empty($userInfos[$item['rop_uid']]['nickname']) ? "" :$userInfos[$item['rop_uid']]['nickname'];
@@ -111,6 +129,7 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
             $item["abroadplan_price"]     = empty($abroadplanInfos[$item['abroadplan_id']]['price']) ? "" : sprintf("%.2f", $abroadplanInfos[$item['abroadplan_id']]['price'] / 100);
             $item["refund_balance"] = empty($ext['refund_balance']) || empty($ext['refund_back_balance']) ? "" : sprintf("%.2f", $ext['refund_balance']/ 100);
             $item["refund_back_balance"] = empty($ext['refund_back_balance']) ? "" : sprintf("%.2f", $ext['refund_back_balance'] /100);
+            $item["birthplace"]     = empty($birthplaceInfo[$bpid]["name"]) ? "-" : $birthplaceInfo[$bpid]["name"];
 
             if($item['type'] == Service_Data_Profile::REFUND && empty($item["refund_back_balance"])) {
                 $item["refund_balance"] = $item['capital'];
@@ -121,7 +140,7 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
 
     private function formatExcel($lists) {
         $result = array(
-            'title' => array('日期', 'UID', '用户名', '用户类型', "状态", '实际金额(元)', '充值-计划名称', '充值-计划金额(元)', '退款-退款金额(元)','退款-还款金额(元)',  '操作员', '操作备注', "协作人员",  "审核员", '审核备注',  "更新日期"),
+            'title' => array('日期', 'UID', '用户名', '用户类型', "生源地", "状态", '实际金额(元)', '充值-计划名称', '充值-计划金额(元)', '退款-退款金额(元)','退款-还款金额(元)',  '操作员', '操作备注', "协作人员",  "审核员", '审核备注',  "更新日期"),
             'lists' => array(),
         );
         if (empty($lists)) {
@@ -129,11 +148,13 @@ class Service_Page_Records_Account_Lists extends Zy_Core_Service{
         }
         
         foreach ($lists as $item) {
+            $type = ($item['type'] == "1") ? "充值(续费)" : (($item['type'] == "3") ? "充值(首次)" : "退款");
             $tmp = array(
                 $item['update_time'],
                 $item['uid'],
                 $item['nickname'],
-                $item['type'] == "1" ? "充值" : "退款",
+                $type,
+                $item["birthplace"],
                 $item['state'] == "1" ? "审批通过" : ($item['state'] == "2" ? "审批拒绝" : "待审批"),
                 $item['capital'],
                 $item['abroadplan_name'],
