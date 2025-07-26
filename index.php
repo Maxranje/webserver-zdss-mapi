@@ -10,7 +10,7 @@ switch (ENV) {
 		break;
 
 	case 'production':
-		ini_set('display_errors', 0);
+		ini_set('display_errors', 1);
 		error_reporting (E_ERROR & E_USER_WARNING);
 		break;
 
@@ -21,10 +21,12 @@ switch (ENV) {
 # set file path
 define('BASEPATH',  dirname(__FILE__).DIRECTORY_SEPARATOR);
 define('SYSPATH',   BASEPATH . 'library/');
-define('VIEWPATH',   BASEPATH . 'public/');
-define('HOSTNAME',   "http://zdss.cn//");
-//define('HOSTNAME',   "http://127.0.0.1:8060//");
-
+define('VIEWPATH',  BASEPATH . 'public/');
+if (ENV == "development") {
+    define('HOSTNAME',   "http://127.0.0.1:8060/");
+} else {
+    define('HOSTNAME',  "http://zdss.cn/");
+}
 
 require_once SYSPATH . 'autoload/autoload.php';
 Zy_Core_Bootstrap::getInstance()->run();

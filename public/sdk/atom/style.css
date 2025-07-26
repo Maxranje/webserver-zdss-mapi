@@ -303,6 +303,9 @@ img {
 .w-50 {
   width: 50% !important; }
 
+.w-100 {
+  width: 100% !important; }  
+
 .section-padding-50 {
   padding-top: 50px;
   padding-bottom: 50px; }
@@ -8764,7 +8767,7 @@ ul.wysihtml5-toolbar li {
 /*# sourceMappingURL=style.css.map */
 
 .tobarimg1 {
-  background: url(/public/atom/img/bg-img/slider-1.jpg) no-repeat;
+  background: url(/public/sdk/atom/img/bg-img/slider-1.jpg) no-repeat;
   max-width: 100%;
   max-height: 100%;
   width: 100%;
@@ -8773,7 +8776,7 @@ ul.wysihtml5-toolbar li {
 }
 
 .tobarimg2 {
-  background: url(/public/atom/img/bg-img/slider-3.jpg) no-repeat;
+  background: url(/public/sdk/atom/img/bg-img/slider-3.jpg) no-repeat;
   max-width: 100%;
   max-height: 100%;
   width: 100%;
@@ -8782,7 +8785,7 @@ ul.wysihtml5-toolbar li {
 }
 
 .tobarimg3 {
-  background: url(/public/atom/img/bg-img/slider-2.jpg) no-repeat;
+  background: url(/public/sdk/atom/img/bg-img/slider-2.jpg) no-repeat;
   max-width: 100%;
   max-height: 100%;
   width: 100%;

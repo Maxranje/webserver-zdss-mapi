@@ -161,7 +161,7 @@ return array(
                     "label"=>"课表",
                     "url"=>"/schedule/calendar",
                     "icon"=>"fa fa-calendar",
-                    "link"=>HOSTNAME . "mapi/schedule/calendarplatform"
+                    "link"=>HOSTNAME . "platform"
                 ),
                 array(
                     "id" => 44,
@@ -353,7 +353,7 @@ return array(
             "label"=>"个人课表",
             "url"=>"/calendar",
             "icon"=>"fa fa-calendar",
-            "link"=>HOSTNAME . "mapi/dashboard/home"
+            "link"=>HOSTNAME . "details"
         ),
     ),
     "mode" => array(

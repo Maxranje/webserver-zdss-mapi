@@ -69,6 +69,8 @@ abstract class Zy_Database_Dbdriver {
 	// 连接的超时时间
 	public $timeout 			= 10;
 
+    // 
+    public $failover;
 
 	/**
 	 * 初始化连接变量

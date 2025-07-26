@@ -1,6 +1,10 @@
 <?php
 class Zy_Helper_Utils {
 
+    public static function isDev () {
+        return ENV == "development";
+    }
+
     public static function exportExcel($fileName, $tileArray = [], $dataArray = [])
     {
         ini_set('memory_limit', '512M');

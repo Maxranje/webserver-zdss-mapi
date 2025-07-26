@@ -3,7 +3,7 @@
 class Service_Page_Abroadorder_Confirm_Down extends Zy_Core_Service{
 
     public function execute () {
-        if (!$this->checkAdmin() && !$this->checkStudent()) {
+        if (!$this->checkAdmin()) {
             throw new Zy_Core_Exception(405, "无权限操作");
         }
 
