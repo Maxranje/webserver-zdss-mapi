@@ -1,10 +1,6 @@
 <?php
 class Zy_Helper_Utils {
 
-    public static function isDev () {
-        return ENV == "development";
-    }
-
     public static function exportExcel($fileName, $tileArray = [], $dataArray = [])
     {
         ini_set('memory_limit', '512M');
@@ -103,13 +99,13 @@ class Zy_Helper_Utils {
         $minute = floor($hourSecond / 60);
         $duration = '';
         if ($hour > 0) {
-            $duration = $hour . ' Hour ';
+            $duration = $hour . ' h ';
         }
         if ($minute > 0) {
-            $duration .= $minute . ' Min ';
+            $duration .= $minute . ' m ';
         }
         if (empty($duration)) {
-            $duration = "0 Hour";
+            $duration = "0 h";
         }
         return $duration;
     }
@@ -122,6 +118,18 @@ class Zy_Helper_Utils {
         }
         return true;
     }
+
+    public static function checkStrictStr($str, $min = 6, $max = 20) {
+        $str = trim($str);
+        preg_match_all('/[a-zA-Z0-9,]+/u',$str,$result);
+        if (empty($result[0][0]) || mb_strlen($str, "utf-8") != mb_strlen($result[0][0], "utf-8")) {
+            return false;
+        }
+        if (strlen($str) < $min || strlen($str) > $max) {
+            return false;
+        }        
+        return true;
+    }    
 
     public static function autoID ($k1, $k2) {
         $end = time() - strtotime(date("Ymd"));
@@ -140,6 +148,5 @@ class Zy_Helper_Utils {
         }   
         $len = $index + 5 >= strlen($numberStr) ? strlen($numberStr) : $index+5;
         return substr($numberStr, 0, $len);
-
     }
 }

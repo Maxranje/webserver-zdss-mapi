@@ -106,13 +106,7 @@ class Zy_Core_Actions {
 
     public function redirectLogin () {
         header('HTTP/1.1 301 Moved Permanently');
-        // 线上线下地址不一样, 线下为了方便测试用
-        if (Zy_Helper_Utils::isDev()) {
-            header(sprintf("Location: http://%s/login", HOSTNAME));
-        } else {
-            header(sprintf("Location: http://%s/mapi/sign/page", $_SERVER['HTTP_HOST']));
-        }
-        
+        header(sprintf("Location: http://%s/login", $_SERVER['HTTP_HOST']));
         exit;
     }
 

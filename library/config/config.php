@@ -5,8 +5,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 return array(
     'language'      => 'en',
     'charset'       => 'UTF-8',
-    'log_path'      =>  BASEPATH . 'log',
-    'log_file'      => "service.log",
+    'log_path'      =>  LOGPATH,
+    'log_file'      => "service.mapi.log",
     'serverdns'     => 'http://127.0.0.1/',
     'dbdriver'      => 'mysqli',
     'platform'      => '/platform/public/index.html',
