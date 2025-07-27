@@ -10,6 +10,7 @@
     <link rel="stylesheet" title="default" href="/public/sdk/ang.css" />
     <link rel="stylesheet" href="/public/sdk/iconfont.css" />
     <link rel="stylesheet" href="/public/sdk/helper.css" />
+    <link rel="stylesheet" href="/public/sdk/atom/mapi.css" />
     <script src="/public/sdk/sdk.js"></script>
     <script src="/public/sdk/vue.js"></script>
     <script src="/public/sdk/history.js"></script>
@@ -21,10 +22,7 @@
 
 <body>
     <div id="root" class="app-wrapper"></div>
-    <script>
-var uuname = "{{ data.name }}";
-var isbell = "{{ data.isbell }}";
-var bellElement;
+<script>
 (function() {
     let amis = amisRequire('amis/embed');
     const match = amisRequire('path-to-regexp').match;
@@ -37,12 +35,40 @@ var bellElement;
             type: 'tpl',
             inline: false,
             className: 'w-full',
-            tpl: isbell == "1" ? bell : nobell
+            tpl:`<div class="zy-header-container">
+                    <div class="zy-header-left"></div>
+                    <div class="zy-header-right">` + 
+                    {% if data.is_reviewer == "1" %} 
+                        `<!-- 通知图标 -->
+                        <a class="zy-header-link" title="通知" href="/mapi/dashboard/page#/review">
+                            <div class="zy-notification-container">
+                                <i class="fa fa-bell" id="bell_notice"> <span>通知</span></i>
+                                <span class="zy-notification-badge" id="zy-notification_badge"></span>
+                                <span></span>
+                            </div>
+                        </a>` + 
+                    {% endif %} 
+                        `<!-- 邮箱图标 -->                   
+                        <a class="zy-header-link" title="邮箱" href="http://mail.zdss.cn">
+                            <i class="fa fa-envelope"> <span>邮箱</span></i> 
+                        </a>
+
+                        <!-- 模考平台 -->
+                        <a class="zy-header-link" title="中控" href="/choice">
+                            <i class="fa fa-reply-all"> <span>中控</span></i> 
+                        </a>                        
+
+                        <!-- 退出图标 -->
+                        <a class="zy-header-link" title="退出" href="javascript:mysignOut()">
+                            <i class="fa fa-sign-out"> <span>退出</span></i>
+                        </a>
+                    </div>
+                </div>`
         },
         api: '/mapi/dashboard/menu'
     };
 
-    {% if data.isbell == "1" %}
+    {% if data.is_reviewer == "1" %}
     setTimeout(noticeBell, 2000);
     setInterval(noticeBell,30000); 
     {% endif %}
