@@ -58,8 +58,11 @@
         "switchPerPage": false,
         "placeholder": "没有权限信息",
         "columnsCount": 4,
-        "perPageAvailable": [10000, 20000],
-        "perPage" : 10000,
+        "perPageAvailable": [
+            10000,
+            20000
+        ],
+        "perPage": 10000,
         "card": {
             "header": {
                 "className": "bg-white",
@@ -88,7 +91,7 @@
                                         {
                                             "name": "name",
                                             "label": "角色",
-                                            "size" : "full",
+                                            "size": "full",
                                             "type": "input-text"
                                         },
                                         {
@@ -98,7 +101,7 @@
                                             "name": "descs",
                                             "type": "textarea",
                                             "label": "描述",
-                                            "size" : "full"
+                                            "size": "full"
                                         }
                                     ]
                                 },
@@ -118,13 +121,26 @@
                                     ]
                                 },
                                 {
-                                    "title": "页面权限",
+                                    "title": "排课页面权限",
                                     "body": [
                                         {
                                             "label": "选择页面",
                                             "name": "page_ids",
                                             "type": "transfer",
                                             "source": "/mapi/roles/pagelists",
+                                            "selectMode": "list",
+                                            "required": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "title": "模考页面权限",
+                                    "body": [
+                                        {
+                                            "label": "选择页面",
+                                            "name": "mock_ids",
+                                            "type": "transfer",
+                                            "source": "/mapi/roles/mocklists",
                                             "selectMode": "list",
                                             "required": true
                                         }
