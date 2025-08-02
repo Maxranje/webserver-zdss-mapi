@@ -1,6 +1,6 @@
 <?php
 
-class Service_Page_Api_Navigation extends Zy_Core_Service{
+class Service_Page_Api_Mockmenu extends Zy_Core_Service{
 
     // 通用组件, 页面获取信息
     public function execute () {
