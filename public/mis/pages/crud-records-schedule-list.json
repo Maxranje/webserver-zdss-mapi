@@ -1,0 +1,238 @@
+{
+    "type": "page",
+    "title": "结算报表",
+    "body": {
+        "type": "crud",
+        "api": {
+            "method": "post",
+            "url": "/mapi/records/lists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "syncLocation": false,
+        "id": "records_lists",
+        "name": "records_lists",
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "tree-select",
+                    "name": "student_uids",
+                    "label": "学员",
+                    "size": "md",
+                    "initiallyOpen": false,
+                    "searchable": true,
+                    "onlyLeaf": true,
+                    "multiple": true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "teacher_uids",
+                    "label": "教师",
+                    "size": "md",
+                    "initiallyOpen": false,
+                    "searchable": true,
+                    "onlyLeaf": true,
+                    "multiple": true,
+                    "source": "/mapi/teacher/lists?is_select=1&nickname=$term"
+                },
+                {
+                    "type": "select",
+                    "name": "category",
+                    "label": "场景",
+                    "size": "md",
+                    "value": 0,
+                    "options": [
+                        {
+                            "label": "请选择",
+                            "value": 0
+                        },
+                        {
+                            "label": "学员消费",
+                            "value": 1
+                        },
+                        {
+                            "label": "教师收入",
+                            "value": 2
+                        }
+                    ]
+                },
+                {
+                    "type": "tree-select",
+                    "name": "bpid",
+                    "onlyLeaf": true,
+                    "label": "生源地",
+                    "searchable": true,
+                    "size": "md",
+                    "initiallyOpen": false,
+                    "source": "/mapi/birthplace/lists?is_select=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "group_ids",
+                    "onlyLeaf": true,
+                    "multiple": true,
+                    "searchable": true,
+                    "size": "lg",
+                    "label": "班级",
+                    "source": "/mapi/group/lists?is_select=1"
+                },
+                {
+                    "type": "input-date-range",
+                    "name": "daterangee",
+                    "inline": true,
+                    "label": "时间范围"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "action",
+                "actionType": "download",
+                "label": "导出Excel",
+                "api": "/mapi/records/lists?state=${state}&daterangee=${daterangee}&uid=${uid}&bpid=${bpid}&is_export=1"
+            },
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "update_time",
+                "label": "操作日期",
+                "type": "text",
+                "width": 100,
+                "toggled": true
+            },
+            {
+                "name": "schedule_time",
+                "label": "课程时间",
+                "type": "text",
+                "width": 150,
+                "toggled": true
+            },
+            {
+                "name": "uid",
+                "label": "UID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "nickname",
+                "label": "用户名",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "type",
+                "label": "用户类型",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "state",
+                "label": "状态",
+                "type": "mapping",
+                "map": {
+                    "1": "<span class='label label-info'>正常</span>",
+                    "2": "<span class='label label-danger'>撤销</span>"
+                }
+            },
+            {
+                "name": "category",
+                "label": "场景",
+                "type": "mapping",
+                "map": {
+                    "1": "<span class='label label-info'>学员消费</span>",
+                    "2": "<span class='label label-success'>教师收入</span>"
+                }
+            },
+            {
+                "name": "schedule_id",
+                "label": "排课ID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "money_info",
+                "label": "金额(元)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "duration",
+                "label": "课时(小时)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "birthplace",
+                "label": "生源地",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "group_name",
+                "label": "班级",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "order_id",
+                "label": "订单ID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "is_abroadplan",
+                "label": "计划订单",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "isfree",
+                "label": "免费订单",
+                "type": "mapping",
+                "map": {
+                    "1": "<span class='label label-success'>是</span>",
+                    "0": "-"
+                }
+            },
+            {
+                "name": "operator",
+                "label": "操作员",
+                "type": "text",
+                "toggled": true
+            }
+        ]
+    }
+}

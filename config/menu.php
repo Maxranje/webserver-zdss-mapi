@@ -15,7 +15,7 @@ return array(
                         "label" =>  "Dashboard",
                         "url"=>"/index/1",
                         "icon"=>"fa fa-home",
-                        "schemaApi"=>"get:/public/pages/dashboard.json"
+                        "schemaApi"=>"get:/public/mis/pages/dashboard.json"
                     ),
                 ),
             ),
@@ -25,9 +25,9 @@ return array(
         array(
             "id" => 2,
             "label"=>"学员管理",
-            "url"=>"/student",
+            "url"=>"student",
             "icon"=>"fa fa-group",
-            "schemaApi"=>"get:/public/pages/crud-student-list.json"
+            "schemaApi"=>"get:/public/mis/pages/crud-student-list.json"
         ),
         array(
             "id" => 12,
@@ -40,42 +40,42 @@ return array(
                     "label"=>"订单列表",
                     "url"=>"/order/list",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-order-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-order-list.json"
                 ),
                 // array(
                 //     "id" => 122,
                 //     "label"=>"结转记录",
                 //     "url"=>"/order/transfer",
                 //     "icon"=>"fa fa-retweet",
-                //     "schemaApi"=>"get:/public/pages/crud-order-transfer-list.json"
+                //     "schemaApi"=>"get:/public/mis/pages/crud-order-transfer-list.json"
                 // ),
                 // array(
                 //     "id" => 123,
                 //     "label"=>"退款记录",
                 //     "url"=>"/order/refund",
                 //     "icon"=>"fa fa-reply",
-                //     "schemaApi"=>"get:/public/pages/crud-order-refund-list.json"
+                //     "schemaApi"=>"get:/public/mis/pages/crud-order-refund-list.json"
                 // ),
                 // array(
                 //     "id" => 124,
                 //     "label"=>"存额变更",
                 //     "url"=>"/order/recharge",
                 //     "icon"=>"fa fa-random",
-                //     "schemaApi"=>"get:/public/pages/crud-order-recharge-list.json"
+                //     "schemaApi"=>"get:/public/mis/pages/crud-order-recharge-list.json"
                 // ),
                 array(
                     "id" => 126,
                     "label"=>"变更记录",
                     "url"=>"/order/change",
                     "icon"=>"fa fa-retweet",
-                    "schemaApi"=>"get:/public/pages/crud-order-change-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-order-change-list.json"
                 ),                
                 array(
                     "id" => 125,
                     "label"=>"绑定课程",
                     "url"=>"/order/band",
                     "icon"=>"fa fa-check-square-o",
-                    "schemaApi"=>"get:/public/pages/form-order-band.json"
+                    "schemaApi"=>"get:/public/mis/pages/form-order-band.json"
                 )
             ]
         ),
@@ -90,42 +90,42 @@ return array(
                     "label"=>"服务列表",
                     "url"=>"/aporder/package/list",
                     "icon"=>"fa fa-reorder",
-                    "schemaApi"=>"get:/public/pages/crud-aporder-package-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-aporder-package-list.json"
                 ),
                 array(
                     "id" => 143,
                     "label"=>"订单列表",
                     "url"=>"/aporder/order/list",
                     "icon"=>"fa fa-calendar",
-                    "schemaApi"=>"get:/public/pages/crud-aporder-order-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-aporder-order-list.json"
                 ),
                 array(
                     "id" => 144,
                     "label"=>"变更记录",
                     "url"=>"/aporder/change/list",
                     "icon"=>"fa fa-retweet",
-                    "schemaApi"=>"get:/public/pages/crud-aporder-change-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-aporder-change-list.json"
                 ),                    
                 array(
                     "id" => 145,
                     "label"=>"绑定课程",
                     "url"=>"/aporder/band",
                     "icon"=>"fa fa-window-restore",
-                    "schemaApi"=>"get:/public/pages/form-abroadplan-order-band.json"
+                    "schemaApi"=>"get:/public/mis/pages/form-abroadplan-order-band.json"
                 ),
                 array(
                     "id" => 141,
                     "label"=>"配置计划",
                     "url"=>"/abroadplan/lists",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-abroadplan-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-abroadplan-list.json"
                 ),
                 array(
                     "id" => 146,
                     "label"=>"配置检查项",
                     "url"=>"/abroadplan/confirm",
                     "icon"=>"fa fa-check-square-o",
-                    "schemaApi"=>"get:/public/pages/form-abroadplan-confirm.json"
+                    "schemaApi"=>"get:/public/mis/pages/form-abroadplan-confirm.json"
                 )                            
             ], 
         ),
@@ -134,7 +134,7 @@ return array(
             "label"=>"班级管理",
             "url"=>"/group",
             "icon"=>"fa fa-envelope-o",
-            "schemaApi"=>"get:/public/pages/crud-group-list.json"
+            "schemaApi"=>"get:/public/mis/pages/crud-group-list.json"
         ),
         array(
             "id" => 4,
@@ -147,28 +147,28 @@ return array(
                     "label"=>"开始排课",
                     "url"=>"/schedule/schedulestart",
                     "icon"=>"fa fa-pencil-square-o",
-                    "schemaApi"=>"get:/public/pages/form-schedule.json"
+                    "schemaApi"=>"get:/public/mis/pages/form-schedule.json"
                 ),
                 array(
                     "id" => 42,
                     "label"=>"排课列表",
                     "url"=>"/schedule/schedulelist",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-schedule-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-schedule-list.json"
                 ),
                 array(
                     "id" => 43,
                     "label"=>"课表",
                     "url"=>"/schedule/calendar",
                     "icon"=>"fa fa-calendar",
-                    "link"=>HOSTNAME . "mapi/schedule/calendarplatform"
+                    "link"=>HOSTNAME . "platform"
                 ),
                 array(
                     "id" => 44,
                     "label"=>"操作日志",
                     "url"=>"/schedule/operationlog",
                     "icon"=>"fa fa-align-left",
-                    "schemaApi"=>"get:/public/pages/crud-log-schedule-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-log-schedule-list.json"
                 ),
             ]
         ),
@@ -183,14 +183,14 @@ return array(
                     "label"=>"教室预览",
                     "url"=>"/schedule/arearoute",
                     "icon"=>"fa fa-calendar",
-                    "schemaApi"=>"get:/public/pages/crud-schedule-area-detail.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-schedule-area-detail.json"
                 ),
                 array(
                     "id" => 102,
                     "label"=>"配置教室",
                     "url"=>"/schedule/arealist",
                     "icon"=>"fa fa-bars",
-                    "schemaApi"=>"get:/public/pages/crud-schedule-area-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-schedule-area-list.json"
                 )
             ]
         ),
@@ -205,49 +205,49 @@ return array(
                     "label"=>"账户变动明细表",
                     "url"=>"/records/account",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-records-account-history-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-records-account-history-list.json"
                 ),
                 array(
                     "id" => 55,
                     "label"=>"账户变动实时表",
                     "url"=>"/records/student",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-records-account-current-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-records-account-current-list.json"
                 ),                
                 array(
                     "id" => 51,
                     "label"=>"结算报表",
                     "url"=>"/records/lists",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-records-schedule-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-records-schedule-list.json"
                 ),
                 array(
                     "id" => 52,
                     "label"=>"订单信息明细表",
                     "url"=>"/records/order",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-records-order-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-records-order-list.json"
                 ),
                 array(
                     "id" => 56,
                     "label"=>"订单消耗实时表",
-                    "url"=>"/records/orderv2",
+                    "url"=>"/records/order_current",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-records-orderv2-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-records-order-current-list.json"
                 ),
                 array(
                     "id" => 57,
                     "label"=>"学管统计表",
                     "url"=>"/records/sop",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-records-sop-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-records-sop-list.json"
                 ),
                 array(
                     "id" => 54,
                     "label"=>"教师课时",
                     "url"=>"/records/teacher",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-records-teacher-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-records-teacher-list.json"
                 )
             ]
         ),
@@ -262,14 +262,14 @@ return array(
                     "label"=>"科目分类",
                     "url"=>"/subject/lists",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-subject-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-subject-list.json"
                 ),
                 array(
                     "id" => 63,
                     "label"=>"绑定班型",
                     "url"=>"/subject/claszemap",
                     "icon"=>"fa fa-retweet",
-                    "schemaApi"=>"get:/public/pages/crud-claszemap-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-claszemap-list.json"
                 ),
             ], 
         ),
@@ -284,14 +284,14 @@ return array(
                     "label"=>"教师列表",
                     "url"=>"/teacher/lists",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-teacher-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-teacher-list.json"
                 ),
                 array(
                     "id" => 72,
                     "label"=>"锁定时间",
                     "url"=>"/teacher/lock",
                     "icon"=>"fa fa-lock",
-                    "schemaApi"=>"get:/public/pages/crud-teacher-lock-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-teacher-lock-list.json"
                 ),
             ]
         ),
@@ -300,14 +300,14 @@ return array(
             "label"=>"校区管理",
             "url"=>"/area",
             "icon"=>"fa fa-street-view",
-            "schemaApi"=>"get:/public/pages/crud-area-list.json"
+            "schemaApi"=>"get:/public/mis/pages/crud-area-list.json"
         ),
         array(
             "id" => 13,
             "label"=>"工单审批",
             "url"=>"/review",
             "icon"=>"fa fa-check-circle-o",
-            "schemaApi"=>"get:/public/pages/crud-review-list.json"
+            "schemaApi"=>"get:/public/mis/pages/crud-review-list.json"
         ),
         array(
             "id" => 9,
@@ -321,28 +321,28 @@ return array(
                     "label"=>"操作人员",
                     "url"=>"/system/admins",
                     "icon"=>"fa fa-list",
-                    "schemaApi"=>"get:/public/pages/crud-admin-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-admin-list.json"
                 ),
                 array(
                     "id" => 92,
                     "label"=>"角色配置",
                     "url"=>"/system/roles",
                     "icon"=>"fa fa-bars",
-                    "schemaApi"=>"get:/public/pages/crud-roles-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-roles-list.json"
                 ),
                 array(
                     "id" => 93,
                     "label"=>"生源地",
                     "url"=>"/system/birthplace",
                     "icon"=>"fa fa-server",
-                    "schemaApi"=>"get:/public/pages/crud-birthplace-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-birthplace-list.json"
                 ),
                 array(
                     "id" => 94,
                     "label"=>"班型配置",
                     "url"=>"/subject/clasze",
                     "icon"=>"fa fa-calendar",
-                    "schemaApi"=>"get:/public/pages/crud-clasze-list.json"
+                    "schemaApi"=>"get:/public/mis/pages/crud-clasze-list.json"
                 ),
             ]
         )
@@ -351,9 +351,9 @@ return array(
         array(
             "id" => 11,
             "label"=>"个人课表",
-            "url"=>"/calendar",
+            "url"=>"/platform",
             "icon"=>"fa fa-calendar",
-            "link"=>HOSTNAME . "mapi/dashboard/home"
+            "link"=>HOSTNAME . "details"
         ),
     ),
     "mode" => array(

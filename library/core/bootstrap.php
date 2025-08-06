@@ -83,7 +83,7 @@ class Zy_Core_Bootstrap {
         }
 
         $controllers = 'Controller_'.$controller;        
-        call_user_func([new $controllers, '_init'], $controller, $action);
+        call_user_func([new $controllers, '_init'], $action);
     }
 
 
