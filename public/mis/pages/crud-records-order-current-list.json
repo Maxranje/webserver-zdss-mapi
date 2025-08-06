@@ -1,0 +1,161 @@
+{
+    "type": "page",
+    "title": "订单消耗实时表",
+    "body": [
+        {
+            "type": "alert",
+            "title": "实时表说明",
+            "body": "<p style='color:red; font-weight:bold;'>1. 列表呈现的是某个时间段内-学员账户数据变更和值</p> <p>2.必须要选定时间周期, 最长跨度不能超过1年, </p><p>3.列:剩余课时和账户余额为实时数据, 不随时间变化</p>",
+            "level": "info",
+            "showCloseButton": true,
+            "showIcon": true,
+            "className": "mb-2"
+        },
+        {
+            "type": "crud",
+            "api": {
+                "method": "post",
+                "url": "/mapi/records/orderlistsv2",
+                "dataType": "form"
+            },
+            "perPage": 20,
+            "syncLocation": false,
+            "id": "records_lists",
+            "name": "records_lists",
+            "columnsTogglable": false,
+            "labelTpl": "${id}",
+            "filter": {
+                "title": "条件搜索",
+                "submitText": "",
+                "body": [
+                    {
+                        "type": "input-text",
+                        "name": "nickname",
+                        "label": "学员姓名",
+                        "size": "md",
+                        "placeholder": ""
+                    },
+                    {
+                        "type": "tree-select",
+                        "name": "bpid",
+                        "onlyLeaf": true,
+                        "label": "生源地",
+                        "searchable": true,
+                        "size": "md",
+                        "initiallyOpen": false,
+                        "source": "/mapi/birthplace/lists?is_select=1"
+                    },
+                    {
+                        "type": "input-date-range",
+                        "name": "daterangee",
+                        "inline": true,
+                        "label": "时间范围",
+                        "value": "${DATETOSTR(STARTOF(DATEMODIFY(NOW(), 0, 'month'), 'month'), 'X')},${DATETOSTR(ENDOF(DATEMODIFY(NOW(), 0, 'month'), 'month'), 'X')}"
+                    },
+                    {
+                        "type": "submit",
+                        "label": "搜索"
+                    }
+                ]
+            },
+            "filterTogglable": true,
+            "headerToolbar": [
+                "filter-toggler",
+                "bulkActions",
+                {
+                    "type": "action",
+                    "actionType": "download",
+                    "label": "导出Excel",
+                    "api": "/mapi/records/orderlistsv2?nickname=${nickname}&bpid=${bpid}&daterangee=${daterangee}&is_export=1"
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "共有 ${total} 条数据。",
+                    "className": "v-middle"
+                },
+                {
+                    "type": "columns-toggler",
+                    "align": "right"
+                },
+                {
+                    "type": "drag-toggler",
+                    "align": "right"
+                },
+                {
+                    "type": "pagination",
+                    "align": "right"
+                }
+            ],
+            "footerToolbar": [
+                "statistics",
+                "switch-per-page",
+                "pagination"
+            ],
+            "columns": [
+                {
+                    "name": "order_id",
+                    "label": "订单ID",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "order_name",
+                    "label": "订单标识",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "abroadplan_name",
+                    "label": "留学计划",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "is_free",
+                    "label": "是否免费",
+                    "type": "mapping",
+                    "map": {
+                        "2": "<span class='label label-info'>否</span>",
+                        "1": "<span class='label label-success'>是</span>"
+                    }
+                },
+                {
+                    "name": "schedule_nums",
+                    "label": "订单总课时",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "balance",
+                    "label": "订单余额",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "check_schedule_nums",
+                    "label": "结算课时",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "check_schedule_balance",
+                    "label": "结算金额",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "change_duration",
+                    "label": "结转账户课时",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "change_balance",
+                    "label": "结转账户金额",
+                    "type": "text",
+                    "toggled": true
+                }
+            ]
+        }
+    ]
+}

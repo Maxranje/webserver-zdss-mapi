@@ -20,7 +20,7 @@ class Controller_Abroadorder extends Zy_Core_Controller{
         "packageduration" => "actions/abroadorder/Packageduration.php",    
         "packagedetail"   => "actions/abroadorder/Packagedetail.php",   
         "packagetransfer" => "actions/abroadorder/Packagetransfer.php",      
-        "packageunbind"   => "actions/abroadorder/PackageUnbind.php",
+        "packageunbind"   => "actions/abroadorder/Packageunbind.php",
 
         // 变更记录
         "changelists" => "actions/abroadorder/Changelists.php", 

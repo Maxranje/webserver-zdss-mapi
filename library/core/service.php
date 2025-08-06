@@ -51,6 +51,13 @@ class Zy_Core_Service {
         return true;
     }
 
+    public function checkTeacherPages () {
+        if ($this->checkTeacher() && !empty($this->adption['pages'])) {
+            return true;
+        }
+        return false;
+    }    
+
     // 获取用户的权限ID
     public function getUserRolePageIds () {
         return empty($this->adption['pages']) ? array() : $this->adption['pages'];
@@ -102,5 +109,27 @@ class Zy_Core_Service {
                 Zy_Helper_Log::warning("add 42 ponit log failed, err:" . $e->getMessage());
             }
         }
+    }
+
+    // y用户登录信息
+    public function getAuthInfo ($userInfo) {
+        $roleType = 0 ;
+        if ($userInfo["type"] == Service_Data_Profile::USER_TYPE_SUPER||  
+            !empty($this->adption["pages"]) || 
+            !empty($userInfo["pages"])) {
+            $roleType = 1;
+        }
+        return array(
+            "user" => array(
+                "nickname"  => $userInfo["nickname"],
+                "type"      => $userInfo["type"],
+                "uid"       => $userInfo["uid"],
+                "avatar"    => $userInfo["avatar"],    
+                "school"    => $userInfo["school"],
+                "graduate"  => $userInfo["graduate"],
+                "roleType"  => $roleType,
+            ),
+            "auth_token" => Zy_Helper_Authtoken::buildToken($userInfo["uid"]),
+        );
     }
 }

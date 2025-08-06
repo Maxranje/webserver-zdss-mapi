@@ -1,0 +1,189 @@
+{
+    "type": "page",
+    "title": "服务订单变更记录",
+    "body": {
+        "type": "crud",
+        "id": "change_list",
+        "api": {
+            "method": "post",
+            "url": "/mapi/abroadorder/changelists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "syncLocation": false,
+        "labelTpl": "${order_id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "order_id",
+                    "label": "订单ID",
+                    "placeholder": "严格搜索"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "student_uid",
+                    "label": "学员",
+                    "initiallyOpen": false,
+                    "searchable": true,
+                    "onlyLeaf": true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term"
+                },
+                {
+                    "label": "类型",
+                    "type": "select",
+                    "name": "type",
+                    "value": "0",
+                    "options": [
+                        {
+                            "label": "请选择",
+                            "value": "0"
+                        },
+                        {
+                            "label": "服务创建",
+                            "value": "4"
+                        },
+                        {
+                            "label": "服务删除",
+                            "value": "5"
+                        },
+                        {
+                            "label": "服务结转",
+                            "value": "9"
+                        },
+                        {
+                            "label": "服务完结",
+                            "value": "6"
+                        },
+                        {
+                            "label": "服务加课时",
+                            "value": "8"
+                        },
+                        {
+                            "label": "服务中订单变更",
+                            "value": "7"
+                        }
+                    ]
+                },
+                {
+                    "type": "input-date-range",
+                    "name": "date_range",
+                    "inline": true,
+                    "label": "时间范围"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "student_uid",
+                "label": "UID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "student_name",
+                "label": "学员名",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "abroadplan_name",
+                "label": "留学&升学计划",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "type",
+                "label": "类型",
+                "type": "mapping",
+                "map": {
+                    "4": "<span class='label label-info'>服务创建</span>",
+                    "5": "<span class='label label-danger'>服务删除</span>",
+                    "6": "<span class='label label-default'>服务完结</span>",
+                    "7": "<span class='label label-success'>服务订单变更</span>",
+                    "8": "<span class='label label-success'>服务增加课时</span>",
+                    "9": "<span class='label label-default'>服务结转</span>"
+                }
+            },
+            {
+                "name": "review_state",
+                "label": "审核状态",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "change_state",
+                "label": "订单状态",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "order_id",
+                "label": "订单id",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "duration",
+                "label": "变更课时(小时)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "operator",
+                "label": "操作员",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "container",
+                "label": "备注",
+                "popOver": {
+                    "body": {
+                        "type": "tpl",
+                        "tpl": "${remark}"
+                    }
+                }
+            },
+            {
+                "name": "update_time",
+                "label": "修改时间",
+                "type": "text",
+                "toggled": true
+            }
+        ]
+    }
+}

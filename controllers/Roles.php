@@ -15,5 +15,8 @@ class Controller_Roles extends Zy_Core_Controller{
 
         // mode
         "modelists"     => "actions/roles/Modelists.php",
+
+        // mock
+        "mocklists"     => "actions/roles/Mocklists.php"
     );
 }
