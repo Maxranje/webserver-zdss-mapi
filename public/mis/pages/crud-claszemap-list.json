@@ -1,0 +1,311 @@
+{
+    "type": "page",
+    "title": "绑定班型",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "drawer",
+            "label": "新增",
+            "className": "m-r-sm",
+            "primary": true,
+            "drawer": {
+                "position": "right",
+                "size": "lg",
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "clasze-create-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/clasze/mapcreate",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "clasze_list"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "tree-select",
+                            "name": "bpid",
+                            "onlyLeaf":true,
+                            "searchable":true,
+                            "label": "生源地",
+                            "source": "/mapi/birthplace/lists?is_select=1",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "tree-select",
+                            "name": "subject_id",
+                            "onlyLeaf":true,
+                            "searchable":true,
+                            "label": "科目",
+                            "source": "/mapi/subject/lists?is_select=1&is_parent=1",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "tree-select",
+                            "label": "班型",
+                            "name": "cid",
+                            "onlyLeaf":true,
+                            "searchable":true,
+                            "source": "/mapi/clasze/lists?is_select=1",
+                            "required": true,
+                            "unique": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "price",
+                            "label": "课时价",
+                            "required": true,
+                            "addOn": {
+                                "type": "text",
+                                "label": "元"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "api": {
+            "method": "post",
+            "url": "/mapi/clasze/maplists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "id":"clasze_list",
+        "syncLocation":false,
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "tree-select",
+                    "name": "bpid",
+                    "onlyLeaf":true,
+                    "searchable":true,
+                    "size":"md",
+                    "label": "生源地",
+                    "source": "/mapi/birthplace/lists?is_select=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "subject_id",
+                    "onlyLeaf":true,
+                    "searchable":true,
+                    "size":"md",
+                    "label": "科目",
+                    "source": "/mapi/subject/lists?is_select=1&is_parent=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "cid",
+                    "onlyLeaf":true,
+                    "searchable":true,
+                    "size":"md",
+                    "label": "班型",
+                    "source": "/mapi/clasze/lists?is_select=1"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },        
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "combineNum": 2,
+        "columns": [
+            {
+                "name": "birthplace",
+                "label": "生源地",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "subject_name",
+                "label": "科目",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "clasze_name",
+                "label": "班型",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "price_info",
+                "label": "价格(元)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "create_time",
+                "label": "创建时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "update_time",
+                "label": "修改时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "width": 100,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "label": "编辑",
+                        "level": "info",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "clasze-edit-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/clasze/mapupdate",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                                "actionType": "reload",
+                                                "componentId": "clasze_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "ID",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "bpid",
+                                        "onlyLeaf":true,
+                                        "searchable":true,
+                                        "size":"md",
+                                        "label": "生源地",
+                                        "source": "/mapi/birthplace/lists?is_select=1",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "subject_id",
+                                        "onlyLeaf":true,
+                                        "searchable":true,
+                                        "size":"md",
+                                        "label": "科目",
+                                        "source": "/mapi/subject/lists?is_select=1&is_parent=1",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "label": "班型",
+                                        "name": "cid",
+                                        "onlyLeaf":true,
+                                        "searchable":true,
+                                        "source": "/mapi/clasze/lists?is_select=1",
+                                        "required": true,
+                                        "unique": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "price_info",
+                                        "label": "课时价",
+                                        "required": true,
+                                        "addOn": {
+                                            "type": "text",
+                                            "label": "元"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "删除",
+                        "level": "danger",
+                        "actionType": "ajax",
+                        "confirmText": "您确认要删除, 删除绑定关系需要提前删除应用这套绑定关系的订单, 否则会出现订单无法结算问题!",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/clasze/mapdelete?id=$id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

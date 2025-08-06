@@ -1,0 +1,225 @@
+{
+    "type": "page",
+    "title": "留学与升学服务计划",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "drawer",
+            "label": "新增",
+            "className": "m-r-sm",
+            "primary": true,
+            "drawer": {
+                "position": "right",
+                "size": "lg",
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "plan-create-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/plan/create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "plan_list"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "input-text",
+                            "name": "name",
+                            "label": "计划名称",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "price",
+                            "label": "价格",
+                            "required": true,
+                            "kilobitSeparator" : true,
+                            "suffix": "元",
+                            "desc" : "元为单位, 大于等于0"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "draggable": true,
+        "api": {
+            "method": "post",
+            "url": "/mapi/plan/lists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "id":"plan_list",
+        "syncLocation":false,
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "name",
+                    "label": "计划名称",
+                    "size":"md",
+                    "placeholder": "模糊匹配"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },        
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "id",
+                "label": "ID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "name",
+                "label": "计划名称",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "price",
+                "label": "价格(元)",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "create_time",
+                "label": "创建时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "update_time",
+                "label": "修改时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "width": 100,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "label": "编辑",
+                        "level": "info",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "plan-edit-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/plan/update",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                                "actionType": "reload",
+                                                "componentId": "plan_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "ID",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "name",
+                                        "label": "计划名称",
+                                        "required": true,
+                                        "desc" : "修改计划名称会影响到充值记录和统计管理中展示"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "price",
+                                        "label": "价格",
+                                        "required": true,
+                                        "kilobitSeparator" : true,
+                                        "suffix": "元",
+                                        "desc" : "元为单位, 大于等于0"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "删除",
+                        "level": "danger",
+                        "actionType": "ajax",
+                        "confirmText": "您确认要删除, 计划一旦删除, 会导致充值记录和账户总余额中的计划消失?",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/plan/delete?id=$id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

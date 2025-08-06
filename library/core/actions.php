@@ -94,7 +94,12 @@ class Zy_Core_Actions {
         header('Content-Type: text/html; charset=utf-8');
         header("Cache-Control: no-cache, must-revalidate");
         
-        $loader = new Twig_Loader_Filesystem(VIEWPATH);
+        if ($tpl == "mock") {
+            $tpl = "index";
+            $loader = new Twig_Loader_Filesystem(BASEPATH . 'public/sdk');
+        } else {
+            $loader = new Twig_Loader_Filesystem(VIEWPATH);    
+        }
         // 配置环境
         $twig = new Twig_Environment($loader);
         

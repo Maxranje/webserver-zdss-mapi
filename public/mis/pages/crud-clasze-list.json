@@ -1,0 +1,211 @@
+{
+    "type": "page",
+    "title": "班型列表",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "dialog",
+            "label": "新增",
+            "className": "m-r-sm",
+            "primary": true,
+            "dialog": {
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "clasze-create-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/clasze/create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "clasze_list"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "input-text",
+                            "name": "name",
+                            "label": "班型",
+                            "required": true
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "identify",
+                            "label": "班型标识",
+                            "required": true,
+                            "desc": "班型标识作用于创建班级时关联的班号, 例如:1V1, 1V6"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "api": {
+            "method": "post",
+            "url": "/mapi/clasze/lists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "id": "clasze_list",
+        "syncLocation": false,
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "name",
+                    "label": "班型",
+                    "size": "md",
+                    "placeholder": "模糊匹配"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "id",
+                "label": "ID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "name",
+                "label": "班型",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "identify",
+                "label": "标记",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "create_time",
+                "label": "创建时间",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "name": "update_time",
+                "label": "更新时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "width": 100,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "label": "编辑",
+                        "level": "info",
+                        "actionType": "dialog",
+                        "dialog": {
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "clasze-edit-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/clasze/update",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                                "actionType": "reload",
+                                                "componentId": "clasze_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "ID",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "name",
+                                        "label": "班型",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "identify",
+                                        "label": "标识",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "删除",
+                        "level": "danger",
+                        "actionType": "ajax",
+                        "confirmText": "您确认要删除, 删除班型需要提前删除科目和班型的绑定关系, 同时要提前删除应用该班型的班级",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/clasze/delete?id=$id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

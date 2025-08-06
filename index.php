@@ -3,7 +3,7 @@ define('APP_NAME',  'mapi');
 define('ENV',       'development');
 define('BASEPATH',  dirname(__FILE__).DIRECTORY_SEPARATOR);
 define('SYSPATH',   BASEPATH . 'library/');
-define('VIEWPATH',  BASEPATH . 'public/sdk');
+define('VIEWPATH',  BASEPATH . 'public/mis');
 
 # init error reporting by env
 switch (ENV) {
@@ -12,7 +12,7 @@ switch (ENV) {
 		error_reporting(-1);
 
         # reset path
-        define('LOGPATH',   BASEPATH . '../../log');
+        define('LOGPATH',   BASEPATH . '../../../log');
         define('HOSTNAME',   "http://127.0.0.1:8060/");        
 		break;
 
