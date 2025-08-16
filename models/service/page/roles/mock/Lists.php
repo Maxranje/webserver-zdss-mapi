@@ -7,7 +7,7 @@ class Service_Page_Roles_Mock_Lists extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $menuConf = Zy_Helper_Config::getAppConfig("navigation");
+        $menuConf = Zy_Helper_Config::getAppConfig("mock_menu");
         $menuConf = $menuConf['menu']; // 主体
 
         $result = array();

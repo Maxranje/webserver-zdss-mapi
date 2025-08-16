@@ -1,36 +1,6 @@
 <?php
 class Zy_Helper_Utils {
 
-    public static function exportExcel($fileName, $tileArray = [], $dataArray = [])
-    {
-        ini_set('memory_limit', '512M');
-        ini_set('max_execution_time', 0);
-        require SYSPATH . "/phpexcel/PHPExcel.php";
-
-        header("Pragma: public");
-        header("Expires: 0");
-        header("Cache-Control:must-revalidate, post-check=0, pre-check=0");
-        header("Content-Type:application/force-download");
-        header("Content-Type:application/vnd.ms-execl");
-        header("Content-Type:application/octet-stream");
-        header("Content-Type:application/download");;
-        header('Content-Disposition:attachment;filename="'.$fileName.'.xls"');
-        header("Content-Transfer-Encoding:binary");
-
-        $objPHPExcel = new PHPExcel();
-        $objPHPExcel->setActiveSheetIndex(0);
-
-        $count = count($dataArray);
-        for ($i = 2; $i <= $count+1; $i++) { 
-            $objPHPExcel->getActiveSheet()->fromArray($dataArray);
-        }
-        $objPHPExcel->createSheet();
-
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save('php://output');
-        exit;
-    }
-
     public static function exportExcelSimple($fileName, $tileArray = [], $dataArray = [])
     {
         ini_set('memory_limit', '512M');
@@ -110,12 +80,15 @@ class Zy_Helper_Utils {
         return $duration;
     }
 
-    public static function checkStr($str) {
+    public static function checkStr($str, $min = 0, $max = 999) {
         $str = trim($str);
         preg_match_all('/[\x{4e00}-\x{9fa5}a-zA-Z0-9,]+/u',$str,$result);
         if (empty($result[0][0]) || mb_strlen($str, "utf-8") != mb_strlen($result[0][0], "utf-8")) {
             return false;
         }
+        if (strlen($str) < $min || strlen($str) > $max) {
+            return false;
+        }        
         return true;
     }
 

@@ -339,7 +339,9 @@ class Service_Data_Profile {
             $userInfo['phone'], 
             $userInfo['type'],
             $userInfo['pages'],
-            $userInfo['modes']);
+            $userInfo['mocks'],
+            $userInfo['modes']
+        );
     }
 
     public function delUserSession () {

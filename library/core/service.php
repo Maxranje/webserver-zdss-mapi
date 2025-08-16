@@ -58,10 +58,15 @@ class Zy_Core_Service {
         return false;
     }    
 
-    // 获取用户的权限ID
+    // 获取用户的排课权限ID
     public function getUserRolePageIds () {
         return empty($this->adption['pages']) ? array() : $this->adption['pages'];
     }
+
+    // 获取用户的模考权限ID
+    public function getUserRoleMockIds () {
+        return empty($this->adption['mocks']) ? array() : $this->adption['mocks'];
+    }    
 
     // 获取用户功能权限id
     public function getUserRoleModeIds () {
@@ -111,12 +116,12 @@ class Zy_Core_Service {
         }
     }
 
-    // y用户登录信息
+    // 用户登录信息
     public function getAuthInfo ($userInfo) {
         $roleType = 0 ;
-        if ($userInfo["type"] == Service_Data_Profile::USER_TYPE_SUPER||  
-            !empty($this->adption["pages"]) || 
-            !empty($userInfo["pages"])) {
+        if ($userInfo["type"] == Service_Data_Profile::USER_TYPE_SUPER ||  
+            (!empty($this->adption["pages"]) || !empty($userInfo["pages"])) ||
+            (!empty($this->adption["mocks"]) || !empty($userInfo["mocks"]))) {
             $roleType = 1;
         }
         return array(

@@ -5,15 +5,15 @@ class Service_Data_Roles {
     private $daoRole ;
     private $daoRoleMap ;
 
-    const ROLE_MODE_SCHEDULE_UPDATE = "4001";
-    const ROLE_MODE_SCHEDULE_DELETE = "4002";
-    const ROLE_MODE_STUDENT_RECHARGE = "4003";
-    const ROLE_MODE_STUDENT_REFUND = "4004";
-    const ROLE_MODE_TEACHER_SALARY = "4005";
-    const ROLE_MODE_TEACHER_LOCKDEL = "4006";
-    const ROLE_MODE_REVIEW_HANDLE = "4007";  // 审核操作
-    const ROLE_MODE_STUDENT_AMOUNT_HANDLE = "4008";  // 学员金额和订单等信息查看权限
-    const ROLE_MODE_STUDENT_EDIT = "4009";  // 学员编辑权限
+    const ROLE_MODE_SCHEDULE_UPDATE         = "4001";
+    const ROLE_MODE_SCHEDULE_DELETE         = "4002";
+    const ROLE_MODE_STUDENT_RECHARGE        = "4003";
+    const ROLE_MODE_STUDENT_REFUND          = "4004";
+    const ROLE_MODE_TEACHER_SALARY          = "4005";
+    const ROLE_MODE_TEACHER_LOCKDEL         = "4006";
+    const ROLE_MODE_REVIEW_HANDLE           = "4007";  // 审核操作
+    const ROLE_MODE_STUDENT_AMOUNT_HANDLE   = "4008";  // 学员金额和订单等信息查看权限
+    const ROLE_MODE_STUDENT_EDIT            = "4009";  // 学员编辑权限
 
     public function __construct() {
         $this->daoRole = new Dao_Roles () ;
@@ -28,6 +28,7 @@ class Service_Data_Roles {
         $data = $this->daoRole->getRecordByConds($conds, $this->daoRole->arrFieldsMap);
         if (!empty($data)) {
             $data['page_ids'] = explode(",", $data['page_ids']);
+            $data['mock_ids'] = explode(",", $data['mock_ids']);
         }
         return empty($data) ? array() : $data;
     }
@@ -40,6 +41,7 @@ class Service_Data_Roles {
         $data = $this->daoRole->getRecordByConds($conds, $this->daoRole->arrFieldsMap);
         if (!empty($data)) {
             $data['page_ids'] = explode(",", $data['page_ids']);
+            $data['mock_ids'] = explode(",", $data['mock_ids']);
         }
         return empty($data) ? array() : $data;
     }
@@ -79,9 +81,15 @@ class Service_Data_Roles {
     // 根据uid获取页面ids (基础session用, 不要改, 重启一个接口)
     public function getPageIdsByUid($uid, $type) {
         // 超管权限为空, 默认就是全部, 学生返回空, 就是真的没有
-        $pageIds = $modeIds = array();
-        if (in_array($type, array(Service_Data_Profile::USER_TYPE_STUDENT, Service_Data_Profile::USER_TYPE_SUPER))) {
-            return array($pageIds, $modeIds);
+        $result = array(
+            "page_ids" => array(),
+            "mock_ids" => array(),
+            "mode_ids" => array(),
+        );
+        if (in_array($type, array(
+            Service_Data_Profile::USER_TYPE_STUDENT, 
+            Service_Data_Profile::USER_TYPE_SUPER))) {
+            return $result;
         }
 
         // 正常从数据库查权限
@@ -90,7 +98,7 @@ class Service_Data_Roles {
         );
         $data = $this->daoRoleMap->getListByConds($conds, array("role_id"));
         if (empty($data)) {
-            return array($pageIds, $modeIds);  // 不配置谁都没权限
+            return $result;  // 不配置谁都没权限
         }
 
         $rolesIds = Zy_Helper_Utils::arrayInt($data, 'role_id');
@@ -99,21 +107,21 @@ class Service_Data_Roles {
         $conds = array(
             sprintf("id in (%s)", implode(",", $rolesIds))
         );
-        $data2 = $this->daoRole->getListByConds($conds, array("page_ids", "mode_ids"));
+        $data2 = $this->daoRole->getListByConds($conds, array("page_ids", "mode_ids", "mock_ids"));
         if (empty($data2)) {
-            return array($pageIds, $modeIds);
+            return $result;
         }
 
         foreach ($data2 as $item) {
-            $pageIds = array_merge($pageIds, explode(",", $item['page_ids']));
-            $modeIds = array_merge($modeIds, explode(",", $item['mode_ids']));
+            $result["page_ids"] = array_merge($result["page_ids"], explode(",", $item['page_ids']));
+            $result["mock_ids"] = array_merge($result["mock_ids"], explode(",", $item['mock_ids']));
+            $result["mode_ids"] = array_merge($result["mode_ids"], explode(",", $item['mode_ids']));
         }
-        $pageIds = array_unique($pageIds);
-        $pageIds = array_values($pageIds);
+        $result["page_ids"] = array_values(array_unique($result["page_ids"]));
+        $result["mock_ids"] = array_values(array_unique($result["mock_ids"]));
+        $result["mode_ids"] = array_values(array_unique($result["mode_ids"]));
 
-        $modeIds = array_unique($modeIds);
-        $modeIds = array_values($modeIds);
-        return array($pageIds, $modeIds);
+        return $result;
     }
 
     // 创建权限
@@ -122,7 +130,7 @@ class Service_Data_Roles {
     }
 
     // 更新权限
-    public function updateRoles ($id, $name, $descs, $pageIds, $modeIds, $insetUids, $delUids){
+    public function updateRoles ($id, $name, $descs, $pageIds, $mockIds, $modeIds, $insetUids, $delUids){
         $this->daoRole->startTransaction();
         $conds = array(
             'id' => $id,
@@ -131,6 +139,7 @@ class Service_Data_Roles {
             "name" => $name,
             "descs" => $descs,
             "page_ids" => implode(",", $pageIds),
+            "mock_ids" => implode(",", $mockIds),
             "mode_ids" => implode(",", $modeIds),
             "update_time" => time(),
         );

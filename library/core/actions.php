@@ -94,12 +94,7 @@ class Zy_Core_Actions {
         header('Content-Type: text/html; charset=utf-8');
         header("Cache-Control: no-cache, must-revalidate");
         
-        if ($tpl == "mock") {
-            $tpl = "index";
-            $loader = new Twig_Loader_Filesystem(BASEPATH . 'public/sdk');
-        } else {
-            $loader = new Twig_Loader_Filesystem(VIEWPATH);    
-        }
+        $loader = new Twig_Loader_Filesystem(VIEWPATH);
         // 配置环境
         $twig = new Twig_Environment($loader);
         
@@ -117,7 +112,7 @@ class Zy_Core_Actions {
 
     public function redirect404 () {
         header('HTTP/1.1 301 Moved Permanently');
-        header(sprintf("Location: http://%s/mapi/sign/err", $_SERVER['HTTP_HOST']));
+        header(sprintf("Location: http://%s/error", $_SERVER['HTTP_HOST']));
         exit;
     }    
 

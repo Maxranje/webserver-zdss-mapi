@@ -1,0 +1,279 @@
+{
+    "type": "page",
+    "body": {
+        "type": "crud",
+        "id": "question_list",
+        "api": {
+            "method": "post",
+            "url": "/mapi/mock/question_lists",
+            "dataType": "form"
+        },
+        "perPage": 10,
+        "perPageAvailable": [
+            5,
+            10,
+            20
+        ],
+        "syncLocation": false,
+        "labelTpl": "${qid}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "qid",
+                    "size": "md",
+                    "label": "考题ID"
+                },
+                {
+                    "label": "考题类型",
+                    "type": "select",
+                    "name": "type",
+                    "options": [
+                        {
+                            "label": "请选择",
+                            "value": "0"
+                        },
+                        {
+                            "label": "单选题",
+                            "value": "1"
+                        },
+                        {
+                            "label": "多选题",
+                            "value": "2"
+                        },
+                        {
+                            "label": "判断题",
+                            "value": "3"
+                        },
+                        {
+                            "label": "填空题",
+                            "value": "4"
+                        },
+                        {
+                            "label": "简答题",
+                            "value": "5"
+                        },
+                        {
+                            "label": "写作题",
+                            "value": "6"
+                        }
+                    ]
+                },
+                {
+                    "label": "难度",
+                    "type": "select",
+                    "name": "level",
+                    "options": [
+                        {
+                            "label": "非常简单",
+                            "value": "1"
+                        },
+                        {
+                            "label": "简单",
+                            "value": "2"
+                        },
+                        {
+                            "label": "一般",
+                            "value": "3"
+                        },
+                        {
+                            "label": "较难",
+                            "value": "4"
+                        },
+                        {
+                            "label": "超难",
+                            "value": "5"
+                        }
+                    ]
+                },
+                {
+                    "type": "tree-select",
+                    "name": "tag_id",
+                    "label": "标签",
+                    "placeholder": "请选择",
+                    "multiple": true,
+                    "initiallyOpen": false,
+                    "onlyLeaf": true,
+                    "searchable": true
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "qid",
+                "label": "QID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "content",
+                "label": "内容",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "is_group",
+                "label": "是否分组",
+                "type": "status",
+                "toggled": true
+            },
+            {
+                "name": "premeta_id",
+                "label": "材料ID",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "type",
+                "label": "类型",
+                "type": "mapping",
+                "map": {
+                    "4": "简单题",
+                    "3": "填空题",
+                    "2": "多选题",
+                    "1": "选择题"
+                }
+            },
+            {
+                "name": "type",
+                "label": "类型",
+                "type": "mapping",
+                "map": {
+                    "1": "<span class='label label-info'>非常简单</span>",
+                    "2": "<span class='label label-success'>简单</span>",
+                    "3": "<span class='label label-danger'>一般</span>",
+                    "4": "<span class='label label-warning'>较难</span>",
+                    "5": "<span class='label label-danger'>困难</span>"
+                }
+            },
+            {
+                "name": "score",
+                "label": "分数",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "frequency",
+                "label": "应用次数",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "tags",
+                "type": "list",
+                "label": "标签",
+                "listItem": {
+                    "title": "${value}"
+                }
+            },
+            {
+                "name": "operator",
+                "label": "操作员",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "update_time",
+                "label": "更新时间",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "fixed": "right",
+                "width": 220,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "label": "预览",
+                        "level": "primary",
+                        "actionType": "dialog",
+                        "dialog": {
+                            "size": "lg",
+                            "title": "材料",
+                            "body": {
+                                "type": "tpl",
+                                "tpl": ""
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "材料",
+                        "actionType": "dialog",
+                        "disabledOn": "this.premeta_id <= 0",
+                        "dialog": {
+                            "size": "lg",
+                            "title": "材料",
+                            "body": {
+                                "type": "tpl",
+                                "tpl": ""
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "编辑",
+                        "actionType": "dialog",
+                        "disabledOn": "this.premeta_id <= 0",
+                        "dialog": {
+                            "size": "lg",
+                            "title": "材料",
+                            "body": {
+                                "type": "tpl",
+                                "tpl": ""
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "actionType": "ajax",
+                        "label": "删除",
+                        "level": "danger",
+                        "disabledOn": "this.is_partner === 1",
+                        "confirmText": "您确认要删除学员么? 如果关联订单无法删除, 建议下线处理!",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/student/delete?uid=$uid"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

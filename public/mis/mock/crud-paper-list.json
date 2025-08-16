@@ -1,0 +1,325 @@
+{
+    "type": "page",
+    "title": "试卷",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "dialog",
+            "label": "新增",
+            "className": "m-r-sm",
+            "primary": true,
+            "dialog": {
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "paper-new-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/mock/paper_create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "source_lists"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "input-text",
+                            "name": "title",
+                            "label": "试卷名称",
+                            "desc": "限定100字内",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "tree-select",
+                            "name": "subject_ids",
+                            "onlyLeaf": true,
+                            "multiple": true,
+                            "searchable": true,
+                            "required": true,
+                            "label": "所属科目",
+                            "source": "/mapi/subject/lists?is_select=1"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "tree-select",
+                            "name": "source_ids",
+                            "onlyLeaf": true,
+                            "multiple": true,
+                            "searchable": true,
+                            "required": true,
+                            "label": "所属分类",
+                            "source": "/mapi/mock/source_lists?is_select=1"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "textarea",
+                            "showCounter": true,
+                            "maxLength": 200,
+                            "name": "descs",
+                            "label": "成绩说明",
+                            "desc": "限定200字内"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "id": "order_list",
+        "api": {
+            "method": "post",
+            "url": "/mapi/mock/paper_lists",
+            "dataType": "form"
+        },
+        "perPage": 10,
+        "perPageAvailable": [
+            5,
+            10
+        ],
+        "syncLocation": false,
+        "labelTpl": "${pid}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "pid",
+                    "size": "md",
+                    "label": "试卷id",
+                    "placeholder": "精确匹配"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "mode": "cards",
+        "columnsCount": 4,
+        "card": {
+            "className": "mt-5 rounded-xl",
+            "media": {
+                "type": "image",
+                "url": "$bg_img",
+                "className": "w-full h-30 content-center rounded-br-none rounded-bl-none",
+                "position": "top"
+            },
+            "header": {
+                "title": "$title",
+                "subTitle": "$sub_title"
+            },
+            "toolbar": [
+                {
+                    "type": "dropdown-button",
+                    "level": "link",
+                    "align": "right",
+                    "icon": "fa fa-ellipsis-h",
+                    "className": "pr-1 flex m-l",
+                    "hideCaret": true,
+                    "buttons": [
+                        {
+                            "type": "button",
+                            "actionType": "dialog",
+                            "label": "编辑",
+                            "className": "m-r-sm",
+                            "primary": true,
+                            "dialog": {
+                                "title": "编辑",
+                                "body": {
+                                    "type": "form",
+                                    "name": "paper-edit-form",
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/mock/paper_create",
+                                        "dataType": "form"
+                                    },
+                                    "onEvent": {
+                                        "click": {
+                                            "actions": [
+                                                {
+                                                    "actionType": "reload",
+                                                    "componentId": "source_lists"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "body": [
+                                        {
+                                            "type": "input-text",
+                                            "name": "title",
+                                            "label": "试卷名称",
+                                            "desc": "限定100字内",
+                                            "required": true
+                                        },
+                                        {
+                                            "type": "divider"
+                                        },
+                                        {
+                                            "type": "tree-select",
+                                            "name": "subject_ids",
+                                            "onlyLeaf": true,
+                                            "multiple": true,
+                                            "searchable": true,
+                                            "required": true,
+                                            "label": "所属科目",
+                                            "source": "/mapi/subject/lists?is_select=1"
+                                        },
+                                        {
+                                            "type": "divider"
+                                        },
+                                        {
+                                            "type": "tree-select",
+                                            "name": "source_ids",
+                                            "onlyLeaf": true,
+                                            "multiple": true,
+                                            "searchable": true,
+                                            "required": true,
+                                            "label": "所属分类",
+                                            "source": "/mapi/mock/source_lists?is_select=1"
+                                        },
+                                        {
+                                            "type": "divider"
+                                        },
+                                        {
+                                            "type": "textarea",
+                                            "showCounter": true,
+                                            "maxLength": 200,
+                                            "name": "descs",
+                                            "label": "成绩说明",
+                                            "desc": "限定200字内"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "label": "录入",
+                            "actionType": "drawer",
+                            "drawer": {
+                                "title": "$title - 试题详情",
+                                "size": "xl",
+                                "body": {
+                                    "type": "service",
+                                    "api": "/mapi/mock/paper_details?pid=$pid",
+                                    "body": [
+                                        {
+                                            "type": "alert",
+                                            "level": "info",
+                                            "showIcon": true,
+                                            "title": "操作说明",
+                                            "body": [
+                                                {
+                                                    "type": "tpl",
+                                                    "tpl": "使用前请先阅读"
+                                                },
+                                                {
+                                                    "type": "button",
+                                                    "level": "link",
+                                                    "label": "<试题创建规则>",
+                                                    "actionType": "dialog",
+                                                    "dialog": {
+                                                        "size": "lg",
+                                                        "title": "充值",
+                                                        "body": "123"
+                                                    }
+                                                },
+                                                {
+                                                    "type": "tpl",
+                                                    "tpl": "再进行操作"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "grid",
+                                            "gap": "md",
+                                            "className": "mt-5",
+                                            "columns": [
+                                                {
+                                                    "type": "panel",
+                                                    "md": 3,
+                                                    "body": [
+                                                        {
+                                                            "type": "tpl",
+                                                            "tpl": "标题"
+                                                        },
+                                                        {
+                                                            "type": "divider",
+                                                            "title": "timu",
+                                                            "titlePosition": "left"
+                                                        },
+                                                        {
+                                                            "type": "list",
+                                                            "source": "$question_labels",
+                                                            "placeholder": "暂无试题",
+                                                            "listItem": {
+                                                                "title": "$title",
+                                                                "subTitle": "$sub_title"
+                                                            },
+                                                            "itemAction": {
+                                                                "type": "button",
+                                                                "hidden": true,
+                                                                "actionType": "dialog",
+                                                                "dialog": {
+                                                                    "title": "详情",
+                                                                    "body": "当前行的数据 browser: ${browser}, version: ${version}"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "container",
+                                                    "md": 9,
+                                                    "body": [
+                                                        {},
+                                                        {}
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

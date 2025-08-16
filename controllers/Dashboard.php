@@ -7,6 +7,6 @@ class Controller_Dashboard extends Zy_Core_Controller{
 
         // mock 相关
         "mock"          => "actions/dashboard/Mock.php",
-        "navigation"    => "actions/dashboard/Navigation.php",
+        "mockmenu"      => "actions/dashboard/Mockmenu.php",
     );
 }

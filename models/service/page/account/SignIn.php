@@ -23,7 +23,11 @@ class Service_Page_Account_SignIn extends Zy_Core_Service{
 
         // 获取权限
         $serviceRoles = new Service_Data_Roles();
-        list($userInfo['pages'], $userInfo['modes']) = $serviceRoles->getPageIdsByUid($userInfo['uid'], $userInfo['type']);
+        $roles = $serviceRoles->getPageIdsByUid($userInfo['uid'], $userInfo['type']);
+        $userInfo["pages"] = $roles["page_ids"];
+        $userInfo["mocks"] = $roles["mock_ids"];
+        $userInfo["modes"] = $roles["mode_ids"];
+        
         $ret = $serviceData->setUserSession($userInfo);
         if (!$ret) {
             throw new Zy_Core_Exception(405, "系统错误请重试");
