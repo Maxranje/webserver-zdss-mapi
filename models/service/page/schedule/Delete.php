@@ -38,7 +38,6 @@ class Service_Page_Schedule_Delete extends Zy_Core_Service{
         } else if ($id > 0) {
             $data = $serviceData->getScheduleById($id);
             if (empty($data) || $data['state'] != Service_Data_Schedule::SCHEDULE_ABLE) {
-                var_dump($id);
                 throw new Zy_Core_Exception(405, "操作失败, 或已结算/已完成的课程不可以单个删除");
             }
 

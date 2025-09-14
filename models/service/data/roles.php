@@ -14,6 +14,8 @@ class Service_Data_Roles {
     const ROLE_MODE_REVIEW_HANDLE           = "4007";  // 审核操作
     const ROLE_MODE_STUDENT_AMOUNT_HANDLE   = "4008";  // 学员金额和订单等信息查看权限
     const ROLE_MODE_STUDENT_EDIT            = "4009";  // 学员编辑权限
+    const ROLE_MODE_SCHEDULE_REVOKE         = "4010";  // 排课撤销
+    const ROLE_MODE_MOCK_DONE               = "4011";  // mock强制结束
 
     public function __construct() {
         $this->daoRole = new Dao_Roles () ;

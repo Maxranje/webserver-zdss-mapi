@@ -20,12 +20,14 @@
                     "type": "input-text",
                     "name": "order_id",
                     "label": "订单ID",
+                    "size": "md",
                     "placeholder": "严格搜索"
                 },
                 {
                     "type": "tree-select",
                     "name": "student_uid",
                     "label": "学员",
+                    "size": "md",
                     "initiallyOpen": false,
                     "searchable": true,
                     "onlyLeaf": true,

@@ -1,0 +1,1034 @@
+{
+    "type": "page",
+    "body": [
+        {
+            "type": "service",
+            "api": "/mapi/mock/question_detail?qid=$qid&parent_id=$parent_id",
+            "body": [
+                {
+                    "type": "tpl",
+                    "tpl": "<h2 style='font-weight:bold'>${question.title}</h2>"
+                },
+                {
+                    "type": "alert",
+                    "level": "warning",
+                    "className": "p-2 mb-4",
+                    "showIcon": true,
+                    "title": "操作说明",
+                    "body": [
+                        {
+                            "type": "tpl",
+                            "tpl": "使用前请先阅读"
+                        },
+                        {
+                            "type": "button",
+                            "level": "link",
+                            "label": "<试题创建规则>",
+                            "actionType": "dialog",
+                            "dialog": {
+                                "size": "lg",
+                                "title": "配置说明",
+                                "body": {
+                                    "type": "html",
+                                    "html": "<div><h5 style='color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px; margin-top: 0;'>单项题配置说明</h5><ul style='list-style-type: none; padding-left: 0;'><li style='margin-bottom: 12px; padding-left: 24px; position: relative;'><span style='position: absolute; left: 0; color: #3498db; font-weight: bold;'>1.</span>前置材料为选填项，若配置则页面将采用左文右题的阅读理解模式呈现</li><li style='margin-bottom: 12px; padding-left: 24px; position: relative;'><span style='position: absolute; left: 0; color: #3498db; font-weight: bold;'>2.</span>简述作为快速识别考题的关键，可用简短词语描述；若题目简单，也可直接填写题干，总字数需少于50字</li><li style='margin-bottom: 12px; padding-left: 24px; position: relative;'><span style='position: absolute; left: 0; color: #3498db; font-weight: bold;'>3.</span>考题难度为必填项，系统将根据难度等级评估学员的模考水平</li><li style='margin-bottom: 12px; padding-left: 24px; position: relative;'><span style='position: absolute; left: 0; color: #3498db; font-weight: bold;'>4.</span>考题标签为非必填项，若填写，系统将在学员错题本及分析报告中，根据标签确定知识欠缺范围，单题最多可添加4个标签</li><li style='margin-bottom: 12px; padding-left: 24px; position: relative;'><span style='position: absolute; left: 0; color: #3498db; font-weight: bold;'>5.</span>题干字数限制在150字以内，如需描述更多内容，建议通过添加前置材料实现</li><li style='margin-bottom: 12px; padding-left: 24px; position: relative;'><span style='position: absolute; left: 0; color: #3498db; font-weight: bold;'>6.</span>选择题或多选题的选项配置中，勾选的选项将被视为正确答案</li><li style='padding-left: 24px; position: relative;'><span style='position: absolute; left: 0; color: #3498db; font-weight: bold;'>7.</span>写作等主观题的评判依赖AI系统接入及教师评分</li></ul></div>"
+                                },
+                                "actions": []
+                            }
+                        },
+                        {
+                            "type": "tpl",
+                            "tpl": "再进行操作"
+                        }
+                    ]
+                },
+                {
+                    "type": "tabs",
+                    "tabsMode": "radio",
+                    "activeKey": "tab${question.tab}",
+                    "tabs": [
+                        {
+                            "title": "单项题",
+                            "hash": "tab1",
+                            "visibleOn": "${question.is_add == 1 || ( question.qid > 0 && question.tab == 1 )}",
+                            "body": {
+                                "type": "form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "${IF(question.qid > 0, '/mapi/mock/question_update', '/mapi/mock/question_create')}",
+                                    "dataType": "form"
+                                },
+                                "title": "",
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "qid",
+                                        "value": "${question.qid || 0}",
+                                        "hidden": true
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "pre_meta_id",
+                                        "value": "${question.pre_meta_id || 0}",
+                                        "hidden": true
+                                    },
+                                    {
+                                        "type": "combo",
+                                        "name": "single_question_pre_meta_combo",
+                                        "label": "前置材料",
+                                        "multiple": true,
+                                        "maxLength": 1,
+                                        "value": "${question.single_question_pre_meta_combo}",
+                                        "items": [
+                                            {
+                                                "type": "input-rich-text",
+                                                "name": "single_question_pre_meta",
+                                                "options": {
+                                                    "menubar": false,
+                                                    "height": 200,
+                                                    "content_css": "/public/mis/sdk/tinymce-custom.css",
+                                                    "branding": false,
+                                                    "statusbar": true,
+                                                    "plugins": [
+                                                        "advlist",
+                                                        "autolink",
+                                                        "link",
+                                                        "image",
+                                                        "lists",
+                                                        "charmap",
+                                                        "preview",
+                                                        "anchor",
+                                                        "pagebreak",
+                                                        "searchreplace",
+                                                        "wordcount",
+                                                        "visualblocks",
+                                                        "visualchars",
+                                                        "code",
+                                                        "fullscreen",
+                                                        "insertdatetime",
+                                                        "media",
+                                                        "nonbreaking",
+                                                        "table",
+                                                        "emoticons",
+                                                        "template",
+                                                        "help"
+                                                    ],
+                                                    "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "group",
+                                        "body": [
+                                            {
+                                                "label": "考题类型",
+                                                "type": "select",
+                                                "required": true,
+                                                "name": "single_question_type",
+                                                "value": "${question.single_question_type  || 1}",
+                                                "options": [
+                                                    {
+                                                        "label": "单选题",
+                                                        "value": "1"
+                                                    },
+                                                    {
+                                                        "label": "多选题",
+                                                        "value": "2"
+                                                    },
+                                                    {
+                                                        "label": "判断题",
+                                                        "value": "3"
+                                                    },
+                                                    {
+                                                        "label": "填空题",
+                                                        "value": "4"
+                                                    },
+                                                    {
+                                                        "label": "简答题",
+                                                        "value": "5"
+                                                    },
+                                                    {
+                                                        "label": "写作题",
+                                                        "value": "6"
+                                                    },
+                                                    {
+                                                        "label": "听力题",
+                                                        "value": "7"
+                                                    },
+                                                    {
+                                                        "label": "口语题",
+                                                        "value": "8"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "label": "难度",
+                                                "type": "select",
+                                                "name": "single_question_level",
+                                                "required": true,
+                                                "value": "${question.single_question_level  || 1}",
+                                                "options": [
+                                                    {
+                                                        "label": "非常简单",
+                                                        "value": "1"
+                                                    },
+                                                    {
+                                                        "label": "简单",
+                                                        "value": "2"
+                                                    },
+                                                    {
+                                                        "label": "一般",
+                                                        "value": "3"
+                                                    },
+                                                    {
+                                                        "label": "较难",
+                                                        "value": "4"
+                                                    },
+                                                    {
+                                                        "label": "超难",
+                                                        "value": "5"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "tree-select",
+                                                "name": "single_question_tag_ids",
+                                                "onlyLeaf": true,
+                                                "multiple": true,
+                                                "searchable": true,
+                                                "initiallyOpen": false,
+                                                "label": "标签",
+                                                "value": "${question.single_question_tag_ids || []}",
+                                                "source": "/mapi/mock/tag_lists?is_select=1"
+                                            },
+                                            {
+                                                "type": "tree-select",
+                                                "name": "single_question_subject_id",
+                                                "onlyLeaf": true,
+                                                "searchable": true,
+                                                "initiallyOpen": false,
+                                                "label": "科目",
+                                                "value": "${question.single_question_subject_id || ''}",
+                                                "source": "/mapi/subject/lists?is_select=1&is_leaf=1"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "label": "简述",
+                                        "name": "single_question_description",
+                                        "value": "${question.single_question_description || ''}",
+                                        "placeholder": "识别标题简述",
+                                        "required": true,
+                                        "desc": "在列表或试卷中能快速识别当前试题内容简述"
+                                    },
+                                    {
+                                        "type": "tpl",
+                                        "tpl": "<p style='font-weight:900;'>题干</p>"
+                                    },
+                                    {
+                                        "type": "input-rich-text",
+                                        "name": "single_question_content",
+                                        "required": true,
+                                        "value": "${question.single_question_content || ''}",
+                                        "options": {
+                                            "menubar": false,
+                                            "height": 200,
+                                            "content_css": "/public/mis/sdk/tinymce-custom.css",
+                                            "branding": false,
+                                            "statusbar": true,
+                                            "plugins": [
+                                                "advlist",
+                                                "autolink",
+                                                "link",
+                                                "image",
+                                                "lists",
+                                                "charmap",
+                                                "preview",
+                                                "anchor",
+                                                "pagebreak",
+                                                "searchreplace",
+                                                "wordcount",
+                                                "visualblocks",
+                                                "visualchars",
+                                                "code",
+                                                "fullscreen",
+                                                "insertdatetime",
+                                                "media",
+                                                "nonbreaking",
+                                                "table",
+                                                "emoticons",
+                                                "template",
+                                                "help"
+                                            ],
+                                            "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
+                                        }
+                                    },
+                                    {
+                                        "type": "tpl",
+                                        "visibleOn": "this.single_question_type == 7",
+                                        "tpl": "<p style='font-weight:900;'>音频地址</p>"
+                                    },
+                                    {
+                                        "type": "alert",
+                                        "level": "success",
+                                        "visibleOn": "this.single_question_type == 7",
+                                        "body": [
+                                            {
+                                                "type": "tpl",
+                                                "tpl": "音频需要提前上传, 平台只配置上传好地址, "
+                                            },
+                                            {
+                                                "type": "link",
+                                                "href": "https://www.baidu.com",
+                                                "body": "【上传工具地址】"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "required": true,
+                                        "visibleOn": "this.single_question_type == 7",
+                                        "name": "single_question_audio",
+                                        "value": "${question.single_question_audio || ''}",
+                                        "placeholder": "http地址"
+                                    },
+                                    {
+                                        "type": "alert",
+                                        "level": "info",
+                                        "visibleOn": "this.single_question_type == 1 || this.single_question_type == 2",
+                                        "body": "请从选项中选出正确的答案, 最少2个最多6个选项, 勾选即为正确答案"
+                                    },
+                                    {
+                                        "type": "alert",
+                                        "level": "info",
+                                        "visibleOn": "this.single_question_type == 3",
+                                        "body": "判断题勾选即为正确答案"
+                                    },
+                                    {
+                                        "type": "alert",
+                                        "level": "info",
+                                        "visibleOn": "this.single_question_type == 4",
+                                        "body": "填空题空格录入方式为连续输入5个下划线，例如：What _____ is your _____?"
+                                    },
+                                    {
+                                        "type": "tpl",
+                                        "tpl": "<p style='font-weight:900;'>答案</p>"
+                                    },
+                                    {
+                                        "type": "alert",
+                                        "level": "info",
+                                        "visibleOn": "this.single_question_type > 4 && this.single_question_type <= 8",
+                                        "body": "主观题, 无需配置答案"
+                                    },
+                                    {
+                                        "type": "combo",
+                                        "name": "single_answer_combo_radio",
+                                        "multiple": true,
+                                        "addable": true,
+                                        "removable": true,
+                                        "maxLength": 6,
+                                        "minLength": 2,
+                                        "value": "${question.single_answer_combo_radio || []}",
+                                        "visibleOn": "this.single_question_type == 1",
+                                        "items": [
+                                            {
+                                                "type": "input-text",
+                                                "name": "answer_id",
+                                                "hidden": true
+                                            },
+                                            {
+                                                "type": "radio",
+                                                "name": "is_answer",
+                                                "columnClassName": "no-grow",
+                                                "trueValue": 1,
+                                                "falseValue": 2,
+                                                "className": "mt-1"
+                                            },
+                                            {
+                                                "type": "input-text",
+                                                "name": "answer_content",
+                                                "placeholder": "请输入答案"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "combo",
+                                        "name": "single_answer_combo_checkbox",
+                                        "multiple": true,
+                                        "addable": true,
+                                        "removable": true,
+                                        "maxLength": 6,
+                                        "minLength": 2,
+                                        "value": "${question.single_answer_combo_checkbox || []}",
+                                        "visibleOn": "this.single_question_type == 2",
+                                        "items": [
+                                            {
+                                                "type": "input-text",
+                                                "name": "answer_id",
+                                                "hidden": true
+                                            },
+                                            {
+                                                "name": "is_answer",
+                                                "type": "checkbox",
+                                                "columnClassName": "no-grow",
+                                                "trueValue": 1,
+                                                "falseValue": 2,
+                                                "className": "mt-1"
+                                            },
+                                            {
+                                                "type": "input-text",
+                                                "name": "answer_content",
+                                                "placeholder": "请输入答案"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "combo",
+                                        "name": "single_answer_combo_check",
+                                        "multiple": true,
+                                        "maxLength": 2,
+                                        "minLength": 2,
+                                        "value": "${question.single_answer_combo_checkbox || []}",
+                                        "visibleOn": "this.single_question_type == 3",
+                                        "items": [
+                                            {
+                                                "type": "input-text",
+                                                "name": "answer_id",
+                                                "hidden": true
+                                            },
+                                            {
+                                                "type": "radio",
+                                                "name": "is_answer",
+                                                "columnClassName": "no-grow",
+                                                "trueValue": 1,
+                                                "falseValue": 2,
+                                                "className": "mt-1"
+                                            },
+                                            {
+                                                "type": "input-text",
+                                                "name": "answer_content",
+                                                "placeholder": "请输入判断文案"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "combo",
+                                        "label": "答案顺序必须与配置空格顺序一一对应",
+                                        "name": "single_answer_combo_fill",
+                                        "multiple": true,
+                                        "addable": true,
+                                        "removable": true,
+                                        "value": "${question.single_answer_combo_fill || []}",
+                                        "visibleOn": "this.single_question_type == 4",
+                                        "items": [
+                                            {
+                                                "type": "input-text",
+                                                "name": "answer_id",
+                                                "hidden": true
+                                            },
+                                            {
+                                                "type": "input-text",
+                                                "name": "answer_content",
+                                                "placeholder": "请输入答案"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "combo",
+                                        "name": "single_answer_explan_combo",
+                                        "label": "解析",
+                                        "multiple": true,
+                                        "maxLength": 1,
+                                        "value": "${question.single_answer_explan_combo || []}",
+                                        "items": [
+                                            {
+                                                "type": "input-rich-text",
+                                                "name": "single_answer_explan",
+                                                "options": {
+                                                    "menubar": false,
+                                                    "height": 200,
+                                                    "content_css": "/public/mis/sdk/tinymce-custom.css",
+                                                    "branding": false,
+                                                    "statusbar": true,
+                                                    "plugins": [
+                                                        "advlist",
+                                                        "autolink",
+                                                        "link",
+                                                        "image",
+                                                        "lists",
+                                                        "charmap",
+                                                        "preview",
+                                                        "anchor",
+                                                        "pagebreak",
+                                                        "searchreplace",
+                                                        "wordcount",
+                                                        "visualblocks",
+                                                        "visualchars",
+                                                        "code",
+                                                        "fullscreen",
+                                                        "insertdatetime",
+                                                        "media",
+                                                        "nonbreaking",
+                                                        "table",
+                                                        "emoticons",
+                                                        "template",
+                                                        "help"
+                                                    ],
+                                                    "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "actions": [
+                                    {
+                                        "type": "button",
+                                        "label": "重置",
+                                        "confirmText": "确认是否重置? 辛辛苦苦编写的呢",
+                                        "confirmTitle": "确认",
+                                        "actionType": "reset"
+                                    },
+                                    {
+                                        "type": "button",
+                                        "label": "提交",
+                                        "level": "primary",
+                                        "confirmText": "请确认修改内容, <span style='font-weight:bold; color:red;'>注意: 如果试题已经参与过考试并且进入学员错题本, 则该试题后续将无法被修改!</span>",
+                                        "confirmTitle": "确认",
+                                        "actionType": "submit"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "title": "题目组",
+                            "hash": "tab2",
+                            "visibleOn": "${question.is_add == 1 || (question.batch_question_parent_qid > 0 && question.tab == 2)}",
+                            "body": {
+                                "type": "form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "${IF(question.batch_question_parent_qid > 0, '/mapi/mock/question_updatebatch', '/mapi/mock/question_createbatch')}",
+                                    "dataType": "form"
+                                },
+                                "title": "",
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "pre_meta_id",
+                                        "value": "${question.pre_meta_id || 0}",
+                                        "hidden": true
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "batch_question_parent_qid",
+                                        "value": "${question.batch_question_parent_qid || 0}",
+                                        "hidden": true
+                                    },
+                                    {
+                                        "type": "input-rich-text",
+                                        "label": "前置材料",
+                                        "required": true,
+                                        "name": "batch_question_pre_meta",
+                                        "value": "${question.batch_question_pre_meta || ''}",
+                                        "options": {
+                                            "menubar": false,
+                                            "height": 200,
+                                            "content_css": "/public/mis/sdk/tinymce-custom.css",
+                                            "branding": false,
+                                            "statusbar": true,
+                                            "plugins": [
+                                                "advlist",
+                                                "autolink",
+                                                "link",
+                                                "image",
+                                                "lists",
+                                                "charmap",
+                                                "preview",
+                                                "anchor",
+                                                "pagebreak",
+                                                "searchreplace",
+                                                "wordcount",
+                                                "visualblocks",
+                                                "visualchars",
+                                                "code",
+                                                "fullscreen",
+                                                "insertdatetime",
+                                                "media",
+                                                "nonbreaking",
+                                                "table",
+                                                "emoticons",
+                                                "template",
+                                                "help"
+                                            ],
+                                            "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
+                                        }
+                                    },
+                                    {
+                                        "type": "alert",
+                                        "level": "info",
+                                        "body": "该场景为<span style='font-weight:bold;'>完形填空</span>或<span style='font-weight:bold;'>阅读理解</span>等, 以一组题呈现的题型提供能力支撑, 所以前置材料为必填项"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "label": "题目组简述",
+                                        "name": "batch_question_parent_description",
+                                        "value": "${question.batch_question_parent_description}",
+                                        "placeholder": "识别简述",
+                                        "required": true,
+                                        "desc": "在列表或试卷中能快速识别当前题目组内容简述"
+                                    },
+                                    {
+                                        "type": "tpl",
+                                        "tpl": "<p style='font-weight:900;'>配置试题</p>"
+                                    },
+                                    {
+                                        "type": "combo",
+                                        "name": "batch_question_combo_item",
+                                        "multiple": true,
+                                        "multiLine": true,
+                                        "minLength": 1,
+                                        "value": "${question.batch_question_combo_item || []}",
+                                        "items": [
+                                            {
+                                                "type": "fieldSet",
+                                                "title": "基本配置",
+                                                "body": [
+                                                    {
+                                                        "type": "input-text",
+                                                        "label": "QuestionID",
+                                                        "name": "batch_question_qid",
+                                                        "value": "${batch_question_qid || 0}",
+                                                        "visibleOn": "batch_question_qid > 0",
+                                                        "disabled": true
+                                                    },
+                                                    {
+                                                        "type": "group",
+                                                        "body": [
+                                                            {
+                                                                "label": "考题类型",
+                                                                "type": "select",
+                                                                "required": true,
+                                                                "name": "batch_question_type",
+                                                                "options": [
+                                                                    {
+                                                                        "label": "单选题",
+                                                                        "value": "1"
+                                                                    },
+                                                                    {
+                                                                        "label": "多选题",
+                                                                        "value": "2"
+                                                                    },
+                                                                    {
+                                                                        "label": "判断题",
+                                                                        "value": "3"
+                                                                    },
+                                                                    {
+                                                                        "label": "填空题",
+                                                                        "value": "4"
+                                                                    },
+                                                                    {
+                                                                        "label": "简答题",
+                                                                        "value": "5"
+                                                                    },
+                                                                    {
+                                                                        "label": "写作题",
+                                                                        "value": "6"
+                                                                    },
+                                                                    {
+                                                                        "label": "听力题",
+                                                                        "value": "7"
+                                                                    },
+                                                                    {
+                                                                        "label": "口语题",
+                                                                        "value": "8"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "label": "难度",
+                                                                "type": "select",
+                                                                "name": "batch_question_level",
+                                                                "required": true,
+                                                                "options": [
+                                                                    {
+                                                                        "label": "非常简单",
+                                                                        "value": "1"
+                                                                    },
+                                                                    {
+                                                                        "label": "简单",
+                                                                        "value": "2"
+                                                                    },
+                                                                    {
+                                                                        "label": "一般",
+                                                                        "value": "3"
+                                                                    },
+                                                                    {
+                                                                        "label": "较难",
+                                                                        "value": "4"
+                                                                    },
+                                                                    {
+                                                                        "label": "超难",
+                                                                        "value": "5"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "type": "tree-select",
+                                                                "name": "batch_question_tag_ids",
+                                                                "onlyLeaf": true,
+                                                                "multiple": true,
+                                                                "searchable": true,
+                                                                "initiallyOpen": false,
+                                                                "label": "标签",
+                                                                "source": "/mapi/mock/tag_lists?is_select=1"
+                                                            },
+                                                            {
+                                                                "type": "tree-select",
+                                                                "name": "batch_question_subject_id",
+                                                                "onlyLeaf": true,
+                                                                "searchable": true,
+                                                                "initiallyOpen": false,
+                                                                "label": "科目",
+                                                                "source": "/mapi/subject/lists?is_select=1&is_leaf=1"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "tpl",
+                                                        "tpl": "<p style='font-weight:900;'>题干</p>"
+                                                    },
+                                                    {
+                                                        "type": "input-rich-text",
+                                                        "name": "batch_question_content",
+                                                        "options": {
+                                                            "menubar": false,
+                                                            "height": 200,
+                                                            "content_css": "/public/mis/sdk/tinymce-custom.css",
+                                                            "branding": false,
+                                                            "statusbar": true,
+                                                            "plugins": [
+                                                                "advlist",
+                                                                "autolink",
+                                                                "link",
+                                                                "image",
+                                                                "lists",
+                                                                "charmap",
+                                                                "preview",
+                                                                "anchor",
+                                                                "pagebreak",
+                                                                "searchreplace",
+                                                                "wordcount",
+                                                                "visualblocks",
+                                                                "visualchars",
+                                                                "code",
+                                                                "fullscreen",
+                                                                "insertdatetime",
+                                                                "media",
+                                                                "nonbreaking",
+                                                                "table",
+                                                                "emoticons",
+                                                                "template",
+                                                                "help"
+                                                            ],
+                                                            "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "tpl",
+                                                        "visibleOn": "this.batch_question_type == 7",
+                                                        "tpl": "<p style='font-weight:900;'>音频地址</p>"
+                                                    },
+                                                    {
+                                                        "type": "alert",
+                                                        "level": "success",
+                                                        "visibleOn": "this.batch_question_type == 7",
+                                                        "body": [
+                                                            {
+                                                                "type": "tpl",
+                                                                "tpl": "音频需要提前上传, 平台只配置上传好地址, "
+                                                            },
+                                                            {
+                                                                "type": "link",
+                                                                "href": "https://www.baidu.com",
+                                                                "body": "【上传工具地址】"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "input-text",
+                                                        "required": true,
+                                                        "visibleOn": "this.batch_question_type == 7",
+                                                        "name": "batch_question_audio",
+                                                        "placeholder": "http地址"
+                                                    },
+                                                    {
+                                                        "type": "alert",
+                                                        "level": "info",
+                                                        "visibleOn": "this.batch_question_type == 1 || this.batch_question_type == 2",
+                                                        "body": "请从选项中选出正确的答案, 最少2个最多6个选项, 勾选即为正确答案"
+                                                    },
+                                                    {
+                                                        "type": "alert",
+                                                        "level": "info",
+                                                        "visibleOn": "this.batch_question_type == 3",
+                                                        "body": "判断题勾选即为正确答案"
+                                                    },
+                                                    {
+                                                        "type": "alert",
+                                                        "level": "info",
+                                                        "visibleOn": "this.batch_question_type == 4",
+                                                        "body": "填空题空格录入方式为连续输入5个下划线，例如：What _____ is your _____?"
+                                                    },
+                                                    {
+                                                        "type": "tpl",
+                                                        "tpl": "<p style='font-weight:900;'>答案</p>"
+                                                    },
+                                                    {
+                                                        "type": "alert",
+                                                        "level": "info",
+                                                        "visibleOn": "this.batch_question_type > 4 && this.batch_question_type <= 8",
+                                                        "body": "主观题, 无需配置答案"
+                                                    },
+                                                    {
+                                                        "type": "combo",
+                                                        "name": "batch_answer_combo_radio",
+                                                        "multiple": true,
+                                                        "addable": true,
+                                                        "removable": true,
+                                                        "maxLength": 6,
+                                                        "minLength": 2,
+                                                        "visibleOn": "this.batch_question_type == 1",
+                                                        "items": [
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "answer_id",
+                                                                "hidden": true
+                                                            },
+                                                            {
+                                                                "type": "radio",
+                                                                "name": "is_answer",
+                                                                "columnClassName": "no-grow",
+                                                                "trueValue": 1,
+                                                                "falseValue": 2,
+                                                                "className": "mt-1"
+                                                            },
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "answer_content",
+                                                                "placeholder": "请输入答案"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "combo",
+                                                        "name": "batch_answer_combo_checkbox",
+                                                        "multiple": true,
+                                                        "addable": true,
+                                                        "removable": true,
+                                                        "maxLength": 6,
+                                                        "minLength": 2,
+                                                        "visibleOn": "this.batch_question_type == 2",
+                                                        "items": [
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "answer_id",
+                                                                "hidden": true
+                                                            },
+                                                            {
+                                                                "name": "is_answer",
+                                                                "type": "checkbox",
+                                                                "trueValue": 1,
+                                                                "falseValue": 2,
+                                                                "columnClassName": "no-grow",
+                                                                "className": "mt-1"
+                                                            },
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "answer_content",
+                                                                "placeholder": "请输入答案"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "combo",
+                                                        "name": "batch_answer_combo_check",
+                                                        "multiple": true,
+                                                        "maxLength": 2,
+                                                        "minLength": 2,
+                                                        "visibleOn": "this.batch_question_type == 3",
+                                                        "items": [
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "answer_id",
+                                                                "hidden": true
+                                                            },
+                                                            {
+                                                                "type": "radio",
+                                                                "name": "is_answer",
+                                                                "columnClassName": "no-grow",
+                                                                "trueValue": 1,
+                                                                "falseValue": 2,
+                                                                "className": "mt-1"
+                                                            },
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "answer_content",
+                                                                "placeholder": "请输入判断文案"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "combo",
+                                                        "label": "答案顺序必须与配置空格顺序一一对应",
+                                                        "name": "batch_answer_combo_fill",
+                                                        "multiple": true,
+                                                        "addable": true,
+                                                        "removable": true,
+                                                        "visibleOn": "this.batch_question_type == 4",
+                                                        "items": [
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "answer_id",
+                                                                "hidden": true
+                                                            },
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "answer_content",
+                                                                "placeholder": "请输入答案"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "divider"
+                                                    },
+                                                    {
+                                                        "type": "combo",
+                                                        "name": "batch_answer_explan_combo",
+                                                        "label": "解析",
+                                                        "multiple": true,
+                                                        "maxLength": 1,
+                                                        "items": [
+                                                            {
+                                                                "type": "input-rich-text",
+                                                                "name": "batch_answer_explan",
+                                                                "options": {
+                                                                    "menubar": false,
+                                                                    "height": 200,
+                                                                    "content_css": "/public/mis/sdk/tinymce-custom.css",
+                                                                    "branding": false,
+                                                                    "statusbar": true,
+                                                                    "plugins": [
+                                                                        "advlist",
+                                                                        "autolink",
+                                                                        "link",
+                                                                        "image",
+                                                                        "lists",
+                                                                        "charmap",
+                                                                        "preview",
+                                                                        "anchor",
+                                                                        "pagebreak",
+                                                                        "searchreplace",
+                                                                        "wordcount",
+                                                                        "visualblocks",
+                                                                        "visualchars",
+                                                                        "code",
+                                                                        "fullscreen",
+                                                                        "insertdatetime",
+                                                                        "media",
+                                                                        "nonbreaking",
+                                                                        "table",
+                                                                        "emoticons",
+                                                                        "template",
+                                                                        "help"
+                                                                    ],
+                                                                    "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "actions": [
+                                    {
+                                        "type": "button",
+                                        "label": "重置",
+                                        "confirmText": "确认是否重置? 辛辛苦苦编写的呢",
+                                        "confirmTitle": "确认",
+                                        "actionType": "reset"
+                                    },
+                                    {
+                                        "type": "button",
+                                        "label": "提交",
+                                        "level": "primary",
+                                        "confirmText": "请确认修改内容, <span style='font-weight:bold; color:red;'>注意: 如果试题已经参与过考试并且进入学员错题本, 则该试题后续将无法被修改!</span>",
+                                        "confirmTitle": "确认",
+                                        "actionType": "submit"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "title": "线下导入",
+                            "hash": "tab3",
+                            "hiddenOn": "${question.qid > 0 &&question.tab != 3}",
+                            "body": [
+                                {
+                                    "type": "form",
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/mock/question_createinport",
+                                        "dataType": "form"
+                                    },
+                                    "title": "",
+                                    "body": [
+                                        {
+                                            "type": "alert",
+                                            "level": "info",
+                                            "className": "p-2 mb-4",
+                                            "body": [
+                                                {
+                                                    "level": "link",
+                                                    "label": "《导入示例》",
+                                                    "icon": "fa fa-file-text-o",
+                                                    "actionType": "saveAs",
+                                                    "type": "action",
+                                                    "api": "/public/mis/data/description.xlsx"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "input-excel",
+                                            "name": "question_file",
+                                            "parseMode": "array",
+                                            "plainText": true,
+                                            "label": "上传试题Excel"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "title": "AI出题",
+                            "hash": "tab4",
+                            "hiddenOn": "${question.qid > 0 &&question.tab != 4}",
+                            "body": {
+                                "type": "tpl",
+                                "tpl": "<div style='width: 100%; height: 300px; display: flex; justify-content: center; align-items: center; background-color: #f5f5f5; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);'><p style='font-family: 'Microsoft YaHei', sans-serif; font-size: 28px; color: #333; font-weight: 500; letter-spacing: 2px; text-align: center;'>功能完善中, 敬请期待</p></div>"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

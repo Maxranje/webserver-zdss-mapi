@@ -1,0 +1,114 @@
+{
+    "type": "page",
+    "className": "p-2 ",
+    "body": [
+        {
+            "type": "tpl",
+            "tpl": "<h2 style='font-weight:bold'>开始考试</h2>"
+        },
+        {
+            "type": "panel",
+            "title": "",
+            "className": "border-solid border-gray-100 shadow p-4 rounded-md mt-5 -mb-2 ",
+            "body": [
+                {
+                    "type": "group",
+                    "body": [
+                        {
+                            "type": "tree-select",
+                            "name": "pid",
+                            "onlyLeaf": true,
+                            "label": "试卷",
+                            "searchable": true,
+                            "required": true,
+                            "initiallyOpen": false,
+                            "source": "/mapi/mock/paper_lists?is_select=1"
+                        },
+                        {
+                            "type": "tree-select",
+                            "name": "teacher_uid",
+                            "onlyLeaf": true,
+                            "label": "监考老师",
+                            "required": true,
+                            "searchable": true,
+                            "initiallyOpen": false,
+                            "source": "/mapi/teacher/lists?is_select=1"
+                        }
+                    ]
+                },
+                {
+                    "type": "input-datetime-range",
+                    "name": "start_end",
+                    "label": "考试期限",
+                    "value": "today,+1weeks",
+                    "size": "md",
+                    "required": true,
+                    "desc": "允许学员在该时间范围内参加考试, 超过时间则关闭本次考试, 间隔不得超过7天"
+                },
+                {
+                    "type": "input-number",
+                    "name": "expire_time",
+                    "label": "考试时长",
+                    "step": 10,
+                    "required": true,
+                    "value": 60,
+                    "min": 10,
+                    "max": 240,
+                    "size": "md",
+                    "showSteps": true,
+                    "precision": 0,
+                    "desc": "当次考试时长, 10分钟到240分钟之间, 单位分钟"
+                },
+                {
+                    "type": "textarea",
+                    "showCounter": true,
+                    "maxLength": 100,
+                    "name": "remark",
+                    "label": "备注",
+                    "desc": "限定100字内"
+                }
+            ]
+        },
+        {
+            "type": "panel",
+            "className": "border-solid border-gray-100 shadow p-4 rounded-md mt-5 -mb-2 ",
+            "title": "选择学员",
+            "required": true,
+            "body": [
+                {
+                    "type": "alert",
+                    "level": "warning",
+                    "className": "p-2",
+                    "showIcon": true,
+                    "body": "<span style='font-weight:bold;'>最少选定1人, 单场考试最多50人</span>"
+                },
+                {
+                    "name": "student_uids",
+                    "type": "transfer",
+                    "columns": [
+                        {
+                            "name": "value",
+                            "label": "Uid"
+                        },
+                        {
+                            "name": "label",
+                            "label": "昵称"
+                        }
+                    ],
+                    "source": "/mapi/student/lists?is_select=1&is_mock=1",
+                    "searchable": true,
+                    "selectMode": "table"
+                }
+            ]
+        },
+        {
+            "type": "button",
+            "label": "提交",
+            "className": "mt-5 ",
+            "level": "success",
+            "actionType": "ajax",
+            "api": "/mapi/mock/exam_start",
+            "redirect": "../exam/list"
+        }
+    ]
+}

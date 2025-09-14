@@ -118,6 +118,26 @@
                             "initiallyOpen": false,
                             "source": "/mapi/api/soplists",
                             "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "label": "模考学员",
+                            "type": "select",
+                            "name": "is_mock",
+                            "desc": "默认为模考学员, 若取消则学员不允许参加模考, 同时不会再模考中心展示学员信息",
+                            "value": 1,
+                            "options": [
+                                {
+                                    "label": "是",
+                                    "value": "1"
+                                },
+                                {
+                                    "label": "否",
+                                    "value": "2"
+                                }
+                            ]
                         }
                     ]
                 }
@@ -266,6 +286,22 @@
                         },
                         {
                             "label": "欠费",
+                            "value": "2"
+                        }
+                    ]
+                },
+                {
+                    "label": "模考学员",
+                    "type": "select",
+                    "name": "is_mock",
+                    "clearable": true,
+                    "options": [
+                        {
+                            "label": "是",
+                            "value": "1"
+                        },
+                        {
+                            "label": "否",
                             "value": "2"
                         }
                     ]
@@ -807,6 +843,25 @@
                                         "source": "/mapi/api/soplists",
                                         "required": true,
                                         "desc": "学管更新会同步更新到排课列表中"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "label": "模考学员",
+                                        "type": "select",
+                                        "name": "is_mock",
+                                        "desc": "默认为模考学员, 若取消则学员不允许参加模考, 同时不会再模考中心展示学员信息",
+                                        "options": [
+                                            {
+                                                "label": "是",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "label": "否",
+                                                "value": "2"
+                                            }
+                                        ]
                                     }
                                 ]
                             }

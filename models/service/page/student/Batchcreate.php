@@ -68,6 +68,7 @@ class Service_Page_Student_Batchcreate extends Zy_Core_Service{
                 "graduate"      => $record['graduate']  ,
                 "sex"           => $record['sex'] , 
                 "balance"       => 0,
+                "is_mock"       => 1,
                 "create_time"   => time() , 
                 "update_time"   => time() , 
             ];

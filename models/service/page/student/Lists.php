@@ -16,6 +16,8 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
         $sopuid         = empty($this->request['sop_uid']) ? 0 : intval($this->request['sop_uid']);
         $balanceState   = empty($this->request['balance_state']) ? 0 : intval($this->request['balance_state']);
         $nickname       = empty($this->request['nickname']) ? "" : strval($this->request['nickname']);
+        $fromPage       = empty($this->request['from_page']) ? "" : strval($this->request['from_page']);
+        $isMock         = empty($this->request['is_mock']) ? 0 : intval($this->request['is_mock']);
         $isSelect       = empty($this->request['is_select']) ? false : true;
         $isDefer        = empty($this->request['is_defer']) ? false : true;
 
@@ -53,6 +55,10 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
             $conds[] = sprintf("sop_uid = %d", $sopuid);
         }
 
+        if ($isMock > 0) {
+            $conds[] = sprintf("is_mock = %d", $isMock);
+        }        
+
         if ($balanceState > 0) {
             $conds[] = $balanceState == 2 ? "balance < 0" : "balance >= 0";
         }
@@ -74,10 +80,16 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
         if ($isSelect) {
             return $this->formatSelect($lists, $isDefer);
         } 
-
+        
+        if ($fromPage == "mock") {
+            $rows = $this->formatMock($lists);
+        } else {
+            $rows = $this->formatDefault($lists);
+        }
+        
         $total = $serviceData->getTotalByConds($conds);
         return array(
-            'rows' => $this->formatDefault($lists),
+            'rows' => $rows,
             'total' => $total,
         );
     }
@@ -150,6 +162,62 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
         }
         return $result;
     }
+
+    // 格式化数据
+    private function formatMock($lists) {
+        if (empty($lists)) {
+            return array();
+        }
+
+        $studentUids = Zy_Helper_Utils::arrayInt($lists, "uid");
+        $bpids = Zy_Helper_Utils::arrayInt($lists, "bpid");
+        $sopuids = Zy_Helper_Utils::arrayInt($lists, "sop_uid");
+
+        // 获取管理员
+        $serviceData = new Service_Data_Profile();
+        $sopInfos = $serviceData->getUserInfoByUids($sopuids);
+        $sopInfos = array_column($sopInfos, null, "uid");
+
+        // 获取生源地
+        $serviceData = new Service_Data_Birthplace();
+        $birthplaces = $serviceData->getBirthplaceByIds($bpids);
+        $birthplaces = array_column($birthplaces, null, "id");
+
+        $serviceData = new Service_Data_Exam() ;
+        $examInfos = $serviceData->getExamByStudentUids($studentUids);
+
+        // get role
+        $isPartner          = $this->checkPartner();
+
+        $result = array();
+        foreach ($lists as $item) {
+            $ext = empty($item["ext"])? array() : json_decode($item['ext'], true);
+            $item['is_partner']         = $isPartner ? 1 : 0;
+            $item["remark"]             = empty($ext['remark']) ? "" : $ext['remark'];
+            $item['birthplace']         = empty($birthplaces[$item['bpid']]['name']) ? "" : $birthplaces[$item['bpid']]['name'];
+            $item['sop_name']           = empty($sopInfos[$item['sop_uid']]['nickname']) ? "" : $sopInfos[$item['sop_uid']]['nickname'];
+            $item['create_time']        = date("Y年m月d日", $item['create_time']);
+            $item['update_time']        = date("Y年m月d日", $item['update_time']);
+            $item["is_edit"]            = $this->isOperator(Service_Data_Roles::ROLE_MODE_STUDENT_EDIT, $item["sop_uid"]) ? 1 : 0;
+            $item['exam_done_count']    = 0;
+            $item['exam_unable_count']  = 0;
+            $item['score']              = 0;
+
+            if (!empty($examInfos[$item["uid"]])) {
+                foreach ($examInfos[$item["uid"]] as $v) {
+                    if ($v["status"] == Service_Data_Exam::EXAM_STATUS_COMPLETE) {
+                        $item['exam_done_count'] ++;
+                    } else {
+                        $item['exam_unable_count'] ++;
+                    }
+                }
+            }
+
+            unset($item['passport']);
+            $result[] = $item;
+        }
+        return $result;
+    }    
 
     // Select格式化数据
     private function formatSelect($lists, $isDefer = false) {

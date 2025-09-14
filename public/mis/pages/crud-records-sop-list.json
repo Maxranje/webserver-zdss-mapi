@@ -8,8 +8,8 @@
                 "type": "chart",
                 "api": "/mapi/student/soplists?is_charts=1&chart_type=pie",
                 "config": {
-                    "title" : {
-                        "text" : "学管负责学员数量分布",
+                    "title": {
+                        "text": "学管负责学员数量分布",
                         "left": "center"
                     },
                     "tooltip": {
@@ -18,15 +18,18 @@
                     "legend": {
                         "orient": "vertical",
                         "left": "left",
-                        "type" : "scroll"
+                        "type": "scroll"
                     },
-                    "series" : [
+                    "series": [
                         {
-                            "name" : "分布",
-                            "type" : "pie",
-                            "radius" : ["40%", "70%"],
-                            "avoidLabelOverlap" : false,
-                            "data" : "${charts || []}",
+                            "name": "分布",
+                            "type": "pie",
+                            "radius": [
+                                "40%",
+                                "70%"
+                            ],
+                            "avoidLabelOverlap": false,
+                            "data": "${charts || []}",
                             "itemStyle": {
                                 "borderRadius": 10,
                                 "borderColor": "#fff",
@@ -42,7 +45,7 @@
                                     "fontSize": 40,
                                     "fontWeight": "bold"
                                 }
-                            }                     
+                            }
                         }
                     ]
                 }
@@ -68,7 +71,12 @@
                         }
                     },
                     "legend": {
-                        "data": ["正常", "下线", "休眠", "完结"]
+                        "data": [
+                            "正常",
+                            "下线",
+                            "休眠",
+                            "完结"
+                        ]
                     },
                     "toolbox": {
                         "show": true,
@@ -79,7 +87,10 @@
                             },
                             "magicType": {
                                 "show": true,
-                                "type": ["line", "bar"]
+                                "type": [
+                                    "line",
+                                    "bar"
+                                ]
                             },
                             "restore": {
                                 "show": true
@@ -90,13 +101,17 @@
                         }
                     },
                     "calculable": true,
-                    "xAxis": [{
-                        "type": "category",
-                        "data" : "${xAxis || []}"
-                    }],
-                    "yAxis": [{
-                        "type": "value"
-                    }],
+                    "xAxis": [
+                        {
+                            "type": "category",
+                            "data": "${xAxis || []}"
+                        }
+                    ],
+                    "yAxis": [
+                        {
+                            "type": "value"
+                        }
+                    ],
                     "dataZoom": [
                         {
                             "show": true,
@@ -108,26 +123,27 @@
                             "start": 0,
                             "end": 100
                         }
-                    ],                    
-                    "series": [{
+                    ],
+                    "series": [
+                        {
                             "name": "正常",
                             "type": "bar",
-                            "data" : "${x1 || []}"
+                            "data": "${x1 || []}"
                         },
                         {
                             "name": "下线",
                             "type": "bar",
-                            "data" : "${x2 || []}"
+                            "data": "${x2 || []}"
                         },
                         {
                             "name": "休眠",
                             "type": "bar",
-                            "data" : "${x3 || []}"
+                            "data": "${x3 || []}"
                         },
                         {
                             "name": "完结",
                             "type": "bar",
-                            "data" : "${x4 || []}"
+                            "data": "${x4 || []}"
                         }
                     ]
                 }
@@ -138,13 +154,13 @@
             "draggable": true,
             "api": {
                 "method": "post",
-                "url":"/mapi/student/soplists",
+                "url": "/mapi/student/soplists",
                 "dataType": "form"
             },
             "perPage": 20,
-            "syncLocation":false,
-            "id" : "sop_student_list",
-            "name" : "sop_student_list",
+            "syncLocation": false,
+            "id": "sop_student_list",
+            "name": "sop_student_list",
             "columnsTogglable": false,
             "filterTogglable": true,
             "headerToolbar": [

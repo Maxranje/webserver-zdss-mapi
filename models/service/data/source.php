@@ -3,9 +3,11 @@
 class Service_Data_Source {
 
     private $daoSource ;
+    private $daoPaperSource;
 
     public function __construct() {
         $this->daoSource = new Dao_Source () ;
+        $this->daoPaperSource = new Dao_Papersource();
     }
 
     public function getSourceById ($id) {
@@ -45,6 +47,19 @@ class Service_Data_Source {
         }
 
         return $data;
+    }
+
+    public function getPaperBySourceIds ($ids) {
+        $arrConds = array(
+            sprintf("source_id in (%s)", implode(",", $ids))
+        );
+
+        $data = $this->daoPaperSource->getListByConds($arrConds, $this->daoPaperSource->arrFieldsMap);
+        if (empty($data)) {
+            return array();
+        }
+
+        return Zy_Helper_Utils::arrayInt($data, "pid");
     }
 
     // 创建

@@ -1,0 +1,246 @@
+{
+    "type": "page",
+    "body": {
+        "type": "crud",
+        "id": "exam_lists",
+        "api": {
+            "method": "post",
+            "url": "/mapi/mock/exam_lists",
+            "dataType": "form"
+        },
+        "perPage": 10,
+        "perPageAvailable": [
+            5,
+            10,
+            20
+        ],
+        "syncLocation": false,
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "tree-select",
+                    "name": "pid",
+                    "searchable": true,
+                    "onlyLeaf": true,
+                    "label": "试卷",
+                    "size": "md",
+                    "source": "/mapi/mock/paper_lists?is_select=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "teacher_uid",
+                    "searchable": true,
+                    "onlyLeaf": true,
+                    "label": "监考老师",
+                    "source": "/mapi/api/soplists"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "student_uid",
+                    "searchable": true,
+                    "onlyLeaf": true,
+                    "label": "学员",
+                    "source": "/mapi/student/lists?is_select=1&is_mock=1"
+                },
+                {
+                    "label": "状态",
+                    "type": "select",
+                    "clearable": true,
+                    "name": "status",
+                    "options": [
+                        {
+                            "label": "待开始",
+                            "value": "1"
+                        },
+                        {
+                            "label": "进行中",
+                            "value": "5"
+                        },
+                        {
+                            "label": "已结束",
+                            "value": "2"
+                        },
+                        {
+                            "label": "强制结束",
+                            "value": "4"
+                        }
+                    ]
+                },
+                {
+                    "type": "input-date-range",
+                    "name": "daterange",
+                    "inline": true,
+                    "label": "考期"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "id",
+                "label": "ExamID",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "name": "indentify",
+                "label": "标识",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "paper_name",
+                "label": "试卷名称",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "teacher_name",
+                "label": "监考老师",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "paper_type",
+                "label": "类型",
+                "type": "mapping",
+                "map": {
+                    "1": "<span class='label bg-gray-300'>常规</span>",
+                    "2": "<span class='label label-info'>入学评估</span>",
+                    "3": "<span class='label label-success'>单词本</span>"
+                }
+            },
+            {
+                "name": "start_end",
+                "label": "起止时间",
+                "remark": "起止时间是允许学员参加考试时间,而非考试时长",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "expire_time",
+                "label": "时长",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "student_cnt",
+                "label": "考生数",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "status",
+                "label": "状态",
+                "type": "mapping",
+                "map": {
+                    "5": "<span class='label label-info'>进行中</span>",
+                    "4": "<span class='label label-danger'>强制结束</span>",
+                    "2": "<span class='label label-default'>已结束</span>",
+                    "1": "<span class='label bg-gray-300'>待开始</span>"
+                }
+            },
+            {
+                "name": "operator_name",
+                "label": "操作员",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "container",
+                "label": "备注",
+                "popOver": {
+                    "body": {
+                        "type": "tpl",
+                        "tpl": "${remark}"
+                    }
+                }
+            },
+            {
+                "name": "update_time",
+                "label": "更新时间",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "fixed": "right",
+                "width": 150,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "label": "编辑",
+                        "actionType": "link",
+                        "disabledOn": "this.status != 1",
+                        "link": "/exam/edit?exam_id=$id"
+                    },
+                    {
+                        "type": "button",
+                        "label": "监控",
+                        "actionType": "link",
+                        "level": "primary",
+                        "link": "/exam/monitor?exam_id=$id"
+                    },
+                    {
+                        "type": "button",
+                        "actionType": "ajax",
+                        "label": "结束",
+                        "level": "danger",
+                        "disabledOn": "(this.is_terminated != 1 && this.status == 5) || (this.status == 2) || (this.status  == 4)",
+                        "confirmText": "如果全员已交卷, 则会修改考试状态, 正常结束当前考试, 如果有学员未提交, 则会强行结束考试",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/mock/exam_end?exam_id=$id"
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "actionType": "ajax",
+                        "label": "删除",
+                        "disabledOn": "this.status != 1",
+                        "confirmText": "您确认要删除模考么? ",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/mock/exam_delete?exam_id=$id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

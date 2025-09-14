@@ -51,9 +51,10 @@ class Service_Page_Order_Lists extends Zy_Core_Service{
         }
 
         if ($warning == 1) {
-            $conds[] = sprintf("balance <= %d and balance > 0", Service_Data_Order::WARNING_BALANCE);
+            $conds[] = sprintf("balance <= %d", Service_Data_Order::WARNING_BALANCE);
+            $conds[] = "balance > 0";
         } else if ($warning == 2) {
-            $conds[] = "isfree=1";
+            $conds[] = "isfree = 1";
         } else if ($warning == 3) {
             $conds[] = "balance <= 0";
         }

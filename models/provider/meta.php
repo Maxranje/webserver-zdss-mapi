@@ -10,11 +10,8 @@ class Dao_Meta extends Zy_Core_Dao {
         $this->arrFieldsMap = array(
             "id" => "id",
             "content" => "content",
-            "type" => "type",
-            "isFlag" => "isFlag",
             "operator" => "operator",
             "update_time" => "update_time",
-            "create_time" => "create_time",
             "ext" => "ext",
         );
     }

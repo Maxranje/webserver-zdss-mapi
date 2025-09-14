@@ -13,6 +13,7 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
         $orderDir       = empty($this->request['orderDir']) ? "desc" : trim($this->request['orderDir']);
         $orderBy        = empty($this->request['orderBy']) ? "" : trim($this->request['orderBy']);
         $isSelect       = empty($this->request['is_select']) ? false : true;
+        $isLeaf         = empty($this->request['is_leaf']) ? false : true;
         $isParent       = empty($this->request['is_parent']) ? false : true;
 
         $pn = ($pn-1) * $rn;
@@ -47,7 +48,7 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
             $lists = $this->formatDefault($lists);
         }
         if ($isSelect) {
-            $lists = $this->formatSelect($lists);
+            $lists = $this->formatSelect($lists, $isLeaf);
         }
 
         $total = $serviceData->getSubjectTotalByConds($conds);
@@ -100,7 +101,7 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
         return $result;
     }
 
-    private function formatSelect($lists) {
+    private function formatSelect($lists, $isLeaf = false) {
         if (empty($lists)) {
             return array();
         }
@@ -112,9 +113,11 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
             }
             $op = array(
                 'label' => $item['subject_name'],
-                'value' => $item['subject_id'],
                 "children" => array(),
             ) ;
+            if (!$isLeaf) {
+                $op["value"] = $item['subject_id'];
+            }
             foreach ($item['children'] as $v) {
                 $op['children'][] = array(
                     'label' => $v['subject_name'],
@@ -125,7 +128,7 @@ class Service_Page_Subject_Lists extends Zy_Core_Service{
         }
         return $options;
     }
-
+    
     private function formatParent($lists) {
         if (empty($lists)) {
             return array();

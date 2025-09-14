@@ -44,6 +44,8 @@ abstract class Zy_Database_Dbdriver {
 	// 结果
 	public $result_id		= FALSE;
 
+    // stmt
+    public $stmt_id        = FALSE;
 
 	// 查询次数
 	public $query_count		= 0;
@@ -144,7 +146,22 @@ abstract class Zy_Database_Dbdriver {
 	abstract public function error() ;
 	// 字符集设置
 	abstract public function db_set_charset ($charset);
-
+    // 自动提交
+    abstract protected function _auto_commit ($autoCommit);
+    // 开启事务
+    abstract protected function _trans_start ();
+    // 提交事务
+    abstract protected function _commit ();   
+    // 回滚事务
+    abstract protected function _rollback ();     
+    // 关闭
+    abstract protected function _close ();      
+    // 查询
+    abstract protected function _execute($sql);      
+    // 简单格式化
+    abstract protected function _escape_str ($sql);
+    // 执行预处理语句 (由具体驱动实现)
+    abstract protected function _execute_prepared($sql, $binds);        
 
 	// 禁用事务
 	public function trans_off()
@@ -205,21 +222,6 @@ abstract class Zy_Database_Dbdriver {
 		}
 	}
 
-
-	// 执行sql
-	public function simple_query($sql)
-	{
-		if ( ! $this->conn_id)
-		{
-			if ( ! $this->initialize())
-			{
-				return FALSE;
-			}
-		}
-
-		return $this->_execute($sql);
-	}
-
 	/**
 	 * 查询功能, 支持单条sql 和  需要绑定参数的SQL
 	 *
@@ -251,7 +253,16 @@ abstract class Zy_Database_Dbdriver {
 		}
 
 		Zy_Helper_Benchmark::start('db_query');
-		if (FALSE === ($this->result_id = $this->simple_query($sql)))
+		if ( ! $this->conn_id)
+		{
+			if ( ! $this->initialize())
+			{
+                $error = $this->error();
+                Zy_Helper_Log::warning('db query error: '.$error['message'].' - initialize : '.$sql);
+			}
+		}
+        // 查询
+		if (FALSE === ($this->result_id = $this->_execute($sql)))
 		{
 			$error = $this->error();
 			Zy_Helper_Log::warning('db query error: '.$error['message'].' - Invalid query: '.$sql);
@@ -267,7 +278,7 @@ abstract class Zy_Database_Dbdriver {
 		}
 
 		// DML语句直接返回
-		if ($_sql_type == 'DML')
+		if ($_sql_type == 'dml')
 		{
 			return TRUE;
 		}
@@ -278,6 +289,91 @@ abstract class Zy_Database_Dbdriver {
 
 		return $result;
 	}
+
+    /**
+     * 预处理查询
+     *
+     * @param string $sql SQL语句
+     * @param array $binds 绑定参数
+     * @return mixed
+     */
+    public function prepared_query($sql, $binds = array())
+    {
+        // 如果binds 为空 则去query
+        if (empty($binds)) {
+            return $this->query($sql);
+        }
+
+        if (empty($sql)) {
+            trigger_error('[Error] db invalid query [Detail] sql empty');
+        }
+
+		$_sql_type = $this->sql_type($sql);
+
+		if ( $_sql_type != 'dml' && $_sql_type != 'dql' ){
+			Zy_Helper_Log::warning('Illegal operation SQL type');
+			return FALSE;
+		}        
+        
+        if (!is_array($binds)) 
+        {
+            $binds = array($binds);
+        }
+        
+        // 记录本次查询的SQL
+        if ($this->save_queries === TRUE) {
+            $this->queries[] = $sql;
+        }
+        
+        Zy_Helper_Benchmark::start('db_query');
+		if ( ! $this->conn_id)
+		{
+			if ( ! $this->initialize())
+			{
+                $error = $this->error();
+                Zy_Helper_Log::warning('db query error: '.$error['message'].' - initialize : '.$sql);
+			}
+		}        
+        // 查询
+		if (FALSE === ($this->stmt_id = $this->_execute_prepared($sql, $binds)))
+		{
+			$error = $this->error();
+			Zy_Helper_Log::warning('db query error: '.$error['message'].' - Invalid query: '.$sql . " - Ivalid param" . json_encode($binds));
+
+			return FALSE;
+		}
+        
+        Zy_Helper_Benchmark::stop('db_query');
+        
+        // 记录本次查询时间
+        if ($this->save_queries === TRUE) 
+            {
+            $this->query_times[] = Zy_Helper_Benchmark::elapsed('db_query');
+        }
+        
+        // DML语句直接返回
+        if ($_sql_type == 'dml') 
+        {
+            return true;
+        }
+
+
+        // result_id 是statment 对于SELECT查询，获取结果集
+        if ($this->stmt_id->result_metadata()) {
+            $result = $this->stmt_id->get_result();
+            // 加载结果集对象
+            $driver = 'Zy_Database_Drivers_'.$this->dbdriver.'_Result';
+            $result_obj = new $driver($this);            
+            $result_obj->result_id = $result;
+            
+            $this->stmt_id->close();
+            return $result_obj;
+        } 
+        
+        $this->stmt_id->close();
+        Zy_Helper_Log::warning('db query error: DQL result_metadata false - Invalid query: '.$sql . " - Ivalid param" . json_encode($binds));
+        return false;
+    }
 
 	/**
 	 * 绑定参数, 对参数进行字符正则处理

@@ -8,6 +8,11 @@
     /* 左侧占位，保持布局平衡 */
 }
 
+.amis-scope .a-Tabs-content .a-Panel--form{
+    border:none;box-shadow:none;margin:0;
+}
+
+
 .zy-header-right {
     display: flex;
     align-items: center;

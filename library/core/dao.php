@@ -45,6 +45,11 @@ class Zy_Core_Dao{
     public $arrFieldsMap;
 
     /**
+     * 是否开启prepare
+     */
+    public $isPrepared = true;
+
+    /**
      * Dao基类的构造函数，子类需要写自己的构造函数覆盖父类构造函数.
      *
      * 子类构造函数Demo:<br/>
@@ -68,7 +73,7 @@ class Zy_Core_Dao{
      * @param  array|false $bind_param  绑定参数, false为不绑定
      * @return array|bool  返回查询结果集，失败为false
      */
-    public function query($sql, $bind_param = FALSE) {
+    public function query($sql) {
         if (empty($this->_db)) {
             $this->_db = Zy_Database_Dbservice::getDB($this->_dbName);
         }
@@ -76,23 +81,6 @@ class Zy_Core_Dao{
 
         return is_bool($this->_res) ? $this->_res : $this->_res->result();
     }
-
-
-
-    /**
-     * 获取影响行数
-     * @api
-     * @param  null
-     * @return int|false 返回查询结果集，失败为false
-     */
-    public function getAffectedRows() {
-        if (empty($this->_db)) {
-            $this->_db = Zy_Database_Dbservice::getDB($this->_dbName);
-        }
-        $nums = $this->_db->affected_rows();
-        return $nums < 0 ? FALSE : intval($nums);
-    }
-
 
     /**
      * Select查询，根据限制条件获取结果数组
@@ -138,14 +126,14 @@ class Zy_Core_Dao{
         }
         //限制条件字段以及格式的转换
         $arrConds  = Zy_Database_Dbservice::mapRow($arrConds, $this->arrFieldsMap);
-        $arrConds  = Zy_Database_Dbservice::getConds($arrConds);
+        $arrConds  = Zy_Database_Dbservice::getConds($arrConds, $this->isPrepared);
 
         //查询字段的转换
         $arrFields = Zy_Database_Dbservice::mapField($arrFields, $this->arrFieldsMap, true);
         //表名以及强制索引字段的添加
         $tableName = (empty($strIndex)) ? $this->_table : $this->_table." {$strIndex}";
-        $querySql = Zy_Database_Dbsqlmaker::getSelect ($this->_db, $tableName, $arrFields,$arrConds, $arrOptions, $arrAppends);
-        $this->_res = $this->_db->query($querySql);
+        $querySql = Zy_Database_Dbsqlmaker::getSelect ($this->_db, $tableName, $arrFields,$arrConds, $arrOptions, $arrAppends, $this->isPrepared, $bindParams);
+        $this->_res = $this->_db->prepared_query($querySql, $bindParams);
         if ($this->_res === false){
             return FALSE;
         }
@@ -175,14 +163,14 @@ class Zy_Core_Dao{
      * </code>
      * @return bool 插入成功返回true，否则返回false
      */
-    public function insertRecords($arrFields) {
+    public function insertRecords($arrFields, $options = NULL, $onDup = NULL) {
         if (empty($this->_db)) {
             $this->_db = Zy_Database_Dbservice::getDB($this->_dbName);
         }
 
         $arrFields = Zy_Database_Dbservice::mapRow($arrFields, $this->arrFieldsMap);
-        $querySql = Zy_Database_Dbsqlmaker::getInsert ($this->_db, $this->_table, $arrFields);
-        $this->_res = $this->_db->query($querySql);
+        $querySql = Zy_Database_Dbsqlmaker::getInsert ($this->_db, $this->_table, $arrFields, $options, $onDup, $this->isPrepared, $bindParams);
+        $this->_res = $this->_db->prepared_query($querySql, $bindParams);
         return $this->_res === false ? false : true;
     }
 
@@ -225,11 +213,11 @@ class Zy_Core_Dao{
         }
 
         $arrConds  = Zy_Database_Dbservice::mapRow($arrConds, $this->arrFieldsMap);
-        $arrConds  = Zy_Database_Dbservice::getConds($arrConds);
+        $arrConds  = Zy_Database_Dbservice::getConds($arrConds, $this->isPrepared);
         $arrFields = Zy_Database_Dbservice::mapRow($arrFields, $this->arrFieldsMap);
 
-        $querySql = Zy_Database_Dbsqlmaker::getUpdate ($this->_db, $this->_table, $arrFields, $arrConds, $arrOptions, $arrAppends);
-        $this->_res = $this->_db->query($querySql);
+        $querySql = Zy_Database_Dbsqlmaker::getUpdate ($this->_db, $this->_table, $arrFields, $arrConds, $arrOptions, $arrAppends, $this->isPrepared, $bindParams);
+        $this->_res = $this->_db->prepared_query($querySql, $bindParams);
         return $this->_res === false ? false : true;
     }
 
@@ -239,16 +227,16 @@ class Zy_Core_Dao{
      * @param  mixed  $arrConds   限制条件，数组或者字符串形式均可，示例见{@link getListByConds()}的conds参数
      * @return bool 成功返回true，失败返回false
      */
-    public function deleteByConds($arrConds) {
+    public function deleteByConds($arrConds, $options = NULL, $appends = NULL) {
         if (empty($this->_db)) {
             $this->_db = Zy_Database_Dbservice::getDB($this->_dbName);
         }
 
         $arrConds = Zy_Database_Dbservice::mapRow($arrConds, $this->arrFieldsMap);
-        $arrConds = Zy_Database_Dbservice::getConds($arrConds);
+        $arrConds = Zy_Database_Dbservice::getConds($arrConds, $this->isPrepared);
 
-        $querySql = Zy_Database_Dbsqlmaker::getDelete ($this->_db, $this->_table, $arrConds, NULL);
-        $this->_res = $this->_db->query($querySql);
+        $querySql = Zy_Database_Dbsqlmaker::getDelete ($this->_db, $this->_table, $arrConds, $options, $appends, $this->isPrepared, $bindParams);
+        $this->_res = $this->_db->prepared_query($querySql, $bindParams);
         return $this->_res === false ? false : true;
     }
 
@@ -263,10 +251,10 @@ class Zy_Core_Dao{
             $this->_db = Zy_Database_Dbservice::getDB($this->_dbName);
         }
         $arrConds = Zy_Database_Dbservice::mapRow($arrConds, $this->arrFieldsMap);
-        $arrConds = Zy_Database_Dbservice::getConds($arrConds);
+        $arrConds = Zy_Database_Dbservice::getConds($arrConds, $this->isPrepared);
 
-        $querySql = Zy_Database_Dbsqlmaker::getSelect ($this->_db, $this->_table, array('count(*) as count') , $arrConds);
-        $this->_res = $this->_db->query($querySql);
+        $querySql = Zy_Database_Dbsqlmaker::getSelect ($this->_db, $this->_table, array('count(*) as count') , $arrConds, null, null, $this->isPrepared, $bindParams);
+        $this->_res = $this->_db->prepared_query($querySql, $bindParams);
         if ($this->_res === false){
             return FALSE;
         }

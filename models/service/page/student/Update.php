@@ -15,6 +15,7 @@ class Service_Page_Student_Update extends Zy_Core_Service{
         $graduate   = empty($this->request['graduate']) ? "" : trim($this->request['graduate']);
         $bpid       = empty($this->request['bpid']) ? 0 : intval($this->request['bpid']);
         $sex        = empty($this->request['sex']) ? "M" : trim($this->request['sex']);
+        $isMock     = empty($this->request['is_mock']) ? 1 : intval($this->request['is_mock']);
         $sopuid     = empty($this->request['sop_uid']) ? 0 : intval($this->request['sop_uid']);
         $state      = empty($this->request["state"]) || !in_array($this->request['state'], Service_Data_Profile::STUDENT_STATE) ? Service_Data_Profile::STUDENT_ABLE : intval($this->request['state']);
 
@@ -64,6 +65,7 @@ class Service_Page_Student_Update extends Zy_Core_Service{
             "school"        => $school, 
             "graduate"      => $graduate,
             "sex"           => $sex, 
+            "is_mock"       => $isMock==1?1:2,
             "state"         => $state,
             "update_time"   => time(),
         ];

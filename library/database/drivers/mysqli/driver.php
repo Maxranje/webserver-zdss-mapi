@@ -119,6 +119,54 @@ class Zy_Database_Drivers_Mysqli_Driver extends Zy_Database_Dbdriver {
 		return $this->conn_id->query($sql);
 	}
 
+
+    /**
+     * 执行预处理语句
+     *
+     * @param string $sql SQL语句
+     * @param array $binds 绑定参数
+     * @return mixed
+     */
+    protected function _execute_prepared($sql, $binds)
+    {
+        // 准备语句
+        $stmt = $this->conn_id->prepare($sql);
+        if (!$stmt) 
+        {
+            return false;
+        }
+        
+        // 如果有绑定参数，绑定它们
+        if (!empty($binds)) {
+            $types = '';
+            $params = array();
+            
+            foreach ($binds as $key => $value) {
+                if (is_int($value)) {
+                    $types .= 'i';
+                } elseif (is_float($value)) {
+                    $types .= 'd';
+                } else {
+                    $types .= 's';
+                }
+                
+                // 注意：必须通过引用传递
+                $params[] = &$binds[$key];
+            }
+            
+            array_unshift($params, $types);
+            call_user_func_array(array($stmt, 'bind_param'), $params);
+        }
+        
+        // 执行语句
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return false;
+        }
+
+        return $stmt;
+    }    
+
 	// 默认提交
 	protected function _auto_commit ($autoCommit) {
 		$this->conn_id->autocommit($autoCommit);

@@ -1,0 +1,204 @@
+{
+    "type": "page",
+    "body": [
+        {
+            "type": "tpl",
+            "tpl": "<h2 style='font-weight:bold'>模考进度监控</h2>"
+        },
+        {
+            "type": "service",
+            "api": "/mapi/mock/exam_detail?exam_id=$exam_id&is_monitor=1",
+            "name": "monitor-service",
+            "id": "monitor-service",
+            "body": {
+                "type": "container",
+                "body": [
+                    {
+                        "type": "property",
+                        "column": 3,
+                        "className": "border-solid border-gray-200 shadow-sm rounded bg-white",
+                        "items": [
+                            {
+                                "label": "试卷",
+                                "content": "<span class='text-black font-black ml-2'>${paper.title}</span>",
+                                "span": 3
+                            },
+                            {
+                                "label": "总分",
+                                "content": "<span class='text-black font-black ml-2'>${exam.total_score}</span>"
+                            },
+                            {
+                                "label": "题数",
+                                "content": "<span class='text-black font-black ml-2'>${exam.question_cnt}</span>"
+                            },
+                            {
+                                "label": "类型",
+                                "content": "<span class='label label-danger ml-2 '>${exam.paper_type_info}</span>"
+                            },
+                            {
+                                "label": "备注",
+                                "content": "<span class='text-gray-500  ml-2'>${exam.remark}</span>",
+                                "span": 5
+                            }
+                        ]
+                    },
+                    {
+                        "type": "panel",
+                        "title": "",
+                        "className": "border-solid border-gray-200 shadow-sm rounded bg-white mt-5",
+                        "visibleOn": "${charts.xAxis}",
+                        "body": {
+                            "type": "chart",
+                            "config": {
+                                "legend": {
+                                    "selectedMode": false
+                                },
+                                "calculable": true,
+                                "xAxis": [
+                                    {
+                                        "type": "category",
+                                        "data": "${charts.xAxis || []}"
+                                    }
+                                ],
+                                "yAxis": [
+                                    {
+                                        "type": "value"
+                                    }
+                                ],
+                                "series": "${charts.serise}"
+                            }
+                        }
+                    },
+                    {
+                        "type": "crud",
+                        "className": "mt-5",
+                        "source": "${rows}",
+                        "mode": "cards",
+                        "columnsCount": 1,
+                        "card": {
+                            "className": "border-solid border-gray-100 shadow p-4 rounded-md -mb-2 ",
+                            "header": {
+                                "className": "bg-white",
+                                "title": "$nickname",
+                                "subTitle": "$school / $graduate"
+                            },
+                            "body": [
+                                {
+                                    "type": "progress",
+                                    "animate": true,
+                                    "value": "$progress",
+                                    "valueTpl": "$progress_info",
+                                    "stripe": true,
+                                    "strokeWidth": 12
+                                }
+                            ],
+                            "toolbar": [
+                                {
+                                    "type": "tpl",
+                                    "visibleOn": "status == 2",
+                                    "tpl": "<span class=' label label-success mr-2'>已完成</span>"
+                                },
+                                {
+                                    "type": "tpl",
+                                    "visibleOn": "status == 4",
+                                    "tpl": "<span class=' label label-default mr-2'>已被强制结束</span>"
+                                },
+                                {
+                                    "type": "button",
+                                    "label": "视图",
+                                    "icon": "fa fa-location-arrow",
+                                    "className": "text-xs text-black mr-2",
+                                    "actionType": "dialog",
+                                    "dialog": {
+                                        "actions": [],
+                                        "size": "lg",
+                                        "title": "视图",
+                                        "body": {
+                                            "type": "crud",
+                                            "api": {
+                                                "method": "post",
+                                                "url": "/mapi/mock/exam_student?exam_id=${exam.id}&student_uid=$student_uid",
+                                                "dataType": "form"
+                                            },
+                                            "perPage": 20,
+                                            "id": "exam_student_answer_lists",
+                                            "columns": [
+                                                {
+                                                    "name": "answer_list_qid",
+                                                    "label": "QuestionID",
+                                                    "type": "text",
+                                                    "toggled": true
+                                                },
+                                                {
+                                                    "name": "answer_list_coll",
+                                                    "label": "ParentID",
+                                                    "type": "text",
+                                                    "toggled": true
+                                                },
+                                                {
+                                                    "name": "answer_list_description",
+                                                    "label": "题目描述",
+                                                    "type": "text",
+                                                    "toggled": true
+                                                },
+                                                {
+                                                    "name": "answer_list_type",
+                                                    "label": "考题类型",
+                                                    "type": "text",
+                                                    "toggled": true
+                                                },
+                                                {
+                                                    "name": "answer_list_level",
+                                                    "label": "考题难度",
+                                                    "type": "text",
+                                                    "toggled": true
+                                                },
+                                                {
+                                                    "name": "answer_list_answer_id",
+                                                    "label": "考生客观题选项ID",
+                                                    "type": "text",
+                                                    "toggled": true
+                                                },
+                                                {
+                                                    "name": "answer_list_answer_content",
+                                                    "label": "考生主观题答案",
+                                                    "type": "text",
+                                                    "toggled": true
+                                                },
+                                                {
+                                                    "name": "answer_list_is_correct",
+                                                    "label": "是否正确",
+                                                    "type": "status"
+                                                },
+                                                {
+                                                    "name": "answer_list_spend_time",
+                                                    "label": "作答时间",
+                                                    "type": "text",
+                                                    "toggled": true
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "label": "强制结束",
+                                    "icon": "fa fa-ban",
+                                    "visibleOn": "status == 5 || status == 1",
+                                    "className": "text-xs text-black mr-2",
+                                    "actionType": "ajax",
+                                    "reload": "monitor-service",
+                                    "confirmText": "您确认要强制结束么? 强制结束会影响学员模考, 请非常慎重",
+                                    "api": {
+                                        "method": "get",
+                                        "url": "/mapi/mock/exam_end?exam_id=${exam.id}&student_uid=$student_uid"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

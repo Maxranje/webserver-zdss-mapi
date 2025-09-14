@@ -352,7 +352,7 @@
                         "level": "warning",
                         "label": "撤销",
                         "disabledOn": "this.state === 1",
-                        "hiddenOn": "this.is_super === 0",
+                        "visibleOn": "this.is_super == 1 || this.is_revoke == 1",
                         "actionType": "ajax",
                         "confirmText": "是否确认撤销操作?",
                         "api": {

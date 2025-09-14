@@ -1,0 +1,277 @@
+{
+    "type": "page",
+    "title": "来源配置",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "dialog",
+            "label": "新增来源",
+            "className": "m-r-sm",
+            "primary": true,
+            "dialog": {
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "source-new-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/mock/source_create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "source_lists"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "input-text",
+                            "name": "name",
+                            "size": "md",
+                            "label": "一级来源",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "sub_name",
+                            "size": "md",
+                            "label": "二级来源",
+                            "desc": "每个一级来源最少要有一个二级来源",
+                            "required": true
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "api": {
+            "method": "post",
+            "url": "/mapi/mock/source_lists",
+            "dataType": "form"
+        },
+        "id": "source_lists",
+        "perPageAvailable": [
+            50,
+            100
+        ],
+        "perPage": 50,
+        "syncLocation": false,
+        "labelTpl": "${id}",
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "展示全部数据, 共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page"
+        ],
+        "combineNum": 2,
+        "columns": [
+            {
+                "name": "id",
+                "label": "ID",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "name": "name",
+                "label": "一级来源",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "sub_id",
+                "label": "SID",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "name": "sub_name",
+                "label": "二级来源",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "update_time",
+                "label": "更新时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "create_time",
+                "label": "创建时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "width": 100,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "label": "添加",
+                        "level": "info",
+                        "actionType": "dialog",
+                        "dialog": {
+                            "title": "添加",
+                            "body": {
+                                "type": "form",
+                                "name": "source-add-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/mock/source_create",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                                "actionType": "reload",
+                                                "componentId": "source_lists"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "一级ID",
+                                        "size": "md",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "name",
+                                        "size": "md",
+                                        "label": "一级名称",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "sub_name",
+                                        "size": "md",
+                                        "label": "二级名称",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "编辑",
+                        "actionType": "dialog",
+                        "dialog": {
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "source-edit-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/mock/source_update",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                                "actionType": "reload",
+                                                "componentId": "source_lists"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "一级ID",
+                                        "size": "md",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "sub_id",
+                                        "label": "二级ID",
+                                        "size": "md",
+                                        "disabled": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "name",
+                                        "size": "md",
+                                        "label": "一级名称",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "sub_name",
+                                        "size": "md",
+                                        "label": "二级名称",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "删除",
+                        "level": "danger",
+                        "actionType": "ajax",
+                        "confirmText": "您确认要删除, 删除会影响到模考筛选",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/mock/source_delete?id=$id&sub_id=$sub_id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

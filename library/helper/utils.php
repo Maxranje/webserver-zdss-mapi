@@ -67,12 +67,17 @@ class Zy_Helper_Utils {
         $hour = floor($durationSec / 3600);
         $hourSecond = $durationSec - $hour * 3600;
         $minute = floor($hourSecond / 60);
+        $hourSecond = $durationSec - $minute * 60;
+        $second = $hourSecond;
         $duration = '';
         if ($hour > 0) {
             $duration = $hour . ' h ';
         }
         if ($minute > 0) {
             $duration .= $minute . ' m ';
+        }
+        if ($second > 0) {
+            $duration .= $second . " s ";
         }
         if (empty($duration)) {
             $duration = "0 h";
@@ -102,11 +107,65 @@ class Zy_Helper_Utils {
             return false;
         }        
         return true;
+    } 
+    
+    /**
+     * 验证字符串：检查长度范围、检测SQL注入风险，同时支持中文字符
+     * 
+     * @param string $str 需要检测的字符串
+     * @param int $minLength 最小长度限制
+     * @param int $maxLength 最大长度限制
+     * @return bool 验证通过返回true，否则返回false
+     */
+    public static function validateString($str, $minLength = 0, $maxLength = 10000) {
+        // 检查输入类型
+        if (!is_string($str)) {
+            return false;
+        }
+        // 检查字符串长度（中文字符按单个字符计算）
+        $strLength = mb_strlen($str, 'UTF-8');
+        if ($strLength < $minLength || $strLength > $maxLength) {
+            return false;
+        }
+        
+        // 检测潜在的SQL注入模式
+        $sqlInjectionPatterns = [
+            '/union\s+select/i',
+            '/insert\s+into/i',
+            '/update\s+.*set/i',
+            '/delete\s+from/i',
+            '/drop\s+(table|database)/i',
+            '/alter\s+table/i',
+            '/truncate\s+table/i',
+            '/exec\s*\(/i',
+            '/xp_cmdshell/i',
+            '/declare\s+.*@/i',
+            '/select\s+.*from/i',
+            '/\b(or|and)\b\s+.*=.*--/i',
+            '/\'.*--/'
+        ];
+        
+        foreach ($sqlInjectionPatterns as $pattern) {
+            if (preg_match($pattern, $str)) {
+                return false;
+            }
+        }
+        
+        return true;
     }    
 
-    public static function autoID ($k1, $k2) {
+    public static function validateStringHttp($url) {
+        $pattern = "^(http?|https?)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,4}\/?([^\s<>\#%\"]{0,2000}?)$";
+        return preg_match("/$pattern/", $url) === 1;
+    }
+     
+
+    public static function autoID ($k1, $k2 = "") {
         $end = time() - strtotime(date("Ymd"));
         $day = date("Ymd");
+        if (empty($k2)) {
+            return sprintf("%s-%s-%s", $k1, $day,$end);
+        }
         return sprintf("%s-%s-%s-%s", $k1, $k2, $day,$end);
     }
 

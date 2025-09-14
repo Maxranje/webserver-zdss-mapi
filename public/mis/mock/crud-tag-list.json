@@ -1,0 +1,374 @@
+{
+    "type": "page",
+    "body": [
+        {
+            "type": "panel",
+            "title": "标签树",
+            "body": [
+                {
+                    "type": "chart",
+                    "id": "tag_charts",
+                    "name": "tag_charts",
+                    "api": "/mapi/mock/tag_lists?is_charts=1",
+                    "config": {
+                        "tooltip": {
+                            "trigger": "item",
+                            "triggerOn": "mousemove"
+                        },
+                        "series": [
+                            {
+                                "type": "tree",
+                                "data": [
+                                    "${charts}"
+                                ],
+                                "top": "1%",
+                                "left": "7%",
+                                "bottom": "1%",
+                                "right": "20%",
+                                "symbolSize": 7,
+                                "label": {
+                                    "position": "left",
+                                    "verticalAlign": "middle",
+                                    "align": "right",
+                                    "fontSize": 9
+                                },
+                                "leaves": {
+                                    "label": {
+                                        "position": "right",
+                                        "verticalAlign": "middle",
+                                        "align": "left"
+                                    }
+                                },
+                                "emphasis": {
+                                    "focus": "descendant"
+                                },
+                                "expandAndCollapse": true,
+                                "animationDuration": 550,
+                                "animationDurationUpdate": 750
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "type": "crud",
+            "id": "tag_lists",
+            "name": "tag_lists",
+            "api": {
+                "method": "post",
+                "url": "/mapi/mock/tag_lists?is_rows=1",
+                "dataType": "form"
+            },
+            "syncLocation": false,
+            "labelTpl": "${id}",
+            "filterTogglable": true,
+            "headerToolbar": [
+                "filter-toggler",
+                "bulkActions",
+                {
+                    "type": "button",
+                    "label": "新增根标签",
+                    "actionType": "dialog",
+                    "level": "primary",
+                    "icon": "fa fa-plus",
+                    "dialog": {
+                        "title": "新增根标签",
+                        "body": {
+                            "type": "form",
+                            "name": "tag-add-form",
+                            "model": "horizontal",
+                            "horizontal": {
+                                "left": 1,
+                                "right": 11,
+                                "justify": false
+                            },
+                            "api": {
+                                "method": "post",
+                                "url": "/mapi/mock/tag_create",
+                                "dataType": "form"
+                            },
+                            "reload": "tag_lists,tag_charts",
+                            "body": [
+                                {
+                                    "type": "input-text",
+                                    "name": "id",
+                                    "value": 0,
+                                    "hidden": true
+                                },
+                                {
+                                    "type": "input-text",
+                                    "name": "new_title",
+                                    "label": "标签",
+                                    "required": true
+                                },
+                                {
+                                    "type": "divider"
+                                },
+                                {
+                                    "type": "input-rich-text",
+                                    "name": "new_description",
+                                    "label": "描述",
+                                    "options": {
+                                        "menubar": false,
+                                        "height": 200,
+                                        "content_css": "/public/mis/sdk/tinymce-custom.css",
+                                        "branding": false,
+                                        "statusbar": true,
+                                        "plugins": [
+                                            "advlist",
+                                            "autolink",
+                                            "link",
+                                            "image",
+                                            "lists",
+                                            "charmap",
+                                            "preview",
+                                            "anchor",
+                                            "pagebreak",
+                                            "searchreplace",
+                                            "wordcount",
+                                            "visualblocks",
+                                            "visualchars",
+                                            "code",
+                                            "fullscreen",
+                                            "insertdatetime",
+                                            "media",
+                                            "nonbreaking",
+                                            "table",
+                                            "emoticons",
+                                            "template",
+                                            "help"
+                                        ],
+                                        "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "type": "tpl",
+                    "tpl": "共有 ${total} 条数据。",
+                    "className": "v-middle"
+                },
+                {
+                    "type": "columns-toggler",
+                    "align": "right"
+                },
+                {
+                    "type": "drag-toggler",
+                    "align": "right"
+                }
+            ],
+            "footerToolbar": [
+                "statistics"
+            ],
+            "columns": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "title",
+                    "label": "名称",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "name": "description",
+                    "label": "描述",
+                    "type": "tpl",
+                    "toggled": true
+                },
+                {
+                    "name": "update_time",
+                    "label": "修改时间",
+                    "type": "text",
+                    "toggled": true
+                },
+                {
+                    "type": "operation",
+                    "label": "操作",
+                    "width": 180,
+                    "buttons": [
+                        {
+                            "type": "button",
+                            "label": "新增子集",
+                            "actionType": "dialog",
+                            "dialog": {
+                                "title": "新增子集",
+                                "size": "lg",
+                                "body": {
+                                    "type": "form",
+                                    "name": "tag-add-form",
+                                    "model": "horizontal",
+                                    "horizontal": {
+                                        "left": 1,
+                                        "right": 11,
+                                        "justify": false
+                                    },
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/mock/tag_create",
+                                        "dataType": "form"
+                                    },
+                                    "reload": "tag_lists,tag_charts",
+                                    "body": [
+                                        {
+                                            "type": "input-text",
+                                            "name": "id",
+                                            "hidden": true
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "new_title",
+                                            "label": "标签",
+                                            "required": true
+                                        },
+                                        {
+                                            "type": "divider"
+                                        },
+                                        {
+                                            "type": "input-rich-text",
+                                            "name": "new_description",
+                                            "label": "描述",
+                                            "options": {
+                                                "menubar": false,
+                                                "height": 200,
+                                                "content_css": "/public/mis/sdk/tinymce-custom.css",
+                                                "branding": false,
+                                                "statusbar": true,
+                                                "plugins": [
+                                                    "advlist",
+                                                    "autolink",
+                                                    "link",
+                                                    "image",
+                                                    "lists",
+                                                    "charmap",
+                                                    "preview",
+                                                    "anchor",
+                                                    "pagebreak",
+                                                    "searchreplace",
+                                                    "wordcount",
+                                                    "visualblocks",
+                                                    "visualchars",
+                                                    "code",
+                                                    "fullscreen",
+                                                    "insertdatetime",
+                                                    "media",
+                                                    "nonbreaking",
+                                                    "table",
+                                                    "emoticons",
+                                                    "template",
+                                                    "help"
+                                                ],
+                                                "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "label": "编辑",
+                            "actionType": "dialog",
+                            "dialog": {
+                                "title": "编辑",
+                                "size": "lg",
+                                "body": {
+                                    "type": "form",
+                                    "name": "tag-edit-form",
+                                    "model": "horizontal",
+                                    "horizontal": {
+                                        "left": 1,
+                                        "right": 11,
+                                        "justify": false
+                                    },
+                                    "api": {
+                                        "method": "post",
+                                        "url": "/mapi/mock/tag_update",
+                                        "dataType": "form"
+                                    },
+                                    "reload": "tag_lists,tag_charts",
+                                    "body": [
+                                        {
+                                            "type": "input-text",
+                                            "name": "id",
+                                            "label": "id",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "type": "divider"
+                                        },
+                                        {
+                                            "type": "input-text",
+                                            "name": "title",
+                                            "label": "标签",
+                                            "required": true
+                                        },
+                                        {
+                                            "type": "divider"
+                                        },
+                                        {
+                                            "type": "input-rich-text",
+                                            "name": "description",
+                                            "label": "描述",
+                                            "options": {
+                                                "menubar": false,
+                                                "height": 200,
+                                                "content_css": "/public/mis/sdk/tinymce-custom.css",
+                                                "branding": false,
+                                                "statusbar": true,
+                                                "plugins": [
+                                                    "advlist",
+                                                    "autolink",
+                                                    "link",
+                                                    "image",
+                                                    "lists",
+                                                    "charmap",
+                                                    "preview",
+                                                    "anchor",
+                                                    "pagebreak",
+                                                    "searchreplace",
+                                                    "wordcount",
+                                                    "visualblocks",
+                                                    "visualchars",
+                                                    "code",
+                                                    "fullscreen",
+                                                    "insertdatetime",
+                                                    "media",
+                                                    "nonbreaking",
+                                                    "table",
+                                                    "emoticons",
+                                                    "template",
+                                                    "help"
+                                                ],
+                                                "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "label": "删除",
+                            "level": "danger",
+                            "actionType": "ajax",
+                            "confirmText": "您确认要删除, 删除会关联删除题库中的标签信息, 如果要删除的标签存在子标签则需要把子标签删除干净, 才可删除",
+                            "api": {
+                                "method": "get",
+                                "url": "/mapi/mock/tag_delete?id=$id"
+                            },
+                            "reload": "tag_lists,tag_charts"
+                        }
+                    ],
+                    "toggled": true
+                }
+            ]
+        }
+    ]
+}

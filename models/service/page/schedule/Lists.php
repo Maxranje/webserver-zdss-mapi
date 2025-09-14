@@ -203,6 +203,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
         
         $isModeUpdate = $this->isModeAble(Service_Data_Roles::ROLE_MODE_SCHEDULE_UPDATE);
         $isModeDelete = $this->isModeAble(Service_Data_Roles::ROLE_MODE_SCHEDULE_DELETE);
+        $isModeRevoke = $this->isModeAble(Service_Data_Roles::ROLE_MODE_SCHEDULE_REVOKE);
         
         $sum_duration = 0;
         $result = array();
@@ -230,6 +231,7 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
             $item['is_super']   = $this->checkSuper() ? 1 : 0;
             $item['is_u']       = $isModeUpdate ? 1 : 0;
             $item['is_d']       = $isModeDelete ? 1 : 0;
+            $item["is_revoke"]  = $isModeRevoke ? 1 : 0;
             $item["week_time"]  = $this->weekName[date("w", $item['start_time'])];
             $item['time_day']   = strtotime(date("Y-m-d", $item['start_time']));
             $item['time_range'] = sprintf("%s,%s", date("H:i", $item['start_time']), date("H:i", $item['end_time']));
