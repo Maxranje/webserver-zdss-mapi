@@ -72,7 +72,7 @@
                     "id": "assess_1tips",
                     "hidden": true,
                     "showIcon": true,
-                    "body": "<div style='font-weight:bold;'>评估试卷考试中考题是根据学员客观题(选择/填空)正确度进行动态调整 </div><div>动态调整规则: 客观题(选择/填空)正确率>=0.75(10道题)即可提升难度 </div><div>考试结束标准: 最少完成10道题, 最多50道, 某难度停留<0.75 / 通过最高难度L5, </div><div style='font-weight:bold; color:black;'>!!!!请注意, 评估试卷各Level题目数量不足, 虽依然可以考试, 但会存在跳题或漏题情况, 该情况建议修改试卷为常规类型</div>"
+                    "body": "<div style='font-weight:bold;'>评估试卷考试中考题是根据考生作答正确度进行动态调整 (主观题因无法实时判断, 所以提交后一律认为正确) </div><div>动态调整规则: 试题正确率>=0.75(10道题)即可提升难度 </div><div>考试结束标准: 最少完成10道题, 最多50道, 某难度停留<0.75 / 通过最高难度L5, </div><div style='font-weight:bold; color:black;'>!!!!请注意, 评估试卷各Level题目数量不足, 虽依然可以考试, 但会存在跳题或漏题情况, 该情况建议修改试卷为常规类型</div>"
                 },
                 {
                     "type": "input-date-range",

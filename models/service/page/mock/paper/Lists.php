@@ -11,20 +11,17 @@ class Service_Page_Mock_Paper_Lists extends Zy_Core_Service{
         $rn             = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
         $title          = empty($this->request['title']) ? "" : trim($this->request['title']);
         $type           = empty($this->request['type']) ? 0 : intval($this->request['type']);
-        $qids           = empty($this->request['qids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['qids']));
-        $pids           = empty($this->request['pids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['pids']));
+        $qids           = empty($this->request['qids']) ? array() : Zy_Helper_Utils::rmArrZore(Zy_Helper_Utils::arrayInt(explode(",", $this->request['qids'])));
         $isSelect       = empty($this->request['is_select']) ? false : true;
         $isType         = empty($this->request['is_type']) ? false : true;
         $pn             = ($pn-1) * $rn;        
 
         $conds = array();
         // question找paper
+        $pids = array();
         $servicePaper = new Service_Data_Paper();        
         if (count($qids) > 0) {
-            $paperIds = $servicePaper->getPaperIdsByQids($qids);
-            if (!empty($paperIds)) {
-                $pids = array_intersect($paperIds, $pids);
-            }
+            $pids = $servicePaper->getPaperIdsByQids($qids);
         }    
         if (count($pids) > 0) {
             $conds[] = sprintf("pid in (%s)", implode(",", $pids));

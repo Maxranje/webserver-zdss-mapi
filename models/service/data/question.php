@@ -343,7 +343,7 @@ class Service_Data_Question {
         if (!empty($preMeta["meta"]) && 
             $preMeta["meta_type"] == Service_Data_Meta::META_TYPE_AUDIO && 
             !Zy_Helper_Utils::validateStringHttp($preMeta["meta"])) {
-            throw new Zy_Core_Exception(405, "操作失败, 前置材料前置材料音频格式不正确");
+            throw new Zy_Core_Exception(405, "操作失败, 前置材料音频格式不正确");
         }        
 
         if (!empty($preMeta["parent_desc"]) && !Zy_Helper_Utils::validateString($preMeta["parent_desc"], 1, 200)) {
@@ -389,8 +389,8 @@ class Service_Data_Question {
                     if (!isset($v["answer_content"])) {
                         throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s选项没有答案描述", $k));
                     }
-                    if (!Zy_Helper_Utils::validateString($v["answer_content"], 0, 100)) {
-                        throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s选项答案描述内容包含非法字符或长度超过100个字符", $k));
+                    if (!Zy_Helper_Utils::validateString($v["answer_content"], 0, 200)) {
+                        throw new Zy_Core_Exception(405, sprintf("操作失败, 单选第%s选项答案描述内容包含非法字符或长度超过100个字符", $k));
                     }
                     if (isset($v["is_answer"]) && $v["is_answer"] == 1) {
                         $correct++;
@@ -413,8 +413,8 @@ class Service_Data_Question {
                     if (!isset($v["answer_content"])) {
                         throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s选项没有答案描述", $k));
                     }
-                    if (!Zy_Helper_Utils::validateString($v["answer_content"], 0, 100)) {
-                        throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s选项答案描述内容包含非法字符或长度超过100个字符", $k));
+                    if (!Zy_Helper_Utils::validateString($v["answer_content"], 0, 200)) {
+                        throw new Zy_Core_Exception(405, sprintf("操作失败, 多选第%s选项答案描述内容包含非法字符或长度超过100个字符", $k));
                     }
                     if (isset($v["is_answer"]) && $v["is_answer"] == 1) {
                         $correct++;
@@ -437,8 +437,8 @@ class Service_Data_Question {
                     if (!isset($v["answer_content"])) {
                         throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s选项没有答案描述", $k));
                     }
-                    if (!Zy_Helper_Utils::validateString($v["answer_content"], 0, 100)) {
-                        throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s选项答案描述内容包含非法字符或长度超过100个字符", $k));
+                    if (!Zy_Helper_Utils::validateString($v["answer_content"], 0, 200)) {
+                        throw new Zy_Core_Exception(405, sprintf("操作失败, 判断第%s选项答案描述内容包含非法字符或长度超过100个字符", $k));
                     }
                     if (isset($v["is_answer"]) && $v["is_answer"] == 1) {
                         $correct++;
@@ -464,7 +464,7 @@ class Service_Data_Question {
                         throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s选项没有答案描述", $k));
                     }
                     if (!Zy_Helper_Utils::validateString($v["answer_content"], 0, 100)) {
-                        throw new Zy_Core_Exception(405, sprintf("操作失败, 第%s选项答案描述内容包含非法字符或长度超过100个字符", $k));
+                        throw new Zy_Core_Exception(405, sprintf("操作失败, 填空第%s选项答案描述内容包含非法字符或长度超过100个字符", $k));
                     }
                     $v["answer_id"] = empty($v["answer_id"]) ? 0 : intval($v["answer_id"]);
                 }
@@ -488,6 +488,7 @@ class Service_Data_Question {
         }
 
         // 检查tags
+        $tagIds = Zy_Helper_Utils::rmArrZore(Zy_Helper_Utils::arrayInt($tagIds));
         if (count($tagIds) > 0) {
             $serviceData = new Service_Data_tag();
             $tagInfos = $serviceData->getTagByIds($tagIds);
@@ -497,6 +498,7 @@ class Service_Data_Question {
         }
 
         // 检查tags
+        $sourceIds = Zy_Helper_Utils::rmArrZore(Zy_Helper_Utils::arrayInt($sourceIds));
         if (count($sourceIds) > 0) {
             $serviceData = new Service_Data_QuestionSource();
             $sourceInfos = $serviceData->getSourceByIds($sourceIds);

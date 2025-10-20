@@ -23,6 +23,9 @@ class Service_Page_Mock_Exam_Start extends Zy_Core_Service{
         if ($endTime <= $startTime ) {
             throw new Zy_Core_Exception(405, "操作失败, 日期时间范围选定不正确!");
         }
+        if ($endTime - $startTime > 7*86400) {
+            throw new Zy_Core_Exception(405, "操作失败, 参考时间在7天以内");
+        }
 
         $pidArr = explode("_", $pid);
         if (!is_array($pidArr) || count($pidArr) != 2 || intval($pidArr[0]) <= 0 || !in_array($pidArr[1], Service_Data_Paper::PAPER_TYPE_MAP)) {

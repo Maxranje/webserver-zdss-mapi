@@ -23,7 +23,7 @@ class Service_Page_Mock_Question_Delete extends Zy_Core_Service{
         $serviceData = new Service_Data_Paper();
         $paperInfos = $serviceData->getPaperIdsByQids(array($qid), true);
         if (!empty($paperInfos[$qid])) {
-            throw new Zy_Core_Exception(405, "操作失败, 已被试卷收录, 不允许删除");
+            throw new Zy_Core_Exception(405, "操作失败, 已被试卷收录先从试卷中摘除后再删除试题");
         }        
 
         // 判断是否还有上课的map

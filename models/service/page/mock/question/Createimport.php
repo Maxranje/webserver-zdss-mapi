@@ -34,10 +34,10 @@ class Service_Page_Mock_Question_Createimport extends Zy_Core_Service{
         // 对物料处理
         $preMeta = array();    
         foreach ($request as $k => $v) {
-            $groupKey           = empty($v[0]) ? 0 : $v[0];
-            $description        = empty($v[1]) ? "" : $v[1];
-            $meta               = empty($v[2]) ? "" : $v[2];
-            $metaType           = empty($v[3]) ? "" : $v[3];
+            $groupKey           = empty(trim($v[0])) ? "" : trim($v[0]);
+            $description        = empty(trim($v[1])) ? "" : trim($v[1]);
+            $meta               = empty(trim($v[2])) ? "" : trim($v[2]);
+            $metaType           = empty(intval($v[3])) ? 0 : intval($v[3]);
 
             if (!empty($groupKey)) {
                 if (!isset($preMeta[$groupKey])) {
@@ -68,22 +68,22 @@ class Service_Page_Mock_Question_Createimport extends Zy_Core_Service{
         $questions = array();
         foreach($request as $k => $v) {
             $q = array(
-                "description" => empty($v[1]) ? "" : $v[1],
-                "type" => empty($v[4]) ? 0 : intval($v[4]),
-                "level" => empty($v[5]) ? 0 : intval($v[5]),
-                "score" => empty($v[6]) ? 0 : intval($v[6]),
-                "tag_ids" => empty($v[7]) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $v[7])),
-                "source_ids" => empty($v[8]) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $v[8])),
-                "content" => empty($v[9]) ? "" : $v[9],
-                "explan" => empty($v[12]) ? "" : $v[12],
+                "description" => empty(trim($v[1])) ? "" : trim($v[1]),
+                "type" => empty(intval($v[4])) ? 0 : intval($v[4]),
+                "level" => empty(intval($v[5])) ? 0 : intval($v[5]),
+                "score" => empty(intval($v[6])) ? 0 : intval($v[6]),
+                "tag_ids" => empty(trim($v[7])) ? array() : Zy_Helper_Utils::rmArrZore(Zy_Helper_Utils::arrayInt(explode(",", trim($v[7])))),
+                "source_ids" => empty(trim($v[8])) ? array() : Zy_Helper_Utils::rmArrZore(Zy_Helper_Utils::arrayInt(explode(",", trim($v[8])))),
+                "content" => empty(trim($v[9])) ? "" : trim($v[9]),
+                "explan" => empty(trim($v[12])) ? "" : trim($v[12]),
                 "radio" => array(),
                 "checkbox" => array(),
                 "check" => array(),
                 "fill" => array(),
             );
             $groupKey = $v[0];
-            $answer = empty($v[10]) ? "" : $v[10];
-            $correct = empty($v[11]) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $v[11]));
+            $answer = empty(trim($v[10])) ? "" : trim($v[10]);
+            $correct = empty(trim($v[11])) ? array() : Zy_Helper_Utils::rmArrZore(Zy_Helper_Utils::arrayInt(explode(",", trim($v[11]))));
 
             if (!empty($preMeta[$groupKey]['parent_desc'])) {
                 $q["description"] = $preMeta[$groupKey]['parent_desc'];
@@ -115,10 +115,15 @@ class Service_Page_Mock_Question_Createimport extends Zy_Core_Service{
                         $key = "radio";
                         break;
                 }
-                    
-                $q[$key] = array_map(function($item) {
-                    return ["answer_content" => $item];
-                }, explode("\n", $answer));
+                if (strpos($answer, "<br>") !== false) {
+                    $q[$key] = array_map(function($item) {
+                        return ["answer_content" => $item];
+                    }, explode("<br>", $answer));
+                } else {
+                    $q[$key] = array_map(function($item) {
+                        return ["answer_content" => $item];
+                    }, explode("\n", $answer));
+                }
 
                 // 填空没有对错
                 if ($q["type"] != Service_Data_Question::QUESTION_TYPE_FILL) {
@@ -128,7 +133,7 @@ class Service_Page_Mock_Question_Createimport extends Zy_Core_Service{
                         }
                         $q[$key][$v - 1]["is_answer"] = 1;
                     }
-                }
+                }                
             }
             $questions[$groupKey][] = $q;
         }

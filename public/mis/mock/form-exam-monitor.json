@@ -48,7 +48,7 @@
                         "showIcon": true,
                         "hiddenOn": "${exam.paper_type == 1}",
                         "className": "mt-5 shadow p-4 rounded-md font-black",
-                        "body": "评估类型考试考题随考生客观题准确度变化而变化, 每人考题不尽相同, 以考生实际作答后数据为准!"
+                        "body": "评估类型考试考题随考生作答准确度变化而变化, 每人考题不尽相同, 以考生实际作答后数据为准!"
                     },
                     {
                         "type": "crud",

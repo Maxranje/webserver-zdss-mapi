@@ -68,12 +68,12 @@
                 "bulkActions",
                 {
                     "type": "button",
-                    "label": "新增根标签",
+                    "label": "新增一级标签",
                     "actionType": "dialog",
                     "level": "primary",
                     "icon": "fa fa-plus",
                     "dialog": {
-                        "title": "新增根标签",
+                        "title": "新增一级标签",
                         "body": {
                             "type": "form",
                             "name": "tag-add-form",

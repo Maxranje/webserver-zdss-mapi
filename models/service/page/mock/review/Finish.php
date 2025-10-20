@@ -16,6 +16,15 @@ class Service_Page_Mock_Review_Finish extends Zy_Core_Service{
 
         // 获取考生考试信息
         $serviceExam = new Service_Data_Exam();
+        $exam = $serviceExam->getExamById($examId);
+        if (empty($exam)) {
+            throw new Zy_Core_Exception(405, "操作失败, 获取考试信息失败, 请重试");
+        }
+        if (!$this->isModeAble(Service_Data_Roles::ROLE_MODE_MOCK_DONE) && $exam["teacher_uid"] != OPERATOR) {
+            throw new Zy_Core_Exception(405, "非特定权限或监考老师, 无权限操作");
+        }
+
+        // 获取考生状态
         $studentExam = $serviceExam->getStudentRecordByConds(array(
             "student_uid" => $studentUid,
             "exam_id" => $examId,
@@ -30,10 +39,19 @@ class Service_Page_Mock_Review_Finish extends Zy_Core_Service{
         ])) {
             throw new Zy_Core_Exception(405, "操作失败, 考生必须已交卷或被强制踢出, 或批改中, 否则无法完结");
         }  
+        $ext = json_decode($studentExam["ext"], true);
+        $unExam = false;
+        if ($studentExam["status"] == Service_Data_Exam::EXAM_STUDENT_STATUS_TERMINATED && 
+            !empty($ext["last_status"]) && $ext["last_status"] == Service_Data_Exam::EXAM_STUDENT_STATUS_TERMINATED) {
+            $unExam = true;
+        }        
 
         // 获取所有试题和答案
         try {
-            $reviewRet = $serviceExam->getStudentAnswerDetailForReview($examId, intval($studentExam['pid']), $studentUid);
+            $reviewRet["studentScore"] = 0;
+            if (!$unExam) {
+                $reviewRet = $serviceExam->getStudentAnswerDetailForReview($examId, intval($studentExam['pid']), $studentUid);
+            }
         } catch (Exception $e) {
             throw new Zy_Core_Exception(405, $e->getMessage() . ", 请重试");
         }        

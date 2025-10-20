@@ -153,14 +153,14 @@ class Service_Page_Mock_Exam_Detail extends Zy_Core_Service{
             $exam["paper_type_info"] = "单词本";
         } else if ($exam["paper_type"] == Service_Data_Paper::PAPER_TYPE_ASSESS) {
             $exam["paper_type_info"] = "评估";
-        } else{
+        } else if ($exam["paper_type"] == Service_Data_Paper::PAPER_TYPE_NORMAL) {
             $exam["paper_type_info"] = "常规";
+        } else {
+            $exam["paper_type_info"] = "未知";
         }
         $exam["total_question"] = $this->examInfo["total_question"] . " 道";
         $exam["total_score"] = $exam["total_score"] . " 分";
 
-        
-        
         // 输出内容
         $ret = array(
             "exam" => $exam,

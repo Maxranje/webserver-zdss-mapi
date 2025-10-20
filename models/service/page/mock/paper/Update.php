@@ -41,8 +41,8 @@ class Service_Page_Mock_Paper_Update extends Zy_Core_Service{
         // 从评估切位常规, 需要判断题目数
         if ($paper["type"] != $type && $type == Service_Data_Paper::PAPER_TYPE_NORMAL) {
             $qids = $servicePaper->getPaperQuestionIds($pid);
-            if (count($qids) > Service_Data_Paper::NORMAL_TOTAL_QUESTION) {
-                throw new Zy_Core_Exception(405, "操作失败, 当前试卷考题数超过了".Service_Data_Paper::NORMAL_TOTAL_QUESTION."道, 无法变更为常规试卷");
+            if (count($qids) > Service_Data_Paper::INPUT_NORMAL_TOTAL_QUESTION) {
+                throw new Zy_Core_Exception(405, "操作失败, 当前试卷考题数超过了".Service_Data_Paper::INPUT_NORMAL_TOTAL_QUESTION."道, 无法变更为常规试卷");
             }
         }
 

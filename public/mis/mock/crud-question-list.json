@@ -95,7 +95,7 @@
                             "value": "4"
                         },
                         {
-                            "label": "超难",
+                            "label": "困难",
                             "value": "5"
                         }
                     ]
@@ -161,8 +161,8 @@
             "className": "border-solid border-gray-100 shadow p-4 rounded-md mt-5 -mb-2 ",
             "header": {
                 "className": "bg-white",
-                "title": "QuestionID $qid",
-                "subTitle": "$description"
+                "title": "$description",
+                "subTitle": "Qid:  $qid"
             },
             "body": [
                 {

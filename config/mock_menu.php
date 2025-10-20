@@ -58,7 +58,7 @@ return array(
                 ),
                 array(
                     "id" => 10014,
-                    "label"=>"来源配置",
+                    "label"=>"试题来源",
                     "url"=>"/question/source",
                     "icon"=>"fa fa-mail-forward",
                     "schemaApi"=>"get:/public/mis/mock/crud-source-list.json"
@@ -118,7 +118,7 @@ return array(
                 array(
                     "id" => 10045,
                     "label"=>"批改试卷",
-                    "url"=>"/exam/reviewlists",
+                    "url"=>"/review/lists",
                     "icon"=>"fa fa-retweet",
                     "schemaApi"=>"get:/public/mis/mock/crud-exam-review.json"
                 ),

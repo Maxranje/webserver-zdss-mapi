@@ -197,10 +197,11 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
                     "exam_unable_count" => 0
                 );
             }
-            if ($v["status"] == Service_Data_Exam::EXAM_STATUS_COMPLETE) {
-                $examRet[$v["student_uid"]]['exam_done_count'] ++;
+            if ($v["status"] == Service_Data_Exam::EXAM_STATUS_ONGOING || 
+                $v["status"] == Service_Data_Exam::EXAM_STATUS_PENDING) {
+                $examRet[$v["student_uid"]]['exam_unable_count'] ++;                    
             } else {
-                $examRet[$v["student_uid"]]['exam_unable_count'] ++;
+                $examRet[$v["student_uid"]]['exam_done_count'] ++;
             }
         }
 

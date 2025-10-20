@@ -57,6 +57,19 @@ class Zy_Helper_Utils {
         return array_values($result);
     }
 
+    // 删除数组中0, 一维数组
+    public static function rmArrZore ($arr) {
+        if (empty($arr) || !is_array($arr)) {
+            return array();
+        }
+        foreach ($arr as $i => $item) {
+            if ($item === 0) {
+                unset($arr[$i]);
+            }
+        }
+        return array_values($arr);
+    }    
+
     /** 
      * 格式化时长
      * @param int $secondParam 传入秒数

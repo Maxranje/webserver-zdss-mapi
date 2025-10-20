@@ -23,13 +23,6 @@
             "body": [
                 {
                     "type": "input-text",
-                    "name": "pids",
-                    "label": "试卷Id",
-                    "size": "md",
-                    "placeholder": "多个用逗号分隔"
-                },
-                {
-                    "type": "input-text",
                     "name": "qids",
                     "label": "试题Id",
                     "size": "md",
@@ -269,10 +262,10 @@
                         },
                         {
                             "type": "button",
-                            "label": "录题",
+                            "label": "录入",
                             "actionType": "drawer",
                             "drawer": {
-                                "title": "录题",
+                                "title": "详情",
                                 "size": "xl",
                                 "actions": [
                                     {
@@ -332,7 +325,7 @@
                                                 "className": "p-2 mt-5 ml-3 shadow rounded",
                                                 "hiddenOn": "${paper.type != 2}",
                                                 "showIcon": true,
-                                                "body": "<div style='font-weight:bold;'>评估试卷最大录入${paper.input_total_question}道, 考试中考题是根据学员客观题(选择/填空)正确度进行动态调整,  所以录入试题尽可能每个难度均衡配置数量 (注意:主观题(写作/口语)无法实时判别, 一律认为正确) </div><div style='font-weight:bold; color:red;'>动态调整规则: 客观题(选择/填空)正确率>=0.75(10道题)即可提升难度 </div><div style='font-weight:bold; color:red;'>考试结束标准: 最少完成10道题, 最多50道, 未超过某难度 / 通过最高难度L5  </div>"
+                                                "body": "<div style='font-weight:bold;'>评估试卷最大录入${paper.input_total_question}道, 考试中考题是根据学员试题正确度进行动态调整,  所以录入试题尽可能每个难度均衡配置数量 (注意:主观题(简答/写作/口语)无法实时判别, 作答提交后一律认为正确) </div><div style='font-weight:bold; color:red;'>动态调整规则: 作答正确率>=0.75(10道题)即可提升难度 </div><div style='font-weight:bold; color:red;'>考试结束标准: 最少完成10道题, 最多50道, 未超过某难度 / 通过最高难度L5  </div>"
                                             },
                                             {
                                                 "type": "tpl",
@@ -375,7 +368,7 @@
                                                                 "headerToolbar": [
                                                                     "bulkActions",
                                                                     {
-                                                                        "label": "考题变更",
+                                                                        "label": "增删考题",
                                                                         "type": "button",
                                                                         "size": "sm",
                                                                         "icon": "fa fa-plus-circle",
@@ -415,7 +408,7 @@
                                                                     },
                                                                     {
                                                                         "type": "tpl",
-                                                                        "tpl": "试卷共 ${questions_total} 道题。",
+                                                                        "tpl": "当前试卷共 ${questions_total} 道题。",
                                                                         "className": "v-middle mb-2"
                                                                     }
                                                                 ],

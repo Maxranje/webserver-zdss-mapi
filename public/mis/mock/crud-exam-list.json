@@ -47,7 +47,7 @@
                     "source": "/mapi/student/lists?is_select=1&is_mock=1"
                 },
                 {
-                    "label": "状态",
+                    "label": "模考状态",
                     "type": "select",
                     "clearable": true,
                     "name": "status",
@@ -61,7 +61,7 @@
                             "value": "5"
                         },
                         {
-                            "label": "已结束",
+                            "label": "已交卷",
                             "value": "2"
                         },
                         {
@@ -74,7 +74,7 @@
                     "type": "input-date-range",
                     "name": "daterange",
                     "inline": true,
-                    "label": "考试时间"
+                    "label": "开考时间"
                 },
                 {
                     "type": "submit",
@@ -220,7 +220,7 @@
                         "label": "批改",
                         "actionType": "link",
                         "level": "primary",
-                        "link": "/exam/reviewlists?exam_indentify=$indentify"
+                        "link": "/review/lists?exam_indentify=$indentify"
                     },
                     {
                         "type": "button",
@@ -234,8 +234,8 @@
                         "actionType": "ajax",
                         "label": "结束",
                         "level": "danger",
-                        "disabledOn": "(this.is_terminated != 1 && this.status == 5) || (this.status == 2) || (this.status  == 4)",
-                        "confirmText": "如果全员已交卷, 则会修改考试状态, 正常结束当前考试, 如果有考生未提交, 则会强行结束考试",
+                        "disabledOn": "(this.is_terminated != 1 && (this.status == 5 || this.status == 1)) || (this.status == 2) || (this.status  == 4)",
+                        "confirmText": "<b>已交卷考生不受影响, 未交卷或未作答的考生会被强制踢出.</b>",
                         "api": {
                             "method": "get",
                             "url": "/mapi/mock/exam_end?exam_id=$id"

@@ -13,7 +13,7 @@ class Service_Page_Mock_Exam_Lists extends Zy_Core_Service{
         $teacherUid     = empty($this->request['teacher_uid']) ? 0 : intval($this->request['teacher_uid']);
         $studentUid    = empty($this->request['student_uid']) ? 0 : intval($this->request['student_uid']);
         $status         = empty($this->request['status']) ? 0 : intval($this->request['status']);
-        $dataRange      = empty($this->request['daterangee']) ? array() : explode(",", $this->request['daterangee']);
+        $dataRange      = empty($this->request['daterange']) ? array() : explode(",", $this->request['daterange']);
 
         $pn = ($pn-1) * $rn;
 
@@ -33,14 +33,14 @@ class Service_Page_Mock_Exam_Lists extends Zy_Core_Service{
         }          
         
         if ($studentUid > 0) {
-            $studentExams = $serviceExam->getExamsBySuid(array($studentUid));
+            $studentExams = $serviceExam->getExamsBySuid($studentUid);
             $examIds = Zy_Helper_Utils::arrayInt($studentExams, "exam_id");
             !empty($examIds) && $conds[] = sprintf("id in (%s)", implode(",",$examIds));
         }
 
         if (!empty($dataRange)) {
-            $conds[] = sprintf("create_time >= %d", intval($dataRange[0]));
-            $conds[] = sprintf("create_time <= %d", intval($dataRange[1]) + 1);
+            $conds[] = sprintf("start_time >= %d", intval($dataRange[0]));
+            $conds[] = sprintf("start_time < %d", intval($dataRange[1]));
         }
 
         $arrAppends[] = "limit {$pn} , {$rn}";
@@ -51,7 +51,6 @@ class Service_Page_Mock_Exam_Lists extends Zy_Core_Service{
         }
 
         $lists = $this->formatDefault($lists);
-
         $total = $serviceExam->getTotalByConds($conds);
         return array(
             'rows' => $lists,
@@ -86,8 +85,7 @@ class Service_Page_Mock_Exam_Lists extends Zy_Core_Service{
             $item["student_cnt"] = empty($examMaps[$item["id"]]) ? 0 : count($examMaps[$item["id"]]);
             $item["expire_time"] = $item["expire_time"] . "分钟";
             $item["total_question"] = $item["total_question"];
-            $item["start_end"] = sprintf("%s~%s", date("Y年m月d日 H:i:s", $item["start_time"]), date("Y年m月d日 H:i:s", $item["end_time"]));
-            
+            $item["start_end"] = sprintf("%s~%s", date("m月d日 H:i", $item["start_time"]), date("m月d日 H:i", $item["end_time"]));
             $item["paper_name"] = empty($paperInfos[$item["pid"]]["title"]) ? "-" : $paperInfos[$item["pid"]]["title"]; 
             $item["teacher_name"] = empty($userInfos[$item["teacher_uid"]]["nickname"]) ? "-" : $userInfos[$item["teacher_uid"]]["nickname"];
             $item["operator_name"] = empty($userInfos[$item["operator"]]["nickname"]) ? "-" : $userInfos[$item["operator"]]["nickname"];

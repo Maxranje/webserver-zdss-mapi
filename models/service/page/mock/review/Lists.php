@@ -14,7 +14,7 @@ class Service_Page_Mock_Review_Lists extends Zy_Core_Service{
         $teacherUid     = empty($this->request['teacher_uid']) ? 0 : intval($this->request['teacher_uid']);
         $studentUid     = empty($this->request['student_uid']) ? 0 : intval($this->request['student_uid']);
         $status         = empty($this->request['status']) ? 0 : intval($this->request['status']);
-        $dataRange      = empty($this->request['daterangee']) ? array() : explode(",", $this->request['daterangee']);
+        $dataRange      = empty($this->request['daterange']) ? array() : explode(",", $this->request['daterange']);
 
         $pn = ($pn-1) * $rn;
 
@@ -26,7 +26,7 @@ class Service_Page_Mock_Review_Lists extends Zy_Core_Service{
 
         $examIds = array();
         if ($teacherUid > 0) {
-            $teacherExam = $serviceExam->getExamByTeacherUids(array($teacherUid));
+            $teacherExam = $serviceExam->getExamByTeacherUid($teacherUid);
             $tmpExamIds = Zy_Helper_Utils::arrayInt($teacherExam, "id");
             if (empty($tmpExamIds)) {
                 return array();
@@ -39,7 +39,7 @@ class Service_Page_Mock_Review_Lists extends Zy_Core_Service{
             if (empty($examInfo)) {
                 return array();
             }
-            $examIds = array($examInfo['id']);
+            $examIds = array_merge($examIds, array($examInfo['id']));
         }
         
         if (in_array($status, [
@@ -67,8 +67,8 @@ class Service_Page_Mock_Review_Lists extends Zy_Core_Service{
         }
 
         if (!empty($dataRange)) {
-            $conds[] = sprintf("update_time >= %d", intval($dataRange[0]));
-            $conds[] = sprintf("update_time <= %d", intval($dataRange[1]) + 1);
+            $conds[] = sprintf("start_time >= %d", intval($dataRange[0]));
+            $conds[] = sprintf("start_time < %d", intval($dataRange[1]));
         }
 
         $arrAppends[] = "limit {$pn} , {$rn}";
@@ -79,7 +79,6 @@ class Service_Page_Mock_Review_Lists extends Zy_Core_Service{
         }
 
         $lists = $this->formatDefault($lists);
-
         $total = $serviceExam->getStudentTotalByConds($conds);
         return array(
             'rows' => $lists,

@@ -34,6 +34,11 @@ class Service_Page_Mock_Exam_Review extends Zy_Core_Service{
         if ($studentExam["status"] == Service_Data_Exam::EXAM_STUDENT_STATUS_PENDING) {
             throw new Zy_Core_Exception(405, "操作失败, 考生未开始考试");
         }
+        $ext = json_decode($studentExam["ext"], true);
+        if ($studentExam["status"] == Service_Data_Exam::EXAM_STUDENT_STATUS_TERMINATED && 
+            !empty($ext["last_status"]) && $ext["last_status"] == Service_Data_Exam::EXAM_STUDENT_STATUS_TERMINATED) {
+            throw new Zy_Core_Exception(405, "加载失败, 考生未作答");
+        }
         $pid = intval($studentExam["pid"]);
 
         // 获取考生信息
@@ -65,7 +70,6 @@ class Service_Page_Mock_Exam_Review extends Zy_Core_Service{
         );
 
         $panel = $this->format($ret, $params, $isReview);
-        
         return $panel;
     }
 
@@ -123,7 +127,7 @@ class Service_Page_Mock_Exam_Review extends Zy_Core_Service{
         );
 
 
-        $ret[1]["body"] = $this->formatQuestionAnswerDetail($questionData, $isReview, $params["student_exam"]["status"]);
+        $ret[1]["body"] = $this->formatQuestionAnswerDetail($questionData, $isReview, $params);
         return $ret;
     } 
 

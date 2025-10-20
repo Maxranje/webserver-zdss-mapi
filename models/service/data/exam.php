@@ -67,16 +67,15 @@ class Service_Data_Exam {
         return $data;
     }
 
-    public function getExamByTeacherUids ($uids) {
+    public function getExamByTeacherUid ($uid) {
         $arrConds = array(
-            sprintf("teacher_uid in (%s)", implode(",", $uids))
+            "teacher_uid" => $uid,
         );
 
         $data = $this->daoExam->getListByConds($arrConds, $this->daoExam->arrFieldsMap);
         if (empty($data)) {
             return array();
         }
-
         return $data;
     }    
 
@@ -304,7 +303,7 @@ class Service_Data_Exam {
         // 优先创建试卷,
         $daoPaper = new Dao_Paper();
         $paperProfile = array(
-            "title" => sprintf("【%s】%s定向模考", date("m.d"), $userInfo["nickname"]),
+            "title" => sprintf("【%s-】%s定向模考", date("m.d"), mt_rand(111, 999),$userInfo["nickname"]),
             "type" => $paper["type"],
             "frequency" => 1,
             "total_score" => $paper["total_score"],
@@ -312,6 +311,7 @@ class Service_Data_Exam {
             "operator" => OPERATOR,
             "update_time" => time(),
             "create_time" => time(),   
+            "ext" => json_encode(array("is_reward" => 1)),
         );
         $ret = $daoPaper->insertRecords($paperProfile);        
         if ($ret ==false) {
@@ -358,6 +358,7 @@ class Service_Data_Exam {
             "operator" => OPERATOR,
             "update_time" => time(),
             "create_time" => time(),
+            "ext" => json_encode(array("is_reward" => 1)),
         );
         $ret = $this->daoExam->insertRecords($examProfile);
         if ($ret == false) {
@@ -643,6 +644,10 @@ class Service_Data_Exam {
         $conds = array(
             "exam_id" => $examId,
             "student_uid" => $studentUid,
+            sprintf("status in (%s)", implode(",", [
+                self::EXAM_STUDENT_STATUS_ONGOING, 
+                self::EXAM_STUDENT_STATUS_PENDING
+            ]))
         );
         $profile = array(
             "status" => self::EXAM_STUDENT_STATUS_TERMINATED,

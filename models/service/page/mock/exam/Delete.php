@@ -7,6 +7,10 @@ class Service_Page_Mock_Exam_Delete extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
+        if (!$this->isModeAble(Service_Data_Roles::ROLE_MODE_MOCK_DONE)) {
+            throw new Zy_Core_Exception(405, "无权限操作");
+        }
+
         $examId = empty($this->request['exam_id']) ? 0 : intval($this->request['exam_id']);
         if ($examId <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 入参不全");

@@ -1,6 +1,6 @@
 {
     "type": "page",
-    "title": "考试列表",
+    "title": "批改列表",
     "body": {
         "type": "crud",
         "id": "exam_review_lists",
@@ -68,7 +68,7 @@
                             "value": "4"
                         },
                         {
-                            "label": "待批改",
+                            "label": "批改中",
                             "value": "7"
                         },
                         {
@@ -176,7 +176,7 @@
                 "map": {
                     "8": "<span class='label label-default'>结束</span>",
                     "7": "<span class='label label-info'>批改中</span>",
-                    "4": "<span class='label label-warning'>强制结束, 待批改</span>",
+                    "4": "<span class='label label-warning'>强制结束</span>",
                     "2": "<span class='label label-warning'>已交卷, 待批改</span>"
                 }
             },

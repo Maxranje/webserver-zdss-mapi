@@ -80,10 +80,10 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         if (empty($lists)) {
             return array();
         }
-        $lists = $this->formatBase($lists);
         if ($isSelect) {
             return $this->formatSelect($lists, $pid);
-        }
+        }        
+        $lists = $this->formatBase($lists);
         $total = $serviceQuestion->getTotalByConds($conds);
         return array(
             'rows' => $lists,
@@ -128,7 +128,7 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
             $sourceInfos = array_column($sourceInfos, null, "id");
         }        
 
-        // 看看试题有没有考过试
+        // 看看试题背试卷录入情况
         $serviceData = new Service_Data_Paper();
         $paperInfos = $serviceData->getPaperIdsByQids($questionQids, true);
 
@@ -147,9 +147,7 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
             $tmp["operator"]        = empty($userInfos[$v["operator"]]["nickname"]) ? "" : $userInfos[$v["operator"]]["nickname"];
             $tmp["update_time"]     = date("Y-m-d", $v["update_time"]);
             $tmp["frequency"]       = empty($paperInfos[$v['qid']]) ? 0 : intval($paperInfos[$v['qid']]);
-            $tmp["tags"]            = array();
             $tmp['tag_list']        = array();
-            $tmp['sources']         = array();
             $tmp['source_list']     = array();
 
             // 标签
@@ -158,10 +156,6 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
                     if (empty($tagInfos[$tid]["title"])) {
                         continue;
                     }
-                    $tmp["tags"][] = array(
-                        "title" => $tagInfos[$tid]["title"],
-                        "description" => empty($tagInfos[$tid]["description"]) ? "" : $tagInfos[$tid]["description"],
-                    );  
                     $tmp['tag_list'][] = $tagInfos[$tid]["title"];
                 }
             }            
@@ -172,9 +166,7 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
                     if (empty($sourceInfos[$sid]["name"])) {
                         continue;
                     }
-                    $tmp["sources"][] = array(
-                        "name" => $sourceInfos[$sid]["name"],
-                    );  
+                    $tmp["source_list"][] = $sourceInfos[$sid]["name"];  
                 }
             }            
 

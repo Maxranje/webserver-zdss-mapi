@@ -16,7 +16,7 @@ class Service_Page_Mock_Paper_Updatequestion extends Zy_Core_Service{
         } 
 
         if ($score <= 0 || $score > 100) {
-            throw new Zy_Core_Exception(405, "操作失败, 分值必须在1到99之间");
+            throw new Zy_Core_Exception(405, "操作失败, 分值必须在1到100之间");
         }
 
         $servicePaper = new Service_Data_Paper();
@@ -29,16 +29,15 @@ class Service_Page_Mock_Paper_Updatequestion extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 已参与模考试卷不允许改变试题分数, 会影响已考试考生最终成绩");
         }
 
-        $questions = $servicePaper->getPaperQuestions($pid);
-        $questions = array_column($questions, null, "qid");
-        if (empty($questions[$qid]["id"])) {
+        $question = $servicePaper->getPaperSingleQuestion($pid, $qid);
+        if (empty($question)) {
             throw new Zy_Core_Exception(405, "操作失败, 试题关联不存在或已被从试卷中摘除");
         }
-        if ($questions[$qid]["score"] == $score) {
+        if ($question["score"] == $score) {
             return array();
         }
 
-        $ret = $servicePaper->updateQuestionScore($questions[$qid]['id'], $score);
+        $ret = $servicePaper->updateQuestionScore($question['id'], $score);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "修改失败, 请重试");
         }

@@ -43,6 +43,9 @@ class Service_Page_Mock_Exam_Update extends Zy_Core_Service{
         if ($endTime <= $startTime ) {
             throw new Zy_Core_Exception(405, "操作失败, 日期时间范围选定不正确!");
         }
+        if ($endTime - $startTime > 7*86400) {
+            throw new Zy_Core_Exception(405, "操作失败, 参考时间在7天以内");
+        }        
 
         if ($expireTime < 10 || $expireTime > 240) {
             throw new Zy_Core_Exception(405, "操作失败, 时长必须要在10分钟到240分钟之间");
