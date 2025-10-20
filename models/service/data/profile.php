@@ -22,6 +22,9 @@ class Service_Data_Profile {
     const REFUND            = 2;  // 这是退款
     const RENEW             = 3;  // 名字有问题, 这个是第一次充值
 
+    const STUDENT_MOCK      = 1;
+    const STUDENT_NO_MOCK   = 2;
+
     public function __construct() {
         $this->daoUser = new Dao_User () ;
     }
@@ -340,7 +343,8 @@ class Service_Data_Profile {
             $userInfo['type'],
             $userInfo['pages'],
             $userInfo['mocks'],
-            $userInfo['modes']
+            $userInfo['modes'],
+            $userInfo["is_mock"],
         );
     }
 

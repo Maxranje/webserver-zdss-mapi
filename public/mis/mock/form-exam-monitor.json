@@ -29,7 +29,7 @@
                             },
                             {
                                 "label": "题数",
-                                "content": "<span class='text-black font-black ml-2'>${exam.question_cnt}</span>"
+                                "content": "<span class='text-black font-black ml-2'>${exam.total_question}</span>"
                             },
                             {
                                 "label": "类型",
@@ -43,31 +43,12 @@
                         ]
                     },
                     {
-                        "type": "panel",
-                        "title": "",
-                        "className": "border-solid border-gray-200 shadow-sm rounded bg-white mt-5",
-                        "visibleOn": "${charts.xAxis}",
-                        "body": {
-                            "type": "chart",
-                            "config": {
-                                "legend": {
-                                    "selectedMode": false
-                                },
-                                "calculable": true,
-                                "xAxis": [
-                                    {
-                                        "type": "category",
-                                        "data": "${charts.xAxis || []}"
-                                    }
-                                ],
-                                "yAxis": [
-                                    {
-                                        "type": "value"
-                                    }
-                                ],
-                                "series": "${charts.serise}"
-                            }
-                        }
+                        "type": "alert",
+                        "level": "warning",
+                        "showIcon": true,
+                        "hiddenOn": "${exam.paper_type == 1}",
+                        "className": "mt-5 shadow p-4 rounded-md font-black",
+                        "body": "评估类型考试考题随考生客观题准确度变化而变化, 每人考题不尽相同, 以考生实际作答后数据为准!"
                     },
                     {
                         "type": "crud",
@@ -76,11 +57,17 @@
                         "mode": "cards",
                         "columnsCount": 1,
                         "card": {
-                            "className": "border-solid border-gray-100 shadow p-4 rounded-md -mb-2 ",
+                            "className": "border-solid border-gray-100 shadow p-4 rounded-md  ",
                             "header": {
                                 "className": "bg-white",
                                 "title": "$nickname",
-                                "subTitle": "$school / $graduate"
+                                "titleClassName": "text-bold text-black text-xl",
+                                "subTitle": "UID: ${student_uid}",
+                                "avatarText": "${status_info}",
+                                "avatarTextClassName": "flex justify-center items-center text-sm",
+                                "avatarTextBackground": [
+                                    "${status_color}"
+                                ]
                             },
                             "body": [
                                 {
@@ -94,89 +81,20 @@
                             ],
                             "toolbar": [
                                 {
-                                    "type": "tpl",
-                                    "visibleOn": "status == 2",
-                                    "tpl": "<span class=' label label-success mr-2'>已完成</span>"
-                                },
-                                {
-                                    "type": "tpl",
-                                    "visibleOn": "status == 4",
-                                    "tpl": "<span class=' label label-default mr-2'>已被强制结束</span>"
-                                },
-                                {
                                     "type": "button",
-                                    "label": "视图",
-                                    "icon": "fa fa-location-arrow",
+                                    "label": "预览",
+                                    "icon": "fa fa-file-text-o",
+                                    "visibleOn": "status != 1",
+                                    "disabledOn": "answer_cnt <= 0",
                                     "className": "text-xs text-black mr-2",
                                     "actionType": "dialog",
                                     "dialog": {
-                                        "actions": [],
                                         "size": "lg",
-                                        "title": "视图",
+                                        "title": "预览",
                                         "body": {
-                                            "type": "crud",
-                                            "api": {
-                                                "method": "post",
-                                                "url": "/mapi/mock/exam_student?exam_id=${exam.id}&student_uid=$student_uid",
-                                                "dataType": "form"
-                                            },
-                                            "perPage": 20,
-                                            "id": "exam_student_answer_lists",
-                                            "columns": [
-                                                {
-                                                    "name": "answer_list_qid",
-                                                    "label": "QuestionID",
-                                                    "type": "text",
-                                                    "toggled": true
-                                                },
-                                                {
-                                                    "name": "answer_list_coll",
-                                                    "label": "ParentID",
-                                                    "type": "text",
-                                                    "toggled": true
-                                                },
-                                                {
-                                                    "name": "answer_list_description",
-                                                    "label": "题目描述",
-                                                    "type": "text",
-                                                    "toggled": true
-                                                },
-                                                {
-                                                    "name": "answer_list_type",
-                                                    "label": "考题类型",
-                                                    "type": "text",
-                                                    "toggled": true
-                                                },
-                                                {
-                                                    "name": "answer_list_level",
-                                                    "label": "考题难度",
-                                                    "type": "text",
-                                                    "toggled": true
-                                                },
-                                                {
-                                                    "name": "answer_list_answer_id",
-                                                    "label": "考生客观题选项ID",
-                                                    "type": "text",
-                                                    "toggled": true
-                                                },
-                                                {
-                                                    "name": "answer_list_answer_content",
-                                                    "label": "考生主观题答案",
-                                                    "type": "text",
-                                                    "toggled": true
-                                                },
-                                                {
-                                                    "name": "answer_list_is_correct",
-                                                    "label": "是否正确",
-                                                    "type": "status"
-                                                },
-                                                {
-                                                    "name": "answer_list_spend_time",
-                                                    "label": "作答时间",
-                                                    "type": "text",
-                                                    "toggled": true
-                                                }
-                                            ]
+                                            "type": "service",
+                                            "initFetch": false,
+                                            "schemaApi": "/mapi/mock/exam_review?exam_id=$exam_id&student_uid=$student_uid"
                                         }
                                     }
                                 },
@@ -188,7 +106,7 @@
                                     "className": "text-xs text-black mr-2",
                                     "actionType": "ajax",
                                     "reload": "monitor-service",
-                                    "confirmText": "您确认要强制结束么? 强制结束会影响学员模考, 请非常慎重",
+                                    "confirmText": "您确认要强制结束么? 强制结束会影响考生模考, 请非常慎重",
                                     "api": {
                                         "method": "get",
                                         "url": "/mapi/mock/exam_end?exam_id=${exam.id}&student_uid=$student_uid"

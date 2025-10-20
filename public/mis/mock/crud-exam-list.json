@@ -1,5 +1,6 @@
 {
     "type": "page",
+    "title": "考试列表",
     "body": {
         "type": "crud",
         "id": "exam_lists",
@@ -25,7 +26,7 @@
                     "name": "pid",
                     "searchable": true,
                     "onlyLeaf": true,
-                    "label": "试卷",
+                    "label": "考试试卷",
                     "size": "md",
                     "source": "/mapi/mock/paper_lists?is_select=1"
                 },
@@ -42,7 +43,7 @@
                     "name": "student_uid",
                     "searchable": true,
                     "onlyLeaf": true,
-                    "label": "学员",
+                    "label": "考生",
                     "source": "/mapi/student/lists?is_select=1&is_mock=1"
                 },
                 {
@@ -73,7 +74,7 @@
                     "type": "input-date-range",
                     "name": "daterange",
                     "inline": true,
-                    "label": "考期"
+                    "label": "考试时间"
                 },
                 {
                     "type": "submit",
@@ -117,13 +118,13 @@
             },
             {
                 "name": "indentify",
-                "label": "标识",
+                "label": "考试标识",
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "paper_name",
-                "label": "试卷名称",
+                "label": "考试试卷",
                 "type": "text",
                 "toggled": true
             },
@@ -135,36 +136,42 @@
             },
             {
                 "name": "paper_type",
-                "label": "类型",
+                "label": "考试类型",
                 "type": "mapping",
                 "map": {
-                    "1": "<span class='label bg-gray-300'>常规</span>",
-                    "2": "<span class='label label-info'>入学评估</span>",
-                    "3": "<span class='label label-success'>单词本</span>"
+                    "1": "<span class='label label-success'>常规</span>",
+                    "2": "<span class='label label-info'>评估</span>"
                 }
             },
             {
                 "name": "start_end",
-                "label": "起止时间",
-                "remark": "起止时间是允许学员参加考试时间,而非考试时长",
+                "label": "考试时间",
+                "remark": "起止时间是允许考生参加考试时间,而非考试时长",
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "expire_time",
-                "label": "时长",
+                "label": "考试时长",
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "student_cnt",
-                "label": "考生数",
+                "label": "考生数量",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "total_question",
+                "label": "最大考题数",
+                "remark": "评估考试实际考题数会比该值要小",
                 "type": "text",
                 "toggled": true
             },
             {
                 "name": "status",
-                "label": "状态",
+                "label": "考试状态",
                 "type": "mapping",
                 "map": {
                     "5": "<span class='label label-info'>进行中</span>",
@@ -210,9 +217,16 @@
                     },
                     {
                         "type": "button",
-                        "label": "监控",
+                        "label": "批改",
                         "actionType": "link",
                         "level": "primary",
+                        "link": "/exam/reviewlists?exam_indentify=$indentify"
+                    },
+                    {
+                        "type": "button",
+                        "label": "监控",
+                        "actionType": "link",
+                        "level": "warning",
                         "link": "/exam/monitor?exam_id=$id"
                     },
                     {
@@ -221,7 +235,7 @@
                         "label": "结束",
                         "level": "danger",
                         "disabledOn": "(this.is_terminated != 1 && this.status == 5) || (this.status == 2) || (this.status  == 4)",
-                        "confirmText": "如果全员已交卷, 则会修改考试状态, 正常结束当前考试, 如果有学员未提交, 则会强行结束考试",
+                        "confirmText": "如果全员已交卷, 则会修改考试状态, 正常结束当前考试, 如果有考生未提交, 则会强行结束考试",
                         "api": {
                             "method": "get",
                             "url": "/mapi/mock/exam_end?exam_id=$id"

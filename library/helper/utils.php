@@ -64,14 +64,19 @@ class Zy_Helper_Utils {
      */
     public static function formatDurationForTime($secondParam) {
         $durationSec = (int) $secondParam;
+        $day = floor($durationSec / 86400);
+        $hourSecond = $durationSec - $day * 86400;
         $hour = floor($durationSec / 3600);
         $hourSecond = $durationSec - $hour * 3600;
         $minute = floor($hourSecond / 60);
         $hourSecond = $durationSec - $minute * 60;
         $second = $hourSecond;
         $duration = '';
+        if ($day > 0) {
+            $duration = $day . ' d ';
+        }
         if ($hour > 0) {
-            $duration = $hour . ' h ';
+            $duration .= $hour . ' h ';
         }
         if ($minute > 0) {
             $duration .= $minute . ' m ';

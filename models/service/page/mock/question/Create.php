@@ -10,11 +10,10 @@ class Service_Page_Mock_Question_Create extends Zy_Core_Service{
         $type       = empty($this->request['single_question_type']) ? 0 : intval($this->request['single_question_type']);
         $level      = empty($this->request['single_question_level']) ? 0 : intval($this->request['single_question_level']);
         $score      = empty($this->request['single_question_score']) ? 0 : intval($this->request['single_question_score']);
-        $subjectId  = empty($this->request['single_question_subject_id']) ? 0 : intval($this->request['single_question_subject_id']);
+        $sourceIds  = empty($this->request['single_question_source_ids']) ? array() : explode(",",$this->request['single_question_source_ids']);
         $tagIds     = empty($this->request['single_question_tag_ids']) ? array() : explode(",",$this->request['single_question_tag_ids']);
         $description= empty($this->request['single_question_description']) ? "" : trim($this->request['single_question_description']);
         $content    = empty($this->request['single_question_content']) ? "" : trim($this->request['single_question_content']);        
-        $audio      = empty($this->request['single_question_audio']) ? "" : trim($this->request['single_question_audio']);
         $radio      = empty($this->request['single_answer_combo_radio']) ? array() : $this->request['single_answer_combo_radio'];
         $checkbox   = empty($this->request['single_answer_combo_checkbox']) ? array() : $this->request['single_answer_combo_checkbox'];
         $check      = empty($this->request['single_answer_combo_check']) ? array() : $this->request['single_answer_combo_check'];
@@ -28,11 +27,10 @@ class Service_Page_Mock_Question_Create extends Zy_Core_Service{
                     "type" => $type,
                     "level" => $level,
                     "score" => $score,
-                    "subject_id" => $subjectId,
+                    "source_ids" => $sourceIds,
                     "tag_ids" => $tagIds,
                     "description" => $description,
                     "content" => $content,
-                    "audio" => $audio,
                     "radio" => $radio,
                     "checkbox" => $checkbox,
                     "check" => $check,
@@ -42,6 +40,7 @@ class Service_Page_Mock_Question_Create extends Zy_Core_Service{
             ),
             "pre_meta" => array(
                 "meta" => $meta, 
+                "meta_type" => 1,
                 "is_group" => false, 
             ),
         );

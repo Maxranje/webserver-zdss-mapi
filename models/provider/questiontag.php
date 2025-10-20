@@ -9,6 +9,7 @@ class Dao_QuestionTag extends Zy_Core_Dao {
             "id" => "id",
             "qid" => "qid",
             "tag_id" => "tag_id",
+            "level" => "level",
             "update_time" => "update_time",
             "ext" => "ext",
         );

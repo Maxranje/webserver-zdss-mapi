@@ -13,21 +13,11 @@ class Service_Page_Mock_Paper_Lists extends Zy_Core_Service{
         $type           = empty($this->request['type']) ? 0 : intval($this->request['type']);
         $qids           = empty($this->request['qids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['qids']));
         $pids           = empty($this->request['pids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['pids']));
-        $sourceIds      = empty($this->request['source_ids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['source_ids']));
-        $subjectIds     = empty($this->request['subject_ids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['subject_ids']));
         $isSelect       = empty($this->request['is_select']) ? false : true;
+        $isType         = empty($this->request['is_type']) ? false : true;
         $pn             = ($pn-1) * $rn;        
 
         $conds = array();
-        // sourceid找pid
-        if (count($sourceIds) > 0) {
-            $serviceData = new Service_Data_Source();
-            $paperIds = $serviceData->getPaperBySourceIds($sourceIds);
-            if (!empty($paperIds)) {
-                $pids = array_intersect($paperIds, $pids);
-            }
-        }
-
         // question找paper
         $servicePaper = new Service_Data_Paper();        
         if (count($qids) > 0) {
@@ -38,11 +28,6 @@ class Service_Page_Mock_Paper_Lists extends Zy_Core_Service{
         }    
         if (count($pids) > 0) {
             $conds[] = sprintf("pid in (%s)", implode(",", $pids));
-        }            
-
-        // subjectid找pid
-        if (count($subjectIds) > 0) {
-            $conds[] = sprintf("subject_id in (%s)", implode(",", $subjectIds));
         }
         if (!empty($title)) {
             $conds[] = "title like '%" .$title. "%'";
@@ -62,7 +47,7 @@ class Service_Page_Mock_Paper_Lists extends Zy_Core_Service{
             return array();
         }
         if ($isSelect) {
-            return $this->formatSelect($lists);
+            return $this->formatSelect($lists,$isType);
         }
         $lists = $this->formatBase($lists);
         $total = $servicePaper->getTotalByConds($conds);
@@ -74,45 +59,29 @@ class Service_Page_Mock_Paper_Lists extends Zy_Core_Service{
 
     // 格式化
     private function formatBase ($lists) { 
-        $pids = Zy_Helper_Utils::arrayInt($lists, "pid");
-
-        $serviceData = new Service_Data_Paper();
-        $sourceInfos = $serviceData->getSourceByPaperIds($pids);
-
         $result = array();
         foreach ($lists as $v) {
-            $sourceInfo = empty($sourceInfos[$v["pid"]]) ? array() :$sourceInfos[$v["pid"]];
-
             $tmp = array();
             $tmp["pid"]             = $v["pid"];
             $tmp["title"]           = $v["title"];
             $tmp["type"]            = $v["type"];
             $tmp["bg_img"]          = sprintf("/public/mis/img/paper/paper%d.png", ($v["pid"] % 6) + 1);
-            $tmp["weight_score"]    = $v["weight_score"];
             $tmp["frequency"]       = $v["frequency"];
             $tmp["remark"]          = $v["remark"];
             $tmp["sub_title"]       = sprintf("已关联%d次模考", $v["frequency"]);
-            $tmp["subject_id"]      = $v["subject_id"] <= 0 ? "" : $v["subject_id"]; 
-            $tmp["source_ids"]      = Zy_Helper_Utils::arrayInt($sourceInfo, "source_id");
             $result[] = $tmp;
         }
         return $result;
     }
 
-    private function formatSelect($lists, $qid = 0) {
-        $pids = array();
-        if (!$qid > 0) {
-            $serviceData = new Service_Data_Paper();
-            $pids = $serviceData->getPaperIdsByQids(array($qid));
-        }
-        
+    private function formatSelect($lists, $isType = false) {
         $options = array();
         foreach ($lists as $item) {
             $options[] = array(
                 'label' => $item["title"],
-                'value' => $item['pid'], 
+                'value' => $isType ? sprintf("%s_%s", $item["pid"], $item["type"]) : $item['pid'], 
             );
         }
-        return array('options' => array_values($options), "value" => implode(",",$pids));
+        return array('options' => array_values($options));
     } 
 }

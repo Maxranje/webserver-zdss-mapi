@@ -1,0 +1,407 @@
+{
+    "type": "page",
+    "body": [
+        {
+            "type": "service",
+            "api": "/mapi/mock/wrong_student?student_uid=$student_uid",
+            "body": [
+                {
+                    "type": "tpl",
+                    "tpl": "<h2 style='font-weight:bold; margin-bottom:1.5rem;'>${student_name} 近10场模考错题统计</h2>"
+                },
+                {
+                    "type": "grid",
+                    "gap": "md",
+                    "align": "between",
+                    "columns": [
+                        {
+                            "md": 6,
+                            "body": [
+                                {
+                                    "type": "panel",
+                                    "title": "",
+                                    "className": "border-solid border-gray-200 p-4 rounded-xl",
+                                    "body": {
+                                        "type": "chart",
+                                        "trackExpression": "${errTagsPie}",
+                                        "config": {
+                                            "title": {
+                                                "text": "错题标签分布",
+                                                "left": "center"
+                                            },
+                                            "tooltip": {
+                                                "trigger": "item"
+                                            },
+                                            "legend": {
+                                                "orient": "vertical",
+                                                "left": "left",
+                                                "type": "scroll"
+                                            },
+                                            "series": [
+                                                {
+                                                    "name": "分布",
+                                                    "type": "pie",
+                                                    "radius": [
+                                                        "40%",
+                                                        "70%"
+                                                    ],
+                                                    "avoidLabelOverlap": false,
+                                                    "data": "${errTagsPie || []}",
+                                                    "itemStyle": {
+                                                        "borderRadius": 10,
+                                                        "borderColor": "#fff",
+                                                        "borderWidth": 2
+                                                    },
+                                                    "label": {
+                                                        "show": false,
+                                                        "position": "center"
+                                                    },
+                                                    "emphasis": {
+                                                        "label": {
+                                                            "show": true,
+                                                            "fontSize": 40,
+                                                            "fontWeight": "bold"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "md": 6,
+                            "body": [
+                                {
+                                    "type": "panel",
+                                    "title": "",
+                                    "className": "border-solid border-gray-200 p-4 rounded-xl",
+                                    "body": {
+                                        "type": "chart",
+                                        "trackExpression": "${alytrendChat}",
+                                        "config": {
+                                            "title": {
+                                                "text": "考试趋势分析"
+                                            },
+                                            "tooltip": {
+                                                "trigger": "axis",
+                                                "axisPointer": {
+                                                    "type": "cross",
+                                                    "crossStyle": {
+                                                        "color": "#999"
+                                                    }
+                                                }
+                                            },
+                                            "legend": {
+                                                "data": [
+                                                    "得分",
+                                                    "正确率"
+                                                ],
+                                                "right": 20
+                                            },
+                                            "calculable": true,
+                                            "xAxis": [
+                                                {
+                                                    "type": "category",
+                                                    "data": "${alytrendChat.labels || []}",
+                                                    "axisPointer": {
+                                                        "type": "shadow"
+                                                    },
+                                                    "axisLabel": {
+                                                        "rotate": 45,
+                                                        "interval": 0
+                                                    }
+                                                }
+                                            ],
+                                            "yAxis": [
+                                                {
+                                                    "type": "value",
+                                                    "name": "得分",
+                                                    "min": 0,
+                                                    "max": 100,
+                                                    "interval": 20
+                                                },
+                                                {
+                                                    "type": "value",
+                                                    "name": "正确率",
+                                                    "min": 0,
+                                                    "max": 100,
+                                                    "interval": 20,
+                                                    "axisLabel": {},
+                                                    "splitLine": {
+                                                        "show": false
+                                                    }
+                                                }
+                                            ],
+                                            "series": [
+                                                {
+                                                    "name": "得分",
+                                                    "type": "line",
+                                                    "smooth": true,
+                                                    "symbol": "circle",
+                                                    "symbolSize": 8,
+                                                    "yAxisIndex": 0,
+                                                    "data": "${alytrendChat.score || []}",
+                                                    "lineStyle": {
+                                                        "color": "#409eff",
+                                                        "width": 3
+                                                    },
+                                                    "itemStyle": {
+                                                        "color": "#409eff",
+                                                        "borderColor": "#fff",
+                                                        "borderWidth": 2
+                                                    },
+                                                    "areaStyle": {
+                                                        "color": {
+                                                            "type": "linear",
+                                                            "x": 0,
+                                                            "y": 0,
+                                                            "x2": 0,
+                                                            "y2": 1,
+                                                            "colorStops": [
+                                                                {
+                                                                    "offset": 0,
+                                                                    "color": "rgba(64, 158, 255, 0.3)"
+                                                                },
+                                                                {
+                                                                    "offset": 1,
+                                                                    "color": "rgba(64, 158, 255, 0.05)"
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "name": "正确率",
+                                                    "type": "line",
+                                                    "smooth": true,
+                                                    "symbol": "circle",
+                                                    "symbolSize": 8,
+                                                    "yAxisIndex": 1,
+                                                    "data": "${alytrendChat.accuracy || []}",
+                                                    "lineStyle": {
+                                                        "color": "#67c23a",
+                                                        "width": 3
+                                                    },
+                                                    "itemStyle": {
+                                                        "color": "#67c23a",
+                                                        "borderColor": "#fff",
+                                                        "borderWidth": 2
+                                                    },
+                                                    "areaStyle": {
+                                                        "color": {
+                                                            "type": "linear",
+                                                            "x": 0,
+                                                            "y": 0,
+                                                            "x2": 0,
+                                                            "y2": 1,
+                                                            "colorStops": [
+                                                                {
+                                                                    "offset": 0,
+                                                                    "color": "rgba(103, 194, 58, 0.3)"
+                                                                },
+                                                                {
+                                                                    "offset": 1,
+                                                                    "color": "rgba(103, 194, 58, 0.05)"
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "panel",
+                    "className": "border-solid border-gray-200 rounded-xl border-4",
+                    "body": [
+                        {
+                            "type": "tpl",
+                            "tpl": "<h2 style='font-weight:bold; margin-bottom:1.5rem;'>高频错题标签</h2>"
+                        },
+                        {
+                            "type": "crud",
+                            "mode": "cards",
+                            "checkOnItemClick": true,
+                            "source": "${errTagsArr}",
+                            "bulkActions": [
+                                {
+                                    "type": "button",
+                                    "label": "查看错题集",
+                                    "level": "primary",
+                                    "onEvent": {
+                                        "click": {
+                                            "actions": [
+                                                {
+                                                    "actionType": "rebuild",
+                                                    "componentId": "wrong_question_detail",
+                                                    "args": {
+                                                        "tagIds": "${event.data.ids}"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "label": "圈定标签定向考试",
+                                    "level": "info",
+                                    "className": "border-solid border-gray-200 p-4 rounded",
+                                    "icon": "fa fa-plus-circle",
+                                    "onEvent": {
+                                        "click": {
+                                            "actions": [
+                                                {
+                                                    "actionType": "dialog",
+                                                    "dialog": {
+                                                        "title": "开启定向考试",
+                                                        "size": "lg",
+                                                        "body": [
+                                                            {
+                                                                "type": "form",
+                                                                "name": "reward_start_exam",
+                                                                "id": "reward_start_exam",
+                                                                "api": {
+                                                                    "method": "post",
+                                                                    "url": "/mapi/mock/exam_restart",
+                                                                    "dataType": "form"
+                                                                },
+                                                                "body": [
+                                                                    {
+                                                                        "type": "alert",
+                                                                        "level": "info",
+                                                                        "className": "p-2 mt-5 shadow rounded",
+                                                                        "showIcon": true,
+                                                                        "body": "根据圈定的标签, 对考生针对性进行模考, 来强化学习效果. 采用常规方式进行模考, 对应试卷不可编辑. 仅做记录使用"
+                                                                    },
+                                                                    {
+                                                                        "type": "hidden",
+                                                                        "name": "reward_tag_ids",
+                                                                        "id": "reward_tag_ids"
+                                                                    },
+                                                                    {
+                                                                        "type": "hidden",
+                                                                        "name": "student_uid"
+                                                                    },
+                                                                    {
+                                                                        "type": "input-date-range",
+                                                                        "name": "start_end",
+                                                                        "label": "考试期限",
+                                                                        "value": "today,+1weeks",
+                                                                        "size": "lg",
+                                                                        "required": true,
+                                                                        "desc": "允许考生在该时间范围内参加考试, 超过时间则关闭本次考试, 间隔不得超过7天"
+                                                                    },
+                                                                    {
+                                                                        "type": "input-number",
+                                                                        "name": "expire_time",
+                                                                        "label": "时长",
+                                                                        "step": 10,
+                                                                        "required": true,
+                                                                        "min": 10,
+                                                                        "max": 240,
+                                                                        "value": 60,
+                                                                        "showSteps": true,
+                                                                        "precision": 0,
+                                                                        "placeholder": "10到240之间,单位分钟",
+                                                                        "desc": "系统会圈定30道符合要求题目进行考试"
+                                                                    },
+                                                                    {
+                                                                        "label": "难度",
+                                                                        "type": "select",
+                                                                        "name": "level",
+                                                                        "desc": "不选则会尽可能靠近L2-L3进行出题, 其他级别也会有",
+                                                                        "multiple": true,
+                                                                        "options": [
+                                                                            {
+                                                                                "label": "LEVEL 1",
+                                                                                "value": "1"
+                                                                            },
+                                                                            {
+                                                                                "label": "LEVEL 2",
+                                                                                "value": "2"
+                                                                            },
+                                                                            {
+                                                                                "label": "LEVEL 3",
+                                                                                "value": "3"
+                                                                            },
+                                                                            {
+                                                                                "label": "LEVEL 4",
+                                                                                "value": "4"
+                                                                            },
+                                                                            {
+                                                                                "label": "LEVEL 5",
+                                                                                "value": "5"
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "type": "textarea",
+                                                                        "showCounter": true,
+                                                                        "maxLength": 100,
+                                                                        "name": "remark",
+                                                                        "label": "备注",
+                                                                        "desc": "限定100字内"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "actionType": "setValue",
+                                                    "componentId": "reward_start_exam",
+                                                    "args": {
+                                                        "value": {
+                                                            "reward_tag_ids": "${event.data.ids}"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ],
+                            "footerToolbar": [],
+                            "card": {
+                                "className": "border-solid border-blue-200 p-1 rounded-xl",
+                                "header": {
+                                    "title": "${name}",
+                                    "titleClassName": "font-black text-lg",
+                                    "description": "${value}次, 占比: ${rate}%",
+                                    "avatarText": "${index}",
+                                    "avatarTextBackground": [
+                                        "${bgColor}"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "panel",
+                    "className": "border-solid border-gray-200 rounded-xl",
+                    "body": [
+                        {
+                            "type": "tpl",
+                            "tpl": "<h2 style='font-weight:bold; margin-bottom:1.5rem;'>错题集</h2>"
+                        },
+                        {
+                            "type": "service",
+                            "id": "wrong_question_detail",
+                            "name": "wrong_question_detail",
+                            "schemaApi": "/mapi/mock/wrong_student?student_uid=$student_uid&tag_ids=$tagIds"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

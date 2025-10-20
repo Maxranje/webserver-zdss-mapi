@@ -25,7 +25,7 @@ class Service_Page_Mock_Exam_End extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 考试已完成或已强制结束, 请重试");
         }
                 
-        $students = $serviceExam->getStudentByExamIds(array($examId));
+        $students = $serviceExam->getStudentuidByExamIds(array($examId));
         $students = empty($students[$examId]) ? array() : $students[$examId];
         if (empty($students)) {
             throw new Zy_Core_Exception(405, "操作失败, 无法获取考生信息, 请重试");
@@ -50,7 +50,7 @@ class Service_Page_Mock_Exam_End extends Zy_Core_Service{
         // 循环, 判断是否所有人都已经结束
         $students = array_column($students, null, "student_uid");
         if (empty($students[$studentUid])) {
-            throw new Zy_Core_Exception(405, "操作失败, 考试中无关联当前学员, 请重试");
+            throw new Zy_Core_Exception(405, "操作失败, 考试中无关联当前考生, 请重试");
         }
         if ($students[$studentUid]["status"] == Service_Data_Exam::EXAM_STUDENT_STATUS_COMPLETE || 
             $students[$studentUid]["status"] == Service_Data_Exam::EXAM_STUDENT_STATUS_TERMINATED) {
@@ -58,7 +58,7 @@ class Service_Page_Mock_Exam_End extends Zy_Core_Service{
         }
 
         $serviceExam = new Service_Data_Exam();
-        return $serviceExam->studentEnd($exam["id"], $studentUid);
+        return $serviceExam->studentTerminatedEnd($exam["id"], $studentUid);
     }
 
     // 全体结束

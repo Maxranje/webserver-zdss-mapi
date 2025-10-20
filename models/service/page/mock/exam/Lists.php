@@ -33,8 +33,8 @@ class Service_Page_Mock_Exam_Lists extends Zy_Core_Service{
         }          
         
         if ($studentUid > 0) {
-            $examInfos = $serviceExam->getExamByStudentUids(array($studentUid));
-            $examIds = empty($examInfos[$studentUid]) ? array() : array_column($examInfos[$studentUid], "exam_id");
+            $studentExams = $serviceExam->getExamsBySuid(array($studentUid));
+            $examIds = Zy_Helper_Utils::arrayInt($studentExams, "exam_id");
             !empty($examIds) && $conds[] = sprintf("id in (%s)", implode(",",$examIds));
         }
 
@@ -76,7 +76,7 @@ class Service_Page_Mock_Exam_Lists extends Zy_Core_Service{
         $paperInfos = array_column($paperInfos, null, "pid");
 
         $serviceData = new Service_Data_Exam();
-        $examMaps = $serviceData->getStudentByExamIds($examIds);
+        $examMaps = $serviceData->getStudentsByExamId($examIds);
 
         $isModeDone = $this->isModeAble(Service_Data_Roles::ROLE_MODE_MOCK_DONE);
         
@@ -85,6 +85,7 @@ class Service_Page_Mock_Exam_Lists extends Zy_Core_Service{
             $item["is_terminated"] = $isModeDone || $item["teacher_uid"] == OPERATOR ? 1 : 0;
             $item["student_cnt"] = empty($examMaps[$item["id"]]) ? 0 : count($examMaps[$item["id"]]);
             $item["expire_time"] = $item["expire_time"] . "分钟";
+            $item["total_question"] = $item["total_question"];
             $item["start_end"] = sprintf("%s~%s", date("Y年m月d日 H:i:s", $item["start_time"]), date("Y年m月d日 H:i:s", $item["end_time"]));
             
             $item["paper_name"] = empty($paperInfos[$item["pid"]]["title"]) ? "-" : $paperInfos[$item["pid"]]["title"]; 

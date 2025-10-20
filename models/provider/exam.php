@@ -13,7 +13,7 @@ class Dao_Exam extends Zy_Core_Dao {
             "pid" => "pid",
             "paper_type" => "paper_type",
             "total_score" => "total_score",
-            "pass_score" => "pass_score",
+            "total_question" => "total_question",
             "start_time" => "start_time",
             "end_time" => "end_time",
             "expire_time" => "expire_time",

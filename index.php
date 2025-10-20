@@ -12,7 +12,6 @@ switch (ENV) {
 		error_reporting(-1);
 
         # reset path
-        define('LOGPATH',   BASEPATH . '../../../log');
         define('HOSTNAME',   "http://127.0.0.1:8060/");        
 		break;
 
@@ -21,7 +20,6 @@ switch (ENV) {
 		error_reporting (E_ERROR & E_USER_WARNING);
 
         # reset path
-        define('LOGPATH',   BASEPATH . '../log');
         define('HOSTNAME',  "http://zdss.cn/");        
 		break;
 

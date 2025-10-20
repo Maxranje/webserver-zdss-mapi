@@ -21,13 +21,29 @@
                                 {
                                     "type": "tree-select",
                                     "name": "pid",
-                                    "value": "${exam.pid || ''}",
+                                    "value": "${exam.pid_info || ''}",
                                     "onlyLeaf": true,
                                     "label": "试卷",
                                     "searchable": true,
                                     "required": true,
                                     "initiallyOpen": false,
-                                    "source": "/mapi/mock/paper_lists?is_select=1"
+                                    "source": "/mapi/mock/paper_lists?is_select=1&is_type=1",
+                                    "onEvent": {
+                                        "change": {
+                                            "actions": [
+                                                {
+                                                    "actionType": "show",
+                                                    "componentId": "assess_tips",
+                                                    "expression": "${SPLIT(event.data.value, '_')[1] == 2}"
+                                                },
+                                                {
+                                                    "actionType": "hidden",
+                                                    "componentId": "assess_tips",
+                                                    "expression": "${SPLIT(event.data.value, '_')[1] != 2}"
+                                                }
+                                            ]
+                                        }
+                                    }
                                 },
                                 {
                                     "type": "tree-select",
@@ -39,31 +55,40 @@
                                     "searchable": true,
                                     "initiallyOpen": false,
                                     "source": "/mapi/teacher/lists?is_select=1"
+                                },
+                                {
+                                    "type": "input-number",
+                                    "name": "expire_time",
+                                    "label": "时长",
+                                    "step": 10,
+                                    "required": true,
+                                    "min": 10,
+                                    "max": 240,
+                                    "showSteps": true,
+                                    "precision": 0,
+                                    "value": "${exam.expire_time || 60}",
+                                    "placeholder": "10到240之间,单位分钟"
                                 }
                             ]
                         },
                         {
-                            "type": "input-datetime-range",
+                            "type": "alert",
+                            "level": "warning",
+                            "className": "p-2 mt-5 shadow rounded",
+                            "name": "assess_tips",
+                            "id": "assess_tips",
+                            "hiddenOn": "${exam.paper_type != 2}",
+                            "showIcon": true,
+                            "body": "<div style='font-weight:bold;'>评估试卷考试中考题是根据学员客观题(选择/填空)正确度进行动态调整 </div><div>动态调整规则: 客观题(选择/填空)正确率>=0.75(10道题)即可提升难度 </div><div>考试结束标准: 最少完成10道题, 最多50道, 某难度停留<0.75 / 通过最高难度L5, </div><div style='font-weight:bold; color:black;'>!!!!请注意, 评估试卷各Level题目数量不足, 虽依然可以考试, 但会存在跳题或漏题情况, 该情况建议修改试卷为常规类型</div>"
+                        },
+                        {
+                            "type": "input-date-range",
                             "name": "start_end",
                             "value": "${exam.start_end || ''}",
                             "label": "考试期限",
                             "size": "md",
                             "required": true,
-                            "desc": "允许学员在该时间范围内参加考试, 超过时间则关闭本次考试, 间隔不得超过7天"
-                        },
-                        {
-                            "type": "input-number",
-                            "name": "expire_time",
-                            "label": "考试时长",
-                            "value": "${exam.expire_time || 60}",
-                            "step": 10,
-                            "required": true,
-                            "min": 10,
-                            "max": 240,
-                            "size": "md",
-                            "showSteps": true,
-                            "precision": 0,
-                            "desc": "当次考试时长, 10分钟到240分钟之间, 单位分钟"
+                            "desc": "允许考生在该时间范围内参加考试, 超过时间则关闭本次考试, 间隔不得超过7天"
                         },
                         {
                             "type": "textarea",
@@ -79,7 +104,7 @@
                 {
                     "type": "panel",
                     "className": "border-solid border-gray-100 shadow p-4 rounded-md mt-5 -mb-2 ",
-                    "title": "选择学员",
+                    "title": "选择考生",
                     "required": true,
                     "body": [
                         {

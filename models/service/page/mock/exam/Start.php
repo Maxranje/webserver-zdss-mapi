@@ -8,7 +8,7 @@ class Service_Page_Mock_Exam_Start extends Zy_Core_Service{
         }
 
         $expireTime  = empty($this->request['expire_time']) ? 0 : intval($this->request['expire_time']);
-        $pid         = empty($this->request['pid']) ? 0 : intval($this->request['pid']);
+        $pid         = empty($this->request['pid']) ? "" : trim($this->request['pid']);
         $startEnd    = empty($this->request['start_end']) ? "" : trim($this->request['start_end']);
         $remark      = empty($this->request['remark']) ? "" : trim($this->request['remark']);
         $studentUids = empty($this->request['student_uids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['student_uids']));
@@ -24,9 +24,12 @@ class Service_Page_Mock_Exam_Start extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 日期时间范围选定不正确!");
         }
 
-        if ($pid <= 0) {
-            throw new Zy_Core_Exception(405, "操作失败, 必须选定试卷");
+        $pidArr = explode("_", $pid);
+        if (!is_array($pidArr) || count($pidArr) != 2 || intval($pidArr[0]) <= 0 || !in_array($pidArr[1], Service_Data_Paper::PAPER_TYPE_MAP)) {
+            throw new Zy_Core_Exception(405, "操作失败, 必须选定试卷或所选试卷异常");
         }
+        $pid = intval($pidArr[0]);
+        $paperType = intval($pidArr[1]);
 
         if ($expireTime < 10 || $expireTime > 240) {
             throw new Zy_Core_Exception(405, "操作失败, 时长必须要在10分钟到240分钟之间");
@@ -48,6 +51,20 @@ class Service_Page_Mock_Exam_Start extends Zy_Core_Service{
         $paper = $serviceData->getPaperById($pid);
         if (empty($paper)) {
             throw new Zy_Core_Exception(405, "操作失败, 试卷不存在或已被删除");
+        }
+        if ($paper["type"] != $paperType) {
+            throw new Zy_Core_Exception(405, "操作失败, 试卷类型与请求参数不符合, 请刷新重试");
+        }
+
+        // 根据实际题数, 填充到exam中
+        $paperQids = $serviceData->getPaperQuestionIds($pid);
+        if (count($paperQids) <= 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 试卷没有关联试题.");
+        }
+        if ($paper["type"] == Service_Data_Paper::PAPER_TYPE_NORMAL) {
+            $totalQuestion = count($paperQids);
+        } else if($paper["type"] == Service_Data_Paper::PAPER_TYPE_ASSESS){
+            $totalQuestion = Service_Data_Paper::OUTPUT_ASSESS_TOTAL_QUESTION;
         }
         
         $uids = array_merge($studentUids, array($teacherUid));
@@ -72,6 +89,7 @@ class Service_Page_Mock_Exam_Start extends Zy_Core_Service{
             "end_time"          => $endTime,
             "expire_time"       => $expireTime,
             "pid"               => $pid,
+            "total_question"    => $totalQuestion,
             "student_uids"      => $studentUids,
             "teacher_uid"       => $teacherUid,
             "remark"            => $remark,

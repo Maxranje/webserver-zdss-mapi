@@ -66,12 +66,8 @@
                             "value": "6"
                         },
                         {
-                            "label": "听力题",
-                            "value": "7"
-                        },
-                        {
                             "label": "口语题",
-                            "value": "8"
+                            "value": "7"
                         }
                     ]
                 },
@@ -117,14 +113,14 @@
                 },
                 {
                     "type": "tree-select",
-                    "name": "subject_ids",
+                    "name": "source_ids",
                     "onlyLeaf": true,
                     "multiple": true,
                     "searchable": true,
                     "initiallyOpen": false,
                     "size": "md",
-                    "label": "科目",
-                    "source": "/mapi/subject/lists?is_select=1&is_leaf=1"
+                    "label": "来源",
+                    "source": "/mapi/mock/source_lists?is_select=1"
                 },
                 {
                     "type": "submit",
@@ -186,26 +182,17 @@
                                 "label": "状态",
                                 "type": "mapping",
                                 "map": {
-                                    "5": "<span class='label label-danger text-xs ml-2'>困难</span>",
-                                    "4": "<span class='label label-warning text-xs ml-2'>较难</span>",
-                                    "3": "<span class='label label-info text-xs ml-2'>一般</span>",
-                                    "2": "<span class='label label-danger text-xs ml-2'>简单</span>",
-                                    "1": "<span class='label label-success text-xs ml-2'>非常简单</span>"
+                                    "5": "<span class='label text-black text-xs text-red-500 ml-2'>困难</span>",
+                                    "4": "<span class='label text-black text-xs text-yellow-500 ml-2'>较难</span>",
+                                    "3": "<span class='label text-black text-xs text-yellow-500 ml-2'>一般</span>",
+                                    "2": "<span class='label text-black text-xs text-green-500 ml-2'>简单</span>",
+                                    "1": "<span class='label text-black text-xs text-green-500 ml-2'>非常简单</span>"
                                 }
                             }
                         },
                         {
-                            "label": "分数",
+                            "label": "分值",
                             "content": "<span class='text-black font-black ml-2 text-xs'>$score分</span>"
-                        },
-                        {
-                            "label": "试卷",
-                            "content": "<span class='text-black font-black ml-2 text-xs'>$frequency次</span>"
-                        },
-                        {
-                            "label": "科目",
-                            "content": "<span class='text-black font-black ml-2 text-xs'>$subject_name</span>",
-                            "span": 2
                         },
                         {
                             "label": "标签",
@@ -213,6 +200,19 @@
                                 "type": "each",
                                 "className": "inline-block ml-2",
                                 "name": "$tag_list",
+                                "items": {
+                                    "type": "tpl",
+                                    "tpl": "<span class='label bg-gray-400 ml-2 text-xs'>${item}</span> "
+                                }
+                            },
+                            "span": 3
+                        },
+                        {
+                            "label": "来源",
+                            "content": {
+                                "type": "each",
+                                "className": "inline-block ml-2",
+                                "name": "$source_list",
                                 "items": {
                                     "type": "tpl",
                                     "tpl": "<span class='label bg-gray-400 ml-2 text-xs'>${item}</span> "
@@ -236,14 +236,14 @@
                 },
                 {
                     "type": "button",
-                    "label": "视图",
-                    "icon": "fa fa-location-arrow",
+                    "label": "预览",
+                    "icon": "fa fa-file-text-o",
                     "className": "text-xs text-black mr-2",
                     "actionType": "dialog",
                     "dialog": {
                         "actions": [],
                         "size": "lg",
-                        "title": "视图",
+                        "title": "预览",
                         "body": {
                             "type": "service",
                             "schemaApi": "/mapi/mock/question_detail?qid=$qid&preview=1"

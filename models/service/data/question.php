@@ -9,9 +9,9 @@ class Service_Data_Question {
     const QUESTION_TYPE_FILL        = 4;
     const QUESTION_TYPE_SIMPLEWRITE = 5;
     const QUESTION_TYPE_WRITE       = 6;
-    const QUESTION_TYPE_LISTEN      = 7;
-    const QUESTION_TYPE_SPEAK       = 8;
-    const QUESTION_TYPE_MAP         = array(1,2,3,4,5,6,7,8);
+    const QUESTION_TYPE_SPEAK       = 7;
+    const QUESTION_TYPE_MAP         = array(1,2,3,4,5,6,7);
+    const QUESTION_TYPE_SIMPLE_MAP  = array(1,2,3,4);
     const QUESTION_TYPE_MAP_INFO    = array(
         1 => "单选题",
         2 => "多选题",
@@ -19,8 +19,7 @@ class Service_Data_Question {
         4 => "填空题",
         5 => "简答题",
         6 => "写作题",
-        7 => "听力题",
-        8 => "口语题",
+        7 => "口语题",
     );
 
     // 难度
@@ -54,12 +53,14 @@ class Service_Data_Question {
     private $daoAnswer;
     private $daoMeta;
     private $daoQuestionTag;
+    private $daoQuestionSource;
 
     public function __construct() {
         $this->daoQuestion = new Dao_Question () ;
         $this->daoAnswer = new Dao_Answer();
         $this->daoMeta = new Dao_Meta();
         $this->daoQuestionTag = new Dao_QuestionTag();
+        $this->daoQuestionSource = new Dao_QuestionSource();
     }
 
     public function getQuestionById ($qid) {
@@ -113,6 +114,7 @@ class Service_Data_Question {
             if (!empty($preMeta["meta"])) {
                 $metaProfile = array(
                     "content" => $preMeta["meta"],
+                    "meta_type" => $preMeta["meta_type"],
                     "operator" => OPERATOR,
                     "update_time" => time()
                 );
@@ -161,13 +163,11 @@ class Service_Data_Question {
                     "type"          => $q['type'],
                     "level"         => $q['level'],
                     "score"         => $q["score"],
-                    "subject_id"    => $q['subject_id'],
                     "content"       => $q["content"],
                     "explan"        => $q["explan"],
                     "description"   => $q['description'],
                     "pre_meta_id"   => $metaId,
                     'parent_id'     => $parentId,
-                    "audio"         => $q["audio"],
                     "create_time"   => time(),
                     "update_time"   => time(),
                     "operator"      => OPERATOR,
@@ -222,6 +222,21 @@ class Service_Data_Question {
                         }
                     }
                 }
+                // 来源关联入库
+                if (!empty($q["source_ids"])) {
+                    foreach ($q["source_ids"] as $v) {
+                        $tProfile = array(
+                            "qid"           => intval($qid),
+                            "source_id"     => intval($v),
+                            "update_time"   => time(),
+                        );
+                        $ret = $this->daoQuestionSource->insertRecords($tProfile);
+                        if ($ret == false) {
+                            $this->daoQuestion->rollback();
+                            return false;                       
+                        }
+                    }
+                }                
             }
         }
         
@@ -244,6 +259,13 @@ class Service_Data_Question {
             return false;     
         }
 
+        // 删来源
+        $ret = $this->daoQuestionSource->deleteByConds($conds);
+        if ($ret == false) {
+            $this->daoQuestion->rollback();
+            return false;     
+        }        
+
         // 删答案
         $ret = $this->daoAnswer->deleteByConds($conds);
         if ($ret == false) {
@@ -263,7 +285,7 @@ class Service_Data_Question {
         if ($ret == false) {
             $this->daoQuestion->rollback();
             return false;     
-        }        
+        }            
 
         $this->daoQuestion->commit();
         return true;
@@ -306,6 +328,10 @@ class Service_Data_Question {
             throw new Zy_Core_Exception(405, "操作失败, 题目组必须要有前置材料");
         }
 
+        if (!empty($preMeta["meta"]) && !in_array($preMeta["meta_type"], Service_Data_Meta::META_TYPE_MAP)) {
+            throw new Zy_Core_Exception(405, "操作失败, 题目组前置材料必须是文本或音频其中一个");
+        }        
+
         if (!empty($preMeta["is_group"]) && empty($preMeta["parent_desc"])) {
             throw new Zy_Core_Exception(405, "操作失败, 题目组必须要有简述");
         }        
@@ -314,11 +340,17 @@ class Service_Data_Question {
             throw new Zy_Core_Exception(405, "操作失败, 前置材料长度限定10000字符内");
         }
 
+        if (!empty($preMeta["meta"]) && 
+            $preMeta["meta_type"] == Service_Data_Meta::META_TYPE_AUDIO && 
+            !Zy_Helper_Utils::validateStringHttp($preMeta["meta"])) {
+            throw new Zy_Core_Exception(405, "操作失败, 前置材料前置材料音频格式不正确");
+        }        
+
         if (!empty($preMeta["parent_desc"]) && !Zy_Helper_Utils::validateString($preMeta["parent_desc"], 1, 200)) {
             throw new Zy_Core_Exception(405, "操作失败, 题目组简述长度限定200字符内");
         }        
 
-        $subjectIds = $tagIds = array();
+        $sourceIds = $tagIds = array();
         foreach ($questions as $i => $question) {
             if (!in_array($question["type"], self::QUESTION_TYPE_MAP)) {
                 throw new Zy_Core_Exception(405, "操作失败, 类型检测失败, 请重新确认题目类型");
@@ -439,18 +471,8 @@ class Service_Data_Question {
                 $question["answer"] = $question["fill"];
             }  
 
-            // 听力
-            if ($question["type"] == self::QUESTION_TYPE_LISTEN) {
-                if (empty($question["audio"])) {
-                    throw new Zy_Core_Exception(405, "操作失败, 听力必须配置音频地址");
-                }
-                if (!Zy_Helper_Utils::validateStringHttp($question["audio"])) {
-                    throw new Zy_Core_Exception(405, "操作失败, 音频地址不是一个有效http地址");
-                }
-            }
-
-            if ($question["subject_id"] > 0) {
-                $subjectIds[] = $question["subject_id"];
+            if (count($question["source_ids"]) > 3) {
+                throw new Zy_Core_Exception(405, "操作失败, 每个试题最多3个来源");
             }
             if (count($question["tag_ids"]) > 3) {
                 throw new Zy_Core_Exception(405, "操作失败, 每个试题最多3个标签");
@@ -458,17 +480,11 @@ class Service_Data_Question {
             if (!empty($question["tag_ids"])) {
                 $tagIds = array_merge($tagIds, $question["tag_ids"]);
             }
+            if (!empty($question["source_ids"])) {
+                $sourceIds = array_merge($sourceIds, $question["source_ids"]);
+            }
 
             $questions[$i] = $question;
-        }
-
-        // 检测subject
-        if (count($subjectIds) > 0) {
-            $serviceData = new Service_Data_Subject();
-            $subjectInfos = $serviceData->getSubjectByIds($subjectIds);
-            if (empty($subjectInfos) || count($subjectInfos) != count($subjectIds)) {
-                throw new Zy_Core_Exception(405, "操作失败, 部分科目信息不存在或已失效, 请每项对比检查");
-            }
         }
 
         // 检查tags
@@ -480,9 +496,141 @@ class Service_Data_Question {
             }  
         }
 
+        // 检查tags
+        if (count($sourceIds) > 0) {
+            $serviceData = new Service_Data_QuestionSource();
+            $sourceInfos = $serviceData->getSourceByIds($sourceIds);
+            if (empty($sourceInfos) || count($sourceInfos) != count($sourceIds)) {
+                throw new Zy_Core_Exception(405, "操作失败, 来源信息获取失败, 请刷新重新配置");
+            }  
+        }        
+
         return array(
             "questions" => $questions,
             "pre_meta"  => $preMeta,
         );
-    } 
+    }     
+
+
+    // 获取试题详情
+    public function getQuestionDetails ($qids, $pqMap, $studentAnswers) {
+        $questionInfos = $this->getQuestionByIds($qids);
+        if (empty($questionInfos)) {
+            throw new Exception("获取试题信息失败");
+        }        
+        $questionInfos = array_column($questionInfos, null, "qid");
+
+        // 格式化试题, 并取出必要参数
+        $answerQids = $metaIds = array();
+        foreach ($questionInfos as $qid => $item) {
+            if ($item["pre_meta_id"] > 0) {
+                $metaIds[] = intval($item["pre_meta_id"]);
+            }
+            if (in_array($item["type"], Service_Data_Question::QUESTION_TYPE_SIMPLE_MAP)) {
+                $answerQids[] = intval($item["qid"]);
+            }
+            // 分数
+            $score = !empty($pqMap[$qid]["score"]) ? intval($pqMap[$qid]["score"]) : $item['score'];
+            $questionInfos[$qid] = array(
+                "qid" => intval($item["qid"]),
+                "type" => intval($item["type"]),
+                "level" => intval($item["level"]),
+                "content" => $item["content"],
+                "score" => $score,
+                "metaId" => $item["pre_meta_id"],
+                "explan" => empty($item["explan"]) || $item["explan"] == "NULL" ? "" : $item["explan"],                
+                "questionAnswer" => array(),
+                "studentAnswer" => array(),
+            );     
+        }
+        $metaIds = array_values(array_unique($metaIds));
+
+        // 拉取meta
+        $metas = array();
+        if (!empty($metaIds)) {
+            $serviceMeta = new Service_Data_Meta();
+            $metas = $serviceMeta->getMetaByIds($metaIds);
+            if (!empty($metaIds) && empty($metas)) {
+                throw new Exception("拉取物料信息失败");
+            }
+            foreach ($metas as $i => $item) {
+                $metas[$i] = array(
+                    "content" => $item["content"],
+                    "metaType" => $item["meta_type"],
+                    "id" => $item["id"],
+                );
+            }
+        }
+        $metas = array_values($metas);
+        
+        // get question answer
+        if (!empty($answerQids)) {
+            $serviceAnswer = new Service_Data_Answer();
+            $answers = $serviceAnswer->getAnswerByQids($answerQids);
+            if (empty($answers)) {
+                throw new Exception("获取试题选项失败");
+            }
+            foreach ($answers as $qid => $answer) {
+                if (isset($questionInfos[$qid])) {
+                    $index = 0;
+                    foreach ($answer as $item) {
+                        $tmp = array(
+                            "index" => $index++,
+                            "qid" => $qid,
+                            "type" => $item["type"],
+                            "answerId" => $item["id"],
+                            "isCorrect" => $item["is_correct"],
+                            "answerContent" => $item["content"], 
+                        );
+                        $questionInfos[$qid]["questionAnswer"][] = $tmp;
+                    }                  
+                }
+            }
+        }
+
+
+        $studentScore = array();
+        if (!empty($studentAnswers)) {
+            foreach ($studentAnswers as $item) {
+                if (isset($questionInfos[$item["qid"]])) {
+                    $ext = empty($item["ext"]) ? array() : json_decode($item["ext"], true);
+                    $tmp = array(
+                        "id" => $item["id"],
+                        "qid" => $item["qid"],
+                        "answerId" => empty($item["answer_id"]) ? 0 : $item["answer_id"],
+                        "answerContent" => empty($item["answer_content"]) ? "" : $item["answer_content"], 
+                        "score" => $item["score"],
+                        "reviewAI"  => empty($ext["review_ai"]) ? "" : $ext["review_ai"],
+                        "reviewContent" => empty($item["review_content"]) || $item["review_content"] == "NULL" ? "" : $item["review_content"],
+                    );
+                    // 音频地址
+                    if ($questionInfos[$item["qid"]]["type"] == self::QUESTION_TYPE_SPEAK && !empty($item["answer_content"])) {
+                        $tmp["answerContent"] = HOSTNAME . "resource/mock_speak/". $item["answer_content"];
+                    }
+                    if ($item['score'] > 0) {
+                        if (!isset($studentScore[$item["qid"]])) {
+                            $studentScore[$item["qid"]] = 0;
+                        }
+                        $studentScore[$item["qid"]] = $item["score"];
+                    }
+                    $questionInfos[$item["qid"]]["studentAnswer"][] = $tmp;
+                }
+            }
+        }
+
+        // 按输入顺序输出
+        $questionRet =array();
+        foreach ($qids as $qid) {
+            if (!empty($questionInfos[$qid])) {
+                $questionRet[] = $questionInfos[$qid];
+            }
+        }
+
+        return array(
+            "questions"     => $questionRet,
+            "totalQuestion" => count($questionRet),
+            "metas"         => $metas,
+            "studentScore"  => array_sum(array_values($studentScore)),
+        );          
+    }   
 }

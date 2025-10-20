@@ -26,58 +26,39 @@ class Service_Page_Mock_Paper_Detail extends Zy_Core_Service{
             $questions = $serviceQuestion->getQuestionByIds($qids, true);            
         }
 
-        $paper = $this->formatPaper($paper);
-        $questions = $this->formatQuestion($questions, $paperQuestions);
+        $paperInfo = array(
+            "pid"             => $paper["pid"],
+            "title"           => $paper["title"],
+            "type"            => $paper["type"],
+            "type_info"       => $paper["type"] == Service_Data_Paper::PAPER_TYPE_ASSESS ? "评估" : "常规",
+            "frequency"       => $paper["frequency"],
+            "total_question"  => $paper["total_question"],
+            "remark"          => $paper["remark"],            
+        );
+        $paperInfo["input_total_question"] = $paper["type"] == Service_Data_Paper::PAPER_TYPE_ASSESS ? 
+            Service_Data_Paper::INPUT_ASSESS_TOTAL_QUESTION : 
+            Service_Data_Paper::INPUT_NORMAL_TOTAL_QUESTION;
+
+        list($questions, $total) = $this->formatQuestion($questions, $paperQuestions);
         return array(
-            "paper"     => $paper,
+            "paper"     => $paperInfo,
             "questions" => $questions,
-            "questions_total" => count($questions),
+            "questions_total" => $total,
         );
     }
 
     // 格式化
-    private function formatPaper ($paper) { 
-        $pid = intval($paper["pid"]);
-
-        $sourceInfos = array();
-        $serviceData = new Service_Data_Paper();
-        $sourceIds = $serviceData->getSourceByPaperIds(array($pid));
-        if (!empty($sourceIds[$pid])) {
-            $sourceIds = Zy_Helper_Utils::arrayInt($sourceIds[$pid], "source_id");
-            $serviceData = new Service_Data_Source();
-            $sourceInfos = $serviceData->getSourceByIds($sourceIds);
-        }
-
-        $subjectInfo = array();
-        if (!empty($paper["subject_id"])) {
-            $serviceData = new Service_Data_Subject();
-            $subjectInfo = $serviceData->getSubjectById(intval($paper["subject_id"]));
-        }
-        
-
-        $ret = array();
-        $ret["pid"]             = $paper["pid"];
-        $ret["title"]           = $paper["title"];
-        $ret["type"]            = $paper["type"];
-        $ret["type_info"]       = $paper["type"] == 2 ? "入学测验" : ($paper["type"] == 3 ? "单词本" : "常规");
-        $ret["weight_score"]    = $paper["weight_score"];
-        $ret["frequency"]       = $paper["frequency"];
-        $ret["remark"]          = $paper["remark"];
-        $ret["subject_name"]    = empty($subjectInfo["name"]) ? "暂无" : $subjectInfo["name"];
-        $ret["source_list"]     = array_column($sourceInfos, "name");
-        return $ret;
-    }   
-
-    // 格式化
     private function formatQuestion ($questions, $paperQuestions) { 
         if (empty($questions)) {
-            return array();
+            return array(array(), 0);
         }
 
         $paperQuestions = array_column($paperQuestions, null, "qid");
 
         $options = array();
+        $total = 0;
         foreach ($questions as $i => $item) {
+            $total++;
             $level = empty($item["level"]) ? "" :Service_Data_Question::QUESTION_LEVEL_MAP_INFO[$item["level"]];
             $type  = empty($item["type"]) ? "" :Service_Data_Question::QUESTION_TYPE_MAP_INFO[$item["type"]];
             $score = empty($paperQuestions[$item["qid"]]["score"]) ? $item['score'] : $paperQuestions[$item["qid"]]["score"];
@@ -105,6 +86,6 @@ class Service_Page_Mock_Paper_Detail extends Zy_Core_Service{
                 );
             }
         }
-        return array_values($options);  
+        return array(array_values($options), $total);  
     }    
 }

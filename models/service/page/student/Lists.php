@@ -183,8 +183,26 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
         $birthplaces = $serviceData->getBirthplaceByIds($bpids);
         $birthplaces = array_column($birthplaces, null, "id");
 
+        // 获取考试数
         $serviceData = new Service_Data_Exam() ;
-        $examInfos = $serviceData->getExamByStudentUids($studentUids);
+        $examInfos = $serviceData->getStudentListByConds(array(
+            sprintf("student_uid in (%s)", implode(",", $studentUids)),
+        ), array("student_uid", "status"));
+
+        $examRet = array();
+        foreach ($examInfos as $v) {
+            if (!isset($examRet[$v["student_uid"]])) {
+                $examRet[$v["student_uid"]] = array(
+                    "exam_done_count" => 0, 
+                    "exam_unable_count" => 0
+                );
+            }
+            if ($v["status"] == Service_Data_Exam::EXAM_STATUS_COMPLETE) {
+                $examRet[$v["student_uid"]]['exam_done_count'] ++;
+            } else {
+                $examRet[$v["student_uid"]]['exam_unable_count'] ++;
+            }
+        }
 
         // get role
         $isPartner          = $this->checkPartner();
@@ -199,19 +217,9 @@ class Service_Page_Student_Lists extends Zy_Core_Service{
             $item['create_time']        = date("Y年m月d日", $item['create_time']);
             $item['update_time']        = date("Y年m月d日", $item['update_time']);
             $item["is_edit"]            = $this->isOperator(Service_Data_Roles::ROLE_MODE_STUDENT_EDIT, $item["sop_uid"]) ? 1 : 0;
-            $item['exam_done_count']    = 0;
-            $item['exam_unable_count']  = 0;
+            $item['exam_done_count']    = empty($examRet[$item["uid"]]["exam_done_count"]) ? 0 : $examRet[$item["uid"]]["exam_done_count"];
+            $item['exam_unable_count']  = empty($examRet[$item["uid"]]["exam_unable_count"]) ? 0 : $examRet[$item["uid"]]["exam_unable_count"];
             $item['score']              = 0;
-
-            if (!empty($examInfos[$item["uid"]])) {
-                foreach ($examInfos[$item["uid"]] as $v) {
-                    if ($v["status"] == Service_Data_Exam::EXAM_STATUS_COMPLETE) {
-                        $item['exam_done_count'] ++;
-                    } else {
-                        $item['exam_unable_count'] ++;
-                    }
-                }
-            }
 
             unset($item['passport']);
             $result[] = $item;

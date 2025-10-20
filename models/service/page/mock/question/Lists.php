@@ -16,7 +16,7 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         $parentId       = empty($this->request['parent_id']) ? 0 : intval($this->request['parent_id']); 
         $description    = empty($this->request['description']) ? "" : trim($this->request['description']);
         $tagIds         = empty($this->request['tag_ids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['tag_ids']));
-        $subjectIds     = empty($this->request['subject_ids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['subject_ids']));
+        $sourceIds      = empty($this->request['source_ids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['source_ids']));
         $isSelect       = empty($this->request['is_select']) ? false : true;
         $pn             = ($pn-1) * $rn;        
 
@@ -33,16 +33,23 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
             } else {
                 $qids = $questionIds;
             }
-        }
-        // 根据pid 找qid
-        if ($pid > 0 && $isSelect) {
-            $serviceData = new Service_Data_Paper();
-            $paperQids = $serviceData->getPaperQuestionIds($pid);
-            if (!empty($paperQids)) {
-                $qids = array_intersect($paperQids, $qids);
-            } else {
-                $qids = $paperQids;
+            if (empty($qids)) {
+                return array();
             }            
+        }
+
+        // 根据source找qid
+        if (count($sourceIds) > 0) {
+            $serviceData = new Service_Data_QuestionSource();
+            $questionIds = $serviceData->getQidBySoureIds($sourceIds);
+            if (!empty($qids)) {
+                $qids = array_intersect($questionIds, $qids);
+            } else {
+                $qids = $questionIds;
+            }
+            if (empty($qids)) {
+                return array();
+            }     
         }
 
         if (count($qids) > 0) {
@@ -53,9 +60,6 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         }
         if (in_array($level, Service_Data_Question::QUESTION_LEVEL_MAP)) {
             $conds[] = sprintf("level = %d", $level);
-        }
-        if (count($subjectIds) > 0) {
-            $conds[] = sprintf("subject_id in (%s)", implode(",", $subjectIds));
         }
         if (!empty($description)) {
             $conds[] = "description like '%".$description."%'";
@@ -89,17 +93,8 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
 
     // 格式化
     private function formatBase ($lists) {
-        $subjectIds = Zy_Helper_Utils::arrayInt($lists, "subject_id");
         $uids = Zy_Helper_Utils::arrayInt($lists, "operator");
         $questionQids = Zy_Helper_Utils::arrayInt($lists, "qid");
-
-        $serviceData = new Service_Data_Subject();
-        $subjectInfos = $serviceData->getListByConds(array(sprintf("id in (%s)", implode(",", $subjectIds))));
-        $subjectInfos = array_column($subjectInfos, null, 'id');
-
-        $subjectParentIds = Zy_Helper_Utils::arrayInt($subjectInfos, "parent_id");
-        $subjectParentInfos = $serviceData->getSubjectByIds($subjectParentIds);
-        $subjectParentInfos = array_column($subjectParentInfos, null, 'id');
 
         // 获取管理员
         $serviceData = new Service_Data_Profile();
@@ -119,6 +114,19 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
             $tagInfos = $serviceData->getTagByIds($tagIds);
             $tagInfos = array_column($tagInfos, null, "id");
         }
+
+        // qid
+        $serviceData = new Service_Data_QuestionSource();
+        $qsMap = $serviceData->getSourceByQid($questionQids);
+        $sourceInfos = $sourceIds = array();
+        foreach ($qsMap as $v) {
+            $sourceIds = array_merge($sourceIds, $v);
+        }
+        $sourceIds = Zy_Helper_Utils::arrayInt($sourceIds);
+        if (!empty($sourceIds)) {
+            $sourceInfos = $serviceData->getSourceByIds($sourceIds);
+            $sourceInfos = array_column($sourceInfos, null, "id");
+        }        
 
         // 看看试题有没有考过试
         $serviceData = new Service_Data_Paper();
@@ -141,17 +149,8 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
             $tmp["frequency"]       = empty($paperInfos[$v['qid']]) ? 0 : intval($paperInfos[$v['qid']]);
             $tmp["tags"]            = array();
             $tmp['tag_list']        = array();
-
-            // 科目
-            if (!empty($subjectInfos[$v["subject_id"]]['name'])) {
-                $subjectInfo = $subjectInfos[$v["subject_id"]];
-                $tmp["subject_name"] = $subjectInfo["name"];
-                if (!empty($subjectParentInfos[$subjectInfo["parent_id"]]["name"])) {
-                    $tmp["subject_name"] = sprintf("%s / %s", 
-                        $subjectParentInfos[$subjectInfo["parent_id"]]["name"], 
-                        $subjectInfos[$v["subject_id"]]['name']);
-                }
-            }
+            $tmp['sources']         = array();
+            $tmp['source_list']     = array();
 
             // 标签
             if (!empty($qtMap[$v["qid"]])) {    
@@ -164,6 +163,18 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
                         "description" => empty($tagInfos[$tid]["description"]) ? "" : $tagInfos[$tid]["description"],
                     );  
                     $tmp['tag_list'][] = $tagInfos[$tid]["title"];
+                }
+            }            
+
+            // 来源
+            if (!empty($qsMap[$v["qid"]])) {    
+                foreach ($qsMap[$v["qid"]] as $sid) { // 取tagid
+                    if (empty($sourceInfos[$sid]["name"])) {
+                        continue;
+                    }
+                    $tmp["sources"][] = array(
+                        "name" => $sourceInfos[$sid]["name"],
+                    );  
                 }
             }            
 

@@ -51,7 +51,7 @@ class Service_Page_Student_Create extends Zy_Core_Service{
             "school"        => $school, 
             "graduate"      => $graduate,
             "sex"           => $sex, 
-            "is_mock"       => $isMock == 1 ? 1 : 2,
+            "is_mock"       => $isMock == 1 ? Service_Data_Profile::STUDENT_MOCK : Service_Data_Profile::STUDENT_NO_MOCK,
             "sop_uid"       => $sopuid, 
             "create_time"   => time() , 
             "update_time"   => time() , 

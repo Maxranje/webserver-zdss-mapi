@@ -246,14 +246,15 @@ class Zy_Core_Dao{
      * @param  mixed  $arrConds   限制条件，数组或者字符串形式均可，示例见getListByConds
      * @return int|false 成功返回记录总数，失败返回false
      */
-    public function getCntByConds($arrConds) {
+    public function getCntByConds($arrConds, $filed = array()) {
         if (empty($this->_db)) {
             $this->_db = Zy_Database_Dbservice::getDB($this->_dbName);
         }
         $arrConds = Zy_Database_Dbservice::mapRow($arrConds, $this->arrFieldsMap);
         $arrConds = Zy_Database_Dbservice::getConds($arrConds, $this->isPrepared);
 
-        $querySql = Zy_Database_Dbsqlmaker::getSelect ($this->_db, $this->_table, array('count(*) as count') , $arrConds, null, null, $this->isPrepared, $bindParams);
+        $filed = empty($filed) ?  array('count(*) as count') : $filed;
+        $querySql = Zy_Database_Dbsqlmaker::getSelect ($this->_db, $this->_table, $filed , $arrConds, null, null, $this->isPrepared, $bindParams);
         $this->_res = $this->_db->prepared_query($querySql, $bindParams);
         if ($this->_res === false){
             return FALSE;

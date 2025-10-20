@@ -16,7 +16,6 @@ class Dao_Question extends Zy_Core_Dao {
             "content" => "content",
             "explan" => "explan",
             "description" => "description",
-            "audio" => "audio",
             "parent_id" => "parent_id",
             "is_coll" => "is_coll",
             "pre_meta_id" => "pre_meta_id",

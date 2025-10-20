@@ -9,6 +9,10 @@ class Service_Page_Account_SignProfile extends Zy_Core_Service{
             throw new Zy_Core_Exception(401, "无法获取用户信息");
         }
 
+        if (!empty($userInfo["sop_uid"])) {
+            $sop = $serviceData->getUserInfoByUid(intval($userInfo["sop_uid"]));
+            $userInfo["sopname"] = empty($sop["nickname"]) ? "" : $sop["nickname"];
+        }
         return $this->getAuthInfo($userInfo);
     }
 }

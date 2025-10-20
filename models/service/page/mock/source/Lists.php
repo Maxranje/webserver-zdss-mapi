@@ -13,7 +13,7 @@ class Service_Page_Mock_Source_Lists extends Zy_Core_Service{
 
         $pn = ($pn-1) * $rn;
 
-        $serviceData = new Service_Data_Source();
+        $serviceData = new Service_Data_QuestionSource();
         $append = array();
         if (!$isSelect) {
             $append[] = "limit {$pn} , {$rn}";

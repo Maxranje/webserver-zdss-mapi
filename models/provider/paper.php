@@ -10,11 +10,10 @@ class Dao_Paper extends Zy_Core_Dao {
         $this->arrFieldsMap = array(
             "pid" => "pid",
             "title" => "title",
-            "subject_id" => "subject_id",
             "type" => "type",
             "frequency" => "frequency",
             "total_score" => "total_score",
-            "weight_score" => "weight_score",
+            "total_question" => "total_question",
             "remark" => "remark",
             "operator" => "operator",
             "update_time" => "update_time",

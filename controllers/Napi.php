@@ -14,6 +14,17 @@ class Controller_Napi extends Zy_Core_Controller{
 
         // 课程
         "schedule_summary"    => "actions/napi/schedule/Summary.php",
-        "schedule_tsummary"   => "actions/napi/schedule/Tsummary.php",        
+        "schedule_tsummary"   => "actions/napi/schedule/Tsummary.php",     
+        
+        // 考试
+        "exam_detail"   => "actions/napi/exam/Detail.php",
+        "exam_summary"  => "actions/napi/exam/Summary.php",
+        "exam_lists"    => "actions/napi/exam/Lists.php",     
+        "exam_init"     => "actions/napi/exam/Init.php",
+        "exam_get"      => "actions/napi/exam/Get.php",
+        "exam_save"     => "actions/napi/exam/Save.php",
+        "exam_upload"   => "actions/napi/exam/Upload.php",
+        "exam_submit"   => "actions/napi/exam/Submit.php",
+        "exam_alydata"  => "actions/napi/exam/Alydata.php",  
     );
 }

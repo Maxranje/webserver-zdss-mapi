@@ -24,7 +24,7 @@ return array(
     "menu" => array(
         array(
             "id" => 10001,
-            "label"=>"学员管理",
+            "label"=>"考生管理",
             "url"=>"student",
             "icon"=>"fa fa-group",
             "schemaApi"=>"get:/public/mis/mock/crud-student-list.json"
@@ -44,29 +44,25 @@ return array(
                 ),
                 array(
                     "id" => 10012,
+                    "label"=>"新增题目",
                     "url"=>"/question/add",
                     "visible" => false,
                     "schemaApi"=>"get:/public/mis/mock/form-question-add.json"
                 ),                
                 array(
                     "id" => 10013,
+                    "label"=>"复制题目",
                     "url"=>"/question/copy",
                     "visible" => false,
                     "schemaApi"=>"get:/public/mis/mock/form-question-copy.json"
                 ),
                 array(
                     "id" => 10014,
-                    "label"=>"单词题库",
-                    "url"=>"/question/word",
-                    "icon"=>"fa fa-list-alt",
-                    "schemaApi"=>"get:/public/mis/mock/crud-question-word-list.json"
-                ), 
-                array(
-                    "id" => 10015,
-                    "url"=>"/question/word/import",
-                    "visible" => false,
-                    "schemaApi"=>"get:/public/mis/mock/form-question-word.json"
-                ),
+                    "label"=>"来源配置",
+                    "url"=>"/question/source",
+                    "icon"=>"fa fa-mail-forward",
+                    "schemaApi"=>"get:/public/mis/mock/crud-source-list.json"
+                ),                
             ],
         ),
         array(
@@ -81,29 +77,8 @@ return array(
             "label"=>"试卷管理",
             "url"=>"/paper",
             "icon"=>"fa fa-file",
-            "children"=>[
-                array(
-                    "id" => 10021,
-                    "label"=>"试卷列表",
-                    "url"=>"/paper/list",
-                    "icon"=>"fa fa-file-text",
-                    "schemaApi"=>"get:/public/mis/mock/crud-paper-list.json"
-                ),                             
-                array(
-                    "id" => 10022,
-                    "label"=>"来源配置",
-                    "url"=>"/paper/source",
-                    "icon"=>"fa fa-mail-forward",
-                    "schemaApi"=>"get:/public/mis/mock/crud-source-list.json"
-                ),
-            ],
-        ),
-        array(
-            "id" => 10030,
-            "label"=>"科目管理",
-            "url"=>"/paper/subject",
-            "icon"=>"fa fa-server",
-            "schemaApi"=>"get:/public/mis/pages/crud-subject-list.json"
+            "icon"=>"fa fa-file-text",
+            "schemaApi"=>"get:/public/mis/mock/crud-paper-list.json"
         ),
         array(
             "id" => 10040,
@@ -122,45 +97,47 @@ return array(
                     "id" => 10042,
                     "url"=>"/exam/edit",
                     "visible" => false,
+                    "label"=>"编辑考试",
                     "schemaApi"=>"get:/public/mis/mock/form-exam-edit.json"
                 ),                
                 array(
                     "id" => 10043,
-                    "label"=>"考试记录",
+                    "label"=>"考试列表",
                     "url"=>"/exam/list",
                     "icon"=>"fa fa-history",
                     "schemaApi"=>"get:/public/mis/mock/crud-exam-list.json"
                 ),
                 array(
-                    "id" => 10045,
+                    "id" => 10044,
                     "label"=>"模考监控",
                     "url"=>"/exam/monitor",
                     "icon"=>"fa fa-retweet",
+                    "visible" => false,
                     "schemaApi"=>"get:/public/mis/mock/form-exam-monitor.json"
+                ),                
+                array(
+                    "id" => 10045,
+                    "label"=>"批改试卷",
+                    "url"=>"/exam/reviewlists",
+                    "icon"=>"fa fa-retweet",
+                    "schemaApi"=>"get:/public/mis/mock/crud-exam-review.json"
                 ),
+                array(
+                    "id" => 10046,
+                    "label"=>"试卷详情",
+                    "url"=>"/exam/review",
+                    "visible" => false,
+                    "schemaApi"=>"get:/public/mis/mock/form-exam-review.json"
+                ),                
             ],
         ),
         array(
             "id" => 10050,
             "label"=>"错题本",
-            "url"=>"/wrong",
+            "url"=>"/wrong/student",
             "icon"=>"fa fa-book",
-            "children"=>[
-                array(
-                    "id" => 10051,
-                    "label"=>"考题记录",
-                    "url"=>"/wrong/question",
-                    "icon"=>"fa fa-newspaper-o",
-                    "schemaApi"=>"get:/public/mis/mock/crud-wrong-question-list.json"
-                ),
-                array(
-                    "id" => 10052,
-                    "label"=>"学员记录",
-                    "url"=>"/wrong/student",
-                    "icon"=>"fa fa-group",
-                    "schemaApi"=>"get:/public/mis/mock/crud-wrong-student-list.json"
-                )                
-            ],
-        ),
+            "visible" => false,
+            "schemaApi"=>"get:/public/mis/mock/form-wrong-student-detail.json"
+        )     
     ),
 );

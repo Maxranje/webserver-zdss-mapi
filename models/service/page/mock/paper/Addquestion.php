@@ -13,6 +13,9 @@ class Service_Page_Mock_Paper_Addquestion extends Zy_Core_Service{
         if ($pid <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 无法确认试卷");
         } 
+        if (count($qids) <= 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 试卷最少要有一道题");
+        }
 
         $servicePaper = new Service_Data_Paper();
         $paper = $servicePaper->getPaperById($pid);
@@ -21,7 +24,7 @@ class Service_Page_Mock_Paper_Addquestion extends Zy_Core_Service{
         }
         
         if ($paper["frequency"] > 0 && $paper["type"] == Service_Data_Paper::PAPER_TYPE_NORMAL) {
-            throw new Zy_Core_Exception(405, "操作失败, 常规试卷在以被录入到了模考平台后不允许调整试题");
+            throw new Zy_Core_Exception(405, "操作失败, 已进行模考的常规试卷, 不允许调整试题");
         }
 
         $oldQids = $servicePaper->getPaperQuestionIds($pid);
@@ -39,6 +42,15 @@ class Service_Page_Mock_Paper_Addquestion extends Zy_Core_Service{
         if (empty($addQids) && empty($delQids)) {
             throw new Zy_Core_Exception(405, "操作失败, 无更新内容");
         }
+        if ($paper["frequency"] > 0 && !empty($delQids) && $paper["type"] == Service_Data_Paper::PAPER_TYPE_ASSESS) {
+            throw new Zy_Core_Exception(405, "操作失败, 已参与考试的评估试卷, 只能新增不能删除试题");
+        }   
+        if ($paper["type"] == Service_Data_Paper::PAPER_TYPE_NORMAL && count($qids) > Service_Data_Paper::INPUT_NORMAL_TOTAL_QUESTION) {
+            throw new Zy_Core_Exception(405, "操作失败, 常规试卷最大录入".Service_Data_Paper::INPUT_NORMAL_TOTAL_QUESTION."道");
+        }
+        if ($paper["type"] == Service_Data_Paper::PAPER_TYPE_ASSESS && count($qids) > Service_Data_Paper::INPUT_ASSESS_TOTAL_QUESTION) {
+            throw new Zy_Core_Exception(405, "操作失败, 评估试卷最大录入".Service_Data_Paper::INPUT_ASSESS_TOTAL_QUESTION."道");
+        }
 
         $totalScore = 0;
         foreach ($questions as $v) {
@@ -49,8 +61,9 @@ class Service_Page_Mock_Paper_Addquestion extends Zy_Core_Service{
             "pid" => $pid,
             "total_score" => $totalScore,
             "questions" => $questions,
-            "delQids" => $delQids,
-            "addQids" => $addQids,
+            "del_qids" => $delQids,
+            "add_qids" => $addQids,
+            "total_question" => count($qids),
         );
 
         $serviceData = new Service_Data_Paper();

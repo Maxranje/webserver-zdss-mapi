@@ -33,13 +33,21 @@ class Controller_Mock extends Zy_Core_Controller{
 
         // 考试
         "exam_start"        => "actions/mock/exam/Start.php",
+        "exam_restart"      => "actions/mock/exam/Restart.php",
         "exam_end"          => "actions/mock/exam/End.php",
         "exam_lists"        => "actions/mock/exam/Lists.php",
+        "exam_review"       => "actions/mock/exam/Review.php",
         "exam_update"       => "actions/mock/exam/Update.php",
         "exam_delete"       => "actions/mock/exam/Delete.php",          
         "exam_detail"       => "actions/mock/exam/Detail.php", 
-        "exam_monitor"      => "actions/mock/exam/Monitor.php", 
-        "exam_student"      => "actions/mock/exam/Student.php", 
+
+        // 错题本
+        "wrong_student"       => "actions/mock/wrong/Student.php",
         
+        // 批改
+        "review_save"       => "actions/mock/review/Save.php",
+        "review_getai"      => "actions/mock/review/Getai.php",
+        "review_finish"     => "actions/mock/review/Finish.php",      
+        "review_lists"      => "actions/mock/review/Lists.php",  
     );
 }

@@ -7,23 +7,18 @@ class Service_Page_Mock_Exam_Delete extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $id = empty($this->request['id']) ? 0 : intval($this->request['id']);
-        if ($id <= 0) {
+        $examId = empty($this->request['exam_id']) ? 0 : intval($this->request['exam_id']);
+        if ($examId <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 入参不全");
         }
 
-        $serviceData = new Service_Data_Tag();
-        $tagInfo = $serviceData->getTagById($id);
-        if (empty($tagInfo)) {
-            throw new Zy_Core_Exception(405, "操作失败, 标签不存在,无法删除");
+        $serviceExam = new Service_Data_Exam();
+        $examInfo = $serviceExam->getExamById($examId);
+        if (empty($examInfo) || $examInfo["status"] != Service_Data_Exam::EXAM_STATUS_PENDING) {
+            throw new Zy_Core_Exception(405, "操作失败, 模考不存在或已在进行中, 不允许删除");
         }
 
-        $subTag = $serviceData->getTagByParentID($id);
-        if (!empty($subTag)) {
-            throw new Zy_Core_Exception(405, "操作失败, 无法删除有子节点的标签, 因为需要关联删除题库数据, 必须要把子标签删除干净");
-        }
-
-        $ret = $serviceData->deleteTag($id);
+        $ret = $serviceExam->delete($examId);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "删除错误, 请重试");
         }

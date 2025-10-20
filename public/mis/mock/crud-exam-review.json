@@ -1,0 +1,225 @@
+{
+    "type": "page",
+    "title": "考试列表",
+    "body": {
+        "type": "crud",
+        "id": "exam_review_lists",
+        "api": {
+            "method": "post",
+            "url": "/mapi/mock/review_lists",
+            "dataType": "form"
+        },
+        "perPage": 10,
+        "perPageAvailable": [
+            5,
+            10,
+            20
+        ],
+        "syncLocation": true,
+        "labelTpl": "${id}",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "exam_indentify",
+                    "label": "模考标识",
+                    "size": "md",
+                    "placeholder": "精确搜索"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "pid",
+                    "searchable": true,
+                    "onlyLeaf": true,
+                    "label": "试卷",
+                    "size": "md",
+                    "source": "/mapi/mock/paper_lists?is_select=1"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "teacher_uid",
+                    "searchable": true,
+                    "onlyLeaf": true,
+                    "label": "监考老师",
+                    "source": "/mapi/api/soplists"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "student_uid",
+                    "searchable": true,
+                    "onlyLeaf": true,
+                    "label": "考生",
+                    "source": "/mapi/student/lists?is_select=1&is_mock=1"
+                },
+                {
+                    "label": "状态",
+                    "type": "select",
+                    "clearable": true,
+                    "name": "status",
+                    "options": [
+                        {
+                            "label": "已交卷",
+                            "value": "2"
+                        },
+                        {
+                            "label": "强制结束",
+                            "value": "4"
+                        },
+                        {
+                            "label": "待批改",
+                            "value": "7"
+                        },
+                        {
+                            "label": "结束",
+                            "value": "8"
+                        }
+                    ]
+                },
+                {
+                    "type": "input-date-range",
+                    "name": "daterange",
+                    "inline": true,
+                    "label": "时间"
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "id",
+                "label": "序号",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "student_name",
+                "label": "考生",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "indentify",
+                "label": "考试标识",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "paper_name",
+                "label": "考试试卷",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "teacher_name",
+                "label": "监考老师",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "exam_type",
+                "label": "考试类型",
+                "type": "mapping",
+                "map": {
+                    "1": "常规",
+                    "2": "评估"
+                }
+            },
+            {
+                "name": "start_end",
+                "label": "考试时间",
+                "remark": "真实考试时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "spend_time",
+                "label": "考试时长",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "status",
+                "label": "考试状态",
+                "type": "mapping",
+                "map": {
+                    "8": "<span class='label label-default'>结束</span>",
+                    "7": "<span class='label label-info'>批改中</span>",
+                    "4": "<span class='label label-warning'>强制结束, 待批改</span>",
+                    "2": "<span class='label label-warning'>已交卷, 待批改</span>"
+                }
+            },
+            {
+                "name": "operator_name",
+                "label": "操作员",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "update_time",
+                "label": "更新时间",
+                "type": "text",
+                "toggled": false
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "fixed": "right",
+                "buttons": [
+                    {
+                        "type": "button",
+                        "label": "批阅",
+                        "disabledOn": "this.status == 1 || this.status == 5",
+                        "actionType": "link",
+                        "level": "primary",
+                        "link": "/exam/review?student_uid=$student_uid&exam_id=$exam_id"
+                    },
+                    {
+                        "type": "button",
+                        "actionType": "ajax",
+                        "label": "完结",
+                        "level": "warning",
+                        "disabledOn": "this.status == 1 || this.status == 5 || this.status == 8",
+                        "confirmText": "完结就是表明考生本次模考结束, 完结后无法批改, 同时会对考生错题录入错题本! ",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/mock/review_finish?student_uid=$student_uid&exam_id=$exam_id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

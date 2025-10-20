@@ -4,7 +4,7 @@
     "body": [
         {
             "type": "service",
-            "api": "/mapi/mock/question_detail?qid=$qid&parent_id=$parent_id",
+            "api": "/mapi/mock/question_detail?qid=$qid",
             "body": [
                 {
                     "type": "tpl",
@@ -61,12 +61,8 @@
                                                         "value": "6"
                                                     },
                                                     {
-                                                        "label": "听力题",
-                                                        "value": "7"
-                                                    },
-                                                    {
                                                         "label": "口语题",
-                                                        "value": "8"
+                                                        "value": "7"
                                                     }
                                                 ]
                                             },
@@ -106,16 +102,19 @@
                                                 "searchable": true,
                                                 "initiallyOpen": false,
                                                 "maxLength": 3,
+                                                "placeholder": "请选择标签",
                                                 "source": "/mapi/mock/tag_lists?is_select=1"
                                             },
                                             {
                                                 "type": "tree-select",
-                                                "name": "single_question_subject_id",
-                                                "value": "${question.single_question_subject_id}",
+                                                "name": "single_question_source_ids",
+                                                "value": "${question.single_question_source_ids || []}",
                                                 "onlyLeaf": true,
+                                                "multiple": true,
                                                 "searchable": true,
-                                                "initiallyOpen": false,
-                                                "source": "/mapi/subject/lists?is_select=1&is_leaf=1"
+                                                "maxLength": 3,
+                                                "placeholder": "请选择来源",
+                                                "source": "/mapi/mock/source_lists?is_select=1"
                                             },
                                             {
                                                 "type": "input-number",
@@ -235,18 +234,6 @@
                                             ],
                                             "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
                                         }
-                                    },
-                                    {
-                                        "type": "tpl",
-                                        "visibleOn": "this.single_question_type == 7",
-                                        "tpl": "<p style='font-weight:900;'><span style='color:red; margin-right:2px;'>*</span>音频地址 <a href='http://baidu.com'>【上传工具地址】</a></p>"
-                                    },
-                                    {
-                                        "type": "input-text",
-                                        "visibleOn": "this.single_question_type == 7",
-                                        "name": "single_question_audio",
-                                        "value": "${question.single_question_audio}",
-                                        "placeholder": "音频http地址"
                                     },
                                     {
                                         "type": "alert",
@@ -469,6 +456,23 @@
                                         "tpl": "<p style='font-weight:900;'><span style='color:red; margin-right:2px;'>*</span>材料录入</p>"
                                     },
                                     {
+                                        "type": "select",
+                                        "name": "batch_question_pre_meta_type",
+                                        "required": true,
+                                        "value": "${question.batch_question_pre_meta_type || 1}",
+                                        "options": [
+                                            {
+                                                "label": "阅读材料",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "label": "听力材料",
+                                                "value": "2"
+                                            }
+                                        ],
+                                        "desc": "请选择适配的材料类型,  页面将根据材料类型决定哪种呈现方式, 阅读材料是文本, 听力材料为有效播放链接"
+                                    },
+                                    {
                                         "type": "input-rich-text",
                                         "className": "border-solid border-gray-100 rounded",
                                         "name": "batch_question_pre_meta",
@@ -572,12 +576,8 @@
                                                                         "value": "6"
                                                                     },
                                                                     {
-                                                                        "label": "听力题",
-                                                                        "value": "7"
-                                                                    },
-                                                                    {
                                                                         "label": "口语题",
-                                                                        "value": "8"
+                                                                        "value": "7"
                                                                     }
                                                                 ]
                                                             },
@@ -616,15 +616,18 @@
                                                                 "searchable": true,
                                                                 "maxLength": 3,
                                                                 "initiallyOpen": false,
+                                                                "placeholder": "请选择标签",
                                                                 "source": "/mapi/mock/tag_lists?is_select=1"
                                                             },
                                                             {
                                                                 "type": "tree-select",
-                                                                "name": "batch_question_subject_id",
+                                                                "name": "batch_question_tag_ids",
                                                                 "onlyLeaf": true,
+                                                                "multiple": true,
                                                                 "searchable": true,
-                                                                "initiallyOpen": false,
-                                                                "source": "/mapi/subject/lists?is_select=1&is_leaf=1"
+                                                                "maxLength": 3,
+                                                                "placeholder": "请选择来源",
+                                                                "source": "/mapi/mock/source_lists?is_select=1"
                                                             },
                                                             {
                                                                 "type": "input-number",
@@ -677,17 +680,6 @@
                                                             ],
                                                             "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
                                                         }
-                                                    },
-                                                    {
-                                                        "type": "tpl",
-                                                        "visibleOn": "this.batch_question_type == 7",
-                                                        "tpl": "<p style='font-weight:900;'><span style='color:red; margin-right:2px;'>*</span>音频地址 <a href='http://baidu.com'>【上传工具地址】</a></p>"
-                                                    },
-                                                    {
-                                                        "type": "input-text",
-                                                        "visibleOn": "this.batch_question_type == 7",
-                                                        "name": "batch_question_audio",
-                                                        "placeholder": "音频http地址"
                                                     },
                                                     {
                                                         "type": "alert",
@@ -799,9 +791,8 @@
                                                         "type": "combo",
                                                         "name": "batch_answer_combo_fill",
                                                         "multiple": true,
-                                                        "addable": true,
-                                                        "removable": true,
-                                                        "visibleOn": "this.single_question_type == 4",
+                                                        "itemClassName": "py-1",
+                                                        "visibleOn": "this.batch_question_type == 4",
                                                         "addBtn": {
                                                             "type": "button",
                                                             "label": "新增答案",
@@ -809,6 +800,11 @@
                                                             "icon": "fa fa-plus-circle"
                                                         },
                                                         "items": [
+                                                            {
+                                                                "type": "input-text",
+                                                                "name": "answer_id",
+                                                                "hidden": true
+                                                            },
                                                             {
                                                                 "type": "input-text",
                                                                 "name": "answer_content",

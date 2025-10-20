@@ -31,8 +31,8 @@ class Service_Page_Student_Delete extends Zy_Core_Service{
         }    
         
         $serviceExam = new Service_Data_Exam();
-        $exam = $serviceExam->getExamByStudentUids(array($uid));
-        if (!empty($exam[$uid])) {
+        $studentExamCnt = $serviceExam->getExamCntBySuid($uid);
+        if ($studentExamCnt > 0) {
             throw new Zy_Core_Exception(405, "操作失败, 学员存在模考记录, 无法删除");
         }            
 

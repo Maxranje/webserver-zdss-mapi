@@ -37,23 +37,27 @@ class Service_Page_Mock_Question_Createimport extends Zy_Core_Service{
             $groupKey           = empty($v[0]) ? 0 : $v[0];
             $description        = empty($v[1]) ? "" : $v[1];
             $meta               = empty($v[2]) ? "" : $v[2];
+            $metaType           = empty($v[3]) ? "" : $v[3];
 
             if (!empty($groupKey)) {
                 if (!isset($preMeta[$groupKey])) {
                     $preMeta[$groupKey] = array(
                         "meta" => "", 
+                        "meta_type" => 1,
                         "is_group" => true, 
                     );
                 }
                 // 有材料, 只填充第一个
                 if (!empty($meta) && empty($preMeta[$groupKey]['meta'])) {
                     $preMeta[$groupKey]["meta"] = $meta;
+                    $preMeta[$groupKey]["meta_type"] = $metaType;
                     $preMeta[$groupKey]["parent_desc"] = $description;
                 }
             } else {
                 $groupKey = !empty($meta) ? "pre_meta_" . $k : "none_" . $k;
                 $preMeta[$groupKey] = array(
                     "meta" => $meta,
+                    "meta_type" => 1,
                     "is_group" => false, 
                 );
             }
@@ -65,12 +69,11 @@ class Service_Page_Mock_Question_Createimport extends Zy_Core_Service{
         foreach($request as $k => $v) {
             $q = array(
                 "description" => empty($v[1]) ? "" : $v[1],
-                "type" => empty($v[3]) ? 0 : intval($v[3]),
-                "level" => empty($v[4]) ? 0 : intval($v[4]),
-                "score" => empty($v[5]) ? 0 : intval($v[5]),
-                "tag_ids" => empty($v[6]) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $v[6])),
-                "subject_id" => empty($v[7]) ? 0 : intval($v[7]),
-                "audio" => empty($v[8]) ? "" : $v[8],
+                "type" => empty($v[4]) ? 0 : intval($v[4]),
+                "level" => empty($v[5]) ? 0 : intval($v[5]),
+                "score" => empty($v[6]) ? 0 : intval($v[6]),
+                "tag_ids" => empty($v[7]) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $v[7])),
+                "source_ids" => empty($v[8]) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $v[8])),
                 "content" => empty($v[9]) ? "" : $v[9],
                 "explan" => empty($v[12]) ? "" : $v[12],
                 "radio" => array(),

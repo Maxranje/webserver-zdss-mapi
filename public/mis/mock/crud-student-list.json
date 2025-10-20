@@ -1,11 +1,12 @@
 {
     "type": "page",
+    "title": "考生列表",
     "body": {
         "type": "crud",
         "id": "student_list",
         "api": {
             "method": "post",
-            "url": "/mapi/student/lists?from_page=mock",
+            "url": "/mapi/student/lists?from_page=mock&is_mock=1",
             "dataType": "form"
         },
         "perPage": 10,

@@ -12,7 +12,7 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
 
         // response
         if ($qid <= 0) {
-            throw new Zy_Core_Exception(405, "参数异常, 无法获取试题信息");
+            return array();
         }
 
         // get question info
@@ -56,29 +56,48 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
                 "type" => "alert",
                 "level" => "warning",
                 "showIcon" => true,
-                "body" => "与学员看到最终样式有一定区别, 预览只作为参考使用"
+                "className"=> "border-solid border-gray-100 shadow p-4 rounded-md",
+                "body" => "与考生看到最终样式有一定区别, 预览只作为参考使用"
             ),
+            array(
+                "type"=> "panel",
+                "title"=> "",
+                "className"=> "border-solid border-gray-100 shadow p-4 rounded-md",
+                "body"=> array(),
+            )            
         );
         // 物料
         if (!empty($questions[0]["pre_meta_id"])) {
             $serviceData = new Service_Data_Meta();
             $meta = $serviceData->getMetaById(intval($questions[0]["pre_meta_id"]));
             if (!empty($meta["content"])) {
-                $result[] =  array(
-                    "type"  => "fieldSet",
-                    "title" => "前置材料",
-                    "body"  => array(
+                $result[1]["body"][] = array(
+                    "type"=> "tpl",
+                    "tpl" => "<p style='font-weight:900;'>前置材料</p>"
+                );                
+                if ($meta["meta_type"] == Service_Data_Meta::META_TYPE_AUDIO) {
+                    $result[1]["body"][] = array(
+                        "type"  => "audio",
+                        "src"   =>$meta['content']
+                    );
+                } else {
+                    $result[1]["body"][] = array(
                         "type"  => "html",
                         "html"   =>$meta['content']
-                    )
-                );
+                    );
+                }                     
             }
         }
+
+        $result[1]["body"][] = array(
+            "type"=> "tpl",
+            "tpl" => "<p style='font-weight:900;margin-top:2rem;'>题目详情</p>"
+        ) ;            
 
         // 试题
         $questionsTpl = array(
             "type"=>  "tabs",
-            "tabsMode"=> "line",
+            "tabsMode"=> "simple",
             "className" => "mt-4",
             "defaultKey" => 0,           
             "tabs"=>  []
@@ -88,77 +107,71 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
                 $questionsTpl["defaultKey"] = $index;
             }  
             $tab = array(
-                "title" => sprintf("Question %d", $question["qid"]),            
+                "title" => array(
+                    "type" => "tpl",
+                    "className"=> "font-black",
+                    "tpl" => "Question " . $question["qid"],
+                ),
                 "tab" => array(
                     array(
-                        "type"=> "fieldSet",
-                        "title"=> "Question",
-                        "body"=> [
-                            array(
-                                "type"=> "html",
-                                "html"=> $question["content"],
-                            ),
-                        ]                        
-                    )
+                        "type" => "tpl",
+                        "className" => "text-black font-black mt-2 block",
+                        "tpl" => sprintf("%d. (%s) [%d分] %s", ($index+1), Service_Data_Question::QUESTION_TYPE_MAP_INFO[$question["type"]], $question["score"], $question["content"]),
+                    ),
                 )
             );
-            if (!empty($answers[$question['qid']])) {
-                $answer = $answers[$question['qid']];
-                shuffle($answer);
-                $answer = array_values($answer);
+
+            $questionAnswer = empty($answers[$question['qid']]) ? array() : $answers[$question['qid']]; 
+            // 试题答案
+            if (!empty($questionAnswer) && in_array($question["type"], Service_Data_Question::QUESTION_TYPE_SIMPLE_MAP)) {   
                 $answerHtml = "";
                 $answerCorrect = array();
-                foreach ($answer as $k => $v) {
+                foreach ($questionAnswer as $k => $v) {
                     $key = Service_Data_Question::QUESTION_PREFIX[$k];
                     if ($v["type"] == Service_Data_Question::QUESTION_TYPE_FILL) {
                         $key = $k+1;
-                    }
-                    $answerHtml .= sprintf("<p>%s. %s</p>", $key, $v["content"]);
-                    if ($v["is_correct"] && in_array($v["type"], [
-                        Service_Data_Question::QUESTION_TYPE_CHECK,
-                        Service_Data_Question::QUESTION_TYPE_CHECKBOX,
-                        Service_Data_Question::QUESTION_TYPE_RAIDO,
-                        Service_Data_Question::QUESTION_TYPE_FILL,
-                    ])) {
-                        $answerCorrect[] = $key;
+                        if ($v["is_correct"] == 1) {
+                            $answerCorrect[] = sprintf("%d: %s", $key, $v["content"]);
+                        }                        
+                    } else {
+                        $answerHtml .= sprintf("<p style='padding: 12px; font-weight:500; border:1px solid #f3f4f6; background: #f3f4f6; border-radius: 0.25rem'>%s. %s</p>", $key, $v["content"]);                        
+                        if ($v["is_correct"] == 1) {
+                            $answerCorrect[] = $key;
+                        }                        
                     }
                 }
-                $answerCorrect = implode(",", $answerCorrect);
-                if ($v["type"] == Service_Data_Question::QUESTION_TYPE_FILL) {
-                    $answerCorrect = $answerHtml;
-                } else {
-                    $tab["tab"][0]["body"][] = array(
-                        "type"=> "html",
-                        "html"=> $answerHtml
-                    );
-                }  
-                // 正确答案
-                if (!empty($answerCorrect)) {
-                    $tab["tab"][] = array(
-                        "type"  => "fieldSet",
-                        "title" => "Answer",
-                        "body"  => array(
-                            "type"  => "html",
-                            "html"   => $answerCorrect,
-                        )                    
-                    );
-                }                    
-            }
-            //解析
-            if (!empty($question["explan"])) {
-                $tab["tab"][] = array(
-                    "type"  => "fieldSet",
-                    "title" => "Explanation",
-                    "body"  => array(
-                        "type"  => "html",
-                        "html"   => $question["explan"],
-                    )                    
+                $tab['tab'][] = array(
+                    "type"=> "html",
+                    "html"=> $answerHtml
                 );
-            }  
+                $tab['tab'][] = array(
+                    "type"=> "tpl",
+                    "tpl" => "<p style='font-weight:900; margin-top:1rem;'>答案:</p>"
+                ) ;                                
+                $tab['tab'][] = array(
+                    "type"=> "tpl",
+                    "className" => "text-black text-md block",
+                    "tpl"=> implode(", ", $answerCorrect)
+                );                                   
+            }
+            $tab['tab'][] = array(
+                "type"=> "tpl",
+                "tpl" => "<p style='font-weight:900;margin-top:1rem;'>解析:</p>"
+            ) ;            
+            $tab['tab'][] = array(
+                "type"  => "html",
+                "className" => "text-black text-md block",
+                "html"   => $question["explan"],
+            ) ;
+
+            $tab['tab'][] = array(
+                "type"=> "divider"
+            ) ;            
+
             $questionsTpl["tabs"][] = $tab;
         }
 
-        $result[] = $questionsTpl;
+        $result[1]["body"][] = $questionsTpl;
         return $result;
     }
 
@@ -183,6 +196,10 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
         $serviceData = new Service_Data_Questiontag();
         $qids = Zy_Helper_Utils::arrayInt($questions, "qid");
         $qtMap = $serviceData->getTagidsByQids($qids);
+
+        // 来源
+        $serviceData = new Service_Data_QuestionSource();
+        $qsMap = $serviceData->getSourceByQid($qids);        
 
         // 答案
         if (!empty($answers)) {
@@ -214,10 +231,9 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
             $question["single_question_level"]          = $profile["level"];
             $question["single_question_score"]          = $profile["score"];
             $question["single_question_tag_ids"]        = empty($qtMap[$profile["qid"]]) ? array() : Zy_Helper_Utils::arrayInt($qtMap[$profile["qid"]]);
-            $question["single_question_subject_id"]     = $profile["subject_id"];
+            $question["single_question_source_ids"]     = empty($qsMap[$profile["qid"]]) ? array() : Zy_Helper_Utils::arrayInt($qsMap[$profile["qid"]]);
             $question["single_question_description"]    = $profile["description"];
             $question["single_question_content"]        = $profile["content"];
-            $question["single_question_audio"]          = $profile["audio"];
             $question["single_answer_combo_radio"]      = $profile["type"] != Service_Data_Question::QUESTION_TYPE_RAIDO ? array() : $answer;
             $question["single_answer_combo_check"]      = $profile["type"] != Service_Data_Question::QUESTION_TYPE_CHECK ? array() : $answer;
             $question["single_answer_combo_checkbox"]   = $profile["type"] != Service_Data_Question::QUESTION_TYPE_CHECKBOX ? array() : $answer;
@@ -238,10 +254,11 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
             
         } else {
             $question["qid"]                            = $currentId;
-            $question["title"]                          = "题目组:" . $parentId . " - 编辑中";
+            $question["title"]                          = "Copy题目组:" . $parentId . " - 新建中";
             $question["defaultKey"]                     = 1;                
             $question["batch_question_combo_item"]      = array();
             $question["batch_question_pre_meta"]        = $meta["content"];
+            $question["batch_question_pre_meta_type"]   = $meta["meta_type"];
             $question["batch_question_parent_qid"]      = $parentId;
             $question["pre_meta_id"]                    = $meta["id"];    
             $question["batch_question_description"]     = $questions[0]["description"];
@@ -254,9 +271,8 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
                     "batch_question_level"          => $profile["level"],
                     "batch_question_score"          => $profile["score"],
                     "batch_question_tag_ids"        => empty($qtMap[$profile["qid"]]) ? array() : Zy_Helper_Utils::arrayInt($qtMap[$profile["qid"]]),
-                    "batch_question_subject_id"     => $profile["subject_id"],
+                    "batch_question_source_ids"     => empty($qsMap[$profile["qid"]]) ? array() : Zy_Helper_Utils::arrayInt($qsMap[$profile["qid"]]),
                     "batch_question_content"        => $profile["content"],
-                    "batch_question_audio"          => $profile["audio"],
                     "batch_answer_combo_radio"      => $profile["type"] != Service_Data_Question::QUESTION_TYPE_RAIDO ? array() : $answer,
                     "batch_answer_combo_check"      => $profile["type"] != Service_Data_Question::QUESTION_TYPE_CHECK ? array() : $answer,
                     "batch_answer_combo_checkbox"   => $profile["type"] != Service_Data_Question::QUESTION_TYPE_CHECKBOX ? array() : $answer,

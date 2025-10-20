@@ -25,8 +25,8 @@ class Service_Page_Mock_Paper_Updatequestion extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 试卷不存在或已被删除");
         }
         
-        if ($paper["frequency"] > 0 && $paper["type"] == Service_Data_Paper::PAPER_TYPE_NORMAL) {
-            throw new Zy_Core_Exception(405, "操作失败, 常规试卷在以被录入到了模考平台后不允许调整试题及分值");
+        if ($paper["frequency"] > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 已参与模考试卷不允许改变试题分数, 会影响已考试考生最终成绩");
         }
 
         $questions = $servicePaper->getPaperQuestions($pid);

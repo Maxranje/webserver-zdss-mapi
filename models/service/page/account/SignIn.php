@@ -33,6 +33,11 @@ class Service_Page_Account_SignIn extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "系统错误请重试");
         }
 
+        if (!empty($userInfo["sop_uid"])) {
+            $sop = $serviceData->getUserInfoByUid(intval($userInfo["sop_uid"]));
+            $userInfo["sopname"] = empty($sop["nickname"]) ? "" : $sop["nickname"];
+        }        
+
         $ret = $this->getAuthInfo($userInfo);
         if ($ret["user"]["roleType"] == 1) {
             $ret["redirect"] = "/platform";

@@ -1,5 +1,6 @@
 {
     "type": "page",
+    "title": "试卷列表",
     "body": {
         "type": "crud",
         "id": "paper_lists",
@@ -24,12 +25,14 @@
                     "type": "input-text",
                     "name": "pids",
                     "label": "试卷Id",
+                    "size": "md",
                     "placeholder": "多个用逗号分隔"
                 },
                 {
                     "type": "input-text",
                     "name": "qids",
                     "label": "试题Id",
+                    "size": "md",
                     "placeholder": "多个用逗号分隔"
                 },
                 {
@@ -46,37 +49,14 @@
                     "name": "type",
                     "options": [
                         {
-                            "label": "常规考试",
+                            "label": "常规",
                             "value": "1"
                         },
                         {
-                            "label": "入学评估",
+                            "label": "评估",
                             "value": "2"
-                        },
-                        {
-                            "label": "单词本",
-                            "value": "3"
                         }
                     ]
-                },
-                {
-                    "type": "tree-select",
-                    "name": "subject_id",
-                    "onlyLeaf": true,
-                    "searchable": true,
-                    "label": "科目",
-                    "size": "md",
-                    "source": "/mapi/subject/lists?is_select=1&is_leaf=1"
-                },
-                {
-                    "type": "tree-select",
-                    "name": "source_ids",
-                    "onlyLeaf": true,
-                    "multiple": true,
-                    "searchable": true,
-                    "size": "md",
-                    "label": "来源",
-                    "source": "/mapi/mock/source_lists?is_select=1"
                 },
                 {
                     "type": "submit",
@@ -96,95 +76,69 @@
                 "icon": "fa fa-plus",
                 "dialog": {
                     "title": "新增",
-                    "body": {
-                        "type": "form",
-                        "name": "paper-new-form",
-                        "api": {
-                            "method": "post",
-                            "url": "/mapi/mock/paper_create",
-                            "dataType": "form"
-                        },
-                        "onEvent": {
-                            "click": {
-                                "actions": [
-                                    {
-                                        "actionType": "reload",
-                                        "componentId": "paper_lists"
-                                    }
-                                ]
-                            }
-                        },
-                        "body": [
-                            {
-                                "type": "input-text",
-                                "name": "title",
-                                "label": "试卷名称",
-                                "desc": "限定100字内",
-                                "required": true
+                    "body": [
+                        {
+                            "type": "form",
+                            "name": "paper-new-form",
+                            "api": {
+                                "method": "post",
+                                "url": "/mapi/mock/paper_create",
+                                "dataType": "form"
                             },
-                            {
-                                "type": "divider"
+                            "onEvent": {
+                                "click": {
+                                    "actions": [
+                                        {
+                                            "actionType": "reload",
+                                            "componentId": "paper_lists"
+                                        }
+                                    ]
+                                }
                             },
-                            {
-                                "label": "测验类型",
-                                "type": "select",
-                                "clearable": true,
-                                "required": true,
-                                "name": "type",
-                                "options": [
-                                    {
-                                        "label": "常规考试",
-                                        "value": "1"
-                                    },
-                                    {
-                                        "label": "入学评估",
-                                        "value": "2"
-                                    },
-                                    {
-                                        "label": "单词本",
-                                        "value": "3"
-                                    }
-                                ],
-                                "desc": "入学评估题目会随学员作答情况来难易自动挑选, 需要多配置一些不同分段题, 单词本只考单词"
-                            },
-                            {
-                                "type": "divider"
-                            },
-                            {
-                                "type": "tree-select",
-                                "name": "subject_id",
-                                "onlyLeaf": true,
-                                "searchable": true,
-                                "label": "科目",
-                                "source": "/mapi/subject/lists?is_select=1&is_leaf=1"
-                            },
-                            {
-                                "type": "divider"
-                            },
-                            {
-                                "type": "tree-select",
-                                "name": "source_ids",
-                                "onlyLeaf": true,
-                                "multiple": true,
-                                "searchable": true,
-                                "maxLength": 3,
-                                "label": "来源",
-                                "desc": "最多3项",
-                                "source": "/mapi/mock/source_lists?is_select=1"
-                            },
-                            {
-                                "type": "divider"
-                            },
-                            {
-                                "type": "textarea",
-                                "showCounter": true,
-                                "maxLength": 200,
-                                "name": "remark",
-                                "label": "备注",
-                                "desc": "限定200字内"
-                            }
-                        ]
-                    }
+                            "body": [
+                                {
+                                    "type": "input-text",
+                                    "name": "title",
+                                    "label": "试卷名称",
+                                    "desc": "限定50字内",
+                                    "required": true
+                                },
+                                {
+                                    "type": "divider"
+                                },
+                                {
+                                    "label": "类型",
+                                    "type": "select",
+                                    "clearable": true,
+                                    "required": true,
+                                    "name": "type",
+                                    "value": 1,
+                                    "options": [
+                                        {
+                                            "label": "常规",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "label": "评估",
+                                            "value": "2"
+                                        }
+                                    ],
+                                    "desc": "常规试卷录题即出题, 评估试卷动态从录题中抽题考试, 详情参考录入页"
+                                },
+                                {
+                                    "type": "divider"
+                                },
+                                {
+                                    "type": "textarea",
+                                    "showCounter": true,
+                                    "maxLength": 200,
+                                    "name": "remark",
+                                    "label": "备注",
+                                    "desc": "限定100字内"
+                                }
+                            ]
+                        }
+                    ]
                 }
             },
             {
@@ -221,7 +175,7 @@
                 {
                     "type": "tpl",
                     "visibleOn": "this.type == 2",
-                    "tpl": "<span class=' label label-danger mr-2'>Assess</span>"
+                    "tpl": "<span class=' label label-danger mr-2'>评估</span>"
                 },
                 {
                     "type": "tpl",
@@ -244,106 +198,81 @@
                             "primary": true,
                             "dialog": {
                                 "title": "编辑",
-                                "body": {
-                                    "type": "form",
-                                    "name": "paper-edit-form",
-                                    "api": {
-                                        "method": "post",
-                                        "url": "/mapi/mock/paper_update",
-                                        "dataType": "form"
-                                    },
-                                    "onEvent": {
-                                        "click": {
-                                            "actions": [
-                                                {
-                                                    "actionType": "reload",
-                                                    "componentId": "paper_lists"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "body": [
-                                        {
-                                            "type": "input-text",
-                                            "name": "pid",
-                                            "hidden": true
+                                "body": [
+                                    {
+                                        "type": "form",
+                                        "name": "paper-edit-form",
+                                        "api": {
+                                            "method": "post",
+                                            "url": "/mapi/mock/paper_update",
+                                            "dataType": "form"
                                         },
-                                        {
-                                            "type": "input-text",
-                                            "name": "title",
-                                            "label": "试卷名称",
-                                            "desc": "限定100字内",
-                                            "required": true
+                                        "onEvent": {
+                                            "click": {
+                                                "actions": [
+                                                    {
+                                                        "actionType": "reload",
+                                                        "componentId": "paper_lists"
+                                                    }
+                                                ]
+                                            }
                                         },
-                                        {
-                                            "type": "divider"
-                                        },
-                                        {
-                                            "label": "测验类型",
-                                            "type": "select",
-                                            "clearable": true,
-                                            "required": true,
-                                            "name": "type",
-                                            "options": [
-                                                {
-                                                    "label": "常规考试",
-                                                    "value": "1"
-                                                },
-                                                {
-                                                    "label": "入学评估",
-                                                    "value": "2"
-                                                },
-                                                {
-                                                    "label": "单词本",
-                                                    "value": "3"
-                                                }
-                                            ],
-                                            "desc": "入学评估题目会随学员作答情况来难易自动挑选, 需要多配置一些不同分段题, 单词本只考单词"
-                                        },
-                                        {
-                                            "type": "divider"
-                                        },
-                                        {
-                                            "type": "tree-select",
-                                            "name": "subject_id",
-                                            "onlyLeaf": true,
-                                            "searchable": true,
-                                            "label": "科目",
-                                            "source": "/mapi/subject/lists?is_select=1&is_leaf=1"
-                                        },
-                                        {
-                                            "type": "divider"
-                                        },
-                                        {
-                                            "type": "tree-select",
-                                            "name": "source_ids",
-                                            "onlyLeaf": true,
-                                            "multiple": true,
-                                            "searchable": true,
-                                            "label": "来源",
-                                            "source": "/mapi/mock/source_lists?is_select=1"
-                                        },
-                                        {
-                                            "type": "divider"
-                                        },
-                                        {
-                                            "type": "textarea",
-                                            "showCounter": true,
-                                            "maxLength": 200,
-                                            "name": "remark",
-                                            "label": "备注",
-                                            "desc": "限定200字内"
-                                        }
-                                    ]
-                                }
+                                        "body": [
+                                            {
+                                                "type": "input-text",
+                                                "name": "pid",
+                                                "hidden": true
+                                            },
+                                            {
+                                                "type": "input-text",
+                                                "name": "title",
+                                                "label": "试卷名称",
+                                                "desc": "限定50字内",
+                                                "required": true
+                                            },
+                                            {
+                                                "type": "divider"
+                                            },
+                                            {
+                                                "label": "测验类型",
+                                                "type": "select",
+                                                "clearable": true,
+                                                "required": true,
+                                                "name": "type",
+                                                "options": [
+                                                    {
+                                                        "label": "常规",
+                                                        "value": "1"
+                                                    },
+                                                    {
+                                                        "label": "评估",
+                                                        "value": "2"
+                                                    }
+                                                ],
+                                                "desc": "常规试卷录题即出题, 评估试卷动态从录题中抽题考试, 详情参考录入页"
+                                            },
+                                            {
+                                                "type": "divider"
+                                            },
+                                            {
+                                                "type": "textarea",
+                                                "showCounter": true,
+                                                "maxLength": 200,
+                                                "name": "remark",
+                                                "label": "备注",
+                                                "desc": "限定100字内"
+                                            }
+                                        ]
+                                    }
+                                ]
                             }
                         },
                         {
                             "type": "button",
-                            "label": "录入",
+                            "label": "录题",
                             "actionType": "drawer",
                             "drawer": {
-                                "title": "录入",
+                                "title": "录题",
                                 "size": "xl",
                                 "actions": [
                                     {
@@ -372,40 +301,38 @@
                                                 "items": [
                                                     {
                                                         "label": "名称",
-                                                        "content": "<span class='text-black font-black ml-2'>${paper.title}</span>",
-                                                        "span": 3
+                                                        "content": "<span class='text-black font-black ml-2'>${paper.title}</span>"
                                                     },
                                                     {
                                                         "label": "类型",
                                                         "content": "<span class='text-black font-black ml-2'>${paper.type_info}</span>"
                                                     },
                                                     {
-                                                        "label": "科目",
-                                                        "content": "<span class='text-black font-black ml-2'>${paper.subject_name}</span>"
-                                                    },
-                                                    {
-                                                        "label": "轮次",
-                                                        "content": "<span class='text-black font-black ml-2'>${paper.frequency}次</span>"
+                                                        "label": "总题数",
+                                                        "content": "<span class='text-black font-black ml-2'>${paper.total_question}</span>"
                                                     },
                                                     {
                                                         "label": "备注",
                                                         "content": "<span class='text-gray-500  ml-2'>${paper.remark}</span>",
-                                                        "span": 4
-                                                    },
-                                                    {
-                                                        "label": "来源",
-                                                        "content": {
-                                                            "type": "each",
-                                                            "className": "inline-block ml-2",
-                                                            "name": "${paper.source_list}",
-                                                            "items": {
-                                                                "type": "tpl",
-                                                                "tpl": "<span class='label bg-gray-400 text-xs'>${item}</span> "
-                                                            }
-                                                        },
-                                                        "span": 4
+                                                        "span": 3
                                                     }
                                                 ]
+                                            },
+                                            {
+                                                "type": "alert",
+                                                "level": "warning",
+                                                "className": "p-2 mt-5 ml-3 shadow rounded",
+                                                "hiddenOn": "${paper.type != 1}",
+                                                "showIcon": true,
+                                                "body": "<div style='font-weight:bold;'>常规试卷最大录入${paper.input_total_question}道, 模考时按序全量出题. </div>"
+                                            },
+                                            {
+                                                "type": "alert",
+                                                "level": "warning",
+                                                "className": "p-2 mt-5 ml-3 shadow rounded",
+                                                "hiddenOn": "${paper.type != 2}",
+                                                "showIcon": true,
+                                                "body": "<div style='font-weight:bold;'>评估试卷最大录入${paper.input_total_question}道, 考试中考题是根据学员客观题(选择/填空)正确度进行动态调整,  所以录入试题尽可能每个难度均衡配置数量 (注意:主观题(写作/口语)无法实时判别, 一律认为正确) </div><div style='font-weight:bold; color:red;'>动态调整规则: 客观题(选择/填空)正确率>=0.75(10道题)即可提升难度 </div><div style='font-weight:bold; color:red;'>考试结束标准: 最少完成10道题, 最多50道, 未超过某难度 / 通过最高难度L5  </div>"
                                             },
                                             {
                                                 "type": "tpl",
@@ -425,7 +352,28 @@
                                                                 "className": "border-solid border-gray-100 shadow p-2 rounded",
                                                                 "source": "${questions}",
                                                                 "syncLocation": false,
+                                                                "checkOnItemClick": true,
+                                                                "multiple": false,
+                                                                "bulkActions": [
+                                                                    {
+                                                                        "label": "操作"
+                                                                    }
+                                                                ],
+                                                                "onEvent": {
+                                                                    "selectedChange": {
+                                                                        "actions": [
+                                                                            {
+                                                                                "actionType": "reload",
+                                                                                "componentId": "question_detail",
+                                                                                "args": {
+                                                                                    "qid": "${event.data.selectedItems[0].qid}"
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
                                                                 "headerToolbar": [
+                                                                    "bulkActions",
                                                                     {
                                                                         "label": "考题变更",
                                                                         "type": "button",
@@ -471,15 +419,15 @@
                                                                         "className": "v-middle mb-2"
                                                                     }
                                                                 ],
-                                                                "itemAction": {
-                                                                    "type": "button",
-                                                                    "actionType": "reload",
-                                                                    "target": "question_detail?qid=$qid"
-                                                                },
                                                                 "footable": {
                                                                     "expand": "all"
                                                                 },
                                                                 "columns": [
+                                                                    {
+                                                                        "name": "qid",
+                                                                        "type": "text",
+                                                                        "hidden": true
+                                                                    },
                                                                     {
                                                                         "name": "title",
                                                                         "type": "text"
@@ -497,6 +445,7 @@
                                                                                 "label": "${score_info}",
                                                                                 "level": "link",
                                                                                 "actionType": "dialog",
+                                                                                "disabledOn": "this.frequency > 0",
                                                                                 "dialog": {
                                                                                     "title": "调整分值",
                                                                                     "body": [
