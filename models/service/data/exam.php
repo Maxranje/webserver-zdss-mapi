@@ -303,7 +303,7 @@ class Service_Data_Exam {
         // 优先创建试卷,
         $daoPaper = new Dao_Paper();
         $paperProfile = array(
-            "title" => sprintf("【%s-】%s定向模考", date("m.d"), mt_rand(111, 999),$userInfo["nickname"]),
+            "title" => sprintf("【%s%s】%s定向模考", date("md"), mt_rand(111, 999),$userInfo["nickname"]),
             "type" => $paper["type"],
             "frequency" => 1,
             "total_score" => $paper["total_score"],
