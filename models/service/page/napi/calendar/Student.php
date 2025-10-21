@@ -17,6 +17,9 @@ class Service_Page_Napi_Calendar_Student extends Zy_Core_Service{
         if ($sts < 1438185600 || $ets > 2700489600) {
             throw new Zy_Core_Exception(405, "操作失败, 时间范围不正确");
         }
+        if ($ets - $sts > 45 * 86400) {
+            throw new Zy_Core_Exception(405, "时间范围异常");
+        }        
         // 参数问题
         $sts += 86400;
         $ets += 86399;

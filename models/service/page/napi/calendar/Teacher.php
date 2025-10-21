@@ -18,6 +18,9 @@ class Service_Page_Napi_Calendar_Teacher extends Zy_Core_Service{
         if ($sts < 1438185600 || $ets > 2700489600) {
             throw new Zy_Core_Exception(405, "操作失败, 时间范围不正确");
         }
+        if ($ets - $sts > 45 * 86400) {
+            throw new Zy_Core_Exception(405, "时间范围异常");
+        }
         // 参数问题
         $sts += 86400;
         $ets += 86399;
@@ -29,13 +32,30 @@ class Service_Page_Napi_Calendar_Teacher extends Zy_Core_Service{
             sprintf("end_time <= %d", $ets),
             sprintf("teacher_uid = %d", intval($uid))
         );
+        $pklists = $serviceData->getListByConds($conds);
 
-        $lists = $serviceData->getListByConds($conds);
-        if (empty($lists)) {
+        // 锁定时间
+        $conds = array(
+            sprintf("start_time >= %d", $sts),
+            sprintf("end_time <= %d", $ets),
+            sprintf("uid = %d", intval($uid))
+        ) ;
+        $serviceData = new Service_Data_Lock();
+        $locklist = $serviceData->getListByConds($conds);
+
+        if (empty($pklists) && empty($locklist)) {
             return array();
         }
 
-        return array("lists" => $this->formatBase($lists));
+        if (!empty($pklists)) {
+            $pklists = $this->formatBase($pklists);
+        }
+        if (!empty($locklist)) {
+            $locklist = $this->formatLock($locklist);
+        }
+        
+
+        return array("lists" => array_merge($pklists, $locklist));
     }
 
     private function formatBase ($lists) {
@@ -114,6 +134,23 @@ class Service_Page_Napi_Calendar_Teacher extends Zy_Core_Service{
                     "state" =>  $item["state"] == Service_Data_Schedule::SCHEDULE_ABLE ? 2 : 3,
                 ),
             );
+        }
+        return $result;
+    }
+
+    public function formatLock ($locklist) {
+        $result = array();
+        foreach ($locklist as $key => $item) {
+            $result[] = array(
+                "start" => date("Y-m-d H:i:s",$item['start_time']),
+                "end"   => date("Y-m-d H:i:s",$item['end_time']),
+                "extendedProps" => array(
+                    "teacher" => "时间锁定",
+                    "subject" => "",
+                    "location" => "",
+                    "state" =>  1,
+                ),
+            ); 
         }
         return $result;
     }

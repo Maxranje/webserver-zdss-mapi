@@ -142,6 +142,7 @@ class Zy_Core_Service {
                 "nickname"  => $userInfo["nickname"],
                 "type"      => $userInfo["type"],
                 "uid"       => $userInfo["uid"],
+                "sex"       => $userInfo["sex"], 
                 "avatar"    => $userInfo["avatar"],    
                 "school"    => $userInfo["school"],
                 "graduate"  => $userInfo["graduate"],

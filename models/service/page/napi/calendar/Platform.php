@@ -20,6 +20,9 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
         if ($sts < 1438185600 || $ets > 2700489600) {
             throw new Zy_Core_Exception(405, "操作失败, 时间范围不正确");
         }
+        if ($ets - $sts > 45 * 86400) {
+            throw new Zy_Core_Exception(405, "时间范围异常");
+        }        
         // 参数问题
         $sts += 86400;
         $ets += 86399;
@@ -146,86 +149,112 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
             sprintf("end_time <= %d", $ets),
             sprintf("teacher_uid = %d", intval($uid))
         );
+        $pklists = $serviceData->getListByConds($conds);
+        // 锁定时间
+        $conds = array(
+            sprintf("start_time >= %d", $sts),
+            sprintf("end_time <= %d", $ets),
+            sprintf("uid = %d", intval($uid))
+        ) ;
+        $serviceData = new Service_Data_Lock();
+        $locklist = $serviceData->getListByConds($conds);
 
-        $lists = $serviceData->getListByConds($conds);
-        if (empty($lists)) {
+        if (empty($pklists) && empty($locklist)) {
             return array();
         }
-                
-        $groupIds       = Zy_Helper_Utils::arrayInt($lists, "group_id");
-        $subjectIds     = Zy_Helper_Utils::arrayInt($lists, "subject_id");
-        $areaIds        = Zy_Helper_Utils::arrayInt($lists, "area_id");
-        $roomIds        = Zy_Helper_Utils::arrayInt($lists, "room_id");
 
-        $serviceSubject = new Service_Data_Subject();
-        $subjectInfo = $serviceSubject->getListByConds(array('id in ('.implode(',', $subjectIds).')'));
-        $subjectInfo = array_column($subjectInfo, null, 'id');
-
-        $subjectParentIds = Zy_Helper_Utils::arrayInt($subjectInfo, "parent_id");
-        $subjectParentInfos = $serviceSubject->getSubjectByIds($subjectParentIds);
-        $subjectParentInfos = array_column($subjectParentInfos, null, 'id');
-
-        $serviceData = new Service_Data_Group();
-        $groupInfos = $serviceData->getListByConds(array('id in ('.implode(',', $groupIds).')'));
-        $groupInfos = array_column($groupInfos, null, 'id');
-
-        $areaInfos = $roomInfos = array();
-        if (!empty($roomIds)) {
-            $serviceArea = new Service_Data_Area();
-            $roomInfos = $serviceArea->getRoomListByConds(array('id in ('.implode(",", $roomIds).')'));
-            $roomInfos = array_column($roomInfos, null, 'id');
-        }
-        if (!empty($areaIds)) {
-            $serviceArea = new Service_Data_Area();
-            $areaInfos = $serviceArea->getAreaListByConds(array('id in ('.implode(",", $areaIds).')'));
-            $areaInfos = array_column($areaInfos, null, 'id');
-        }
-
-        
+        // 格式化
         $result = array();
-        foreach ($lists as $key => $item) {
-            if (empty($groupInfos[$item['group_id']]['name'])) {
-                continue;
-            }
-            if (empty($subjectInfo[$item['subject_id']]['name'])) {
-                continue;
-            }
-            if (empty($subjectInfo[$item['subject_id']]['parent_id'])) {
-                continue;
-            }
-            $subjectParentId = $subjectInfo[$item['subject_id']]['parent_id'];
-            if (empty($subjectParentInfos[$subjectParentId]['name'])) {
-                continue;
-            }
-            // 信息
-            $groupName = $groupInfos[$item['group_id']]['name'];
-            // 科目信息
-            $subjectName = sprintf("%s/%s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfo[$item['subject_id']]['name']);
-            // 校区信息
-            $areaName = "";
-            $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
-            if (!empty($item['area_id']) && !empty($areaInfos[$item['area_id']]['name'])) {
-                $areaName = $areaInfos[$item['area_id']]['name'];
-                if (!empty($item['room_id']) && !empty($roomInfos[$item['room_id']]['name'])) {
-                    $areaName = sprintf("%s(%s)", $areaName, $roomInfos[$item['room_id']]['name']);
-                } else {
-                    $areaName = sprintf("%s(%s)", $areaName, "无教室");
-                }
-                if (isset($ext['is_online']) && $ext['is_online'] == 1) {
-                    $areaName = sprintf("%s(%s)", $areaName, "线上");
-                }
-            }            
+        if (!empty($pklists)) {
+            $groupIds       = Zy_Helper_Utils::arrayInt($pklists, "group_id");
+            $subjectIds     = Zy_Helper_Utils::arrayInt($pklists, "subject_id");
+            $areaIds        = Zy_Helper_Utils::arrayInt($pklists, "area_id");
+            $roomIds        = Zy_Helper_Utils::arrayInt($pklists, "room_id");
 
-            $result[] = array(
-                "start" => date("Y-m-d H:i:s",$item['start_time']),
-                "end"   => date("Y-m-d H:i:s",$item['end_time']),
-                "extendedProps" => array(
-                    "teacher" => $groupName,
-                    "subject" => $subjectName,
-                    "location" => $areaName,
-                    "state" =>  $item["state"] == Service_Data_Schedule::SCHEDULE_ABLE ? 2 : 3,
-                ),
-            );
+            $serviceSubject = new Service_Data_Subject();
+            $subjectInfo = $serviceSubject->getListByConds(array('id in ('.implode(',', $subjectIds).')'));
+            $subjectInfo = array_column($subjectInfo, null, 'id');
+
+            $subjectParentIds = Zy_Helper_Utils::arrayInt($subjectInfo, "parent_id");
+            $subjectParentInfos = $serviceSubject->getSubjectByIds($subjectParentIds);
+            $subjectParentInfos = array_column($subjectParentInfos, null, 'id');
+
+            $serviceData = new Service_Data_Group();
+            $groupInfos = $serviceData->getListByConds(array('id in ('.implode(',', $groupIds).')'));
+            $groupInfos = array_column($groupInfos, null, 'id');
+
+            $areaInfos = $roomInfos = array();
+            if (!empty($roomIds)) {
+                $serviceArea = new Service_Data_Area();
+                $roomInfos = $serviceArea->getRoomListByConds(array('id in ('.implode(",", $roomIds).')'));
+                $roomInfos = array_column($roomInfos, null, 'id');
+            }
+            if (!empty($areaIds)) {
+                $serviceArea = new Service_Data_Area();
+                $areaInfos = $serviceArea->getAreaListByConds(array('id in ('.implode(",", $areaIds).')'));
+                $areaInfos = array_column($areaInfos, null, 'id');
+            }
+
+            
+            
+            foreach ($pklists as $key => $item) {
+                if (empty($groupInfos[$item['group_id']]['name'])) {
+                    continue;
+                }
+                if (empty($subjectInfo[$item['subject_id']]['name'])) {
+                    continue;
+                }
+                if (empty($subjectInfo[$item['subject_id']]['parent_id'])) {
+                    continue;
+                }
+                $subjectParentId = $subjectInfo[$item['subject_id']]['parent_id'];
+                if (empty($subjectParentInfos[$subjectParentId]['name'])) {
+                    continue;
+                }
+                // 信息
+                $groupName = $groupInfos[$item['group_id']]['name'];
+                // 科目信息
+                $subjectName = sprintf("%s/%s", $subjectParentInfos[$subjectParentId]['name'], $subjectInfo[$item['subject_id']]['name']);
+                // 校区信息
+                $areaName = "";
+                $ext = empty($item['ext']) ? array() : json_decode($item['ext'], true);
+                if (!empty($item['area_id']) && !empty($areaInfos[$item['area_id']]['name'])) {
+                    $areaName = $areaInfos[$item['area_id']]['name'];
+                    if (!empty($item['room_id']) && !empty($roomInfos[$item['room_id']]['name'])) {
+                        $areaName = sprintf("%s(%s)", $areaName, $roomInfos[$item['room_id']]['name']);
+                    } else {
+                        $areaName = sprintf("%s(%s)", $areaName, "无教室");
+                    }
+                    if (isset($ext['is_online']) && $ext['is_online'] == 1) {
+                        $areaName = sprintf("%s(%s)", $areaName, "线上");
+                    }
+                }            
+
+                $result[] = array(
+                    "start" => date("Y-m-d H:i:s",$item['start_time']),
+                    "end"   => date("Y-m-d H:i:s",$item['end_time']),
+                    "extendedProps" => array(
+                        "teacher" => $groupName,
+                        "subject" => $subjectName,
+                        "location" => $areaName,
+                        "state" =>  $item["state"] == Service_Data_Schedule::SCHEDULE_ABLE ? 2 : 3,
+                    ),
+                );
+            }
+        }
+        if (!empty($locklist)) {
+            foreach ($locklist as $key => $item) {
+                $result[] = array(
+                    "start" => date("Y-m-d H:i:s",$item['start_time']),
+                    "end"   => date("Y-m-d H:i:s",$item['end_time']),
+                    "extendedProps" => array(
+                        "teacher" => "时间锁定",
+                        "subject" => "",
+                        "location" => "",
+                        "state" =>  1,
+                    ),
+                ); 
+            }
         }
         return $result;
     }
