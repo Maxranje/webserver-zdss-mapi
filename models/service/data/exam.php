@@ -818,7 +818,11 @@ class Service_Data_Exam {
     public function getStudentAnswerDetailForMock ($examId, $pid, $studentUid) {
         $ret = $this->getStudentAnswerDetailForReview($examId, $pid, $studentUid);
         // 结构化去掉一些东西
+        $lastLevel = 0;
         foreach ($ret["questions"] as &$question) {
+            if ($question["level"] > $lastLevel) {
+                $lastLevel = $question["level"];
+            }
             // 学员批改去掉一些
             if (!empty($question["studentAnswer"])) {
                 foreach ($question["studentAnswer"] as &$answer) {
@@ -833,6 +837,8 @@ class Service_Data_Exam {
                 }
             }
         }
+        $ret["currentLevel"] = empty(Service_Data_Question::QUESTION_LEVEL_MAP_INFO[$lastLevel]) ? 
+            "" : Service_Data_Question::QUESTION_LEVEL_MAP_INFO[$lastLevel];
         return $ret ;
     }    
 
