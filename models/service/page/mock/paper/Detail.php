@@ -57,31 +57,40 @@ class Service_Page_Mock_Paper_Detail extends Zy_Core_Service{
 
         $options = array();
         $total = 0;
+        $splitCnt = 30;
         foreach ($questions as $i => $item) {
             $total++;
             $level = empty($item["level"]) ? "" :Service_Data_Question::QUESTION_LEVEL_MAP_INFO[$item["level"]];
             $type  = empty($item["type"]) ? "" :Service_Data_Question::QUESTION_TYPE_MAP_INFO[$item["type"]];
             $score = empty($paperQuestions[$item["qid"]]["score"]) ? $item['score'] : $paperQuestions[$item["qid"]]["score"];
+
+            $description = strlen($item["description"]) > $splitCnt ? substr($item["description"], 0, $splitCnt) . "..." : $item["description"];
+            $content = empty($item["content"]) ? "" : strip_tags($item["content"]);
+            $content = strlen($content) > $splitCnt ? substr($content, 0, $splitCnt) . "..." : $content;
+
+            $isOff = $item["state"] != Service_Data_Question::QUESTION_ABLE;
             if ($item['parent_id'] > 0) {
                 if (!isset($options[$item["parent_id"]])) {
                     $options[$item["parent_id"]] = array(
-                        'title'         => sprintf("第%d题 - 题目组", $i+1),
+                        'title'         => sprintf("[题目组] %s", $description),
                         "children"      => array(),
                     );
                 }
                 $options[$item["parent_id"]]["children"][] = array(
-                    'title' => empty($item['description']) ? strip_tags($item["content"]) : $item["description"],
-                    "level" => sprintf("%s(%s)", $type, $level),
+                    'title' => sprintf("%d. %s", $i+1, $content),
+                    "level" => $isOff ? "已下线" : sprintf("%s(%s)", $type, $level),
                     'qid'   => $item['qid'],
                     "score_info"=> $score . "分",
+                    "state"     => $item['state'],
                     "score"     => $score,
                 );
             } else {
                 $options[] = array(
-                    'title'     => sprintf("第%d题 - 单项题", $i+1),
+                    'title'     => sprintf("%d. [单项]%s", $i+1, $description),
                     'qid'       => $item['qid'], 
-                    "level"     => sprintf("%s(%s)", $type, $level),
+                    "level"     => $isOff ? "已下线" : sprintf("%s(%s)", $type, $level),
                     "score_info"=> $score . "分",
+                    "state"     => $item['state'],
                     "score"     => $score,
                 );
             }

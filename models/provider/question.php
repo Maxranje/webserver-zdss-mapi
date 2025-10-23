@@ -11,6 +11,7 @@ class Dao_Question extends Zy_Core_Dao {
         $this->arrFieldsMap = array(
             "qid" => "qid",
             "type" => "type",
+            "state" => "state",
             "level" => "level",
             "subject_id" => "subject_id",
             "content" => "content",
@@ -31,7 +32,9 @@ class Dao_Question extends Zy_Core_Dao {
             "qid" => "qid",
             "type" => "type",
             "level" => "level",
+            "state" => "state",
             "subject_id" => "subject_id",
+            "content" => "content",
             "description" => "description",
             "parent_id" => "parent_id",
             "is_coll" => "is_coll",

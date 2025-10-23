@@ -9,6 +9,7 @@ class Controller_Mock extends Zy_Core_Controller{
         "question_lists"        => "actions/mock/question/Lists.php",
         "question_delete"       => "actions/mock/question/delete.php",  
         "question_detail"       => "actions/mock/question/detail.php",  
+        "question_update"       => "actions/mock/question/Update.php",
         
         // 试卷
         "paper_lists"        => "actions/mock/paper/Lists.php",

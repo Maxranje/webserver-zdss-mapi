@@ -395,11 +395,29 @@
                                                                                     "reload": "paper_detail",
                                                                                     "body": [
                                                                                         {
+                                                                                            "type": "alert",
+                                                                                            "level": "danger",
+                                                                                            "className": "p-2 mt-2 ml-3 shadow rounded",
+                                                                                            "showIcon": true,
+                                                                                            "body": "<div style='font-weight:bold;'>下线试题并且已关联试卷, 会做标记, 但会正常外显.</div>"
+                                                                                        },
+                                                                                        {
                                                                                             "type": "transfer",
                                                                                             "name": "paper_add_qids",
                                                                                             "searchable": true,
-                                                                                            "menuTpl": "<div class='flex justify-between'><span>${label}</span><span class='text-muted m-r text-sm'>${tag}</span></div>",
-                                                                                            "source": "/mapi/mock/question_lists?is_select=1&pid=${paper.pid}"
+                                                                                            "menuTpl": [
+                                                                                                {
+                                                                                                    "type": "tpl",
+                                                                                                    "visibleOn": "${state == 1}",
+                                                                                                    "tpl": "<div class='flex justify-between'><span>${label}</span><span class='text-muted m-r text-sm'>${tag}</span></div>"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type": "tpl",
+                                                                                                    "visibleOn": "${state == 2}",
+                                                                                                    "tpl": "<div class='flex justify-between'><span>${label}</span><span class='font-black m-r text-sm text-danger'>${tag}</span></div>"
+                                                                                                }
+                                                                                            ],
+                                                                                            "source": "/mapi/mock/question_lists?is_paper=1&pid=${paper.pid}"
                                                                                         }
                                                                                     ]
                                                                                 }
@@ -427,7 +445,8 @@
                                                                     },
                                                                     {
                                                                         "name": "level",
-                                                                        "type": "text"
+                                                                        "type": "text",
+                                                                        "classNameExpr": "<%= data.state == 2 ? 'bg-danger' : '' %>"
                                                                     },
                                                                     {
                                                                         "type": "operation",

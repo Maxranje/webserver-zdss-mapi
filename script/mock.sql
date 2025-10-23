@@ -6,6 +6,7 @@ alter table tblUser add column `is_mock`  TINYINT(2) NOT NULL DEFAULT '1' COMMEN
 CREATE TABLE `tblQuestion` (
     `qid` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'qid',
     `type` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '类型',
+    `state` TINYINT(2) NOT NULL DEFAULT '1' COMMENT '状态1有效,2失效',
     `level` TINYINT(2) NOT NULL DEFAULT '1' COMMENT '试题难度',
     `subject_id` int(11) NOT NULL DEFAULT '0' COMMENT '科目id',
     `content` TEXT COMMENT '试题主内容',
@@ -21,9 +22,10 @@ CREATE TABLE `tblQuestion` (
     `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',  
     `ext` VARCHAR(2000) NOT NULL DEFAULT '' COMMENT "冗余",
     PRIMARY KEY (`qid`),
-    KEY `type` (`type`),
+    KEY `type` (`type`, "state"),
     KEY `level` (`level`),
-    KEY `coll_pid` (`is_coll`,`parent_id`)
+    KEY `state` (`state`), 
+    KEY `coll_pid_state` (`is_coll`,`parent_id`, `state`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1000200 DEFAULT CHARSET=utf8 COMMENT='试题表';
 
 CREATE TABLE `tblAnswer` (

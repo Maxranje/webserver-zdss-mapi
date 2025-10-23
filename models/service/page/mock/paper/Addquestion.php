@@ -52,6 +52,14 @@ class Service_Page_Mock_Paper_Addquestion extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 评估试卷最大录入".Service_Data_Paper::INPUT_ASSESS_TOTAL_QUESTION."道");
         }
 
+        // 增量去掉已下线资源
+        $questions = array_column($questions, null, "qid");
+        foreach ($addQids as $v) {
+            if ($questions[$v]["state"] != Service_Data_Question::QUESTION_ABLE) {
+                throw new Zy_Core_Exception(405, "操作失败, 增量试题中存在已下线试题, qid:%s, 描述:%s", $questions[$v]["qid"], $questions[$v]["description"]);
+            }
+        }
+
         $totalScore = 0;
         foreach ($questions as $v) {
             $totalScore += $v["score"];

@@ -11,6 +11,7 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         $rn             = empty($this->request['perPage']) ? 20 : intval($this->request['perPage']);
         $qids           = empty($this->request['qids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['qids']));
         $pid            = empty($this->request['pid']) ? 0 : intval($this->request['pid']);
+        $state          = empty($this->request['state']) || !in_array($this->request['state'], Service_Data_Question::QUESTION_STATE_MAP) ? 0 : intval($this->request['state']);
         $type           = empty($this->request['type']) ? 0 : intval($this->request['type']);
         $level          = empty($this->request['level']) ? 0 : intval($this->request['level']); 
         $parentId       = empty($this->request['parent_id']) ? 0 : intval($this->request['parent_id']); 
@@ -18,6 +19,7 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         $tagIds         = empty($this->request['tag_ids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['tag_ids']));
         $sourceIds      = empty($this->request['source_ids']) ? array() : Zy_Helper_Utils::arrayInt(explode(",", $this->request['source_ids']));
         $isSelect       = empty($this->request['is_select']) ? false : true;
+        $isPaper        = empty($this->request['is_paper']) ? false : true;
         $pn             = ($pn-1) * $rn;        
 
         $conds = array(
@@ -55,6 +57,9 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         if (count($qids) > 0) {
             $conds[] = sprintf("qid in (%s)", implode(",", $qids));
         }
+        if ($state > 0) {
+            $conds[] = sprintf("state = %d", $state);
+        }
         if (in_array($type, Service_Data_Question::QUESTION_TYPE_MAP)) {
             $conds[] = sprintf("type = %d", $type);
         }
@@ -71,7 +76,7 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         $arrAppends = array(
             'order by update_time desc',
         );
-        if (!$isSelect) {
+        if (!$isSelect && !$isPaper) {
             $arrAppends[] = "limit {$pn} , {$rn}";
         }
 
@@ -80,8 +85,8 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         if (empty($lists)) {
             return array();
         }
-        if ($isSelect) {
-            return $this->formatSelect($lists, $pid);
+        if ($isPaper) {
+            return $this->formatPaperSelect($lists, $pid);
         }        
         $lists = $this->formatBase($lists);
         $total = $serviceQuestion->getTotalByConds($conds);
@@ -142,6 +147,8 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
             $tmp["level"]           = $v["level"];
             $tmp["level_info"]      = Service_Data_Question::QUESTION_LEVEL_MAP_INFO[$v["level"]];
             $tmp["score"]           = $v["score"];
+            $tmp["state_info"]      = $v["state"] == Service_Data_Question::QUESTION_DISABLE ? "下线" : "";
+            $tmp["state"]           = $v["state"];
             $tmp["parent_id"]       = empty($v["parent_id"]) ? "-" : $v["parent_id"];
             $tmp["subject_name"]    = "-";
             $tmp["operator"]        = empty($userInfos[$v["operator"]]["nickname"]) ? "" : $userInfos[$v["operator"]]["nickname"];
@@ -179,7 +186,7 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         return $result;
     }
 
-    private function formatSelect($lists, $pid = 0) {
+    private function formatPaperSelect($lists, $pid = 0) {
         $paperQids = array();
         if ($pid > 0) {
             $serviceData = new Service_Data_Paper();
@@ -187,23 +194,39 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         }
         
         $options = array();
+        $splitCnt = 30;
         foreach ($lists as $item) {
+            // 增量外显的不出已下线的.  存量出
+            if ($item["state"] != Service_Data_Question::QUESTION_ABLE && 
+                !in_array($item["qid"], $paperQids)) {
+                continue;
+            }
+            $description = strlen($item["description"]) > $splitCnt ? substr($item["description"], 0, $splitCnt) . "..." : $item["description"];
+            $content = empty($item["content"]) ? "" : strip_tags($item["content"]);
+            $content = strlen($content) > $splitCnt ? substr($content, 0, $splitCnt) . "..." : $content;
+
+            $isOff = $item["state"] != Service_Data_Question::QUESTION_ABLE;
+
+            $tag = sprintf("%s (%s)",  Service_Data_Question::QUESTION_TYPE_MAP_INFO[$item["type"]], Service_Data_Question::QUESTION_LEVEL_MAP_INFO[$item["level"]]);
             if ($item['parent_id'] > 0) {
                 if (!isset($options[$item["parent_id"]])) {
                     $options[$item["parent_id"]] = array(
-                        'label'         => sprintf("题目组: %d", $item["parent_id"]),
+                        'label'         => sprintf("[题目组] %d - %s", $item["qid"],$description),
+                        "state"         => 1,
                         "children"      => array(),
                     );
                 }
                 $options[$item["parent_id"]]["children"][] = array(
-                    'label' => empty($item['description']) ? strip_tags($item["content"]) : $item["description"],
-                    'tag'   => sprintf("%s (%s)",  Service_Data_Question::QUESTION_TYPE_MAP_INFO[$item["type"]], Service_Data_Question::QUESTION_LEVEL_MAP_INFO[$item["level"]]),
-                    'value' => $item['qid'],
+                    'label' => sprintf("%s", $content),
+                    'tag'   => $isOff ? "已下线" : $tag,
+                    'state' => $item["state"],
+                    'value' => $item['qid']     ,
                 );
             } else {
                 $options[] = array(
-                    'label' => empty($item['description']) ? strip_tags($item["content"]) : $item["description"],
-                    'tag'   => sprintf("%s (%s)",  Service_Data_Question::QUESTION_TYPE_MAP_INFO[$item["type"]], Service_Data_Question::QUESTION_LEVEL_MAP_INFO[$item["level"]]),
+                    'label' => sprintf("%s - %s", "单项", $description),
+                    'state' => $item["state"],
+                    'tag'   => $isOff ? "已下线" : $tag,
                     'value' => $item['qid'], 
                 );
             }

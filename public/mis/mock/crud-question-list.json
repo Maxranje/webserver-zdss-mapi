@@ -162,7 +162,13 @@
             "header": {
                 "className": "bg-white",
                 "title": "$description",
-                "subTitle": "Qid:  $qid"
+                "titleClassName": "mt-2",
+                "subTitle": "Qid:  $qid",
+                "avatarText": "$state_info",
+                "avatarTextClassName": "flex justify-center items-center text-lg font-black",
+                "avatarTextBackground": [
+                    "black"
+                ]
             },
             "body": [
                 {
@@ -265,6 +271,52 @@
                     "icon": "fa fa-ellipsis-h",
                     "hideCaret": true,
                     "buttons": [
+                        {
+                            "type": "button",
+                            "label": "修改状态",
+                            "level": "link",
+                            "actionType": "dialog",
+                            "dialog": {
+                                "title": "调整分值",
+                                "body": [
+                                    {
+                                        "type": "form",
+                                        "name": "question-update-state-form",
+                                        "reload": "question_lists",
+                                        "api": {
+                                            "method": "post",
+                                            "url": "/mapi/mock/question_update?qid=${qid}",
+                                            "dataType": "form"
+                                        },
+                                        "body": [
+                                            {
+                                                "type": "alert",
+                                                "level": "danger",
+                                                "className": "p-2 mt-2 ml-3 shadow rounded",
+                                                "showIcon": true,
+                                                "body": "<div style='font-weight:bold;'>下线的试题无法新关联试卷, 但已关联场景下会正常外显.</div>"
+                                            },
+                                            {
+                                                "label": "修改状态",
+                                                "type": "select",
+                                                "name": "state",
+                                                "options": [
+                                                    {
+                                                        "label": "正常",
+                                                        "value": "1"
+                                                    },
+                                                    {
+                                                        "label": "下线",
+                                                        "value": "2"
+                                                    }
+                                                ],
+                                                "desc": ""
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
                         {
                             "type": "button",
                             "actionType": "ajax",

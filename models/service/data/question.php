@@ -2,6 +2,11 @@
 
 class Service_Data_Question {
 
+    // 状态
+    const QUESTION_ABLE     = 1;
+    const QUESTION_DISABLE  = 2;
+    const QUESTION_STATE_MAP = [1,2];
+
     // 类型
     const QUESTION_TYPE_RAIDO       = 1;
     const QUESTION_TYPE_CHECKBOX    = 2;
@@ -137,6 +142,7 @@ class Service_Data_Question {
                     "content"       => "",
                     "explan"        => "",
                     "is_coll"       => 1,
+                    "state"         => self::QUESTION_ABLE,
                     "pre_meta_id"   => $metaId,
                     "description"   => $preMeta["parent_desc"],
                     "create_time"   => time(),
@@ -166,6 +172,7 @@ class Service_Data_Question {
                     "content"       => $q["content"],
                     "explan"        => $q["explan"],
                     "description"   => $q['description'],
+                    "state"         => self::QUESTION_ABLE,
                     "pre_meta_id"   => $metaId,
                     'parent_id'     => $parentId,
                     "create_time"   => time(),
@@ -242,6 +249,18 @@ class Service_Data_Question {
         
         $this->daoQuestion->commit();
         return true;
+    }
+
+    // 更新状态
+    public function updateState ($qid, $state) {
+        // 删tag
+        $conds = array(
+            "qid" => $qid,
+        );
+        $fileds = array(
+            "state" => $state,
+        );
+        return $this->daoQuestion->updateByConds($conds,$fileds);
     }
 
 
