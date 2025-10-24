@@ -181,6 +181,13 @@
                 }
             },
             {
+                "name": "student_score",
+                "label": "最终等分",
+                "type": "tpl",
+                "tpl": "<span class='label label-success'>${student_score}</span>",
+                "toggled": true
+            },
+            {
                 "name": "operator_name",
                 "label": "操作员",
                 "type": "text",
@@ -199,7 +206,7 @@
                 "buttons": [
                     {
                         "type": "button",
-                        "label": "批阅",
+                        "label": "${status != 8 ? '批阅' : '查阅'}",
                         "disabledOn": "this.status == 1 || this.status == 5",
                         "actionType": "link",
                         "level": "primary",

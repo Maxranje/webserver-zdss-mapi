@@ -72,7 +72,7 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         if ($parentId > 0) {
             $conds = array("parent_id" => $parentId);
         }
-
+        
         $arrAppends = array(
             'order by update_time desc',
         );
@@ -137,10 +137,13 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         $serviceData = new Service_Data_Paper();
         $paperInfos = $serviceData->getPaperIdsByQids($questionQids, true);
 
+        $isMode = $this->isModeAble(Service_Data_Roles::ROLE_MODE_MOCK_DONE);
+
         $result = array();
         foreach ($lists as $v) {
             $tmp = array();
             $tmp["qid"]             = $v["qid"];
+            $tmp["is_mode"]         = $isMode ? 1 : 0;
             $tmp["description"]     = $v["description"];
             $tmp["type"]            = $v["type"];
             $tmp["type_info"]       = Service_Data_Question::QUESTION_TYPE_MAP_INFO[$v["type"]];

@@ -181,6 +181,7 @@ class Service_Page_Abroadorder_Package_Lists extends Zy_Core_Service{
             
             // 状态
             $item["pic_name"] = "";
+            $item["pic_color"] = "";
             if (in_array($v["state"], [
                     Service_Data_Aporderpackage::APORDER_STATUS_ADDDUR_PEND,
                     Service_Data_Aporderpackage::APORDER_STATUS_ABLE_PEND,
@@ -188,14 +189,19 @@ class Service_Page_Abroadorder_Package_Lists extends Zy_Core_Service{
                     Service_Data_Aporderpackage::APORDER_STATUS_TRANS_PEND,
             ])) {
                 $item["pic_name"] = "审核中";
+                $item["pic_color"] = "#ed7011";
             } else if ($v['state'] == Service_Data_Aporderpackage::APORDER_STATUS_DONE) {
                 $item["pic_name"] = "完结";
+                $item["pic_color"] = "#1a0603";
             }  else if ($v['state'] == Service_Data_Aporderpackage::APORDER_STATUS_TRANS) {
                 $item["pic_name"] = "结转完";
+                $item["pic_color"] = "#1a0603";
             }  else if ($v['state'] == Service_Data_Aporderpackage::APORDER_STATUS_TRANS_REFUES) {
                 $item["pic_name"] = "结转拒绝";
+                $item["pic_color"] = "#ed7011";
             } else if ($v['state'] == Service_Data_Aporderpackage::APORDER_STATUS_ABLE_REFUES) {
                 $item["pic_name"] = "拒绝";
+                $item["pic_color"] = "#1a0603";
             }
 
             // 没权限看, 需要展示*

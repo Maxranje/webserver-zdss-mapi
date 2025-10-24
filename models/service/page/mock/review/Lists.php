@@ -125,6 +125,8 @@ class Service_Page_Mock_Review_Lists extends Zy_Core_Service{
             $item["paper_name"] = empty($paperInfos[$item["pid"]]["title"]) ? "-" : $paperInfos[$item["pid"]]["title"]; 
             $item["teacher_name"] = empty($userInfos[$exam["teacher_uid"]]["nickname"]) ? "-" : $userInfos[$exam["teacher_uid"]]["nickname"];
             $item["operator_name"] = empty($userInfos[$item["operator"]]["nickname"]) ? "-" : $userInfos[$item["operator"]]["nickname"];
+            $item["student_score"] = $item["status"] == Service_Data_Exam::EXAM_STUDENT_STATUS_FINISHED ? $item["score"] . "分" : "-";
+            unset($item["score"]);
             $result[] = $item;
         }
         return $result;

@@ -7,7 +7,7 @@
         },
         {
             "type": "service",
-            "api": "/mapi/mock/exam_detail?exam_id=$exam_id&is_monitor=1",
+            "api": "/mapi/mock/exam_monitor?exam_indentify=$exam_indentify",
             "name": "monitor-service",
             "id": "monitor-service",
             "body": {
@@ -81,6 +81,11 @@
                             ],
                             "toolbar": [
                                 {
+                                    "type": "tpl",
+                                    "visibleOn": "${status == 8}",
+                                    "tpl": "<span class='label label-success mr-2 text-md'>最终得 <span class='font-black text-xl'>${score}</span> 分</span>"
+                                },
+                                {
                                     "type": "button",
                                     "label": "预览",
                                     "icon": "fa fa-file-text-o",
@@ -94,7 +99,7 @@
                                         "body": {
                                             "type": "service",
                                             "initFetch": false,
-                                            "schemaApi": "/mapi/mock/exam_review?exam_id=$exam_id&student_uid=$student_uid"
+                                            "schemaApi": "/mapi/mock/exam_review?exam_id=${exam.id}&student_uid=$student_uid"
                                         }
                                     }
                                 },

@@ -7,8 +7,8 @@ class Service_Page_Mock_Review_Finish extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 
-        $studentUid     = empty($this->request['student_uid']) ? 0  : intval($this->request['student_uid']);
-        $examId         = empty($this->request['exam_id']) ? 0 : intval($this->request['exam_id']);  
+        $studentUid = empty($this->request['student_uid']) ? 0  : intval($this->request['student_uid']);
+        $examId     = empty($this->request['exam_id']) ? 0 : intval($this->request['exam_id']);  
 
         if ($studentUid <= 0 || $examId <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 参数错误");

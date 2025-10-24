@@ -1,6 +1,6 @@
 <?php
 
-class Actions_Update extends Zy_Core_Actions {
+class Actions_Monitor extends Zy_Core_Actions {
 
     // 执行入口
     public function execute() {
@@ -8,7 +8,7 @@ class Actions_Update extends Zy_Core_Actions {
             $this->error(401, "请先登录");
         }
 
-        $serivce = new Service_Page_Mock_Exam_Update ($this->_request, $this->_userInfo);
+        $serivce = new Service_Page_Mock_Exam_Monitor ($this->_request, $this->_userInfo);
         $this->_data = $serivce->execute();
         return $this->_data;
     }

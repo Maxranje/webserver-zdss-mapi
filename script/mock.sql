@@ -22,10 +22,10 @@ CREATE TABLE `tblQuestion` (
     `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',  
     `ext` VARCHAR(2000) NOT NULL DEFAULT '' COMMENT "冗余",
     PRIMARY KEY (`qid`),
-    KEY `type` (`type`, "state"),
+    KEY `type` (`type`),
     KEY `level` (`level`),
     KEY `state` (`state`), 
-    KEY `coll_pid_state` (`is_coll`,`parent_id`, `state`)
+    KEY `coll_parent_id` (`is_coll`,`parent_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1000200 DEFAULT CHARSET=utf8 COMMENT='试题表';
 
 CREATE TABLE `tblAnswer` (
@@ -85,7 +85,7 @@ CREATE TABLE `tblPaper` (
     `type` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '类型',
     `frequency` int(11) NOT NULL DEFAULT '0' COMMENT '次数',
     `total_score` int(11) NOT NULL DEFAULT '0' COMMENT '总分数',
-    `total_question` int(11) NOT NULL DEFAULT '0' COMMENT '考试题数'
+    `total_question` int(11) NOT NULL DEFAULT '0' COMMENT '考试题数',
     `remark` VARCHAR(500) not null DEFAULT '' COMMENT '说明',
     `operator` int(11) NOT NULL DEFAULT '0' COMMENT '操作员id',
     `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',

@@ -303,7 +303,7 @@ class Service_Data_Exam {
         // 优先创建试卷,
         $daoPaper = new Dao_Paper();
         $paperProfile = array(
-            "title" => sprintf("【%s%s】%s定向模考", date("md"), mt_rand(111, 999),$userInfo["nickname"]),
+            "title" => sprintf("【%s】%s定向模考", date("m.d-His"),$userInfo["nickname"]),
             "type" => $paper["type"],
             "frequency" => 1,
             "total_score" => $paper["total_score"],
@@ -424,6 +424,27 @@ class Service_Data_Exam {
             return false;                       
         }
 
+        // 如果更换了试卷, 则历史pid使用数-1, 新的+1
+        if ($paper["historyPid"] > 0 && $paper["historyPid"] != $profile["pid"]) {
+            $daoPaper = new Dao_Paper();
+            //-1
+            $ret = $daoPaper->updateByConds(array("pid" => $paper["historyPid"]), array(
+                "frequency=frequency-1",
+            ));
+            if ($ret == false) {
+                $this->daoExam->rollback();
+                return false;
+            }   
+            //+1
+            $ret = $daoPaper->updateByConds(array("pid" => $profile["pid"]), array(
+                "frequency=frequency+1",
+            ));
+            if ($ret == false) {
+                $this->daoExam->rollback();
+                return false;
+            }                           
+        }
+
         // 先删再关联考生
         $conds = array(
             "exam_id" => $id,
@@ -455,7 +476,7 @@ class Service_Data_Exam {
     }  
 
     // 删除
-    public function delete ($id) {       
+    public function delete ($id, $pid) {       
         $this->daoExam->startTransaction();
         
         // 删考试
@@ -479,6 +500,17 @@ class Service_Data_Exam {
             $this->daoExam->rollback();
             return false;                       
         }
+
+        // 试卷关联数-1
+        $daoPaper = new Dao_Paper();
+        $ret = $daoPaper->updateByConds(array("pid" => $pid), array(
+            "frequency=frequency-1",
+        ));
+        if ($ret == false) {
+            $this->daoExam->rollback();
+            return false;
+        }           
+
         $this->daoExam->commit();
         return true;
     }      
@@ -680,10 +712,10 @@ class Service_Data_Exam {
     }
 
     // 考试结束
-    public function examEnd ($examId, $status, $studentUids) {   
+    public function examEnd ($examId, $studentUids) {   
         $this->daoExam->startTransaction();
         
-        if ($status == self::EXAM_STATUS_TERMINATED) {
+        if (!empty($studentUids)) {
             $conds = array(
                 "exam_id" => $examId,
                 sprintf("student_uid in (%s)", implode(",", $studentUids)),
@@ -709,10 +741,10 @@ class Service_Data_Exam {
             "status in (1,5)"
         );
         $profile = array(
-            "status" => $status,
+            "status" => self::EXAM_STATUS_COMPLETE,
             "operator" => OPERATOR,
             "update_time" => time(),
-        );        
+        );
 
         $ret = $this->daoExam->updateByConds($conds, $profile);
         if ($ret == false) {

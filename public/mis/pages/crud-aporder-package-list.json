@@ -274,12 +274,9 @@
                 "description": "<p>缴费: $real_balance元 / <span style='text-decoration: line-through;'>$origin_balance元 </span> 优惠: $discount_info</p>",
                 "avatarText": "$pic_name",
                 "avatarTextBackground": [
-                    "#1a0603",
-                    "#ed7011",
-                    "#ed7011",
-                    "#1a0603"
+                    "$pic_color"
                 ],
-                "avatarTextClassName": "text-base"
+                "avatarTextClassName": "text-base content-center font-black"
             },
             "body": [
                 {
@@ -401,7 +398,7 @@
             "toolbar": [
                 {
                     "type": "tpl",
-                    "tpl": "课时超$schedule_nums_more小时",
+                    "tpl": "课时额外赠加$schedule_nums_more小时",
                     "visibleOn": "this.schedule_nums_more > 0",
                     "className": "label label-info mx-1 text-sm"
                 },
@@ -464,7 +461,7 @@
                     "level": "link",
                     "align": "right",
                     "icon": "fa fa-ellipsis-h",
-                    "className": "pr-1 flex m-l",
+                    "className": "m-l",
                     "hideCaret": true,
                     "buttons": [
                         {
@@ -474,7 +471,7 @@
                             "actionType": "drawer",
                             "drawer": {
                                 "position": "right",
-                                "size": "lg",
+                                "size": "xl",
                                 "title": "配置订单",
                                 "body": {
                                     "type": "form",

@@ -53,13 +53,6 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
     private function formatPreview ($currentId, $questions, $answers) {
         $result = array(
             array(
-                "type" => "alert",
-                "level" => "warning",
-                "showIcon" => true,
-                "className"=> "border-solid border-gray-100 shadow p-4 rounded-md",
-                "body" => "与考生看到最终样式有一定区别, 预览只作为参考使用"
-            ),
-            array(
                 "type"=> "panel",
                 "title"=> "",
                 "className"=> "border-solid border-gray-100 shadow p-4 rounded-md",
@@ -71,17 +64,17 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
             $serviceData = new Service_Data_Meta();
             $meta = $serviceData->getMetaById(intval($questions[0]["pre_meta_id"]));
             if (!empty($meta["content"])) {
-                $result[1]["body"][] = array(
+                $result[0]["body"][] = array(
                     "type"=> "tpl",
                     "tpl" => "<p style='font-weight:900;'>前置材料</p>"
                 );                
                 if ($meta["meta_type"] == Service_Data_Meta::META_TYPE_AUDIO) {
-                    $result[1]["body"][] = array(
+                    $result[0]["body"][] = array(
                         "type"  => "audio",
                         "src"   =>$meta['content']
                     );
                 } else {
-                    $result[1]["body"][] = array(
+                    $result[0]["body"][] = array(
                         "type"  => "html",
                         "html"   =>$meta['content']
                     );
@@ -89,7 +82,7 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
             }
         }
 
-        $result[1]["body"][] = array(
+        $result[0]["body"][] = array(
             "type"=> "tpl",
             "tpl" => "<p style='font-weight:900;margin-top:2rem;'>题目详情</p>"
         ) ;            
@@ -171,7 +164,7 @@ class Service_Page_Mock_Question_Detail extends Zy_Core_Service{
             $questionsTpl["tabs"][] = $tab;
         }
 
-        $result[1]["body"][] = $questionsTpl;
+        $result[0]["body"][] = $questionsTpl;
         return $result;
     }
 

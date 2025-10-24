@@ -22,10 +22,10 @@ class Service_Page_Mock_Wrong_Student extends Zy_Core_Service{
         $range  = 10;
         $isShowQuesiton = !empty($tagIds) ? true : false;
 
-        $serviceProfile = new Service_Data_Profile();
-        $student = $serviceProfile->getUserInfoByUid($uid);
-        if (empty($student) || $student["is_mock"] != 1) {
-            throw new Zy_Core_Exception(405, "操作失败, 用户不存在或没有模考权限");
+        $serviceUser = new Service_Data_Profile();
+        $student = $serviceUser->getUserInfoByUid($uid);
+        if (empty($student) || $student["is_mock"] != Service_Data_Profile::STUDENT_MOCK) {
+            throw new Zy_Core_Exception(405, "操作失败, 考生不存在或没有模考权限");
         }
 
         // 拉exam数据

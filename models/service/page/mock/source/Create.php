@@ -15,12 +15,12 @@ class Service_Page_Mock_Source_Create extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 参数错误");
         }
 
-        if (!Zy_Helper_Utils::checkStr($name, 3, 10)) {
-            throw new Zy_Core_Exception(405, "操作失败, 一级分类名仅支持英文/中文/数字/逗号, 长度最小3字最大10个字");
+        if (!Zy_Helper_Utils::validateString($name, 3, 10)) {
+            throw new Zy_Core_Exception(405, "操作失败, 分类长度最小3字最大10个字");
         }
 
-        if (!Zy_Helper_Utils::checkStr($name, 3, 10)) {
-            throw new Zy_Core_Exception(405, "操作失败, 二级分类名仅支持英文/中文/数字/逗号, 长度最小3字最大10个字");
+        if (!Zy_Helper_Utils::validateString($name, 3, 10)) {
+            throw new Zy_Core_Exception(405, "操作失败, 分类长度最小3字最大10个字");
         }    
 
         $serviceData = new Service_Data_QuestionSource();

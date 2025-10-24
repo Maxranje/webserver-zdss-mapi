@@ -20,7 +20,7 @@ class Service_Page_Mock_Tag_Delete extends Zy_Core_Service{
 
         $subTag = $serviceData->getTagByParentID($id);
         if (!empty($subTag)) {
-            throw new Zy_Core_Exception(405, "操作失败, 无法删除有子节点的标签, 因为需要关联删除题库数据, 必须要把子标签删除干净");
+            throw new Zy_Core_Exception(405, "操作失败, 该父标签存在子标签, 需先清空子标签");
         }
 
         $ret = $serviceData->deleteTag($id);

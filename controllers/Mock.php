@@ -38,9 +38,9 @@ class Controller_Mock extends Zy_Core_Controller{
         "exam_end"          => "actions/mock/exam/End.php",
         "exam_lists"        => "actions/mock/exam/Lists.php",
         "exam_review"       => "actions/mock/exam/Review.php",
-        "exam_update"       => "actions/mock/exam/Update.php",
         "exam_delete"       => "actions/mock/exam/Delete.php",          
         "exam_detail"       => "actions/mock/exam/Detail.php", 
+        "exam_monitor"      => "actions/mock/exam/Monitor.php",
 
         // 错题本
         "wrong_student"       => "actions/mock/wrong/Student.php",

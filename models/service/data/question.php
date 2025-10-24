@@ -220,6 +220,7 @@ class Service_Data_Question {
                         $tProfile = array(
                             "qid"           => intval($qid),
                             "tag_id"        => intval($v),
+                            "level"         => intval($qProfile["level"]),
                             "update_time"   => time(),
                         );
                         $ret = $this->daoQuestionTag->insertRecords($tProfile);

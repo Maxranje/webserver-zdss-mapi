@@ -92,23 +92,16 @@ return array(
                     "url"=>"/exam/start",
                     "icon"=>"fa fa-bullseye",
                     "schemaApi"=>"get:/public/mis/mock/form-exam-start.json"
-                ),
+                ),           
                 array(
                     "id" => 10042,
-                    "url"=>"/exam/edit",
-                    "visible" => false,
-                    "label"=>"编辑考试",
-                    "schemaApi"=>"get:/public/mis/mock/form-exam-edit.json"
-                ),                
-                array(
-                    "id" => 10043,
                     "label"=>"考试列表",
                     "url"=>"/exam/list",
                     "icon"=>"fa fa-history",
                     "schemaApi"=>"get:/public/mis/mock/crud-exam-list.json"
                 ),
                 array(
-                    "id" => 10044,
+                    "id" => 10043,
                     "label"=>"模考监控",
                     "url"=>"/exam/monitor",
                     "icon"=>"fa fa-retweet",
@@ -116,14 +109,14 @@ return array(
                     "schemaApi"=>"get:/public/mis/mock/form-exam-monitor.json"
                 ),                
                 array(
-                    "id" => 10045,
+                    "id" => 10044,
                     "label"=>"批改试卷",
                     "url"=>"/review/lists",
                     "icon"=>"fa fa-retweet",
                     "schemaApi"=>"get:/public/mis/mock/crud-exam-review.json"
                 ),
                 array(
-                    "id" => 10046,
+                    "id" => 10045,
                     "label"=>"试卷详情",
                     "url"=>"/exam/review",
                     "visible" => false,

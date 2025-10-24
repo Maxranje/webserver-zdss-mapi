@@ -4,135 +4,152 @@
     "body": [
         {
             "type": "tpl",
-            "tpl": "<h2 style='font-weight:bold'>开始考试</h2>"
+            "tpl": "<h2 style='font-weight:bold'>配置模考</h2>"
         },
         {
-            "type": "panel",
-            "title": "",
-            "className": "border-solid border-gray-100 shadow p-4 rounded-md mt-5 -mb-2 ",
+            "type": "service",
+            "initFetch": "${exam_id > 0 ? false : false}",
+            "api": "/mapi/mock/exam_detail?exam_indentify=$exam_indentify",
             "body": [
                 {
-                    "type": "group",
+                    "type": "panel",
+                    "title": "",
+                    "className": "border-solid border-gray-100 shadow p-4 rounded-md mt-5 -mb-2 ",
                     "body": [
                         {
-                            "type": "tree-select",
-                            "name": "pid",
-                            "onlyLeaf": true,
-                            "label": "试卷",
-                            "searchable": true,
-                            "required": true,
-                            "initiallyOpen": false,
-                            "source": "/mapi/mock/paper_lists?is_select=1&is_type=1",
-                            "onEvent": {
-                                "change": {
-                                    "actions": [
-                                        {
-                                            "actionType": "show",
-                                            "componentId": "assess_1tips",
-                                            "expression": "${SPLIT(event.data.value, '_')[1] == 2}"
-                                        },
-                                        {
-                                            "actionType": "hidden",
-                                            "componentId": "assess_1tips",
-                                            "expression": "${SPLIT(event.data.value, '_')[1] != 2}"
+                            "type": "hidden",
+                            "name": "exam_indentify",
+                            "value": "${exam_indentify || ''}"
+                        },
+                        {
+                            "type": "group",
+                            "body": [
+                                {
+                                    "type": "tree-select",
+                                    "name": "pid",
+                                    "value": "${pid_arr || ''}",
+                                    "onlyLeaf": true,
+                                    "label": "试卷",
+                                    "searchable": true,
+                                    "required": true,
+                                    "initiallyOpen": false,
+                                    "source": "/mapi/mock/paper_lists?is_select=1&is_type=1",
+                                    "onEvent": {
+                                        "change": {
+                                            "actions": [
+                                                {
+                                                    "actionType": "show",
+                                                    "componentId": "assess_tips",
+                                                    "expression": "${SPLIT(event.data.value, '_')[1] == 2}"
+                                                },
+                                                {
+                                                    "actionType": "hidden",
+                                                    "componentId": "assess_tips",
+                                                    "expression": "${SPLIT(event.data.value, '_')[1] != 2}"
+                                                }
+                                            ]
                                         }
-                                    ]
+                                    }
+                                },
+                                {
+                                    "type": "tree-select",
+                                    "name": "teacher_uid",
+                                    "value": "${teacher_uid || ''}",
+                                    "onlyLeaf": true,
+                                    "label": "监考老师",
+                                    "required": true,
+                                    "searchable": true,
+                                    "initiallyOpen": false,
+                                    "source": "/mapi/teacher/lists?is_select=1"
+                                },
+                                {
+                                    "type": "input-number",
+                                    "name": "expire_time",
+                                    "label": "时长",
+                                    "step": 10,
+                                    "required": true,
+                                    "min": 10,
+                                    "max": 240,
+                                    "showSteps": true,
+                                    "precision": 0,
+                                    "value": "${expire_time || 60}",
+                                    "placeholder": "10到240之间,单位分钟"
                                 }
-                            }
+                            ]
                         },
                         {
-                            "type": "tree-select",
-                            "name": "teacher_uid",
-                            "onlyLeaf": true,
-                            "label": "监考老师",
-                            "required": true,
-                            "searchable": true,
-                            "initiallyOpen": false,
-                            "source": "/mapi/teacher/lists?is_select=1"
+                            "type": "alert",
+                            "level": "warning",
+                            "className": "p-2 mt-5 shadow rounded",
+                            "name": "assess_tips",
+                            "id": "assess_tips",
+                            "hiddenOn": "${paper_type != 2}",
+                            "showIcon": true,
+                            "body": "<div style='font-weight:bold;'>评估试卷考试中考题是根据考生作答正确度进行动态调整 (主观题因无法实时判断, 所以提交后一律认为正确) </div><div>动态调整规则: 试题正确率>=0.75(10道题)即可提升难度 </div><div>考试结束标准: 最少完成10道题, 最多50道, 某难度停留<0.75 / 通过最高难度L5, </div><div style='font-weight:bold; color:black;'>!!!!请注意, 评估试卷各Level题目数量不足, 虽依然可以考试, 但会存在跳题或漏题情况, 该情况建议修改试卷为常规类型</div>"
                         },
                         {
-                            "type": "input-number",
-                            "name": "expire_time",
-                            "label": "时长",
-                            "step": 10,
+                            "type": "input-date-range",
+                            "name": "start_end",
+                            "value": "${start_end || ''}",
+                            "label": "考试期限",
+                            "size": "md",
                             "required": true,
-                            "min": 10,
-                            "max": 240,
-                            "showSteps": true,
-                            "precision": 0,
-                            "placeholder": "10到240之间,单位分钟"
+                            "desc": "允许考生在该时间范围内参加考试, 超过时间则关闭本次考试, 间隔不得超过7天"
+                        },
+                        {
+                            "type": "textarea",
+                            "showCounter": true,
+                            "maxLength": 100,
+                            "name": "remark",
+                            "value": "${remark || ''}",
+                            "label": "备注",
+                            "desc": "限定100字内"
                         }
                     ]
                 },
                 {
-                    "type": "alert",
-                    "level": "warning",
-                    "className": "p-2 mt-5 shadow rounded",
-                    "name": "assess_1tips",
-                    "id": "assess_1tips",
-                    "hidden": true,
-                    "showIcon": true,
-                    "body": "<div style='font-weight:bold;'>评估试卷考试中考题是根据考生作答正确度进行动态调整 (主观题因无法实时判断, 所以提交后一律认为正确) </div><div>动态调整规则: 试题正确率>=0.75(10道题)即可提升难度 </div><div>考试结束标准: 最少完成10道题, 最多50道, 某难度停留<0.75 / 通过最高难度L5, </div><div style='font-weight:bold; color:black;'>!!!!请注意, 评估试卷各Level题目数量不足, 虽依然可以考试, 但会存在跳题或漏题情况, 该情况建议修改试卷为常规类型</div>"
-                },
-                {
-                    "type": "input-date-range",
-                    "name": "start_end",
-                    "label": "考试期限",
-                    "value": "today,+1weeks",
-                    "size": "lg",
+                    "type": "panel",
+                    "className": "border-solid border-gray-100 shadow p-4 rounded-md mt-5 -mb-2 ",
+                    "title": "选择考生",
                     "required": true,
-                    "desc": "允许考生在该时间范围内参加考试, 超过时间则关闭本次考试, 间隔不得超过7天"
-                },
-                {
-                    "type": "textarea",
-                    "showCounter": true,
-                    "maxLength": 100,
-                    "name": "remark",
-                    "label": "备注",
-                    "desc": "限定100字内"
-                }
-            ]
-        },
-        {
-            "type": "panel",
-            "className": "border-solid border-gray-100 shadow p-4 rounded-md mt-5 -mb-2 ",
-            "title": "选择考生",
-            "required": true,
-            "body": [
-                {
-                    "type": "alert",
-                    "level": "warning",
-                    "className": "p-2",
-                    "showIcon": true,
-                    "body": "<span style='font-weight:bold;'>最少选定1人, 单场考试最多50人</span>"
-                },
-                {
-                    "name": "student_uids",
-                    "type": "transfer",
-                    "columns": [
+                    "body": [
                         {
-                            "name": "value",
-                            "label": "Uid"
+                            "type": "alert",
+                            "level": "warning",
+                            "className": "p-2",
+                            "showIcon": true,
+                            "body": "<span style='font-weight:bold;'>最少选定1人, 单场考试最多50人</span>"
                         },
                         {
-                            "name": "label",
-                            "label": "昵称"
+                            "name": "student_uids",
+                            "type": "transfer",
+                            "columns": [
+                                {
+                                    "name": "value",
+                                    "label": "Uid"
+                                },
+                                {
+                                    "name": "label",
+                                    "label": "昵称"
+                                }
+                            ],
+                            "value": "${student_uids || []}",
+                            "source": "/mapi/student/lists?is_select=1&is_mock=1",
+                            "searchable": true,
+                            "selectMode": "table"
                         }
-                    ],
-                    "source": "/mapi/student/lists?is_select=1&is_mock=1",
-                    "searchable": true,
-                    "selectMode": "table"
+                    ]
+                },
+                {
+                    "type": "button",
+                    "label": "提交",
+                    "className": "mt-5 ",
+                    "level": "success",
+                    "actionType": "ajax",
+                    "api": "/mapi/mock/exam_start",
+                    "redirect": "../exam/list"
                 }
             ]
-        },
-        {
-            "type": "button",
-            "label": "提交",
-            "className": "mt-5 ",
-            "level": "success",
-            "actionType": "ajax",
-            "api": "/mapi/mock/exam_start",
-            "redirect": "../exam/list"
         }
     ]
 }

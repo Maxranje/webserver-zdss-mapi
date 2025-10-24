@@ -213,7 +213,7 @@
                         "label": "编辑",
                         "actionType": "link",
                         "disabledOn": "this.status != 1",
-                        "link": "/exam/edit?exam_id=$id"
+                        "link": "/exam/start?exam_indentify=$indentify"
                     },
                     {
                         "type": "button",
@@ -227,7 +227,7 @@
                         "label": "监控",
                         "actionType": "link",
                         "level": "warning",
-                        "link": "/exam/monitor?exam_id=$id"
+                        "link": "/exam/monitor?exam_indentify=$indentify"
                     },
                     {
                         "type": "button",

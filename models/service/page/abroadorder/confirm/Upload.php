@@ -50,7 +50,7 @@ class Service_Page_Abroadorder_Confirm_Upload extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 检查项单项不存在");
         }
         
-        $uploadPath = Zy_Helper_Config::getConfig('config')['upload_path'];
+        $uploadPath = Zy_Helper_Config::getConfig('config')['upload_path'] . "/abroadplan_confrim";
         $ret = Zy_Helper_Upload::saveUploadedConfirmFile("file", $uploadPath, $key);
         if (empty($ret)) {
             throw new Zy_Core_Exception(405, "操作失败, 文件上传失败, 请重新尝试");

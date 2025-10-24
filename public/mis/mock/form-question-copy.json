@@ -95,6 +95,17 @@
                                             },
                                             {
                                                 "type": "tree-select",
+                                                "name": "single_question_source_ids",
+                                                "value": "${question.single_question_source_ids || []}",
+                                                "onlyLeaf": true,
+                                                "multiple": true,
+                                                "searchable": true,
+                                                "maxLength": 3,
+                                                "placeholder": "请选择来源",
+                                                "source": "/mapi/mock/source_lists?is_select=1"
+                                            },
+                                            {
+                                                "type": "tree-select",
                                                 "name": "single_question_tag_ids",
                                                 "value": "${question.single_question_tag_ids || []}",
                                                 "onlyLeaf": true,
@@ -104,17 +115,6 @@
                                                 "maxLength": 3,
                                                 "placeholder": "请选择标签",
                                                 "source": "/mapi/mock/tag_lists?is_select=1"
-                                            },
-                                            {
-                                                "type": "tree-select",
-                                                "name": "single_question_source_ids",
-                                                "value": "${question.single_question_source_ids || []}",
-                                                "onlyLeaf": true,
-                                                "multiple": true,
-                                                "searchable": true,
-                                                "maxLength": 3,
-                                                "placeholder": "请选择来源",
-                                                "source": "/mapi/mock/source_lists?is_select=1"
                                             },
                                             {
                                                 "type": "input-number",

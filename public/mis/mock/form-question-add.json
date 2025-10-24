@@ -93,6 +93,7 @@
                                         "multiple": true,
                                         "searchable": true,
                                         "maxLength": 3,
+                                        "placeholder": "请选择来源",
                                         "source": "/mapi/mock/source_lists?is_select=1"
                                     },
                                     {
@@ -103,6 +104,7 @@
                                         "searchable": true,
                                         "initiallyOpen": false,
                                         "maxLength": 3,
+                                        "placeholder": "请选择标签",
                                         "source": "/mapi/mock/tag_lists?is_select=1"
                                     },
                                     {
@@ -640,6 +642,16 @@
                                                     },
                                                     {
                                                         "type": "tree-select",
+                                                        "name": "batch_question_source_ids",
+                                                        "onlyLeaf": true,
+                                                        "multiple": true,
+                                                        "searchable": true,
+                                                        "maxLength": 3,
+                                                        "placeholder": "请选择来源",
+                                                        "source": "/mapi/mock/source_lists?is_select=1"
+                                                    },
+                                                    {
+                                                        "type": "tree-select",
                                                         "name": "batch_question_tag_ids",
                                                         "onlyLeaf": true,
                                                         "multiple": true,
@@ -648,16 +660,6 @@
                                                         "initiallyOpen": false,
                                                         "placeholder": "请选择标签",
                                                         "source": "/mapi/mock/tag_lists?is_select=1"
-                                                    },
-                                                    {
-                                                        "type": "tree-select",
-                                                        "name": "batch_question_source_ids",
-                                                        "onlyLeaf": true,
-                                                        "multiple": true,
-                                                        "searchable": true,
-                                                        "maxLength": 3,
-                                                        "placeholder": "请选择来源",
-                                                        "source": "/mapi/mock/source_lists?is_select=1"
                                                     },
                                                     {
                                                         "type": "input-number",

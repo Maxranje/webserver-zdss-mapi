@@ -101,6 +101,23 @@
                     ]
                 },
                 {
+                    "label": "状态",
+                    "type": "select",
+                    "size": "sm",
+                    "clearable": true,
+                    "name": "state",
+                    "options": [
+                        {
+                            "label": "正常",
+                            "value": "1"
+                        },
+                        {
+                            "label": "下线",
+                            "value": "2"
+                        }
+                    ]
+                },
+                {
                     "type": "tree-select",
                     "name": "tag_ids",
                     "onlyLeaf": true,
@@ -250,10 +267,19 @@
                         "actions": [],
                         "size": "lg",
                         "title": "预览",
-                        "body": {
-                            "type": "service",
-                            "schemaApi": "/mapi/mock/question_detail?qid=$qid&preview=1"
-                        }
+                        "body": [
+                            {
+                                "type": "alert",
+                                "level": "info",
+                                "showIcon": true,
+                                "className": "border-solid border-gray-100 shadow p-4 rounded-md",
+                                "body": "与考生看到最终样式有一定区别, 预览只作为参考使用"
+                            },
+                            {
+                                "type": "service",
+                                "schemaApi": "/mapi/mock/question_detail?qid=$qid&preview=1"
+                            }
+                        ]
                     }
                 },
                 {
@@ -273,55 +299,33 @@
                     "buttons": [
                         {
                             "type": "button",
-                            "label": "修改状态",
-                            "level": "link",
-                            "actionType": "dialog",
-                            "dialog": {
-                                "title": "调整分值",
-                                "body": [
-                                    {
-                                        "type": "form",
-                                        "name": "question-update-state-form",
-                                        "reload": "question_lists",
-                                        "api": {
-                                            "method": "post",
-                                            "url": "/mapi/mock/question_update?qid=${qid}",
-                                            "dataType": "form"
-                                        },
-                                        "body": [
-                                            {
-                                                "type": "alert",
-                                                "level": "danger",
-                                                "className": "p-2 mt-2 ml-3 shadow rounded",
-                                                "showIcon": true,
-                                                "body": "<div style='font-weight:bold;'>下线的试题无法新关联试卷, 但已关联场景下会正常外显.</div>"
-                                            },
-                                            {
-                                                "label": "修改状态",
-                                                "type": "select",
-                                                "name": "state",
-                                                "options": [
-                                                    {
-                                                        "label": "正常",
-                                                        "value": "1"
-                                                    },
-                                                    {
-                                                        "label": "下线",
-                                                        "value": "2"
-                                                    }
-                                                ],
-                                                "desc": ""
-                                            }
-                                        ]
-                                    }
-                                ]
+                            "actionType": "ajax",
+                            "label": "下线",
+                            "hiddenOn": "this.state != 1",
+                            "disabledOn": "this.is_mode != 1",
+                            "confirmText": "<div style='font-weight:bold; color:red;'>下线的试题无法新关联试卷, 但已关联场景下会正常外显.</div>",
+                            "api": {
+                                "method": "get",
+                                "url": "/mapi/mock/question_update?qid=${qid}&state=2"
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "actionType": "ajax",
+                            "label": "恢复",
+                            "hiddenOn": "this.state != 2",
+                            "disabledOn": "this.is_mode != 1",
+                            "confirmText": "<div style='font-weight:bold; color:red;'>确认恢复?</div>",
+                            "api": {
+                                "method": "get",
+                                "url": "/mapi/mock/question_update?qid=${qid}&state=1"
                             }
                         },
                         {
                             "type": "button",
                             "actionType": "ajax",
                             "label": "删除",
-                            "disabledOn": "this.frequency > 0",
+                            "disabledOn": "this.frequency > 0 || this.is_mode != 1",
                             "confirmText": "您确认要删除试题么? 如果删除, 关联的试卷将下线该试题",
                             "api": {
                                 "method": "get",

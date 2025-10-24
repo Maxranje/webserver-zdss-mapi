@@ -16,7 +16,7 @@ class Service_Page_Mock_Tag_Create extends Zy_Core_Service{
         }
 
         if (!empty($description) && mb_strlen($description) > 2000) {
-            throw new Zy_Core_Exception(405, "操作失败, 描述在2000个字符内");
+            throw new Zy_Core_Exception(405, "操作失败, 描述在300个字符内");
         }
 
         $serviceData = new Service_Data_Tag();

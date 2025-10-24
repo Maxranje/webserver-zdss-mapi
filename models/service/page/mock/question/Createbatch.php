@@ -31,12 +31,12 @@ class Service_Page_Mock_Question_Createbatch extends Zy_Core_Service{
             ),
         );
         foreach ($reqItems as $item) {
-            $reqParam["questions"][] = array(
+            $tmp = array(
                 "type"          => empty($item['batch_question_type']) ? 0 : intval($item['batch_question_type']),
                 "level"         => empty($item['batch_question_level']) ? 0 : intval($item['batch_question_level']),
                 "score"         => empty($item['batch_question_score']) ? 0 : intval($item['batch_question_score']),
-                "source_ids"    => empty($item['batch_question_source_ids']) ? array() : explode(",",$item['batch_question_source_ids']),
-                "tag_ids"       => empty($item['batch_question_tag_ids']) ? array() : explode(",",$item['batch_question_tag_ids']),
+                "source_ids"    => empty($item['batch_question_source_ids']) ? array() : $item['batch_question_source_ids'],
+                "tag_ids"       => empty($item['batch_question_tag_ids']) ? array() : $item['batch_question_tag_ids'],
                 "description"   => $description,
                 "content"       => empty($item['batch_question_content']) ? "" : trim($item['batch_question_content']),        
                 "radio"         => empty($item['batch_answer_combo_radio']) ? array() : $item['batch_answer_combo_radio'],
@@ -45,6 +45,20 @@ class Service_Page_Mock_Question_Createbatch extends Zy_Core_Service{
                 "fill"          => empty($item['batch_answer_combo_fill']) ? array() : $item['batch_answer_combo_fill'],
                 "explan"        => empty($item['single_answer_explan_combo'][0]["single_answer_explan"]) ? "" : trim($item['single_answer_explan_combo'][0]["single_answer_explan"]),
             );
+            if (!empty($tmp["tag_ids"]) && (is_string($tmp["tag_ids"]) || is_array($tmp["tag_ids"]))) {
+                if (is_string($tmp["tag_ids"])) {
+                    $tmp["tag_ids"] = explode(",", $tmp["tag_ids"]);
+                } 
+                $tmp["tag_ids"] = Zy_Helper_Utils::rmArrZore(Zy_Helper_Utils::arrayInt($tmp["tag_ids"]));
+            }
+
+            if (!empty($tmp["source_ids"]) && (is_string($tmp["source_ids"]) || is_array($tmp["source_ids"]))) {
+                if (is_string($tmp["source_ids"])) {
+                    $tmp["source_ids"] = explode(",", $tmp["source_ids"]);
+                } 
+                $tmp["source_ids"] = Zy_Helper_Utils::rmArrZore(Zy_Helper_Utils::arrayInt($tmp["source_ids"]));
+            }  
+            $reqParam["questions"][] = $tmp;            
         }
 
         $serviceData = new Service_Data_Question();

@@ -289,7 +289,7 @@
                                             },
                                             {
                                                 "type": "property",
-                                                "column": 3,
+                                                "column": 4,
                                                 "className": "border-solid border-gray-100 ml-4 rounded",
                                                 "items": [
                                                     {
@@ -298,7 +298,11 @@
                                                     },
                                                     {
                                                         "label": "类型",
-                                                        "content": "<span class='text-black font-black ml-2'>${paper.type_info}</span>"
+                                                        "content": "<span class='label label-danger ml-2 '>${paper.type_info}</span>"
+                                                    },
+                                                    {
+                                                        "label": "已考次数",
+                                                        "content": "<span class='text-black font-black ml-2'>${paper.frequency}次</span>"
                                                     },
                                                     {
                                                         "label": "总题数",
@@ -307,7 +311,7 @@
                                                     {
                                                         "label": "备注",
                                                         "content": "<span class='text-gray-500  ml-2'>${paper.remark}</span>",
-                                                        "span": 3
+                                                        "span": 4
                                                     }
                                                 ]
                                             },
@@ -396,8 +400,8 @@
                                                                                     "body": [
                                                                                         {
                                                                                             "type": "alert",
-                                                                                            "level": "danger",
-                                                                                            "className": "p-2 mt-2 ml-3 shadow rounded",
+                                                                                            "level": "warning",
+                                                                                            "className": "p-2 ml-3 shadow rounded",
                                                                                             "showIcon": true,
                                                                                             "body": "<div style='font-weight:bold;'>下线试题并且已关联试卷, 会做标记, 但会正常外显.</div>"
                                                                                         },
@@ -405,6 +409,7 @@
                                                                                             "type": "transfer",
                                                                                             "name": "paper_add_qids",
                                                                                             "searchable": true,
+                                                                                            "selectMode": "tree",
                                                                                             "menuTpl": [
                                                                                                 {
                                                                                                     "type": "tpl",
@@ -496,8 +501,14 @@
                                                     {
                                                         "type": "wrapper",
                                                         "md": 7,
-                                                        "className": "border-solid border-gray-100 shadow-sm p-4 rounded-lg mt-5",
                                                         "body": [
+                                                            {
+                                                                "type": "alert",
+                                                                "level": "info",
+                                                                "showIcon": true,
+                                                                "className": "border-solid border-gray-100 shadow p-4 rounded-md",
+                                                                "body": "与考生看到最终样式有一定区别, 预览只作为参考使用"
+                                                            },
                                                             {
                                                                 "type": "service",
                                                                 "id": "question_detail",
@@ -519,7 +530,7 @@
                             "actionType": "ajax",
                             "label": "删除",
                             "disabledOn": "this.frequency > 0",
-                            "confirmText": "您确认要删除试卷么? 只有未使用的试卷可删除",
+                            "confirmText": "您确认要删除试卷么? 只有未进行模考的试卷才可删除",
                             "api": {
                                 "method": "get",
                                 "url": "/mapi/mock/paper_delete?pid=$pid"

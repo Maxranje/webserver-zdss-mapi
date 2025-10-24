@@ -52,17 +52,19 @@ class Service_Page_Mock_Paper_Detail extends Zy_Core_Service{
         if (empty($questions)) {
             return array(array(), 0);
         }
-
-        $paperQuestions = array_column($paperQuestions, null, "qid");
+        $questions = array_column($questions, null, "qid");
 
         $options = array();
         $total = 0;
         $splitCnt = 30;
-        foreach ($questions as $i => $item) {
+        foreach ($paperQuestions as $i => $v) {
             $total++;
+            $qid = intval($v['qid']);
+            $item = $questions[$qid];
+
             $level = empty($item["level"]) ? "" :Service_Data_Question::QUESTION_LEVEL_MAP_INFO[$item["level"]];
             $type  = empty($item["type"]) ? "" :Service_Data_Question::QUESTION_TYPE_MAP_INFO[$item["type"]];
-            $score = empty($paperQuestions[$item["qid"]]["score"]) ? $item['score'] : $paperQuestions[$item["qid"]]["score"];
+            $score = empty($v["score"]) ? $item['score'] : $v["score"];
 
             $description = strlen($item["description"]) > $splitCnt ? substr($item["description"], 0, $splitCnt) . "..." : $item["description"];
             $content = empty($item["content"]) ? "" : strip_tags($item["content"]);

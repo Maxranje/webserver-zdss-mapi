@@ -63,7 +63,6 @@ class Service_Page_Mock_Exam_End extends Zy_Core_Service{
     // 全体结束
     private function examEnd ($exam, $students) {
         // 循环, 判断是否所有人都已经结束
-        $status = Service_Data_Exam::EXAM_STATUS_COMPLETE;
         $studentUids = array();
         foreach ($students as $v) {
             if ($v["status"] != Service_Data_Exam::EXAM_STUDENT_STATUS_PENDING && 
@@ -71,10 +70,9 @@ class Service_Page_Mock_Exam_End extends Zy_Core_Service{
                 continue;
             }
             $studentUids[] = $v["student_uid"];
-            $status = Service_Data_Exam::EXAM_STATUS_TERMINATED;
         }
 
         $serviceExam = new Service_Data_Exam();
-        return $serviceExam->examEnd($exam["id"], $status, $studentUids);
+        return $serviceExam->examEnd($exam["id"], $studentUids);
     }    
 }

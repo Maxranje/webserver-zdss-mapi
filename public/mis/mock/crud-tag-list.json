@@ -106,41 +106,11 @@
                                     "type": "divider"
                                 },
                                 {
-                                    "type": "input-rich-text",
+                                    "type": "textarea",
                                     "name": "new_description",
                                     "label": "描述",
-                                    "options": {
-                                        "menubar": false,
-                                        "height": 200,
-                                        "content_css": "/public/mis/sdk/tinymce-custom.css",
-                                        "branding": false,
-                                        "statusbar": true,
-                                        "plugins": [
-                                            "advlist",
-                                            "autolink",
-                                            "link",
-                                            "image",
-                                            "lists",
-                                            "charmap",
-                                            "preview",
-                                            "anchor",
-                                            "pagebreak",
-                                            "searchreplace",
-                                            "wordcount",
-                                            "visualblocks",
-                                            "visualchars",
-                                            "code",
-                                            "fullscreen",
-                                            "insertdatetime",
-                                            "media",
-                                            "nonbreaking",
-                                            "table",
-                                            "emoticons",
-                                            "template",
-                                            "help"
-                                        ],
-                                        "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
-                                    }
+                                    "maxLength": 300,
+                                    "showCounter": true
                                 }
                             ]
                         }
@@ -231,41 +201,11 @@
                                             "type": "divider"
                                         },
                                         {
-                                            "type": "input-rich-text",
+                                            "type": "textarea",
                                             "name": "new_description",
                                             "label": "描述",
-                                            "options": {
-                                                "menubar": false,
-                                                "height": 200,
-                                                "content_css": "/public/mis/sdk/tinymce-custom.css",
-                                                "branding": false,
-                                                "statusbar": true,
-                                                "plugins": [
-                                                    "advlist",
-                                                    "autolink",
-                                                    "link",
-                                                    "image",
-                                                    "lists",
-                                                    "charmap",
-                                                    "preview",
-                                                    "anchor",
-                                                    "pagebreak",
-                                                    "searchreplace",
-                                                    "wordcount",
-                                                    "visualblocks",
-                                                    "visualchars",
-                                                    "code",
-                                                    "fullscreen",
-                                                    "insertdatetime",
-                                                    "media",
-                                                    "nonbreaking",
-                                                    "table",
-                                                    "emoticons",
-                                                    "template",
-                                                    "help"
-                                                ],
-                                                "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
-                                            }
+                                            "maxLength": 300,
+                                            "showCounter": true
                                         }
                                     ]
                                 }
@@ -313,41 +253,11 @@
                                             "type": "divider"
                                         },
                                         {
-                                            "type": "input-rich-text",
+                                            "type": "textarea",
                                             "name": "description",
                                             "label": "描述",
-                                            "options": {
-                                                "menubar": false,
-                                                "height": 200,
-                                                "content_css": "/public/mis/sdk/tinymce-custom.css",
-                                                "branding": false,
-                                                "statusbar": true,
-                                                "plugins": [
-                                                    "advlist",
-                                                    "autolink",
-                                                    "link",
-                                                    "image",
-                                                    "lists",
-                                                    "charmap",
-                                                    "preview",
-                                                    "anchor",
-                                                    "pagebreak",
-                                                    "searchreplace",
-                                                    "wordcount",
-                                                    "visualblocks",
-                                                    "visualchars",
-                                                    "code",
-                                                    "fullscreen",
-                                                    "insertdatetime",
-                                                    "media",
-                                                    "nonbreaking",
-                                                    "table",
-                                                    "emoticons",
-                                                    "template",
-                                                    "help"
-                                                ],
-                                                "toolbar": "formatselect | bold italic backcolor  | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat"
-                                            }
+                                            "maxLength": 300,
+                                            "showCounter": true
                                         }
                                     ]
                                 }
