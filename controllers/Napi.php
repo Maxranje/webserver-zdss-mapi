@@ -5,6 +5,7 @@ class Controller_Napi extends Zy_Core_Controller{
         "abroadplan_summary"    => "actions/napi/abroadplan/Summary.php",
         "abroadplan_lists"      => "actions/napi/abroadplan/Lists.php",
         "abroadplan_check"      => "actions/napi/abroadplan/Check.php",
+        "abroadplan_down"       => "actions/napi/abroadplan/Down.php",
 
         // 日历相关
         "calendar_student"     => "actions/napi/calendar/Student.php",

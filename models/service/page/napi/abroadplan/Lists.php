@@ -81,11 +81,7 @@ class Service_Page_Napi_Abroadplan_Lists extends Zy_Core_Service{
                         "items" => array(),
                     );
                     foreach ($v["items"] as $vv) {
-                        $downloadPath = "";
-                        if (!empty($vv['up_ext'])) {
-                            $downloadPath = Zy_Helper_Config::getConfig('config')['upload_path'];
-                            $downloadPath = sprintf("%s/%s", $downloadPath, $vv["key"] . "." . $vv["up_ext"]);
-                        }
+                        $canDownload = !empty($vv['up_ext']) ? 1 : 0;
                         $tmpConfirm["items"][] = array(
                             "key" => "sc_" . $vv["key"],
                             "title" => $vv["title"],
@@ -95,7 +91,7 @@ class Service_Page_Napi_Abroadplan_Lists extends Zy_Core_Service{
                             "teacherCompletedBy" => !empty($vv["o_id"]) && !empty($userInfo[$vv['o_id']]["nickname"]) ? $userInfo[$vv['o_id']]["nickname"] : "",
                             "studentCompleted" => !empty($vv["is_sc"]) ? 1:0,
                             "studentCompletedTime" => !empty($vv["s_time"]) ? date("Y-m-d H:i", $vv["s_time"]) : "",
-                            "downloadUrl" => $downloadPath,
+                            "canDownload" => $canDownload,
                         );
                         $tmp["totalTasks"]++;
                         if (!empty($vv["is_sc"]) && !empty($vv["is_oc"])) {
@@ -107,7 +103,7 @@ class Service_Page_Napi_Abroadplan_Lists extends Zy_Core_Service{
                     $tmp['checklist'][] = $tmpConfirm;
                 }
                 if ($tmp["totalTasks"] > 0) {
-                    $tmp["progress"] = floatval(sprintf("%.2f", $tmp["completedTasks"] / $tmp["totalTasks"])) * 100;
+                    $tmp["progress"] = floatval(sprintf("%.2f", $tmp["completedTasks"] / $tmp["totalTasks"] * 100));
                 }
             }
             $lists[$key] = $tmp;

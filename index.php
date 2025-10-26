@@ -12,7 +12,7 @@ switch (ENV) {
 		error_reporting(-1);
 
         # reset path
-        define('HOSTNAME',   "http://127.0.0.1:8060/");        
+        define('HOSTNAME',   "http://192.168.1.25:8060/");        
 		break;
 
 	case 'production':
