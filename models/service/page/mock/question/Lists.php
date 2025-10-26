@@ -140,11 +140,18 @@ class Service_Page_Mock_Question_Lists extends Zy_Core_Service{
         $isMode = $this->isModeAble(Service_Data_Roles::ROLE_MODE_MOCK_DONE);
 
         $result = array();
+        $splitCnt = Service_Data_Question::QUESTION_CONTENT_SPLITCNT;
+
         foreach ($lists as $v) {
+            $description = strlen($v["description"]) > $splitCnt ? substr($v["description"], 0, $splitCnt) . "..." : $v["description"];
+            $content = empty($v["content"]) ? "" : strip_tags($v["content"]);
+            $content = strlen($content) > $splitCnt ? substr($content, 0, $splitCnt) . "..." : $content;
+
             $tmp = array();
             $tmp["qid"]             = $v["qid"];
             $tmp["is_mode"]         = $isMode ? 1 : 0;
-            $tmp["description"]     = $v["description"];
+            $tmp["descriptionS"]    = $v["parent_id"] > 0 ? $content : $description;
+            $tmp["description"]     = $v["parent_id"] > 0 ? "GroupDesc: " . $description : "";
             $tmp["type"]            = $v["type"];
             $tmp["type_info"]       = Service_Data_Question::QUESTION_TYPE_MAP_INFO[$v["type"]];
             $tmp["level"]           = $v["level"];

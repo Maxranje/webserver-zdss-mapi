@@ -202,7 +202,7 @@ class Service_Data_Exam {
 
         // 按照end_time 进行输出
         usort($studentExam, function($a, $b){
-            return $a["end_time"] >= $b["end_time"] ? -1 : 1;
+            return $a["end_time"] >= $b["end_time"] ? 1 : -1;
         });
 
         foreach ($studentExam as &$v) {

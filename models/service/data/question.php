@@ -7,6 +7,8 @@ class Service_Data_Question {
     const QUESTION_DISABLE  = 2;
     const QUESTION_STATE_MAP = [1,2];
 
+    const QUESTION_CONTENT_SPLITCNT = 30;
+
     // 类型
     const QUESTION_TYPE_RAIDO       = 1;
     const QUESTION_TYPE_CHECKBOX    = 2;

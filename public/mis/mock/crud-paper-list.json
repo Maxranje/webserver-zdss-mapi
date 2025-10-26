@@ -414,12 +414,12 @@
                                                                                                 {
                                                                                                     "type": "tpl",
                                                                                                     "visibleOn": "${state == 1}",
-                                                                                                    "tpl": "<div class='flex justify-between'><span>${label}</span><span class='text-muted m-r text-sm'>${tag}</span></div>"
+                                                                                                    "tpl": "<div class='flex justify-between'><span>${label}</span><span class='text-muted ml-1 text-sm'>${tag}</span></div>"
                                                                                                 },
                                                                                                 {
                                                                                                     "type": "tpl",
                                                                                                     "visibleOn": "${state == 2}",
-                                                                                                    "tpl": "<div class='flex justify-between'><span>${label}</span><span class='font-black m-r text-sm text-danger'>${tag}</span></div>"
+                                                                                                    "tpl": "<div class='flex justify-between'><span>${label}</span><span class='font-black ml-1 text-sm text-danger'>${tag}</span></div>"
                                                                                                 }
                                                                                             ],
                                                                                             "source": "/mapi/mock/question_lists?is_paper=1&pid=${paper.pid}"

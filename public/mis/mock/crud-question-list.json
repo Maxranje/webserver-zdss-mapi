@@ -178,9 +178,10 @@
             "className": "border-solid border-gray-100 shadow p-4 rounded-md mt-5 -mb-2 ",
             "header": {
                 "className": "bg-white",
-                "title": "$description",
+                "title": "$descriptionS",
                 "titleClassName": "mt-2",
                 "subTitle": "Qid:  $qid",
+                "description": "$description",
                 "avatarText": "$state_info",
                 "avatarTextClassName": "flex justify-center items-center text-lg font-black",
                 "avatarTextBackground": [

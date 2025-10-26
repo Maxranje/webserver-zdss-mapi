@@ -56,7 +56,7 @@ class Service_Page_Mock_Paper_Detail extends Zy_Core_Service{
 
         $options = array();
         $total = 0;
-        $splitCnt = 30;
+        $splitCnt = Service_Data_Question::QUESTION_CONTENT_SPLITCNT;
         foreach ($paperQuestions as $i => $v) {
             $total++;
             $qid = intval($v['qid']);

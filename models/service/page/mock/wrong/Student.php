@@ -35,7 +35,7 @@ class Service_Page_Mock_Wrong_Student extends Zy_Core_Service{
             "status" => Service_Data_Exam::EXAM_STUDENT_STATUS_FINISHED
         );
         $appends = array(
-            "order by end_time desc",
+            "order by end_time",
             "limit " . $range,
         );
         $studentExam = $serviceExam->getStudentListByConds($conds, array(), null, $appends);

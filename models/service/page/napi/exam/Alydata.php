@@ -20,7 +20,7 @@ class Service_Page_Napi_Exam_Alydata extends Service_Page_Napi_Exam_Service{
             "status" => Service_Data_Exam::EXAM_STUDENT_STATUS_FINISHED
         );
         $appends = array(
-            "order by end_time desc",
+            "order by end_time",
             "limit " . $range,
         );
         $studentExam = $serviceExam->getStudentListByConds($conds, array(), null, $appends);
