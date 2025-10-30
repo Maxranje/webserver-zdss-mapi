@@ -174,7 +174,7 @@
                     "api": "/mapi/schedule/bandtotal?schedule_ids=$schedule_ids",
                     "body": {
                         "type": "tpl",
-                        "tpl": "已选定 ${total | 0} 小时课程"
+                        "tpl": "已选定 ${total || 0} 小时课程"
                     }
                 },
                 {

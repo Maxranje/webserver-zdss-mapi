@@ -175,7 +175,7 @@
             },
             {
                 "type": "text",
-                "tpl": "${duration | 0}",
+                "tpl": "${duration || 0}",
                 "colSpan": 2
             }
         ],

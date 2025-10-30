@@ -1,6 +1,6 @@
 <?php
 define('APP_NAME',  'mapi');
-define('ENV',       'development');
+define('ENV',       'production');
 define('BASEPATH',  dirname(__FILE__).DIRECTORY_SEPARATOR);
 define('SYSPATH',   BASEPATH . 'library/');
 define('VIEWPATH',  BASEPATH . 'public/mis');
@@ -20,7 +20,7 @@ switch (ENV) {
 		error_reporting (E_ERROR & E_USER_WARNING);
 
         # reset path
-        define('HOSTNAME',  "http://zdss.cn/");        
+        define('HOSTNAME',  "https://zdss.cn/");        
 		break;
 
 	default:

@@ -34,7 +34,6 @@ class Service_Page_Napi_Calendar_Typelists extends Zy_Core_Service{
 
         $arrAppends = array(
             'order by uid desc',
-            'limit 0,400',
         );
 
         $conds = array(
