@@ -432,13 +432,21 @@
                                         "onlyLeaf": true
                                     },
                                     {
-                                        "type": "input-time-range",
-                                        "format": "HH:mm",
-                                        "value": "${time_range}",
+                                        "type": "group",
                                         "label": "模板时间",
-                                        "onlyLeaf": true,
                                         "required": true,
-                                        "name": "time_range",
+                                        "body": [
+                                            {
+                                                "type": "native-time",
+                                                "name": "start_hour",
+                                                "mode": "inline"
+                                            },
+                                            {
+                                                "type": "native-time",
+                                                "name": "end_hour",
+                                                "mode": "inline"
+                                            }
+                                        ],
                                         "desc": "调整后的时间间隔不能大于调整前的时间间隔"
                                     },
                                     {

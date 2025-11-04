@@ -9,7 +9,7 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
 
         $ets = empty($this->request['end_date']) ? "" : trim($this->request['end_date']);
         $sts = empty($this->request['start_date']) ? "" : trim($this->request['start_date']);
-        $id  = empty($this->request['selected_id']) ? 0 : intval($this->request['selected_id']);
+        $id  = empty($this->request['selected_id']) ? "" : trim($this->request['selected_id']);
         $type= empty($this->request['type']) ? "" : trim($this->request['type']);
 
         if (empty($sts) || empty($ets)) {
@@ -31,15 +31,23 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 类目不正确");
         }
 
-        if ($id <= 0) {
+        if (in_array($type, array("student", "teacher")) && intval($id) <= 0) {
             throw new Zy_Core_Exception(405, "操作失败, 选项不正确");
+        }
+
+        $ids = array();
+        if ($type == "group")  {
+            $ids = Zy_Helper_Utils::rmArrZore(Zy_Helper_Utils::arrayInt(explode(",", $id)));
+            if (empty($ids) || count($ids) > 4) {
+                throw new Zy_Core_Exception(405, "操作失败, 班级最少选1个, 最多选3个");
+            }
         }
 
         $lists = array();
         if ($type == "student") {
             $lists = $this->getStudentList($id, $sts, $ets);
         } else if ($type == "group") {
-            $lists = $this->getGroupList($id, $sts, $ets);
+            $lists = $this->getGroupList($ids, $sts, $ets);
         } else {
             $lists = $this->getTeacherList($id, $sts, $ets);
         }
@@ -166,6 +174,7 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
         // 格式化
         $result = array();
         if (!empty($pklists)) {
+            $scheduleIds    = Zy_Helper_Utils::arrayInt($pklists, "id");
             $groupIds       = Zy_Helper_Utils::arrayInt($pklists, "group_id");
             $subjectIds     = Zy_Helper_Utils::arrayInt($pklists, "subject_id");
             $areaIds        = Zy_Helper_Utils::arrayInt($pklists, "area_id");
@@ -182,6 +191,11 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
             $serviceData = new Service_Data_Group();
             $groupInfos = $serviceData->getListByConds(array('id in ('.implode(',', $groupIds).')'));
             $groupInfos = array_column($groupInfos, null, 'id');
+
+            // 如果是老师或班级, 需要判断当前排课是否存在课程
+            $curriculum = new Service_Data_Curriculum();
+            $orderMaps = $curriculum->getOrderCountBySchedule($scheduleIds);
+            $orderMaps = array_column($orderMaps, null, "schedule_id");           
 
             $areaInfos = $roomInfos = array();
             if (!empty($roomIds)) {
@@ -230,7 +244,7 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
                     }
                 }            
 
-                $result[] = array(
+                $tmp = array(
                     "start" => date("Y-m-d H:i:s",$item['start_time']),
                     "end"   => date("Y-m-d H:i:s",$item['end_time']),
                     "extendedProps" => array(
@@ -240,6 +254,13 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
                         "state" =>  $item["state"] == Service_Data_Schedule::SCHEDULE_ABLE ? 2 : 3,
                     ),
                 );
+
+                if ($item['state'] == Service_Data_Schedule::SCHEDULE_ABLE && empty($orderMaps[$item['id']])) {
+                    $tmp["extendedProps"]["teacher"] .= "- 无订单";
+                    $tmp["extendedProps"]["state"] = 4;
+                }
+
+                $result[] = $tmp;
             }
         }
         if (!empty($locklist)) {
@@ -264,7 +285,7 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
         $conds = array(
             sprintf("start_time >= %d", $sts),
             sprintf("end_time <= %d", $ets),
-            sprintf("group_id = %d", intval($gid))
+            sprintf("group_id in (%s)", implode(",", $gid))
         );
 
         $lists = $serviceData->getListByConds($conds);
@@ -272,10 +293,12 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
             return array();
         }
                 
+        $scheduleIds    = Zy_Helper_Utils::arrayInt($lists, "id");
         $teacherUids    = Zy_Helper_Utils::arrayInt($lists, "teacher_uid");
         $subjectIds     = Zy_Helper_Utils::arrayInt($lists, "subject_id");
         $areaIds        = Zy_Helper_Utils::arrayInt($lists, "area_id");
         $roomIds        = Zy_Helper_Utils::arrayInt($lists, "room_id");
+        $groupIds       = Zy_Helper_Utils::arrayInt($lists, "group_id");
 
         $serviceSubject = new Service_Data_Subject();
         $subjectInfo = $serviceSubject->getListByConds(array('id in ('.implode(',', $subjectIds).')'));
@@ -288,6 +311,11 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
         $serviceUser = new Service_Data_Profile();
         $userInfos = $serviceUser->getListByConds(array('uid in ('.implode(',', $teacherUids).')'));
         $userInfos = array_column($userInfos, null, 'uid');
+
+        // 如果是老师或班级, 需要判断当前排课是否存在课程
+        $curriculum = new Service_Data_Curriculum();
+        $orderMaps = $curriculum->getOrderCountBySchedule($scheduleIds);
+        $orderMaps = array_column($orderMaps, null, "schedule_id");
 
         $areaInfos = $roomInfos = array();
         if (!empty($roomIds)) {
@@ -336,7 +364,7 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
                 }
             }            
 
-            $result[] = array(
+            $tmp = array(
                 "start" => date("Y-m-d H:i:s",$item['start_time']),
                 "end"   => date("Y-m-d H:i:s",$item['end_time']),
                 "extendedProps" => array(
@@ -346,6 +374,11 @@ class Service_Page_Napi_Calendar_Platform extends Zy_Core_Service{
                     "state" =>  $item["state"] == Service_Data_Schedule::SCHEDULE_ABLE ? 2 : 3,
                 ),
             );
+            if ($item['state'] == Service_Data_Schedule::SCHEDULE_ABLE && empty($orderMaps[$item['id']])) {
+                $tmp["extendedProps"]["teacher"] .= "- 无订单";
+                $tmp["extendedProps"]["state"] = 4;
+            }            
+            $result[] = $tmp;
         }
         return $result;
     }    

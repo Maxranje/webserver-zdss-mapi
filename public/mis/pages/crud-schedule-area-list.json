@@ -60,6 +60,12 @@
                         "source": "/mapi/api/areaoperator"
                     },
                     {
+                        "type": "input-date-range",
+                        "name": "daterange",
+                        "inline": true,
+                        "label": "时间范围"
+                    },
+                    {
                         "type": "submit",
                         "label": "搜索"
                     }

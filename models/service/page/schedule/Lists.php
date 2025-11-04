@@ -236,6 +236,8 @@ class Service_Page_Schedule_Lists extends Zy_Core_Service{
             $item['time_day']   = strtotime(date("Y-m-d", $item['start_time']));
             $item['time_range'] = sprintf("%s,%s", date("H:i", $item['start_time']), date("H:i", $item['end_time']));
             $item['range_time'] = date('Y-m-d H:i', $item['start_time']) . "~".date('H:i', $item['end_time']);
+            $item["start_hour"] = date("H:i", $item['start_time']);
+            $item["end_hour"] = date("H:i", $item['end_time']);
             $item['duration'] = $item['end_time'] - $item['start_time'];
             $sum_duration += $item['duration'];
             $item['duration'] = sprintf("%.2f小时",  $item['duration'] / 3600);

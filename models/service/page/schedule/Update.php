@@ -9,12 +9,42 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
 
         $id             = empty($this->request['id']) ? 0 : intval($this->request['id']);
         $date           = empty($this->request['date']) ? 0 : intval($this->request['date']);
-        $timeRange      = empty($this->request['time_range']) ? "" : $this->request['time_range'];
+        $startHour      = empty($this->request['start_hour']) ? "" : trim($this->request['start_hour']);
+        $endHour        = empty($this->request['end_hour']) ? "" : trim($this->request['end_hour']);
         $teacherUid     = empty($this->request['teacher_uid']) ? "" : $this->request['teacher_uid'];
         $arIds          = empty($this->request['a_r_id']) ? "" : explode("_", $this->request['a_r_id']);
 
         if ($id <= 0){
             throw new Zy_Core_Exception(405, "请求参数错误");
+        }
+        // CHECK time range
+        if (empty($startHour) || empty($endHour)) {
+            throw new Zy_Core_Exception(405, "操作失败, 时间范围不能为空");
+        }        
+        $timeRange = array($startHour, $endHour);
+        $needTimes = array();
+        foreach ($timeRange as $item) {
+            $range = explode(":", $item);
+            if (empty($range) || count($range) != 2) {
+                throw new Zy_Core_Exception(405, "操作失败, 时间必须都要配置并且时间格式不能有错");
+            }
+            $needTimes[] = $date + ($range[0] * 3600) + ($range[1] * 60);
+        }
+
+        if (empty($needTimes)) {
+            throw new Zy_Core_Exception(405, "操作失败, 时间不正确, 请检查");
+        }  
+
+        $needTimes = array(
+            'sts' => min($needTimes),
+            'ets' => max($needTimes),
+        );
+
+        // 5分钟到4小时
+        if ($needTimes['sts'] >= $needTimes['ets'] 
+            || $needTimes['ets'] - $needTimes['sts'] > (4 * 3600)
+            || $needTimes['ets'] - $needTimes['sts'] < 300) {
+            throw new Zy_Core_Exception(405, "操作失败, 模板时间必须在5分钟到4小时之间");
         }
 
         $areaId = empty($arIds[0]) ? 0 : intval($arIds[0]);
@@ -41,36 +71,6 @@ class Service_Page_Schedule_Update extends Zy_Core_Service{
 
         if ($date <= 0){
             throw new Zy_Core_Exception(405, "操作失败, 调整日期格式不正确");
-        }
-
-        $timeRange = empty($timeRange) ? array() : explode(",", $timeRange);
-        if (empty($timeRange) || count($timeRange) != 2) {
-            throw new Zy_Core_Exception(405, "操作失败, 时间范围有问题");
-        }
-
-        $needTimes = array();
-        foreach ($timeRange as $item) {
-            $range = explode(":", $item);
-            if (empty($range) || count($range) != 2) {
-                throw new Zy_Core_Exception(405, "操作失败, 时间必须都要配置并且时间格式不能有错");
-            }
-            $needTimes[] = $date + ($range[0] * 3600) + ($range[1] * 60);
-        }
-
-        if (empty($needTimes)) {
-            throw new Zy_Core_Exception(405, "操作失败, 时间不正确, 请检查");
-        }
-
-        $needTimes = array(
-            'sts' => min($needTimes),
-            'ets' => max($needTimes),
-        );
-
-        // 5分钟到4小时
-        if ($needTimes['sts'] >= $needTimes['ets'] 
-            || $needTimes['ets'] - $needTimes['sts'] > (4 * 3600)
-            || $needTimes['ets'] - $needTimes['sts'] < 300) {
-            throw new Zy_Core_Exception(405, "操作失败, 模板时间必须在5分钟到4小时之间");
         }
 
         // 和历史记录对比,  不允许 > 当前记录时间,  
