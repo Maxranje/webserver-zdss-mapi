@@ -119,7 +119,7 @@ class Service_Page_Mock_Review_Lists extends Zy_Core_Service{
             $exam = $examInfos[$item["exam_id"]];
             $item["student_name"] = $userInfos[$item["student_uid"]]["nickname"];
             $item["indentify"]    = $exam['indentify'];
-            $item["spend_time"] = Zy_Helper_Utils::formatDurationForTime($item["spend_time"]);
+            $item["spend_time"] = Zy_Helper_Utils::formatDurationForTime($item["spend_time"], false, false);
             $item["start_end"] = sprintf("%s~%s", date("Y年m月d日 H:i", $item["start_time"]), date("H:i", $item["end_time"]));
             $item["exam_type"] = $exam["paper_type"];
             $item["paper_name"] = empty($paperInfos[$item["pid"]]["title"]) ? "-" : $paperInfos[$item["pid"]]["title"]; 

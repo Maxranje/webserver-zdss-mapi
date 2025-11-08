@@ -75,10 +75,13 @@ class Zy_Helper_Utils {
      * @param int $secondParam 传入秒数
      * @return string 返回时长，格式为 1小时3分20秒 
      */
-    public static function formatDurationForTime($secondParam) {
+    public static function formatDurationForTime($secondParam, $isch = false, $noNeedDay = true) {
         $durationSec = (int) $secondParam;
-        $day = floor($durationSec / 86400);
-        $durationSec = $durationSec - $day * 86400;
+        $day = 0;
+        if (!$noNeedDay) {
+            $day = floor($durationSec / 86400);
+            $durationSec = $durationSec - $day * 86400;
+        }
         $hour = floor($durationSec / 3600);
         $durationSec = $durationSec - $hour * 3600;
         $minute = floor($durationSec / 60);
@@ -86,19 +89,19 @@ class Zy_Helper_Utils {
         $second = $durationSec;
         $duration = '';
         if ($day > 0) {
-            $duration = $day . ' d ';
+            $duration = $day . ($isch ? ' 天 ' : ' d ');
         }
         if ($hour > 0) {
-            $duration .= $hour . ' h ';
+            $duration .= $hour . ($isch ? ' 小时 ' : ' h ');
         }
         if ($minute > 0) {
-            $duration .= $minute . ' m ';
+            $duration .= $minute . ($isch ? ' 分 ' : ' m ');
         }
         if ($second > 0) {
-            $duration .= $second . " s ";
+            $duration .= $second . ($isch ? ' 秒 ' : " s ");
         }
         if (empty($duration)) {
-            $duration = "0 h";
+            $duration = "0 " . ($isch ? ' 小时 ' : 'h');
         }
         return $duration;
     }

@@ -60,9 +60,9 @@ class Service_Page_Napi_Schedule_Tsummary extends Zy_Core_Service{
                 }
             }
 
-            $result['current_month_total'] = Zy_Helper_Utils::formatDurationForTime($result['current_month_total']);
-            $result['next_month_total'] = Zy_Helper_Utils::formatDurationForTime($result['next_month_total']);
-            $result['last_month_total'] = Zy_Helper_Utils::formatDurationForTime($result['last_month_total']);
+            $result['current_month_total'] = Zy_Helper_Utils::formatDurationForTime($result['current_month_total'], true);
+            $result['next_month_total'] = Zy_Helper_Utils::formatDurationForTime($result['next_month_total'], true);
+            $result['last_month_total'] = Zy_Helper_Utils::formatDurationForTime($result['last_month_total'], true);
             $result['week_schedule_list'] = $this->formatBase($weekList);
         }
 
