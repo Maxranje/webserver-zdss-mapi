@@ -14,6 +14,7 @@ class Service_Page_Student_Create extends Zy_Core_Service{
         $graduate   = empty($this->request['graduate']) ? "" : trim($this->request['graduate']);
         $bpid       = empty($this->request['birthplace']) ? 0 : intval($this->request['birthplace']);
         $sex        = empty($this->request['sex']) ? "M" : trim($this->request['sex']);
+        $isMock     = empty($this->request['is_mock']) ? 1 : intval($this->request['is_mock']);
         $sopuid     = empty($this->request['sopuid']) ? 0 : intval($this->request['sopuid']);
 
         if (empty($name) || empty($phone) || empty($nickname)) {
@@ -50,6 +51,7 @@ class Service_Page_Student_Create extends Zy_Core_Service{
             "school"        => $school, 
             "graduate"      => $graduate,
             "sex"           => $sex, 
+            "is_mock"       => $isMock == 1 ? Service_Data_Profile::STUDENT_MOCK : Service_Data_Profile::STUDENT_NO_MOCK,
             "sop_uid"       => $sopuid, 
             "create_time"   => time() , 
             "update_time"   => time() , 

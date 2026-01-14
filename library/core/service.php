@@ -43,6 +43,15 @@ class Zy_Core_Service {
         return true;
     }
 
+    public function checkMockStudent () {
+        if (empty($this->adption['type']) 
+            || $this->adption['type'] != Service_Data_Profile::USER_TYPE_STUDENT ||
+            empty($this->adption["is_mock"])) {
+            return false;
+        }
+        return true;
+    }    
+
     public function checkPartner () {
         if (empty($this->adption['type']) 
             || $this->adption['type'] != Service_Data_Profile::USER_TYPE_PARTNER) {
@@ -51,10 +60,22 @@ class Zy_Core_Service {
         return true;
     }
 
-    // 获取用户的权限ID
+    public function checkTeacherPages () {
+        if ($this->checkTeacher() && !empty($this->adption['pages'])) {
+            return true;
+        }
+        return false;
+    }    
+
+    // 获取用户的排课权限ID
     public function getUserRolePageIds () {
         return empty($this->adption['pages']) ? array() : $this->adption['pages'];
     }
+
+    // 获取用户的模考权限ID
+    public function getUserRoleMockIds () {
+        return empty($this->adption['mocks']) ? array() : $this->adption['mocks'];
+    }    
 
     // 获取用户功能权限id
     public function getUserRoleModeIds () {
@@ -102,5 +123,33 @@ class Zy_Core_Service {
                 Zy_Helper_Log::warning("add 42 ponit log failed, err:" . $e->getMessage());
             }
         }
+    }
+
+    // 用户登录信息
+    public function getAuthInfo ($userInfo) {
+        $roleType = 0 ;
+        if ($userInfo["type"] == Service_Data_Profile::USER_TYPE_SUPER ||  
+            (!empty($this->adption["pages"]) || !empty($userInfo["pages"])) ||
+            (!empty($this->adption["mocks"]) || !empty($userInfo["mocks"]))) {
+            $roleType = 1;
+        }
+        if ($userInfo["type"] == Service_Data_Profile::USER_TYPE_STUDENT && 
+            !empty($userInfo["is_mock"])) {
+            $roleType = 2; // 学员时候是否有权限状态
+        }
+        return array(
+            "user" => array(
+                "nickname"  => $userInfo["nickname"],
+                "type"      => $userInfo["type"],
+                "uid"       => $userInfo["uid"],
+                "sex"       => $userInfo["sex"], 
+                "avatar"    => $userInfo["avatar"],    
+                "school"    => $userInfo["school"],
+                "graduate"  => $userInfo["graduate"],
+                "sopname"   => empty($userInfo["sopname"])? "" : $userInfo["sopname"],
+                "roleType"  => $roleType,
+            ),
+            "auth_token" => Zy_Helper_Authtoken::buildToken($userInfo["uid"]),
+        );
     }
 }

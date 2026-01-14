@@ -10,7 +10,16 @@ class Service_Page_Roles_Mode_Lists extends Zy_Core_Service{
         $menuConf = Zy_Helper_Config::getAppConfig("menu");
         $menuConf = $menuConf['mode']; // 主体
 
-        $result = array();
+        $result = array(
+            "schedule" => array(
+                "label" => "排课系统",
+                "children" => array(),
+            ),
+            "mock" => array(
+                "label" => "模考系统",
+                "children" => array(),
+            )            
+        );
         foreach ($menuConf as $item) {
             if (!empty($item['isSuper'])) {
                 continue;
@@ -20,8 +29,12 @@ class Service_Page_Roles_Mode_Lists extends Zy_Core_Service{
                 "value" => $item['id'],
                 "tag" => empty($item["tag"]) ? "" : $item["tag"],
             );
-            $result[] = $tmp;
+            if (!empty($item["is_mock"])) {
+                $result["mock"]["children"][] = $tmp;
+            } else {
+                $result["schedule"]["children"][] = $tmp;
+            }
         }
-        return $result;
+        return array_values($result);
     }
 }

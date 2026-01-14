@@ -1,0 +1,387 @@
+{
+    "type": "page",
+    "title": "班级管理",
+    "toolbar": [
+        {
+            "type": "button",
+            "actionType": "drawer",
+            "label": "新增",
+            "className": "m-r-sm",
+            "primary": true,
+            "drawer": {
+                "position": "right",
+                "size": "lg",
+                "title": "新增",
+                "body": {
+                    "type": "form",
+                    "name": "group-new-form",
+                    "api": {
+                        "method": "post",
+                        "url": "/mapi/group/create",
+                        "dataType": "form"
+                    },
+                    "onEvent": {
+                        "click": {
+                            "actions": [
+                                {
+                                    "actionType": "reload",
+                                    "componentId": "group_list"
+                                }
+                            ]
+                        }
+                    },
+                    "body": [
+                        {
+                            "type": "input-text",
+                            "name": "name",
+                            "label": "名称",
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "tree-select",
+                            "name": "clasze_id",
+                            "onlyLeaf": true,
+                            "label": "科目&班型",
+                            "searchable": true,
+                            "required": true,
+                            "initiallyOpen": false,
+                            "source": "/mapi/subject/claszelists?type=2",
+                            "desc": "科目&班型选择后, 为防止非当前科目&班型的订单绑定到班级, 所以一旦绑定课程就不允许修改, 请谨慎配置!"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "input-text",
+                            "name": "descs",
+                            "label": "描述"
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "radios",
+                            "name": "state",
+                            "label": "状态",
+                            "value": "1",
+                            "options": [
+                                {
+                                    "label": "正常",
+                                    "value": "1"
+                                },
+                                {
+                                    "label": "关闭",
+                                    "value": "2"
+                                }
+                            ],
+                            "required": true
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "tree-select",
+                            "name": "area_operator",
+                            "onlyLeaf": true,
+                            "label": "助教",
+                            "searchable": true,
+                            "initiallyOpen": false,
+                            "source": "/mapi/api/areaoperator",
+                            "required": true
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "body": {
+        "type": "crud",
+        "api": {
+            "method": "post",
+            "url": "/mapi/group/lists",
+            "dataType": "form"
+        },
+        "perPage": 20,
+        "syncLocation": false,
+        "labelTpl": "${id}",
+        "id": "group_list",
+        "filter": {
+            "title": "条件搜索",
+            "submitText": "",
+            "body": [
+                {
+                    "type": "input-text",
+                    "name": "name",
+                    "label": "班级名称",
+                    "size": "md",
+                    "placeholder": "模糊匹配"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "student_uid",
+                    "label": "学员",
+                    "size": "md",
+                    "initiallyOpen": false,
+                    "searchable": true,
+                    "onlyLeaf": true,
+                    "source": "/mapi/student/lists?is_select=1&nickname=$term"
+                },
+                {
+                    "type": "tree-select",
+                    "name": "area_operator",
+                    "onlyLeaf": true,
+                    "label": "助教",
+                    "searchable": true,
+                    "size": "md",
+                    "initiallyOpen": false,
+                    "source": "/mapi/api/areaoperator"
+                },
+                {
+                    "type": "select",
+                    "name": "state",
+                    "label": "状态",
+                    "value": "0",
+                    "options": [
+                        {
+                            "label": "请选择",
+                            "value": "0"
+                        },
+                        {
+                            "label": "正常",
+                            "value": "1"
+                        },
+                        {
+                            "label": "关闭",
+                            "value": "2"
+                        }
+                    ]
+                },
+                {
+                    "type": "submit",
+                    "label": "搜索"
+                }
+            ]
+        },
+        "filterTogglable": true,
+        "headerToolbar": [
+            "filter-toggler",
+            "bulkActions",
+            {
+                "type": "tpl",
+                "tpl": "共有 ${total} 条数据。",
+                "className": "v-middle"
+            },
+            {
+                "type": "columns-toggler",
+                "align": "right"
+            },
+            {
+                "type": "drag-toggler",
+                "align": "right"
+            },
+            {
+                "type": "pagination",
+                "align": "right"
+            }
+        ],
+        "footerToolbar": [
+            "statistics",
+            "switch-per-page",
+            "pagination"
+        ],
+        "columns": [
+            {
+                "name": "identify",
+                "label": "班号",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "name",
+                "label": "班级名称",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "subject_name",
+                "label": "科目",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "clasze_name",
+                "label": "班型",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "descs",
+                "label": "描述",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "state",
+                "label": "状态",
+                "type": "mapping",
+                "map": {
+                    "2": "<span class='label label-danger'>关闭</span>",
+                    "1": "<span class='label label-success'>正常</span>"
+                }
+            },
+            {
+                "name": "area_operator_name",
+                "label": "助教",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "name": "schedule_count",
+                "label": "总排课量",
+                "type": "text",
+                "remark": "这个班级一共排了多少课, 节数, 非小时请留意",
+                "toggled": true
+            },
+            {
+                "name": "update_time",
+                "label": "最后修改时间",
+                "type": "text",
+                "toggled": true
+            },
+            {
+                "type": "operation",
+                "label": "操作",
+                "width": 250,
+                "buttons": [
+                    {
+                        "type": "button",
+                        "label": "编辑",
+                        "level": "default",
+                        "actionType": "drawer",
+                        "drawer": {
+                            "position": "right",
+                            "size": "lg",
+                            "title": "编辑",
+                            "body": {
+                                "type": "form",
+                                "name": "group-edit-form",
+                                "api": {
+                                    "method": "post",
+                                    "url": "/mapi/group/update",
+                                    "dataType": "form"
+                                },
+                                "onEvent": {
+                                    "click": {
+                                        "actions": [
+                                            {
+                                                "actionType": "reload",
+                                                "componentId": "group_list"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "body": [
+                                    {
+                                        "type": "input-text",
+                                        "name": "id",
+                                        "label": "班级ID",
+                                        "disabled": true,
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "name",
+                                        "label": "班级名称",
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "clasze_id",
+                                        "onlyLeaf": true,
+                                        "label": "科目&班型",
+                                        "searchable": true,
+                                        "required": true,
+                                        "initiallyOpen": false,
+                                        "source": "/mapi/subject/claszelists?type=2",
+                                        "desc": "注意: 绑定课程的班级无法修改班型, 修改班型会同步修改班号"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "name": "descs",
+                                        "label": "描述"
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "radios",
+                                        "name": "state",
+                                        "label": "状态",
+                                        "options": [
+                                            {
+                                                "label": "正常",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "label": "关闭",
+                                                "value": "2"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "tree-select",
+                                        "name": "area_operator",
+                                        "onlyLeaf": true,
+                                        "label": "助教",
+                                        "searchable": true,
+                                        "initiallyOpen": false,
+                                        "value": "${area_operator}",
+                                        "source": "/mapi/api/areaoperator",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "disabledOn": "this.state === 2",
+                        "label": "绑定订单",
+                        "level": "default",
+                        "actionType": "link",
+                        "link": "/order/band?search_group_id=$id"
+                    },
+                    {
+                        "type": "button",
+                        "label": "删除",
+                        "disabledOn": "this.schedule_count > 0",
+                        "level": "danger",
+                        "actionType": "ajax",
+                        "confirmText": "您确认要删除么, 如果班级有关联的排课, 无法删除班级, 建议下线操作?",
+                        "api": {
+                            "method": "get",
+                            "url": "/mapi/group/delete?group_id=$id"
+                        }
+                    }
+                ],
+                "toggled": true
+            }
+        ]
+    }
+}

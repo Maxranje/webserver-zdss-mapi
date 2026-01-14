@@ -85,7 +85,7 @@ class Zy_Database_Dbservice
 	/**
 	 * 对传入的SQL限制条件进行定位成字符串形式, 不接受数组传递
 	 */
-	public static function getConds($arrConds){
+	public static function getConds($arrConds, $isPrepared =false){
         //参数检查, 对字符串类型直接返回，对于非数组类型返回NULL
         if (is_string($arrConds)) {
         	return $arrConds;
@@ -101,7 +101,12 @@ class Zy_Database_Dbservice
                 $arrCondsRes[] = $value;
             }
             else {
-                $arrCondsRes["$key ="] = $value;
+                if ($isPrepared) {
+                    $arrCondsRes[$key] = $value;
+                } else {
+                    $arrCondsRes["$key ="] = $value;
+                }
+                
             }
         }
         return $arrCondsRes;

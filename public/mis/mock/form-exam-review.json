@@ -1,0 +1,15 @@
+{
+    "type": "page",
+    "body": [
+        {
+            "type": "tpl",
+            "tpl": "<h2 style='font-weight:bold'>批改试卷</h2>"
+        },
+        {
+            "type": "service",
+            "id": "review_page_detail",
+            "name": "review_page_detail",
+            "schemaApi": "/mapi/mock/exam_review?exam_id=$exam_id&student_uid=$student_uid&is_review=1"
+        }
+    ]
+}

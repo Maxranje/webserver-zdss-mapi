@@ -47,7 +47,7 @@ class Zy_Core_Actions {
         if (!empty($this->_userInfo['userid'])) {
             $this->_userid = $this->_userInfo['userid'] ;
             $this->_isLogin = true;
-            $this->_userInfo["isbell"] = $this->isReviewer();
+            $this->_userInfo["is_reviewer"] = $this->isReviewer();
             define("OPERATOR", intval($this->_userid));
         } 
         try
@@ -106,13 +106,13 @@ class Zy_Core_Actions {
 
     public function redirectLogin () {
         header('HTTP/1.1 301 Moved Permanently');
-        header(sprintf("Location: http://%s/mapi/sign/page", $_SERVER['HTTP_HOST']));
+        header(sprintf("Location: http://%s/login", $_SERVER['HTTP_HOST']));
         exit;
     }
 
     public function redirect404 () {
         header('HTTP/1.1 301 Moved Permanently');
-        header(sprintf("Location: http://%s/mapi/sign/err", $_SERVER['HTTP_HOST']));
+        header(sprintf("Location: http://%s/error", $_SERVER['HTTP_HOST']));
         exit;
     }    
 

@@ -3,7 +3,7 @@
 class Service_Page_Abroadorder_Confirm_Down extends Zy_Core_Service{
 
     public function execute () {
-        if (!$this->checkAdmin() && !$this->checkStudent()) {
+        if (!$this->checkAdmin()) {
             throw new Zy_Core_Exception(405, "无权限操作");
         }
 
@@ -50,7 +50,7 @@ class Service_Page_Abroadorder_Confirm_Down extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 未配置上传或未上传, 请检查");
         }
 
-        $downloadPath = Zy_Helper_Config::getConfig('config')['upload_path'];
+        $downloadPath = Zy_Helper_Config::getConfig('config')['upload_path'] . "/abroadplan_confrim";
         $downloadPath = sprintf("%s/%s", $downloadPath, $checkId . "." . $confirmActiveItem["up_ext"]);
 
         try {

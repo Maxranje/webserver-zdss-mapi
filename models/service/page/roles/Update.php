@@ -12,6 +12,7 @@ class Service_Page_Roles_Update extends Zy_Core_Service{
         $descs      = empty($this->request['descs']) ? "" : strval($this->request['descs']);
         $pageIds    = empty($this->request['page_ids']) ? "" : strval($this->request['page_ids']);
         $modeIds    = empty($this->request['mode_ids']) ? "" : strval($this->request['mode_ids']);
+        $mockIds    = empty($this->request['mock_ids']) ? "" : strval($this->request['mock_ids']);
         $uids       = empty($this->request['uids']) ? "" : strval($this->request['uids']);
 
         if ($id <= 0) {
@@ -20,10 +21,15 @@ class Service_Page_Roles_Update extends Zy_Core_Service{
 
         $pageIds = explode(",", $pageIds);
         $modeIds = explode(",", $modeIds);
+        $mockIds = explode(",", $mockIds);
         $newUids = explode(",", $uids);
 
-        if (empty($name) || empty($pageIds) || empty($newUids)) {
+        if (empty($name) || empty($newUids)) {
             throw new Zy_Core_Exception(405, "操作失败, 名称或归属页面或用户uid不能为空, 如果要把角色去掉权限, 请删掉角色");
+        }
+
+        if (empty($pageIds) && empty($mockIds)) {
+            throw new Zy_Core_Exception(405, "操作失败, 模考或排课权限必须要给定一个, 否则无法提交");
         }
 
         $serviceData = new Service_Data_Roles();
@@ -34,7 +40,7 @@ class Service_Page_Roles_Update extends Zy_Core_Service{
         $diff1 = array_diff($oldUids, $newUids);
 
 
-        $ret = $serviceData->updateRoles($id, $name, $descs, $pageIds, $modeIds, $diff2, $diff1);
+        $ret = $serviceData->updateRoles($id, $name, $descs, $pageIds, $mockIds, $modeIds, $diff2, $diff1);
         if ($ret === false) {
             throw new Zy_Core_Exception(405, "更新失败, 请重试");
         }

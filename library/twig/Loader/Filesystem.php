@@ -32,7 +32,7 @@ class Twig_Loader_Filesystem implements Twig_LoaderInterface, Twig_ExistsLoaderI
     public function __construct($paths = array(), $rootPath = null)
     {
         $this->rootPath = (null === $rootPath ? getcwd() : $rootPath).DIRECTORY_SEPARATOR;
-        if (false !== $realPath = realpath($rootPath)) {
+        if (false !== $realPath = realpath($this->rootPath)) {
             $this->rootPath = $realPath.DIRECTORY_SEPARATOR;
         }
 

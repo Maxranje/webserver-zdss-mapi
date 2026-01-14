@@ -12,12 +12,6 @@ class Controller_Schedule extends Zy_Core_Controller{
         "timelist"      => "actions/schedule/Timelist.php",
         "revoke"        => "actions/schedule/Revoke.php",
 
-        // 日历
-        "calendardata"              => "actions/schedule/Calendardata.php",
-        "calendarclient"            => "actions/schedule/Calendarclient.php",
-        "calendarplatform"          => "actions/schedule/Calendarplatform.php",
-        "calendarexport"            => "actions/schedule/Calendarexport.php",
-
         // 绑定列表
         "bandlists"           => "actions/schedule/Bandlists.php",
         "bandcreate"          => "actions/schedule/Bandcreate.php",

@@ -13,6 +13,7 @@ class Dao_Roles extends Zy_Core_Dao {
             "descs"  => "descs", 
             "page_ids"  => "page_ids", 
             "mode_ids"  => "mode_ids",
+            "mock_ids"  => "mock_ids",
             "create_time"  => "create_time" , 
             "update_time"  => "update_time" , 
             "ext"  => "ext" , 

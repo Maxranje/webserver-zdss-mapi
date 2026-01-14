@@ -35,6 +35,8 @@ class Zy_Core_Session  {
         $type = $this->getSessionUserType ();
         $pages = $this->getSessionUserPages();
         $modes = $this->getSessionUserModes();
+        $mocks = $this->getSessionUserMocks();
+        $isMock = $this->getSessionUserIsMock();
 
         if (empty($userid) || empty($name) || empty($phone) || empty($type) || empty($passport)) {
             return [];
@@ -46,12 +48,14 @@ class Zy_Core_Session  {
             'phone'     => $phone,
             'type'      => $type,
             'pages'     => $pages,
+            'mocks'     => $mocks,
             'modes'     => $modes,
             'passport'  => $passport,
+            'is_mock'   => $isMock,
         ];
     }
 
-    public function setSessionUserInfo ($userid, $name, $passport, $phone, $type, $pages = array(), $modes=array(), $avatar = "") {
+    public function setSessionUserInfo ($userid, $name, $passport, $phone, $type, $pages = array(), $mocks = array(), $modes=array(), $isMock=0, $avatar = "") {
         if (empty($userid) || empty($name) || empty($phone) || empty($type) || empty($passport)) {
             return false;
         }
@@ -69,7 +73,9 @@ class Zy_Core_Session  {
         $this->setSessionUserPhone($phone);
         $this->setSessionUserType($type);
         $this->setSessionUserPages($pages);
+        $this->setSessionUserMocks($mocks);
         $this->setSessionUserModes($modes);
+        $this->setSessionUserIsMock($isMock);
         $this->setSessionUserAvatar($avatar);
         $this->setSessionUserPassport($passport);
         
@@ -114,6 +120,14 @@ class Zy_Core_Session  {
         return isset($_SESSION['pages']) && is_array($_SESSION['pages']) ? $_SESSION['pages'] : array();
     }
 
+    public function getSessionUserMocks () {
+        return isset($_SESSION['mocks']) && is_array($_SESSION['mocks']) ? $_SESSION['mocks'] : array();
+    }    
+
+    public function getSessionUserIsMock () {
+        return isset($_SESSION['is_mock']) ? $_SESSION['is_mock'] : 0;
+    }        
+
     public function getSessionUserModes () {
         return isset($_SESSION['modes']) && is_array($_SESSION['modes']) ? $_SESSION['modes'] : array();
     }
@@ -145,6 +159,14 @@ class Zy_Core_Session  {
     public function setSessionUserPages ($pages) {
         $_SESSION['pages'] = $pages;
     }
+
+    public function setSessionUserMocks ($mocks) {
+        $_SESSION['mocks'] = $mocks;
+    }
+
+    public function setSessionUserIsMock ($isMock) {
+        $_SESSION['is_mock'] = $isMock;
+    }    
 
     public function setSessionUserModes ($modes) {
         $_SESSION['modes'] = $modes;

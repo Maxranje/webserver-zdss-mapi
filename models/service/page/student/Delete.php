@@ -24,6 +24,18 @@ class Service_Page_Student_Delete extends Zy_Core_Service{
             throw new Zy_Core_Exception(405, "操作失败, 学员存在订单关联无法删除");
         }
 
+        $serviceApackage = new Service_Data_Aporderpackage();
+        $apCount = $serviceApackage->getTotalByConds(array('uid' => $uid));
+        if ($apCount > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 学员存在留学服务关联, 无法删除");
+        }    
+        
+        $serviceExam = new Service_Data_Exam();
+        $studentExamCnt = $serviceExam->getExamCntBySuid($uid);
+        if ($studentExamCnt > 0) {
+            throw new Zy_Core_Exception(405, "操作失败, 学员存在模考记录, 无法删除");
+        }            
+
         $ret = $serviceData->deleteUserInfo($uid, $userInfo['type']);
         if ($ret == false) {
             throw new Zy_Core_Exception(405, "删除错误, 请重试");

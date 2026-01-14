@@ -1,0 +1,168 @@
+/* 基础样式重置 */
+body {
+    font-size: 0.725rem;
+    line-height: 1.6;
+    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #fff;
+    padding: 15px;
+    margin: 0;
+}
+
+/* 标题样式 */
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.2em;
+    margin-bottom: 0.6em;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #222;
+}
+
+h1 { font-size: 2.2em; }
+h2 { font-size: 1.8em; }
+h3 { font-size: 1.5em; }
+h4 { font-size: 1.3em; }
+h5 { font-size: 1.1em; }
+h6 { font-size: 1em; color: #666; }
+
+/* 段落和文本 */
+p {
+    margin-top: 0.8em;
+    margin-bottom: 0.8em;
+}
+
+/* 链接样式 */
+a {
+    color: #1e88e5;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #1565c0;
+}
+
+/* 列表样式 */
+ul, ol {
+    margin-top: 0.8em;
+    margin-bottom: 0.8em;
+    padding-left: 1.5em;
+}
+
+li {
+    margin-bottom: 0.4em;
+}
+
+/* 表格样式 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+}
+
+th, td {
+    padding: 0.5em;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* 引用块样式 */
+blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 1em;
+    margin-left: 0;
+    color: #666;
+    font-style: italic;
+}
+
+/* 代码样式 */
+code {
+    background-color: #f5f5f5;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.9em;
+}
+
+pre {
+    background-color: #f5f5f5;
+    padding: 1em;
+    border-radius: 5px;
+    overflow: auto;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+}
+
+/* 图片样式 */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em auto;
+}
+
+/* 水平分割线 */
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 1.5em 0;
+}
+
+/* 表单元素样式 */
+input, textarea, select {
+    border: 1px solid #ddd;
+    padding: 0.5em;
+    border-radius: 3px;
+    font-size: 0.725rem;
+    font-family: inherit;
+}
+
+button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 0.5em 1em;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.725rem;
+    font-family: inherit;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}
+
+/* 辅助类 */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+.text-muted { color: #666; }
+.text-small { font-size: 0.85em; }
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    table {
+        font-size: 0.9em;
+    }
+}

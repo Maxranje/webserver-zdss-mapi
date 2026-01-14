@@ -63,4 +63,72 @@ class Zy_Helper_Upload {
 	
 		return $ext;
 	}
+
+	/**
+	 * 上传mock音频文件
+	 */
+	public static function saveUploadedMockSpeakFile($newDirectory, $newFileName)
+	{
+        // 检查是否有文件上传
+        if (!isset($_FILES['audioBlob'])) {
+            throw new Exception("无有效文件");
+        }
+
+        $audioFile = $_FILES['audioBlob'];
+
+        // 检查上传是否成功
+        if ($audioFile['error'] !== UPLOAD_ERR_OK) {
+            $errorMessage = '文件上传失败';
+            switch ($audioFile['error']) {
+                case UPLOAD_ERR_INI_SIZE:
+                case UPLOAD_ERR_FORM_SIZE:
+                    $errorMessage = '文件大小超过限制';
+                    break;
+                case UPLOAD_ERR_PARTIAL:
+                    $errorMessage = '文件只有部分被上传';
+                    break;
+                case UPLOAD_ERR_NO_FILE:
+                    $errorMessage = '没有文件被上传';
+                    break;
+                case UPLOAD_ERR_NO_TMP_DIR:
+                    $errorMessage = '缺少临时文件夹';
+                    break;
+                case UPLOAD_ERR_CANT_WRITE:
+                    $errorMessage = '文件写入失败';
+                    break;
+            }
+            throw new Exception($errorMessage);
+        }
+
+        // 验证文件类型
+        $allowedTypes = ['audio/webm', 'audio/wav', 'audio/mpeg', 'audio/ogg'];
+        if (!in_array($audioFile['type'], $allowedTypes)) {
+            throw new Exception('不支持的文件类型: ' . $audioFile['type']);
+        }
+
+        // 限制文件大小（10MB）
+        $maxFileSize = 10 * 1024 * 1024;
+        if ($audioFile['size'] > $maxFileSize) {
+            throw new Exception('文件大小超过10MB限制: ' . $audioFile['size']);            
+        }
+
+        // 创建上传目录（如果不存在）
+        if (!file_exists($newDirectory)) {
+            if (!mkdir($newDirectory, 0755, true)) {
+                throw new Exception('无法创建上传目录: ' . $newDirectory);                 
+            }
+        }
+
+        // 生成安全的文件名
+        $originalName = basename($audioFile['name']);
+        $fileExtension = pathinfo($originalName, PATHINFO_EXTENSION);
+        $safeFilename = $newFileName . "_" . date('YmdHis') . '_' . uniqid() . '.' . $fileExtension;
+        $destination = $newDirectory . DIRECTORY_SEPARATOR . $safeFilename;
+
+        // 移动文件到目标位置
+        if (!move_uploaded_file($audioFile['tmp_name'], $destination)) {
+            throw new Exception('move_uploaded_file失败: ' . $destination);     
+        }
+        return $safeFilename;
+	}
 }

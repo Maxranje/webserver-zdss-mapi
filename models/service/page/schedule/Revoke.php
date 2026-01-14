@@ -3,7 +3,7 @@
 class Service_Page_Schedule_Revoke extends Zy_Core_Service{
 
     public function execute () {
-        if (!$this->checkSuper()) {
+        if (!$this->checkSuper() && !$this->isModeAble(Service_Data_Roles::ROLE_MODE_SCHEDULE_REVOKE)) {
             throw new Zy_Core_Exception(405, "无权限查看");
         }
 

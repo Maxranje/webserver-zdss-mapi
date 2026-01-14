@@ -6,7 +6,7 @@ class modifyLog{
         $logfile = Zy_Helper_Config::getConfig('config')['log_file'];
 
         $logPath = ($logPath !== '') ? $logPath : BASEPATH . '../log';
-        $logfile = $logPath . DIRECTORY_SEPARATOR . ($logfile !== '' ? $logfile : "service.log");
+        $logfile = $logPath . DIRECTORY_SEPARATOR . ($logfile !== '' ? $logfile : "service.mapi.log");
 
         if (file_exists($logfile) ){
             rename($logfile, $logfile.".".date("Ymd", strtotime("-1days")));

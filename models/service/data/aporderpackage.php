@@ -107,7 +107,27 @@ class Service_Data_Aporderpackage {
         }
 
         return $result;
-    }     
+    }    
+    
+    // 根据uid获取服务
+    public function getApackagesByUid ($uid){
+        $arrConds = array(
+            sprintf("uid = %d", intval($uid)),
+            sprintf("state in (%s)" , implode(",",[
+                self::APORDER_STATUS_ABLE,
+                self::APORDER_STATUS_DONE,
+                self::APORDER_STATUS_TRANS,
+                self::APORDER_STATUS_ADDDUR_PEND,
+            ]))
+        );
+        $data = $this->daoAporderpackage->getListByConds($arrConds, 
+            $this->daoAporderpackage->arrFieldsMap);
+        if (empty($data)) {
+            return array();
+        }
+
+        return $data;
+    }      
 
     // 预创建服务包, 需要过工单
     public function create ($profile) {

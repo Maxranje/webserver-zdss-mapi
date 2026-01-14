@@ -11,8 +11,6 @@ class Service_Page_Abroadorder_Confirm_Update extends Zy_Core_Service{
         $isReset      = empty($this->request['is_reset']) ? false : true; // 重置检查内容
         $isCheck      = empty($this->request['is_check']) ? false : true; // 更新选项
 
-        // throw new Zy_Core_Exception(405, "无权限查看");
-
         $serviceData = new Service_Data_Aporderpackage();
         $apackageInfo = $serviceData->getAbroadpackageById($apackageId);
         if (empty($apackageInfo)) {
@@ -27,7 +25,6 @@ class Service_Page_Abroadorder_Confirm_Update extends Zy_Core_Service{
         }
         if ($isReset) {
             throw new Zy_Core_Exception(405, "操作失败, 该能力已经下线");
-            //return $this->reset($apackageId, $apackageInfo);
         }
         if ($isCover) {
             return $this->cover($apackageId, $apackageInfo);

@@ -131,16 +131,13 @@ class Service_Page_Records_Lists extends Zy_Core_Service{
             $item['birthplace']     = empty($birthplace[$userInfos[$item['uid']]['bpid']]['name']) ? "" :$birthplace[$userInfos[$item['uid']]['bpid']]['name'];
             $item['money_info']     = sprintf("%.2f元", $item['money'] / 100);
             $item['order_id']       = empty($item['order_id']) ? "-" : $item['order_id'];
-            $item['isfree']         = "-";
+            $item['isfree']         = "0";
             $item['is_abroadplan']  = empty($ext["order"]["abroadplan_id"]) ? "-" : "是";
             $item['duration']       = $duration ;
             $item["schedule_time"]  = empty($scheduleTime) ? "-" : $scheduleTime;
-            if (isset($ext['order'])) {
-                $item['isfree'] = "否";
-                if (!empty($ext['order']['isfree'])) {
-                    $item['isfree'] = "是";
-                    $item['money_info'] = "0.00元";
-                }
+            if (isset($ext['order']) && !empty($ext['order']['isfree'])) {
+                $item['isfree'] = "1";
+                $item['money_info'] = "0.00元";
             }
         }
         return $lists;

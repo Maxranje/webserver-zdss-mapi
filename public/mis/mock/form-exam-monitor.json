@@ -1,0 +1,127 @@
+{
+    "type": "page",
+    "body": [
+        {
+            "type": "tpl",
+            "tpl": "<h2 style='font-weight:bold'>模考进度监控</h2>"
+        },
+        {
+            "type": "service",
+            "api": "/mapi/mock/exam_monitor?exam_indentify=$exam_indentify",
+            "name": "monitor-service",
+            "id": "monitor-service",
+            "body": {
+                "type": "container",
+                "body": [
+                    {
+                        "type": "property",
+                        "column": 3,
+                        "className": "border-solid border-gray-200 shadow-sm rounded bg-white",
+                        "items": [
+                            {
+                                "label": "试卷",
+                                "content": "<span class='text-black font-black ml-2'>${paper.title}</span>",
+                                "span": 3
+                            },
+                            {
+                                "label": "总分",
+                                "content": "<span class='text-black font-black ml-2'>${exam.total_score}</span>"
+                            },
+                            {
+                                "label": "题数",
+                                "content": "<span class='text-black font-black ml-2'>${exam.total_question}</span>"
+                            },
+                            {
+                                "label": "类型",
+                                "content": "<span class='label label-danger ml-2 '>${exam.paper_type_info}</span>"
+                            },
+                            {
+                                "label": "备注",
+                                "content": "<span class='text-gray-500  ml-2'>${exam.remark}</span>",
+                                "span": 5
+                            }
+                        ]
+                    },
+                    {
+                        "type": "alert",
+                        "level": "warning",
+                        "showIcon": true,
+                        "hiddenOn": "${exam.paper_type == 1}",
+                        "className": "mt-5 shadow p-4 rounded-md font-black",
+                        "body": "评估类型考试考题随考生作答准确度变化而变化, 每人考题不尽相同, 以考生实际作答后数据为准!"
+                    },
+                    {
+                        "type": "crud",
+                        "className": "mt-5",
+                        "source": "${rows}",
+                        "mode": "cards",
+                        "columnsCount": 1,
+                        "card": {
+                            "className": "border-solid border-gray-100 shadow p-4 rounded-md  ",
+                            "header": {
+                                "className": "bg-white",
+                                "title": "$nickname",
+                                "titleClassName": "text-bold text-black text-xl",
+                                "subTitle": "UID: ${student_uid}",
+                                "avatarText": "${status_info}",
+                                "avatarTextClassName": "flex justify-center items-center text-sm",
+                                "avatarTextBackground": [
+                                    "${status_color}"
+                                ]
+                            },
+                            "body": [
+                                {
+                                    "type": "progress",
+                                    "animate": true,
+                                    "value": "$progress",
+                                    "valueTpl": "$progress_info",
+                                    "stripe": true,
+                                    "strokeWidth": 12
+                                }
+                            ],
+                            "toolbar": [
+                                {
+                                    "type": "tpl",
+                                    "visibleOn": "${status == 8}",
+                                    "tpl": "<span class='label label-success mr-2 text-md'>最终得 <span class='font-black text-xl'>${score}</span> 分</span>"
+                                },
+                                {
+                                    "type": "button",
+                                    "label": "预览",
+                                    "icon": "fa fa-file-text-o",
+                                    "visibleOn": "status != 1",
+                                    "disabledOn": "answer_cnt <= 0",
+                                    "className": "text-xs text-black mr-2",
+                                    "actionType": "dialog",
+                                    "dialog": {
+                                        "size": "lg",
+                                        "title": "预览",
+                                        "body": {
+                                            "type": "service",
+                                            "initFetch": false,
+                                            "schemaApi": "/mapi/mock/exam_review?exam_id=${exam.id}&student_uid=$student_uid"
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "label": "强制结束",
+                                    "icon": "fa fa-ban",
+                                    "visibleOn": "status == 5 || status == 1",
+                                    "className": "text-xs text-black mr-2",
+                                    "actionType": "ajax",
+                                    "reload": "monitor-service",
+                                    "confirmText": "您确认要强制结束么? 强制结束会影响考生模考, 请非常慎重",
+                                    "api": {
+                                        "method": "get",
+                                        "url": "/mapi/mock/exam_end?exam_id=${exam.id}&student_uid=$student_uid"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

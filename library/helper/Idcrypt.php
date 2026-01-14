@@ -336,4 +336,27 @@ class Zy_Helper_Idcrypt {
         return $data;
     }
 
+
+    public static function encodeExam ($str) {
+        $key = '12345678901234567890123456789012'; // 必须是32位（256位）
+        $method = 'AES-256-CBC';
+        // 生成初始化向量
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($method));
+        // 加密数据
+        $encrypted = openssl_encrypt($str, $method, $key, 0, $iv);
+        return  urlencode(base64_encode($encrypted)); 
+    }
+
+    public static function decodeExam ($str) {
+        var_dump($str);
+        $encrypted = base64_decode($str); // 这里应该是加密后的数据，用base64编码
+        var_dump($encrypted);
+        $key = '12345678901234567890123456789012'; // 密钥必须与加密时使用的相同
+        $method = 'AES-256-CBC';
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($method));
+
+        // 解密数据
+        $decrypted = openssl_decrypt($encrypted, $method, $key, 0, $iv);
+        return $decrypted;
+    }    
 }

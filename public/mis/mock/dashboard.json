@@ -1,0 +1,43 @@
+{
+    "type": "page",
+    "title": "",
+    "body": [
+        {
+            "type": "alert",
+            "showIcon": true,
+            "level": "success",
+            "body": "温馨提示：欢迎使用模考系统 V1"
+        },
+        {
+            "type": "alert",
+            "level": "warning",
+            "showIcon": true,
+            "body": "系统操作有任何问题请及时联系管理员, 谢谢~"
+        },
+        {
+            "type": "timeline",
+            "mode": "alternate",
+            "items": [
+                {
+                    "title": [
+                        {
+                            "type": "text",
+                            "value": "2025.11.03 V1.0.0 更新记录"
+                        },
+                        {
+                            "type": "button",
+                            "label": "查看",
+                            "actionType": "dialog",
+                            "level": "link",
+                            "dialog": {
+                                "title": "V1.0.0 版本更新",
+                                "body": "<div><h3>模考一期^_^</h3></div>",
+                                "actions": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
